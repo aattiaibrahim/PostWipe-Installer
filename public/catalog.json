@@ -18,8 +18,7 @@
             },
             "macos": {
               "resolver": { "type": "static", "url": "https://media.steampowered.com/client/installer/steam.dmg" },
-              "filename": "steam.dmg",
-              "stale": true
+              "filename": "steam.dmg"
             }
           }
         },
@@ -229,13 +228,13 @@
       "name": "File Compressors",
       "apps": [
         {
-          "id": "nanozip",
-          "name": "NanoZip",
-          "icon": "nanozip.ico",
-          "domain": "nanozip.net",
+          "id": "nanazip",
+          "name": "NanaZip",
+          "icon": "nanazip.ico",
+          "domain": "github.com",
           "kind": "download",
-          "notes": "Verify NanoZip is still maintained/hosted at this domain.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.nanozip.net/download/nanozip64.exe" }, "filename": "nanozip64.exe", "stale": true } }
+          "notes": "Corrected from \"NanoZip\" (an unrelated, likely-abandoned tool) to NanaZip, the actively maintained modern 7-Zip fork. Verified against the live M2Team/NanaZip GitHub repo.",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "M2Team/NanaZip", "asset_pattern": "NanaZip_*.msixbundle" }, "filename": "NanaZip.msixbundle" } }
         },
         {
           "id": "winrar",
@@ -386,6 +385,18 @@
           "platforms": {
             "windows": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/windows/", "selector": "a[href*='windows-x86_64-setup.exe']", "attr": "href" }, "filename": "LibreWolf_Setup.exe" },
             "macos": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/macos/", "selector": "a[href*='dl.librewolf.net'][href*='macos-x86_64'][href$='.dmg']", "attr": "href" }, "filename": "LibreWolf.dmg" }
+          }
+        },
+        {
+          "id": "zen-browser",
+          "name": "Zen Browser",
+          "icon": "zen-browser.ico",
+          "domain": "zen-browser.app",
+          "kind": "download",
+          "notes": "Verified against the live zen-browser/desktop GitHub releases.",
+          "platforms": {
+            "windows": { "resolver": { "type": "github_release", "repo": "zen-browser/desktop", "asset_pattern": "zen.installer.exe" }, "filename": "zen.installer.exe" },
+            "macos": { "resolver": { "type": "github_release", "repo": "zen-browser/desktop", "asset_pattern": "zen.macos-universal.dmg" }, "filename": "zen.macos-universal.dmg" }
           }
         }
       ]

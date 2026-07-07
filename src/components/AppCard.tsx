@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import type { AppEntry, Os } from "../types/catalog";
 import { startDownload, generateScript } from "../lib/tauriCommands";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
@@ -44,7 +45,14 @@ export function AppCard({ app, os }: AppCardProps) {
   const actionLabel = isScript ? (busy ? "Generating…" : "Generate Script") : busy ? "Starting…" : "Download";
 
   return (
-    <div className="app-row">
+    <motion.div
+      className="app-row"
+      layout="position"
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+    >
       <img
         className="app-row__icon"
         src={iconSrc(app)}
@@ -78,9 +86,16 @@ export function AppCard({ app, os }: AppCardProps) {
           </p>
         )}
       </div>
-      <button className="app-row__action" disabled={busy} onClick={handleClick}>
+      <motion.button
+        className="app-row__action"
+        disabled={busy}
+        onClick={handleClick}
+        whileHover={busy ? undefined : { scale: 1.04 }}
+        whileTap={busy ? undefined : { scale: 0.96 }}
+        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+      >
         {actionLabel}
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 }

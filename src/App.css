@@ -1,11 +1,13 @@
 :root {
-  --bg: #f6f6f7;
-  --surface: #ffffff;
-  --surface-hover: #eef0f4;
-  --border: #e2e2e6;
+  --bg: #f0f1f5;
+  --surface: rgba(255, 255, 255, 0.6);
+  --surface-solid: #ffffff;
+  --surface-hover: rgba(255, 255, 255, 0.85);
+  --border: rgba(20, 20, 30, 0.08);
   --text: #16171a;
   --text-muted: #6b6f76;
   --accent: #396cd8;
+  --accent-2: #7c3aed;
   --accent-hover: #2c58b3;
   --accent-text: #ffffff;
   --stale: #b45309;
@@ -14,6 +16,10 @@
   --verified-bg: #dcfce7;
   --danger: #dc2626;
   --success: #16a34a;
+  --blob-1: #6d8cff;
+  --blob-2: #b06cf7;
+  --blob-3: #4fd1c5;
+  --glass-blur: 22px;
 
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 15px;
@@ -27,19 +33,24 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1e1f22;
-    --surface: #26272b;
-    --surface-hover: #2f3035;
-    --border: #38393e;
+    --bg: #16171b;
+    --surface: rgba(38, 39, 43, 0.55);
+    --surface-solid: #26272b;
+    --surface-hover: rgba(47, 48, 53, 0.8);
+    --border: rgba(255, 255, 255, 0.08);
     --text: #f2f2f3;
     --text-muted: #9a9ca3;
     --accent: #5b8def;
+    --accent-2: #a78bfa;
     --accent-hover: #7ba3f5;
     --accent-text: #0f0f0f;
     --stale: #fbbf24;
     --stale-bg: #3f2f0f;
     --verified: #4ade80;
     --verified-bg: #123a20;
+    --blob-1: #3b5bdb;
+    --blob-2: #7c3aed;
+    --blob-3: #0d9488;
   }
 }
 
@@ -49,6 +60,47 @@
 
 body {
   margin: 0;
+}
+
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-bg__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.ambient-bg__blob--1 {
+  width: 46vw;
+  height: 46vw;
+  top: -12vw;
+  left: -8vw;
+  background: radial-gradient(circle, var(--blob-1), transparent 70%);
+}
+
+.ambient-bg__blob--2 {
+  width: 40vw;
+  height: 40vw;
+  bottom: -14vw;
+  right: -6vw;
+  background: radial-gradient(circle, var(--blob-2), transparent 70%);
+}
+
+.ambient-bg__blob--3 {
+  width: 34vw;
+  height: 34vw;
+  bottom: 10vh;
+  left: 20vw;
+  background: radial-gradient(circle, var(--blob-3), transparent 70%);
+  opacity: 0.35;
 }
 
 .app-shell {
@@ -62,6 +114,13 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem 0.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border-bottom: 1px solid var(--border);
 }
 
 .app-shell__header h1 {
@@ -88,8 +147,10 @@ body {
   margin: 0 1.5rem 0.75rem;
   padding: 0.75rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 
 .settings-panel__check-btn {
@@ -142,30 +203,45 @@ body {
 }
 
 .os-picker__tile {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
   padding: 0.9rem;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1.5px solid var(--border);
   background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   color: var(--text-muted);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease, color 0.15s ease;
+  overflow: hidden;
+  transition: border-color 0.15s ease, color 0.2s ease;
 }
 
 .os-picker__tile:hover {
-  background-color: var(--surface-hover);
-  transform: translateY(-1px);
+  color: var(--text);
 }
 
 .os-picker__tile--active {
-  border-color: var(--accent);
-  background-color: var(--accent);
+  border-color: transparent;
   color: var(--accent-text);
+}
+
+.os-picker__indicator {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+
+.os-picker__icon,
+.os-picker__tile span {
+  position: relative;
+  z-index: 1;
 }
 
 .os-picker__icon {
@@ -175,41 +251,42 @@ body {
 
 /* Search + folder bar */
 .search-filter-bar {
-  position: sticky;
-  top: 0;
   display: flex;
   gap: 0.75rem;
   padding: 0.6rem 0;
-  background-color: var(--bg);
-  z-index: 1;
 }
 
 .search-filter-bar__input {
   flex: 1;
   padding: 0.55rem 0.9rem;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   color: var(--text);
   font-size: 0.9rem;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-filter-bar__input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 .search-filter-bar__folder-btn {
   padding: 0.5rem 0.9rem;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   color: var(--text);
   font-size: 0.85rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
 .search-filter-bar__folder-btn:hover {
@@ -226,9 +303,12 @@ body {
 
 .category-card {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   overflow: hidden;
+  transition: box-shadow 0.2s ease;
 }
 
 .category-card__header {
@@ -242,6 +322,7 @@ body {
   color: var(--text);
   cursor: pointer;
   text-align: left;
+  transition: background-color 0.15s ease;
 }
 
 .category-card__header:hover {
@@ -273,28 +354,9 @@ body {
   border-radius: 999px;
 }
 
-.category-card__collapse {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.2s ease;
-}
-
-.category-card__collapse--open {
-  grid-template-rows: 1fr;
-}
-
-.category-card__collapse > .category-card__rows {
-  overflow: hidden;
-}
-
 .category-card__rows {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  padding: 0 0.6rem;
-}
-
-.category-card__collapse--open > .category-card__rows {
   padding: 0.2rem 0.6rem 0.6rem;
 }
 
@@ -303,9 +365,9 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 0.4rem;
-  border-radius: 8px;
-  transition: background-color 0.12s ease;
+  padding: 0.55rem 0.5rem;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
 }
 
 .app-row:hover {
@@ -392,22 +454,18 @@ body {
 .app-row__action {
   flex-shrink: 0;
   padding: 0.45rem 0.9rem;
-  border-radius: 8px;
-  border: 1px solid var(--accent);
-  background-color: var(--accent);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: var(--accent-text);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-}
-
-.app-row__action:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-  transform: translateY(-1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .app-row__action:disabled {
+  background: none;
   border-color: var(--border);
   background-color: var(--bg);
   color: var(--text-muted);
@@ -425,9 +483,10 @@ body {
 .download-queue__item {
   padding: 0.6rem 0.85rem;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   background-color: var(--surface);
-  animation: queue-item-in 0.15s ease;
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 
 @keyframes queue-item-in {
@@ -497,8 +556,7 @@ body {
 
 .download-queue__bar-fill {
   height: 100%;
-  background-color: var(--accent);
-  transition: width 0.15s ease-out;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
 }
 
 .download-queue__meta {
