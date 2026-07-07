@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import { useCatalogStore } from "../state/catalogStore";
 import { useOsDetect } from "../hooks/useOsDetect";
+import { useDownloadEvents } from "../hooks/useDownloadEvents";
+import { OsPicker } from "../components/OsPicker";
 import { SearchFilterBar } from "../components/SearchFilterBar";
 import { CategoryGrid } from "../components/CategoryGrid";
+import { DownloadQueuePanel } from "../components/DownloadQueuePanel";
 
 export function Browse() {
   const { catalog, loading, error, osFilter, searchQuery, load } = useCatalogStore();
   useOsDetect();
+  useDownloadEvents();
 
   useEffect(() => {
     load();
@@ -18,7 +22,9 @@ export function Browse() {
 
   return (
     <div className="browse">
+      <OsPicker />
       <SearchFilterBar />
+      <DownloadQueuePanel />
       <CategoryGrid catalog={catalog} os={osFilter} searchQuery={searchQuery} />
     </div>
   );

@@ -13,8 +13,12 @@
     "windows": [
       {
         "title": "PostWipe Installer",
-        "width": 1100,
-        "height": 720
+        "width": 1360,
+        "height": 860,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
+        "resizable": true
       }
     ],
     "security": {
@@ -23,7 +27,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis", "dmg", "app"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -31,5 +35,16 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU2MTk5MUI5NjA0QThFNzQKUldSMGprcGd1WkVaVnZIYWl1TUFYMVlrRElJWGp5aHo0UTM1N0xzVS91OUJ1V3c3Wm0xbjVHWnQK",
+      "endpoints": [
+        "https://github.com/aattiaibrahim/PostWipe-Installer/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

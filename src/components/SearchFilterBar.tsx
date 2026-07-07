@@ -1,16 +1,9 @@
-import type { Os } from "../types/catalog";
 import { useCatalogStore } from "../state/catalogStore";
+import { openDownloadsFolder } from "../lib/tauriCommands";
 
 export function SearchFilterBar() {
-  const osFilter = useCatalogStore((s) => s.osFilter);
-  const setOsFilter = useCatalogStore((s) => s.setOsFilter);
   const searchQuery = useCatalogStore((s) => s.searchQuery);
   const setSearchQuery = useCatalogStore((s) => s.setSearchQuery);
-
-  const osOptions: { value: Os; label: string }[] = [
-    { value: "windows", label: "Windows" },
-    { value: "macos", label: "macOS" },
-  ];
 
   return (
     <div className="search-filter-bar">
@@ -21,17 +14,9 @@ export function SearchFilterBar() {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <div className="search-filter-bar__os-toggle">
-        {osOptions.map((opt) => (
-          <button
-            key={opt.value}
-            className={`os-toggle__option${osFilter === opt.value ? " os-toggle__option--active" : ""}`}
-            onClick={() => setOsFilter(opt.value)}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
+      <button className="search-filter-bar__folder-btn" onClick={() => openDownloadsFolder()}>
+        Open Downloads Folder
+      </button>
     </div>
   );
 }

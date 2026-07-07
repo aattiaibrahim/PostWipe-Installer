@@ -9,6 +9,7 @@
           "id": "steam",
           "name": "Steam",
           "icon": "steam.ico",
+          "domain": "store.steampowered.com",
           "kind": "download",
           "platforms": {
             "windows": {
@@ -26,6 +27,7 @@
           "id": "epic-games",
           "name": "Epic Games Launcher",
           "icon": "epic-games.ico",
+          "domain": "epicgames.com",
           "kind": "download",
           "notes": "Epic dropped official macOS launcher support in 2019; Windows-only entry.",
           "platforms": {
@@ -39,6 +41,7 @@
           "id": "gog-galaxy",
           "name": "GOG Galaxy",
           "icon": "gog.ico",
+          "domain": "gog.com",
           "kind": "download",
           "platforms": {
             "windows": {
@@ -52,6 +55,7 @@
           "id": "wargaming-game-center",
           "name": "Wargaming Game Center",
           "icon": "wargaming-game-center.ico",
+          "domain": "wargaming.net",
           "kind": "download",
           "notes": "Previous URL pointed at a World of Warships installer, not the WGC launcher itself — needs verification.",
           "platforms": {
@@ -66,6 +70,7 @@
           "id": "battle-net",
           "name": "Battle.net",
           "icon": "battle-net.ico",
+          "domain": "battle.net",
           "kind": "download",
           "platforms": {
             "windows": {
@@ -84,6 +89,7 @@
           "id": "ubisoft-connect",
           "name": "Ubisoft Connect",
           "icon": "ubisoft-connect.ico",
+          "domain": "ubisoft.com",
           "kind": "download",
           "platforms": {
             "windows": {
@@ -97,6 +103,7 @@
           "id": "ea-app",
           "name": "EA App",
           "icon": "ea-app.ico",
+          "domain": "ea.com",
           "kind": "download",
           "platforms": {
             "windows": {
@@ -124,13 +131,15 @@
           "id": "zentimings",
           "name": "ZenTimings",
           "icon": "zentimings.ico",
+          "domain": "github.com",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "hattedsquirrel/ZenTimings", "asset_pattern": "ZenTimings*.zip" }, "filename": "ZenTimings.zip" } }
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "irusanov/ZenTimings", "asset_pattern": "ZenTimings*.zip" }, "filename": "ZenTimings.zip" } }
         },
         {
           "id": "cinebench-r20",
           "name": "Cinebench R20",
           "icon": "cinebench-r20.ico",
+          "domain": "maxon.net",
           "kind": "download",
           "notes": "Verify current Maxon Cinebench R20 download URL — Maxon has reorganized their download infrastructure since this was last checked.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://cinebench.com/download/CinebenchR20.zip" }, "filename": "CinebenchR20.zip", "stale": true } }
@@ -139,6 +148,7 @@
           "id": "cpu-z",
           "name": "CPU-Z",
           "icon": "cpu-z.ico",
+          "domain": "cpuid.com",
           "kind": "download",
           "notes": "Pinned version — verify current build at cpuid.com/softwares/cpu-z.html.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://cpuid.com/downloads/cpu-z/cpu-z_2.00-en.exe" }, "filename": "cpu-z.exe", "stale": true } }
@@ -147,6 +157,7 @@
           "id": "hwinfo",
           "name": "HWiNFO",
           "icon": "hwinfo.ico",
+          "domain": "hwinfo.com",
           "kind": "download",
           "notes": "Pinned build number — verify current build at hwinfo.com/download.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.hwinfo.com/download/hwi_716.exe" }, "filename": "hwinfo.exe", "stale": true } }
@@ -155,6 +166,7 @@
           "id": "hwmonitor",
           "name": "HWMonitor x64",
           "icon": "hwmonitor.ico",
+          "domain": "cpuid.com",
           "kind": "download",
           "notes": "Pinned version — verify current build at cpuid.com/softwares/hwmonitor.html.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.cpuid.com/downloads/hwmonitor/hwmonitor_1.45.exe" }, "filename": "hwmonitor.exe", "stale": true } }
@@ -163,6 +175,7 @@
           "id": "nvidia-profile-inspector",
           "name": "NVIDIA Profile Inspector",
           "icon": "nvidia-profile-inspector.ico",
+          "domain": "github.com",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "Orbmu2k/nvidiaProfileInspector", "asset_pattern": "nvidiaProfileInspector.zip" }, "filename": "nvidiaProfileInspector.zip" } }
         },
@@ -170,6 +183,7 @@
           "id": "occt",
           "name": "OCCT",
           "icon": "occt.ico",
+          "domain": "ocbase.com",
           "kind": "download",
           "notes": "Verify OCCT still serves a stable, unversioned zip at this path.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.ocbase.com/download/OCCT.zip" }, "filename": "OCCT.zip", "stale": true } }
@@ -178,6 +192,7 @@
           "id": "prime95",
           "name": "Prime95",
           "icon": "prime95.ico",
+          "domain": "mersenne.org",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.mersenne.org/download/prime95.zip" }, "filename": "prime95.zip" } }
         },
@@ -185,8 +200,10 @@
           "id": "timer-resolution",
           "name": "Timer Resolution",
           "icon": "timer-resolution.ico",
+          "domain": "github.com",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "valleyofdoom/TimerResolution", "asset_pattern": "TimerResolution*.zip" }, "filename": "TimerResolution.zip" } }
+          "notes": "Tool is published as \"SetTimerResolution\" under this repo, not a \"TimerResolution*.zip\" as previously assumed.",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "valleyofdoom/TimerResolution", "asset_pattern": "SetTimerResolution.exe" }, "filename": "SetTimerResolution.exe" } }
         },
         {
           "id": "timing-configurator",
@@ -200,6 +217,7 @@
           "id": "ddu",
           "name": "Display Driver Uninstaller (DDU)",
           "icon": "ddu.ico",
+          "domain": "wagnardsoft.com",
           "kind": "download",
           "notes": "Pinned version — check wagnardsoft.com forum download page for the current DDU release.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.wagnardsoft.com/download/DDU_v18.1.0.0.exe" }, "filename": "DDU.exe", "stale": true } }
@@ -214,6 +232,7 @@
           "id": "nanozip",
           "name": "NanoZip",
           "icon": "nanozip.ico",
+          "domain": "nanozip.net",
           "kind": "download",
           "notes": "Verify NanoZip is still maintained/hosted at this domain.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.nanozip.net/download/nanozip64.exe" }, "filename": "nanozip64.exe", "stale": true } }
@@ -222,17 +241,19 @@
           "id": "winrar",
           "name": "WinRAR",
           "icon": "winrar.ico",
+          "domain": "win-rar.com",
           "kind": "download",
-          "notes": "Pinned build — needs the html resolver against win-rar.com/download.html once implemented.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.win-rar.com/download.html", "selector": "a.winrar-download-64", "attr": "href", "base_url": "https://www.win-rar.com/" }, "filename": "winrar-x64.exe", "stale": true } }
+          "notes": "Verified against the live win-rar.com/download.html page structure.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.win-rar.com/download.html", "selector": "a[href*='winrar-x64-'][href$='.exe']", "attr": "href", "base_url": "https://www.win-rar.com/" }, "filename": "winrar-x64.exe" } }
         },
         {
           "id": "7-zip",
           "name": "7-Zip",
           "icon": "7-zip.ico",
+          "domain": "7-zip.org",
           "kind": "download",
-          "notes": "Pinned build — needs the html resolver against 7-zip.org/download.html once implemented.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.7-zip.org/download.html", "selector": "a[href$='-x64.exe']", "attr": "href", "base_url": "https://www.7-zip.org/" }, "filename": "7z-x64.exe", "stale": true } }
+          "notes": "7-Zip moved its releases to GitHub (ip7z/7zip) in 2024; verified against the live repo.",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "ip7z/7zip", "asset_pattern": "7z*-x64.exe" }, "filename": "7z-x64.exe" } }
         }
       ]
     },
@@ -244,6 +265,7 @@
           "id": "bitwarden",
           "name": "Bitwarden",
           "icon": "bitwarden.ico",
+          "domain": "bitwarden.com",
           "kind": "download",
           "platforms": {
             "windows": { "resolver": { "type": "static", "url": "https://vault.bitwarden.com/download/?app=desktop&platform=windows" }, "filename": "Bitwarden-Installer.exe" },
@@ -254,8 +276,9 @@
           "id": "windscribe",
           "name": "Windscribe",
           "icon": "windscribe.ico",
+          "domain": "windscribe.com",
           "kind": "download",
-          "notes": "Pinned version — needs the html resolver against windscribe.com/download once implemented. A macOS client also exists but its stable URL hasn't been verified yet.",
+          "notes": "windscribe.com/download renders its download button client-side via JavaScript, so a static HTML fetch can't see the real link — this needs the hidden-webview resolver (deferred spike), not the plain html resolver. A macOS client also exists but its URL hasn't been verified.",
           "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://windscribe.com/download", "selector": "a.windows-download", "attr": "href" }, "filename": "Windscribe-Setup.exe", "stale": true } }
         }
       ]
@@ -268,6 +291,7 @@
           "id": "vscode",
           "name": "Visual Studio Code",
           "icon": "vscode.ico",
+          "domain": "code.visualstudio.com",
           "kind": "download",
           "platforms": {
             "windows": { "resolver": { "type": "static", "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" }, "filename": "VSCodeUserSetup-x64.exe" },
@@ -278,8 +302,9 @@
           "id": "pycharm",
           "name": "PyCharm",
           "icon": "pycharm.ico",
+          "domain": "jetbrains.com",
           "kind": "download",
-          "notes": "Pinned to an old version — needs the html resolver against jetbrains.com/pycharm/download once implemented.",
+          "notes": "jetbrains.com/pycharm/download renders its download links client-side via JavaScript, so a static HTML fetch can't see the real link — this needs the hidden-webview resolver (deferred spike), not the plain html resolver.",
           "platforms": {
             "windows": { "resolver": { "type": "html", "page_url": "https://www.jetbrains.com/pycharm/download/?section=windows", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm-installer.exe", "stale": true },
             "macos": { "resolver": { "type": "html", "page_url": "https://www.jetbrains.com/pycharm/download/?section=mac", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm.dmg", "stale": true }
@@ -289,6 +314,7 @@
           "id": "netlimiter",
           "name": "NetLimiter",
           "icon": "netlimiter.ico",
+          "domain": "netlimiter.com",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.netlimiter.com/download/nl5setup.exe" }, "filename": "nl5setup.exe" } }
         },
@@ -296,6 +322,7 @@
           "id": "notepad-plus-plus",
           "name": "Notepad++",
           "icon": "notepad-plus-plus.ico",
+          "domain": "notepad-plus-plus.org",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "notepad-plus-plus/notepad-plus-plus", "asset_pattern": "npp.*.Installer.x64.exe" }, "filename": "npp-installer-x64.exe" } }
         },
@@ -303,6 +330,7 @@
           "id": "putty",
           "name": "PuTTY",
           "icon": "putty.ico",
+          "domain": "putty.org",
           "kind": "download",
           "notes": "Path itself is PuTTY's own stable 'latest' alias, but confirm the resolved filename/version still matches.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi" }, "filename": "putty-installer.msi", "stale": true } }
@@ -311,6 +339,7 @@
           "id": "powertoys",
           "name": "PowerToys",
           "icon": "powertoys.ico",
+          "domain": "microsoft.com",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "microsoft/PowerToys", "asset_pattern": "PowerToysUserSetup-*-x64.exe" }, "filename": "PowerToysUserSetup-x64.exe" } }
         },
@@ -318,6 +347,7 @@
           "id": "process-explorer",
           "name": "Process Explorer",
           "icon": "process-explorer.ico",
+          "domain": "microsoft.com",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.sysinternals.com/files/ProcessExplorer.zip" }, "filename": "ProcessExplorer.zip" } }
         },
@@ -325,6 +355,7 @@
           "id": "autoruns",
           "name": "Autoruns",
           "icon": "autoruns.ico",
+          "domain": "microsoft.com",
           "kind": "download",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.sysinternals.com/files/Autoruns.zip" }, "filename": "Autoruns.zip" } }
         }
@@ -338,6 +369,7 @@
           "id": "brave",
           "name": "Brave Browser",
           "icon": "brave.ico",
+          "domain": "brave.com",
           "kind": "download",
           "platforms": {
             "windows": { "resolver": { "type": "static", "url": "https://referrals.brave.com/latest/Brave-Browser-Setup.exe" }, "filename": "Brave-Browser-Setup.exe" },
@@ -348,11 +380,12 @@
           "id": "librewolf",
           "name": "LibreWolf",
           "icon": "librewolf.ico",
+          "domain": "librewolf.net",
           "kind": "download",
-          "notes": "Pinned to a specific GitLab package version — breaks on every release. Needs the html resolver against librewolf.net/installation once implemented.",
+          "notes": "Verified against the live librewolf.net installation pages; targets the x86_64 build on both platforms.",
           "platforms": {
-            "windows": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/windows/", "selector": "a.download-link", "attr": "href" }, "filename": "LibreWolf_Setup.exe", "stale": true },
-            "macos": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/macos/", "selector": "a.download-link", "attr": "href" }, "filename": "LibreWolf.dmg", "stale": true }
+            "windows": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/windows/", "selector": "a[href*='windows-x86_64-setup.exe']", "attr": "href" }, "filename": "LibreWolf_Setup.exe" },
+            "macos": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/macos/", "selector": "a[href*='dl.librewolf.net'][href*='macos-x86_64'][href$='.dmg']", "attr": "href" }, "filename": "LibreWolf.dmg" }
           }
         }
       ]
@@ -365,6 +398,7 @@
           "id": "discord",
           "name": "Discord",
           "icon": "discord.ico",
+          "domain": "discord.com",
           "kind": "download",
           "notes": "Fixed from the previous canary-build endpoint to Discord's stable release endpoint.",
           "platforms": {
@@ -376,6 +410,7 @@
           "id": "telegram",
           "name": "Telegram",
           "icon": "telegram.ico",
+          "domain": "telegram.org",
           "kind": "download",
           "platforms": {
             "windows": { "resolver": { "type": "static", "url": "https://telegram.org/dl/desktop/win" }, "filename": "telegram-setup.exe" },
@@ -386,8 +421,9 @@
           "id": "teamspeak",
           "name": "TeamSpeak",
           "icon": "teamspeak.ico",
+          "domain": "teamspeak.com",
           "kind": "download",
-          "notes": "Pinned version — needs the html resolver against teamspeak.com/en/downloads once implemented.",
+          "notes": "teamspeak.com/en/downloads renders its download buttons client-side via JavaScript, so a static HTML fetch can't see the real link — this needs the hidden-webview resolver (deferred spike), not the plain html resolver.",
           "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://teamspeak.com/en/downloads/#ts3client", "selector": "a.download-windows", "attr": "href" }, "filename": "TeamSpeak3-Client-win64.exe", "stale": true } }
         }
       ]

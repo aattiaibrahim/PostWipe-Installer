@@ -24,6 +24,7 @@ export interface AppEntry {
   id: string;
   name: string;
   icon: string;
+  domain?: string;
   kind: AppKind;
   notes?: string;
   platforms: Partial<Record<Os, PlatformEntry>>;

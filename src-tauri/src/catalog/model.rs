@@ -19,6 +19,8 @@ pub struct AppEntry {
     pub id: String,
     pub name: String,
     pub icon: String,
+    #[serde(default)]
+    pub domain: Option<String>,
     pub kind: AppKind,
     #[serde(default)]
     pub notes: Option<String>,

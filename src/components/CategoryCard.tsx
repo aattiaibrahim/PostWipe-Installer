@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Category, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
 
@@ -8,6 +9,8 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category, os, searchQuery }: CategoryCardProps) {
+  const [expanded, setExpanded] = useState(true);
+
   const query = searchQuery.trim().toLowerCase();
   const apps = category.apps.filter((app) => {
     if (!app.platforms[os]) return false;
@@ -19,11 +22,17 @@ export function CategoryCard({ category, os, searchQuery }: CategoryCardProps) {
 
   return (
     <section className="category-card">
-      <h2 className="category-card__title">{category.name}</h2>
-      <div className="category-card__apps">
-        {apps.map((app) => (
-          <AppCard key={app.id} app={app} os={os} />
-        ))}
+      <button className="category-card__header" onClick={() => setExpanded((e) => !e)}>
+        <span className={`category-card__chevron${expanded ? " category-card__chevron--open" : ""}`}>&#9656;</span>
+        <h2 className="category-card__title">{category.name}</h2>
+        <span className="category-card__count">{apps.length}</span>
+      </button>
+      <div className={`category-card__collapse${expanded ? " category-card__collapse--open" : ""}`}>
+        <div className="category-card__rows">
+          {apps.map((app) => (
+            <AppCard key={app.id} app={app} os={os} />
+          ))}
+        </div>
       </div>
     </section>
   );
