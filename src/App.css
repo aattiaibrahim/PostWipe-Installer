@@ -52,7 +52,7 @@
     --accent: #6d97ff;
     --accent-2: #b490ff;
     --accent-hover: #7ba3f5;
-    --accent-text: #0f0f0f;
+    --accent-text: #ffffff;
     --stale: #fbbf24;
     --stale-bg: #3f2f0f;
     --verified: #4ade80;
@@ -261,6 +261,17 @@ h3 {
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 
+.settings-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settings-panel__version {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 .settings-panel__check-btn {
   padding: 0.5rem 0.9rem;
   border-radius: 8px;
@@ -293,6 +304,36 @@ h3 {
 
 .status-message--error {
   color: var(--danger);
+}
+
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.error-boundary__message {
+  max-width: 32rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.error-boundary__reload-btn {
+  padding: 0.5rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .browse {
@@ -588,7 +629,7 @@ h3 {
   padding: 0.45rem 0.9rem;
   border-radius: 10px;
   border: 1px solid transparent;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background-color: var(--accent);
   color: var(--accent-text);
   font-size: 0.82rem;
   font-weight: 500;

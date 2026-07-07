@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { getVersion } from "@tauri-apps/api/app";
+import { isTauri } from "../lib/tauriCommands";
 
 export function SettingsPanel() {
   const [status, setStatus] = useState<string>("");
   const [busy, setBusy] = useState(false);
+  const [version, setVersion] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isTauri) return;
+    getVersion()
+      .then(setVersion)
+      .catch(() => {});
+  }, []);
 
   async function handleCheckForUpdates() {
     setBusy(true);
@@ -28,9 +38,12 @@ export function SettingsPanel() {
 
   return (
     <div className="settings-panel">
-      <button className="settings-panel__check-btn" onClick={handleCheckForUpdates} disabled={busy}>
-        {busy ? "Working…" : "Check for Updates"}
-      </button>
+      <div className="settings-panel__row">
+        <button className="settings-panel__check-btn" onClick={handleCheckForUpdates} disabled={busy}>
+          {busy ? "Working…" : "Check for Updates"}
+        </button>
+        {version && <span className="settings-panel__version">Version {version}</span>}
+      </div>
       {status && <p className="settings-panel__status">{status}</p>}
     </div>
   );
