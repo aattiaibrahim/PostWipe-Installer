@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import type { AppEntry, Os } from "../types/catalog";
+import { AnimatePresence, motion } from "framer-motion";
+import type { AppEntry, Os, PlatformEntry } from "../types/catalog";
 import { startDownload, generateScript } from "../lib/tauriCommands";
-import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
+import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { AppIcon } from "./AppIcon";
 
 interface AppCardProps {
@@ -10,10 +11,21 @@ interface AppCardProps {
   os: Os;
 }
 
+function fallbackUrl(platform: PlatformEntry, domain?: string): string | null {
+  const resolver = platform.resolver;
+  if (resolver) {
+    if (resolver.type === "html") return resolver.page_url;
+    if (resolver.type === "github_release") return `https://github.com/${resolver.repo}/releases/latest`;
+  }
+  return domain ? `https://${domain}` : null;
+}
+
 export function AppCard({ app, os }: AppCardProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedPath, setGeneratedPath] = useState<string | null>(null);
+
+  const jobs = useDownloadQueueStore((s) => s.jobs);
 
   const platform = app.platforms[os];
   if (!platform) return null;
@@ -21,6 +33,13 @@ export function AppCard({ app, os }: AppCardProps) {
   const isScript = app.kind === "script";
   const verified = !isScript && !platform.stale && !!platform.resolver;
   const scriptId = platform.script_id;
+
+  const failedJob = Object.values(jobs)
+    .reverse()
+    .find((j) => j.appId === app.id && j.status === "failed");
+  const failureMessage = error ?? failedJob?.error ?? null;
+  const showFallback = !isScript && !!failureMessage;
+  const fallback = fallbackUrl(platform, app.domain);
 
   async function handleClick() {
     setError(null);
@@ -43,49 +62,70 @@ export function AppCard({ app, os }: AppCardProps) {
 
   return (
     <motion.div
-      className="app-row"
+      className="app-row-wrapper"
       layout="position"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <AppIcon appId={app.id} name={app.name} className="app-row__icon" />
-      <div className="app-row__body">
-        <div className="app-row__name-line">
-          <span className="app-row__name">{app.name}</span>
-          {verified && (
-            <span className="badge badge--verified" title="Verified good to go">
-              ✓ verified
-            </span>
-          )}
-          {!isScript && platform.stale && (
-            <span className="badge badge--stale" title={app.notes ?? "Needs verification"}>
-              needs check
-            </span>
+      <div className="app-row">
+        <AppIcon appId={app.id} name={app.name} className="app-row__icon" />
+        <div className="app-row__body">
+          <div className="app-row__name-line">
+            <span className="app-row__name">{app.name}</span>
+            {verified && (
+              <span className="badge badge--verified" title="Verified good to go">
+                ✓ verified
+              </span>
+            )}
+            {!isScript && platform.stale && (
+              <span className="badge badge--stale" title={app.notes ?? "Needs verification"}>
+                needs check
+              </span>
+            )}
+          </div>
+          {app.notes && <p className="app-row__notes">{app.notes}</p>}
+          {failureMessage && <p className="app-row__error">{failureMessage}</p>}
+          {generatedPath && !error && (
+            <p className="app-row__success">
+              Saved to {generatedPath}.{" "}
+              <button className="app-row__link-btn" onClick={() => revealItemInDir(generatedPath)}>
+                Reveal in folder
+              </button>
+            </p>
           )}
         </div>
-        {app.notes && <p className="app-row__notes">{app.notes}</p>}
-        {error && <p className="app-row__error">{error}</p>}
-        {generatedPath && !error && (
-          <p className="app-row__success">
-            Saved to {generatedPath}.{" "}
-            <button className="app-row__link-btn" onClick={() => revealItemInDir(generatedPath)}>
-              Reveal in folder
-            </button>
-          </p>
-        )}
+        <motion.button
+          className="app-row__action"
+          disabled={busy}
+          onClick={handleClick}
+          whileHover={busy ? undefined : { scale: 1.04 }}
+          whileTap={busy ? undefined : { scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 500, damping: 28 }}
+        >
+          {actionLabel}
+        </motion.button>
       </div>
-      <motion.button
-        className="app-row__action"
-        disabled={busy}
-        onClick={handleClick}
-        whileHover={busy ? undefined : { scale: 1.04 }}
-        whileTap={busy ? undefined : { scale: 0.96 }}
-        transition={{ type: "spring", stiffness: 500, damping: 28 }}
-      >
-        {actionLabel}
-      </motion.button>
+      <AnimatePresence initial={false}>
+        {showFallback && fallback && (
+          <motion.div
+            className="app-row__fallback-collapse"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 380, damping: 38 }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="app-row__fallback">
+              Automatic download failed — you can grab it manually instead.{" "}
+              <button className="app-row__link-btn" onClick={() => openUrl(fallback)}>
+                Open {app.domain ?? "website"} ↗
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

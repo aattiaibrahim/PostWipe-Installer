@@ -492,8 +492,14 @@ h3 {
   transform: translateY(-1px);
 }
 
-.app-row + .app-row {
+.app-row-wrapper + .app-row-wrapper {
   border-top: 1px solid var(--border);
+}
+
+.app-row__fallback {
+  padding: 0.1rem 0.5rem 0.7rem 3.25rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 .app-icon {
