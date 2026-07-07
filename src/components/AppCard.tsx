@@ -96,16 +96,9 @@ export function AppCard({ app, os }: AppCardProps) {
             </p>
           )}
         </div>
-        <motion.button
-          className="app-row__action"
-          disabled={busy}
-          onClick={handleClick}
-          whileHover={busy ? undefined : { scale: 1.04 }}
-          whileTap={busy ? undefined : { scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 500, damping: 28 }}
-        >
+        <button className="app-row__action" disabled={busy} onClick={handleClick}>
           {actionLabel}
-        </motion.button>
+        </button>
       </div>
       <AnimatePresence initial={false}>
         {showFallback && fallback && (

@@ -16,23 +16,21 @@ export function OsPicker() {
       {OPTIONS.map((opt) => {
         const active = osFilter === opt.value;
         return (
-          <motion.button
+          <button
             key={opt.value}
             className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
             onClick={() => setOsFilter(opt.value)}
-            whileHover={{ scale: 1.015 }}
-            whileTap={{ scale: 0.98 }}
           >
+            <img className="os-picker__icon" src={opt.icon} alt="" />
+            <span>{opt.label}</span>
             {active && (
               <motion.div
                 className="os-picker__indicator"
                 layoutId="os-picker-indicator"
-                transition={{ type: "spring", stiffness: 500, damping: 34 }}
+                transition={{ type: "spring", stiffness: 500, damping: 40 }}
               />
             )}
-            <img className="os-picker__icon" src={opt.icon} alt="" />
-            <span>{opt.label}</span>
-          </motion.button>
+          </button>
         );
       })}
     </div>

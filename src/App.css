@@ -302,12 +302,16 @@ h3 {
   gap: 0.9rem;
 }
 
-/* OS picker: two big tiles */
+/* OS picker: compact segmented control with a sliding underline */
 .os-picker {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  max-width: 480px;
+  display: inline-flex;
+  align-self: flex-start;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  padding: 3px;
 }
 
 .os-picker__tile {
@@ -315,54 +319,40 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 0.95rem;
-  border-radius: 14px;
-  border: 1.5px solid var(--border);
-  background-color: var(--surface);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 7px;
+  border: none;
+  background: none;
   color: var(--text-muted);
-  font-size: 1rem;
-  font-weight: 650;
-  letter-spacing: -0.01em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   cursor: pointer;
-  overflow: hidden;
-  transition: border-color 0.15s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  transition: color 0.15s ease;
 }
 
 .os-picker__tile:hover {
   color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  transform: translateY(-1px);
 }
 
 .os-picker__tile--active {
-  border-color: transparent;
-  color: var(--accent-text);
-  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--accent) 55%, transparent);
-}
-
-.os-picker__tile--active:hover {
-  transform: translateY(-1px) scale(1.005);
+  color: var(--accent);
 }
 
 .os-picker__indicator {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-}
-
-.os-picker__icon,
-.os-picker__tile span {
-  position: relative;
-  z-index: 1;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
 }
 
 .os-picker__icon {
-  width: 26px;
-  height: 26px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Search + folder bar */
@@ -604,6 +594,15 @@ h3 {
   font-weight: 500;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: filter 0.15s ease;
+}
+
+.app-row__action:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.app-row__action:active:not(:disabled) {
+  filter: brightness(0.95);
 }
 
 .app-row__action:disabled {
