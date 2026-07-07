@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Staged release build artifacts (installer + updater manifest), uploaded to
+# GitHub Releases rather than committed
+/release-assets
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
