@@ -50,3 +50,12 @@ export function monogramColor(appId: string): string {
   for (let i = 0; i < appId.length; i++) hash = (hash * 31 + appId.charCodeAt(i)) >>> 0;
   return MONOGRAM_COLORS[hash % MONOGRAM_COLORS.length];
 }
+
+/// Relative luminance (WCAG-style approximation) of a "#rrggbb" or "rrggbb" hex color, 0 (black) to 1 (white).
+export function relativeLuminance(hex: string): number {
+  const clean = hex.replace("#", "");
+  const r = parseInt(clean.slice(0, 2), 16) / 255;
+  const g = parseInt(clean.slice(2, 4), 16) / 255;
+  const b = parseInt(clean.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}

@@ -6,12 +6,18 @@ use dashmap::DashMap;
 use serde::Serialize;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::time::Duration;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
 use tokio_util::sync::CancellationToken;
 use uuid::Uuid;
 
 const MAX_CONCURRENT_DOWNLOADS: usize = 3;
+/// Last-resort safety net for the whole resolve+download job. job::run already
+/// has its own connect/stall timeouts, so this only guards against something
+/// unforeseen holding a semaphore permit forever (e.g. a pathologically slow
+/// multi-GB transfer or a bug we haven't anticipated).
+const JOB_SAFETY_TIMEOUT: Duration = Duration::from_secs(30 * 60);
 
 struct JobHandle {
     app_id: String,
@@ -72,30 +78,41 @@ impl DownloadManager {
         tokio::spawn(async move {
             let _permit = semaphore.acquire().await;
 
-            events::resolving(&app_handle, &job_id_task, &app_id, &app_name);
-            let url = match resolver::resolve(&resolver_spec).await {
-                Ok(url) => url,
-                Err(err) => {
-                    events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string());
-                    jobs.remove(&job_id_task);
-                    return;
+            let job_body = async {
+                events::resolving(&app_handle, &job_id_task, &app_id, &app_name);
+                let url = match resolver::resolve(&resolver_spec).await {
+                    Ok(url) => url,
+                    Err(err) => {
+                        events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string());
+                        return;
+                    }
+                };
+
+                events::started(&app_handle, &job_id_task, &app_id, &app_name);
+
+                let progress_handle = app_handle.clone();
+                let progress_job_id = job_id_task.clone();
+                let progress_app_id = app_id.clone();
+                let result = job::run(&url, &dest, &cancel_token, |downloaded, total| {
+                    events::progress(&progress_handle, &progress_job_id, &progress_app_id, downloaded, total);
+                })
+                .await;
+
+                match result {
+                    Ok(()) => events::completed(&app_handle, &job_id_task, &app_id, &app_name, &dest.to_string_lossy()),
+                    Err(DownloadError::Cancelled) => events::cancelled(&app_handle, &job_id_task, &app_id, &app_name),
+                    Err(err) => events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string()),
                 }
             };
 
-            events::started(&app_handle, &job_id_task, &app_id, &app_name);
-
-            let progress_handle = app_handle.clone();
-            let progress_job_id = job_id_task.clone();
-            let progress_app_id = app_id.clone();
-            let result = job::run(&url, &dest, &cancel_token, |downloaded, total| {
-                events::progress(&progress_handle, &progress_job_id, &progress_app_id, downloaded, total);
-            })
-            .await;
-
-            match result {
-                Ok(()) => events::completed(&app_handle, &job_id_task, &app_id, &app_name, &dest.to_string_lossy()),
-                Err(DownloadError::Cancelled) => events::cancelled(&app_handle, &job_id_task, &app_id, &app_name),
-                Err(err) => events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string()),
+            if tokio::time::timeout(JOB_SAFETY_TIMEOUT, job_body).await.is_err() {
+                events::failed(
+                    &app_handle,
+                    &job_id_task,
+                    &app_id,
+                    &app_name,
+                    format!("job exceeded the {}-minute safety limit and was aborted", JOB_SAFETY_TIMEOUT.as_secs() / 60),
+                );
             }
 
             jobs.remove(&job_id_task);

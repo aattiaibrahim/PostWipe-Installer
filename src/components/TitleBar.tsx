@@ -12,7 +12,7 @@ export function TitleBar({ onToggleSettings }: TitleBarProps) {
     <div className="title-bar" data-tauri-drag-region>
       <div className="title-bar__brand" data-tauri-drag-region>
         <span className="title-bar__dot" />
-        <span>PostWipe Installer</span>
+        <span className="title-bar__title">PostWipe Installer</span>
       </div>
       <div className="title-bar__actions">
         <button className="title-bar__settings-btn" onClick={onToggleSettings}>

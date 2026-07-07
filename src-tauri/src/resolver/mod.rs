@@ -53,4 +53,18 @@ mod live_tests {
         assert!(url.contains("winrar-x64-"), "unexpected url: {url}");
         assert!(url.ends_with(".exe"), "unexpected url: {url}");
     }
+
+    #[tokio::test]
+    async fn html_windscribe_reproduction() {
+        // Reproduces the exact spec from catalog.json for the "Windscribe crashes the app" report.
+        let spec = ResolverSpec::Html {
+            page_url: "https://windscribe.com/download".to_string(),
+            selector: "a.windows-download".to_string(),
+            attr: "href".to_string(),
+            base_url: None,
+            url_regex: None,
+        };
+        let result = resolve(&spec).await;
+        println!("windscribe resolve result: {result:?}");
+    }
 }

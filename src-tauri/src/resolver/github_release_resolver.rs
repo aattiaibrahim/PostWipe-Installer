@@ -1,6 +1,9 @@
 use super::ResolveError;
 use crate::catalog::model::ResolverSpec;
 use serde::Deserialize;
+use std::time::Duration;
+
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 
 #[derive(Deserialize)]
 struct Release {
@@ -50,7 +53,11 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
     };
 
     let api_url = format!("https://api.github.com/repos/{repo}/releases/latest");
-    let response = reqwest::Client::new()
+    let client = reqwest::Client::builder()
+        .timeout(REQUEST_TIMEOUT)
+        .build()
+        .map_err(|e| ResolveError::Network(e.to_string()))?;
+    let response = client
         .get(&api_url)
         .header("User-Agent", "postwipe-installer")
         .send()

@@ -73,6 +73,32 @@ body {
   background-color: var(--bg);
 }
 
+::selection {
+  background-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--text-muted) 40%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background-clip: padding-box;
+}
+
 h1,
 h2,
 h3 {
@@ -159,6 +185,13 @@ h3 {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
+}
+
+.title-bar__title {
+  background: linear-gradient(120deg, var(--text) 30%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .title-bar__dot {
@@ -263,7 +296,7 @@ h3 {
 }
 
 .browse {
-  padding: 0 1.5rem 1.5rem;
+  padding: 1.25rem 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
@@ -283,27 +316,35 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  padding: 0.9rem;
+  padding: 0.95rem;
   border-radius: 14px;
   border: 1.5px solid var(--border);
   background-color: var(--surface);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   color: var(--text-muted);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color 0.15s ease, color 0.2s ease;
+  transition: border-color 0.15s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .os-picker__tile:hover {
   color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  transform: translateY(-1px);
 }
 
 .os-picker__tile--active {
   border-color: transparent;
   color: var(--accent-text);
+  box-shadow: 0 6px 20px -4px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.os-picker__tile--active:hover {
+  transform: translateY(-1px) scale(1.005);
 }
 
 .os-picker__indicator {
@@ -442,11 +483,13 @@ h3 {
   gap: 0.75rem;
   padding: 0.55rem 0.5rem;
   border-radius: 10px;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
 .app-row:hover {
   background-color: var(--surface-hover);
+  box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
 }
 
 .app-row + .app-row {
@@ -465,7 +508,6 @@ h3 {
 }
 
 .app-icon--brand {
-  background-color: var(--surface-solid);
   border: 1px solid var(--border);
 }
 

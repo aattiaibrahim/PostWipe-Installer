@@ -1,6 +1,9 @@
 use super::ResolveError;
 use crate::catalog::model::ResolverSpec;
 use scraper::{Html, Selector};
+use std::time::Duration;
+
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 
 pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
     let (page_url, selector, attr, base_url, url_regex) = match spec {
@@ -14,7 +17,14 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
         _ => return Err(ResolveError::Unsupported("html")),
     };
 
-    let body = reqwest::get(page_url)
+    let client = reqwest::Client::builder()
+        .timeout(REQUEST_TIMEOUT)
+        .build()
+        .map_err(|e| ResolveError::Network(e.to_string()))?;
+
+    let body = client
+        .get(page_url)
+        .send()
         .await
         .map_err(|e| ResolveError::Network(e.to_string()))?
         .error_for_status()

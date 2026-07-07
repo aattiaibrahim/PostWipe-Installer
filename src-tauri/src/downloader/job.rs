@@ -7,6 +7,8 @@ use tokio_util::sync::CancellationToken;
 
 const PROGRESS_EMIT_INTERVAL: Duration = Duration::from_millis(100);
 const MAX_CONNECT_RETRIES: u32 = 2;
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
+const STALL_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Debug, Error)]
 pub enum DownloadError {
@@ -45,14 +47,20 @@ async fn send_with_retry(client: &reqwest::Client, url: &str) -> Result<reqwest:
 
 /// Streams `url` to `dest`, writing through a `.part` sibling file that's
 /// atomically renamed on success so a cancelled/failed download never leaves
-/// a half-written file at the final path.
+/// a half-written file at the final path. Uses a connect timeout (not a
+/// blanket request timeout, since large downloads can legitimately take a
+/// while) plus a stall timeout on the read loop so a connection that goes
+/// silent mid-transfer fails cleanly instead of hanging forever.
 pub async fn run(
     url: &str,
     dest: &Path,
     cancel: &CancellationToken,
     mut on_progress: impl FnMut(u64, Option<u64>),
 ) -> Result<(), DownloadError> {
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder()
+        .connect_timeout(CONNECT_TIMEOUT)
+        .build()
+        .map_err(|e| DownloadError::Network(e.to_string()))?;
     let response = send_with_retry(&client, url).await?;
     let total_bytes = response.content_length();
 
@@ -69,9 +77,9 @@ pub async fn run(
                 let _ = tokio::fs::remove_file(&part).await;
                 return Err(DownloadError::Cancelled);
             }
-            chunk = stream.next() => {
+            chunk = tokio::time::timeout(STALL_TIMEOUT, stream.next()) => {
                 match chunk {
-                    Some(Ok(bytes)) => {
+                    Ok(Some(Ok(bytes))) => {
                         file.write_all(&bytes).await?;
                         downloaded += bytes.len() as u64;
                         if last_emit.elapsed() >= PROGRESS_EMIT_INTERVAL {
@@ -79,12 +87,20 @@ pub async fn run(
                             last_emit = Instant::now();
                         }
                     }
-                    Some(Err(err)) => {
+                    Ok(Some(Err(err))) => {
                         drop(file);
                         let _ = tokio::fs::remove_file(&part).await;
                         return Err(DownloadError::Network(err.to_string()));
                     }
-                    None => break,
+                    Ok(None) => break,
+                    Err(_elapsed) => {
+                        drop(file);
+                        let _ = tokio::fs::remove_file(&part).await;
+                        return Err(DownloadError::Network(format!(
+                            "connection stalled — no data received for {}s",
+                            STALL_TIMEOUT.as_secs()
+                        )));
+                    }
                 }
             }
         }

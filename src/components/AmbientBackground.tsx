@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 
 const BLOBS = [
-  { className: "ambient-bg__blob--1", parallax: 22, driftSpeed: 0.00011, driftRadius: 40 },
-  { className: "ambient-bg__blob--2", parallax: 34, driftSpeed: 0.00016, driftRadius: 55 },
-  { className: "ambient-bg__blob--3", parallax: 16, driftSpeed: 0.00009, driftRadius: 30 },
+  { className: "ambient-bg__blob--1", parallax: 130, driftSpeed: 0.00011, driftRadius: 40 },
+  { className: "ambient-bg__blob--2", parallax: 190, driftSpeed: 0.00016, driftRadius: 55 },
+  { className: "ambient-bg__blob--3", parallax: 90, driftSpeed: 0.00009, driftRadius: 30 },
 ];
 
 export function AmbientBackground() {
