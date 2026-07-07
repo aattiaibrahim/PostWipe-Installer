@@ -1,0 +1,416 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "gaming",
+      "name": "Gaming Applications",
+      "apps": [
+        {
+          "id": "steam",
+          "name": "Steam",
+          "icon": "steam.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe" },
+              "filename": "SteamSetup.exe"
+            },
+            "macos": {
+              "resolver": { "type": "static", "url": "https://media.steampowered.com/client/installer/steam.dmg" },
+              "filename": "steam.dmg",
+              "stale": true
+            }
+          }
+        },
+        {
+          "id": "epic-games",
+          "name": "Epic Games Launcher",
+          "icon": "epic-games.ico",
+          "kind": "download",
+          "notes": "Epic dropped official macOS launcher support in 2019; Windows-only entry.",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi" },
+              "filename": "EpicGamesLauncherInstaller.msi"
+            }
+          }
+        },
+        {
+          "id": "gog-galaxy",
+          "name": "GOG Galaxy",
+          "icon": "gog.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe" },
+              "filename": "GOG_Galaxy_2.0.exe",
+              "stale": true
+            }
+          }
+        },
+        {
+          "id": "wargaming-game-center",
+          "name": "Wargaming Game Center",
+          "icon": "wargaming-game-center.ico",
+          "kind": "download",
+          "notes": "Previous URL pointed at a World of Warships installer, not the WGC launcher itself — needs verification.",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://wgc.wargaming.net/download/wgc_installer.exe" },
+              "filename": "wgc_installer.exe",
+              "stale": true
+            }
+          }
+        },
+        {
+          "id": "battle-net",
+          "name": "Battle.net",
+          "icon": "battle-net.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE" },
+              "filename": "Battle.net-Setup.exe",
+              "stale": true
+            },
+            "macos": {
+              "resolver": { "type": "static", "url": "https://www.battle.net/download/getInstallerForGame?os=mac&gameProgram=BATTLENET_APP&version=LIVE" },
+              "filename": "Battle.net-Setup.zip",
+              "stale": true
+            }
+          }
+        },
+        {
+          "id": "ubisoft-connect",
+          "name": "Ubisoft Connect",
+          "icon": "ubisoft-connect.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://ubistatic-a.akamaihd.net/UplayPC/PostGame/UbisoftConnectInstaller.exe" },
+              "filename": "UbisoftConnectInstaller.exe",
+              "stale": true
+            }
+          }
+        },
+        {
+          "id": "ea-app",
+          "name": "EA App",
+          "icon": "ea-app.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe" },
+              "filename": "EAappInstaller.exe",
+              "stale": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "overclocking",
+      "name": "Overclocking & Benchmarking",
+      "apps": [
+        {
+          "id": "testmem5",
+          "name": "TestMem5",
+          "icon": "testmem5.ico",
+          "kind": "download",
+          "notes": "Domain looks placeholder — TestMem5 is typically distributed via community forum threads (HWBOT/Overclockers), not a dedicated vendor site. Needs research.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://testmem5.com/download/TestMem5.zip" }, "filename": "TestMem5.zip", "stale": true } }
+        },
+        {
+          "id": "zentimings",
+          "name": "ZenTimings",
+          "icon": "zentimings.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "hattedsquirrel/ZenTimings", "asset_pattern": "ZenTimings*.zip" }, "filename": "ZenTimings.zip" } }
+        },
+        {
+          "id": "cinebench-r20",
+          "name": "Cinebench R20",
+          "icon": "cinebench-r20.ico",
+          "kind": "download",
+          "notes": "Verify current Maxon Cinebench R20 download URL — Maxon has reorganized their download infrastructure since this was last checked.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://cinebench.com/download/CinebenchR20.zip" }, "filename": "CinebenchR20.zip", "stale": true } }
+        },
+        {
+          "id": "cpu-z",
+          "name": "CPU-Z",
+          "icon": "cpu-z.ico",
+          "kind": "download",
+          "notes": "Pinned version — verify current build at cpuid.com/softwares/cpu-z.html.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://cpuid.com/downloads/cpu-z/cpu-z_2.00-en.exe" }, "filename": "cpu-z.exe", "stale": true } }
+        },
+        {
+          "id": "hwinfo",
+          "name": "HWiNFO",
+          "icon": "hwinfo.ico",
+          "kind": "download",
+          "notes": "Pinned build number — verify current build at hwinfo.com/download.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.hwinfo.com/download/hwi_716.exe" }, "filename": "hwinfo.exe", "stale": true } }
+        },
+        {
+          "id": "hwmonitor",
+          "name": "HWMonitor x64",
+          "icon": "hwmonitor.ico",
+          "kind": "download",
+          "notes": "Pinned version — verify current build at cpuid.com/softwares/hwmonitor.html.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.cpuid.com/downloads/hwmonitor/hwmonitor_1.45.exe" }, "filename": "hwmonitor.exe", "stale": true } }
+        },
+        {
+          "id": "nvidia-profile-inspector",
+          "name": "NVIDIA Profile Inspector",
+          "icon": "nvidia-profile-inspector.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "Orbmu2k/nvidiaProfileInspector", "asset_pattern": "nvidiaProfileInspector.zip" }, "filename": "nvidiaProfileInspector.zip" } }
+        },
+        {
+          "id": "occt",
+          "name": "OCCT",
+          "icon": "occt.ico",
+          "kind": "download",
+          "notes": "Verify OCCT still serves a stable, unversioned zip at this path.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.ocbase.com/download/OCCT.zip" }, "filename": "OCCT.zip", "stale": true } }
+        },
+        {
+          "id": "prime95",
+          "name": "Prime95",
+          "icon": "prime95.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.mersenne.org/download/prime95.zip" }, "filename": "prime95.zip" } }
+        },
+        {
+          "id": "timer-resolution",
+          "name": "Timer Resolution",
+          "icon": "timer-resolution.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "valleyofdoom/TimerResolution", "asset_pattern": "TimerResolution*.zip" }, "filename": "TimerResolution.zip" } }
+        },
+        {
+          "id": "timing-configurator",
+          "name": "Timing Configurator",
+          "icon": "timing-configurator.ico",
+          "kind": "download",
+          "notes": "Vendor/source unclear — needs research to confirm a legitimate current download location.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://timingconfigurator.com/download/TimingConfigurator_v4.0.4.zip" }, "filename": "TimingConfigurator.zip", "stale": true } }
+        },
+        {
+          "id": "ddu",
+          "name": "Display Driver Uninstaller (DDU)",
+          "icon": "ddu.ico",
+          "kind": "download",
+          "notes": "Pinned version — check wagnardsoft.com forum download page for the current DDU release.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.wagnardsoft.com/download/DDU_v18.1.0.0.exe" }, "filename": "DDU.exe", "stale": true } }
+        }
+      ]
+    },
+    {
+      "id": "file-compressors",
+      "name": "File Compressors",
+      "apps": [
+        {
+          "id": "nanozip",
+          "name": "NanoZip",
+          "icon": "nanozip.ico",
+          "kind": "download",
+          "notes": "Verify NanoZip is still maintained/hosted at this domain.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.nanozip.net/download/nanozip64.exe" }, "filename": "nanozip64.exe", "stale": true } }
+        },
+        {
+          "id": "winrar",
+          "name": "WinRAR",
+          "icon": "winrar.ico",
+          "kind": "download",
+          "notes": "Pinned build — needs the html resolver against win-rar.com/download.html once implemented.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.win-rar.com/download.html", "selector": "a.winrar-download-64", "attr": "href", "base_url": "https://www.win-rar.com/" }, "filename": "winrar-x64.exe", "stale": true } }
+        },
+        {
+          "id": "7-zip",
+          "name": "7-Zip",
+          "icon": "7-zip.ico",
+          "kind": "download",
+          "notes": "Pinned build — needs the html resolver against 7-zip.org/download.html once implemented.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.7-zip.org/download.html", "selector": "a[href$='-x64.exe']", "attr": "href", "base_url": "https://www.7-zip.org/" }, "filename": "7z-x64.exe", "stale": true } }
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Security & Privacy",
+      "apps": [
+        {
+          "id": "bitwarden",
+          "name": "Bitwarden",
+          "icon": "bitwarden.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": { "resolver": { "type": "static", "url": "https://vault.bitwarden.com/download/?app=desktop&platform=windows" }, "filename": "Bitwarden-Installer.exe" },
+            "macos": { "resolver": { "type": "static", "url": "https://vault.bitwarden.com/download/?app=desktop&platform=macos" }, "filename": "Bitwarden.dmg" }
+          }
+        },
+        {
+          "id": "windscribe",
+          "name": "Windscribe",
+          "icon": "windscribe.ico",
+          "kind": "download",
+          "notes": "Pinned version — needs the html resolver against windscribe.com/download once implemented. A macOS client also exists but its stable URL hasn't been verified yet.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://windscribe.com/download", "selector": "a.windows-download", "attr": "href" }, "filename": "Windscribe-Setup.exe", "stale": true } }
+        }
+      ]
+    },
+    {
+      "id": "dev-tools",
+      "name": "Dev Tools",
+      "apps": [
+        {
+          "id": "vscode",
+          "name": "Visual Studio Code",
+          "icon": "vscode.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": { "resolver": { "type": "static", "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" }, "filename": "VSCodeUserSetup-x64.exe" },
+            "macos": { "resolver": { "type": "static", "url": "https://code.visualstudio.com/sha/download?build=stable&os=darwin" }, "filename": "VSCode-darwin.zip" }
+          }
+        },
+        {
+          "id": "pycharm",
+          "name": "PyCharm",
+          "icon": "pycharm.ico",
+          "kind": "download",
+          "notes": "Pinned to an old version — needs the html resolver against jetbrains.com/pycharm/download once implemented.",
+          "platforms": {
+            "windows": { "resolver": { "type": "html", "page_url": "https://www.jetbrains.com/pycharm/download/?section=windows", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm-installer.exe", "stale": true },
+            "macos": { "resolver": { "type": "html", "page_url": "https://www.jetbrains.com/pycharm/download/?section=mac", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm.dmg", "stale": true }
+          }
+        },
+        {
+          "id": "netlimiter",
+          "name": "NetLimiter",
+          "icon": "netlimiter.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.netlimiter.com/download/nl5setup.exe" }, "filename": "nl5setup.exe" } }
+        },
+        {
+          "id": "notepad-plus-plus",
+          "name": "Notepad++",
+          "icon": "notepad-plus-plus.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "notepad-plus-plus/notepad-plus-plus", "asset_pattern": "npp.*.Installer.x64.exe" }, "filename": "npp-installer-x64.exe" } }
+        },
+        {
+          "id": "putty",
+          "name": "PuTTY",
+          "icon": "putty.ico",
+          "kind": "download",
+          "notes": "Path itself is PuTTY's own stable 'latest' alias, but confirm the resolved filename/version still matches.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi" }, "filename": "putty-installer.msi", "stale": true } }
+        },
+        {
+          "id": "powertoys",
+          "name": "PowerToys",
+          "icon": "powertoys.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "microsoft/PowerToys", "asset_pattern": "PowerToysUserSetup-*-x64.exe" }, "filename": "PowerToysUserSetup-x64.exe" } }
+        },
+        {
+          "id": "process-explorer",
+          "name": "Process Explorer",
+          "icon": "process-explorer.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.sysinternals.com/files/ProcessExplorer.zip" }, "filename": "ProcessExplorer.zip" } }
+        },
+        {
+          "id": "autoruns",
+          "name": "Autoruns",
+          "icon": "autoruns.ico",
+          "kind": "download",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.sysinternals.com/files/Autoruns.zip" }, "filename": "Autoruns.zip" } }
+        }
+      ]
+    },
+    {
+      "id": "browsers",
+      "name": "Browsers",
+      "apps": [
+        {
+          "id": "brave",
+          "name": "Brave Browser",
+          "icon": "brave.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": { "resolver": { "type": "static", "url": "https://referrals.brave.com/latest/Brave-Browser-Setup.exe" }, "filename": "Brave-Browser-Setup.exe" },
+            "macos": { "resolver": { "type": "static", "url": "https://referrals.brave.com/latest/Brave-Browser.dmg" }, "filename": "Brave-Browser.dmg" }
+          }
+        },
+        {
+          "id": "librewolf",
+          "name": "LibreWolf",
+          "icon": "librewolf.ico",
+          "kind": "download",
+          "notes": "Pinned to a specific GitLab package version — breaks on every release. Needs the html resolver against librewolf.net/installation once implemented.",
+          "platforms": {
+            "windows": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/windows/", "selector": "a.download-link", "attr": "href" }, "filename": "LibreWolf_Setup.exe", "stale": true },
+            "macos": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/macos/", "selector": "a.download-link", "attr": "href" }, "filename": "LibreWolf.dmg", "stale": true }
+          }
+        }
+      ]
+    },
+    {
+      "id": "social",
+      "name": "Social & Communication",
+      "apps": [
+        {
+          "id": "discord",
+          "name": "Discord",
+          "icon": "discord.ico",
+          "kind": "download",
+          "notes": "Fixed from the previous canary-build endpoint to Discord's stable release endpoint.",
+          "platforms": {
+            "windows": { "resolver": { "type": "static", "url": "https://discord.com/api/download?platform=win" }, "filename": "DiscordSetup.exe" },
+            "macos": { "resolver": { "type": "static", "url": "https://discord.com/api/download?platform=osx" }, "filename": "Discord.dmg" }
+          }
+        },
+        {
+          "id": "telegram",
+          "name": "Telegram",
+          "icon": "telegram.ico",
+          "kind": "download",
+          "platforms": {
+            "windows": { "resolver": { "type": "static", "url": "https://telegram.org/dl/desktop/win" }, "filename": "telegram-setup.exe" },
+            "macos": { "resolver": { "type": "static", "url": "https://osx.telegram.org/updates/Telegram.dmg" }, "filename": "Telegram.dmg" }
+          }
+        },
+        {
+          "id": "teamspeak",
+          "name": "TeamSpeak",
+          "icon": "teamspeak.ico",
+          "kind": "download",
+          "notes": "Pinned version — needs the html resolver against teamspeak.com/en/downloads once implemented.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://teamspeak.com/en/downloads/#ts3client", "selector": "a.download-windows", "attr": "href" }, "filename": "TeamSpeak3-Client-win64.exe", "stale": true } }
+        }
+      ]
+    },
+    {
+      "id": "system-tweaks",
+      "name": "System Tweaks / Scripts",
+      "apps": [
+        {
+          "id": "restart-audio-service",
+          "name": "Restart Audio Service",
+          "icon": "bat.ico",
+          "kind": "script",
+          "platforms": { "windows": { "script_id": "restart-audio-service" } }
+        },
+        {
+          "id": "kill-valorant-process",
+          "name": "Kill Valorant Process",
+          "icon": "bat.ico",
+          "kind": "script",
+          "platforms": { "windows": { "script_id": "kill-valorant-process" } }
+        }
+      ]
+    }
+  ]
+}

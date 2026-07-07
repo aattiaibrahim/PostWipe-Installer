@@ -1,0 +1,25 @@
+import { useEffect } from "react";
+import { useCatalogStore } from "../state/catalogStore";
+import { useOsDetect } from "../hooks/useOsDetect";
+import { SearchFilterBar } from "../components/SearchFilterBar";
+import { CategoryGrid } from "../components/CategoryGrid";
+
+export function Browse() {
+  const { catalog, loading, error, osFilter, searchQuery, load } = useCatalogStore();
+  useOsDetect();
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (loading) return <div className="status-message">Loading catalog...</div>;
+  if (error) return <div className="status-message status-message--error">Failed to load catalog: {error}</div>;
+  if (!catalog) return null;
+
+  return (
+    <div className="browse">
+      <SearchFilterBar />
+      <CategoryGrid catalog={catalog} os={osFilter} searchQuery={searchQuery} />
+    </div>
+  );
+}
