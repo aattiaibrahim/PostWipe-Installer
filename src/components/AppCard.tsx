@@ -3,14 +3,11 @@ import { motion } from "framer-motion";
 import type { AppEntry, Os } from "../types/catalog";
 import { startDownload, generateScript } from "../lib/tauriCommands";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { AppIcon } from "./AppIcon";
 
 interface AppCardProps {
   app: AppEntry;
   os: Os;
-}
-
-function iconSrc(app: AppEntry): string {
-  return app.domain ? `https://www.google.com/s2/favicons?sz=64&domain=${app.domain}` : `/icons/${app.icon}`;
 }
 
 export function AppCard({ app, os }: AppCardProps) {
@@ -53,14 +50,7 @@ export function AppCard({ app, os }: AppCardProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <img
-        className="app-row__icon"
-        src={iconSrc(app)}
-        alt=""
-        onError={(e) => {
-          e.currentTarget.src = "/icons/placeholder.svg";
-        }}
-      />
+      <AppIcon appId={app.id} name={app.name} className="app-row__icon" />
       <div className="app-row__body">
         <div className="app-row__name-line">
           <span className="app-row__name">{app.name}</span>
