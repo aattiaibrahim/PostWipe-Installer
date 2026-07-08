@@ -72,6 +72,15 @@ html.is-resizing .ambient-bg__blob {
   box-sizing: border-box;
 }
 
+/* Form controls don't inherit the page font by default — without this every button and
+   the search input silently render in the OS UI font instead of Geist. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 html,
 body {
   margin: 0;
@@ -551,6 +560,10 @@ h3 {
 
 .download-history {
   position: relative;
+  /* The wrapper stretches to the flex row's height, but without this the toggle button
+     inside keeps its own natural height and hangs off-alignment from its siblings. */
+  display: flex;
+  align-items: stretch;
 }
 
 .download-history__toggle {
