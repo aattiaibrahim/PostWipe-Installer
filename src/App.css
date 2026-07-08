@@ -504,6 +504,10 @@ h3 {
   color: var(--accent-text);
 }
 
+.os-picker__tile--active:hover {
+  color: var(--accent-text);
+}
+
 .os-picker__indicator {
   position: absolute;
   inset: 0;
@@ -698,6 +702,14 @@ h3 {
 }
 
 .sidebar__item--active {
+  background-color: var(--cat-color, var(--accent));
+  color: #fff;
+}
+
+/* Without this, :hover's higher specificity wins over --active's background/color (but not
+   the icon's separate --active-scoped color rule below), leaving a white icon stranded on
+   the plain near-white hover surface in light mode — invisible until the pointer moves off. */
+.sidebar__item--active:hover {
   background-color: var(--cat-color, var(--accent));
   color: #fff;
 }
@@ -981,6 +993,11 @@ h3 {
   background-color: var(--verified-bg);
   border-color: transparent;
   opacity: 1;
+}
+
+.app-row__pin-btn--active:hover {
+  color: var(--verified);
+  background-color: var(--verified-bg);
 }
 
 /* Per-row action column: buttons on top, progress/checkmark/error status below */

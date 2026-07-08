@@ -87,6 +87,26 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Quick fixes (2026-07-08, fifth pass)
+- [done] Light-mode-only bug: hovering an active sidebar category made its icon disappear for as
+  long as the pointer stayed over it. Root cause: `.sidebar__item:hover` (specificity 0,2,0 — one
+  class + one pseudo-class) beat `.sidebar__item--active` (0,1,0 — one class) for
+  background/color, reverting to the plain near-white hover surface in light mode — but
+  `.sidebar__item--active .sidebar__icon { color: #fff }` (0,2,0, unrelated to `:hover`) kept the
+  icon forced white regardless, so a white icon landed on a near-white background. Invisible in
+  light mode; not in dark mode, where the hover surface is dark enough that a white icon still
+  reads fine — which is why it looked theme-specific. Fixed by adding an explicit
+  `.sidebar__item--active:hover` rule so hovering an already-selected item keeps its category
+  color instead of falling back to the generic hover treatment. Found and fixed the identical
+  pattern on `.os-picker__tile` (shared by the OS picker and the new theme toggle) and
+  `.app-row__pin-btn--active` (the green "✓ Pinned" state losing its color on hover) before it was
+  reported there too.
+- [done] Re-confirmed General Sans is the right call after being asked to double check: directly
+  verified it's genuinely free (fetched real woff2 files from Fontshare's own CDN, no auth/paywall
+  — contradicts one search-result aggregator that incorrectly called it a paid font) and that it's
+  the closest free match to Aeonik's geometric-grotesk style; the other commonly-suggested free
+  options (Inter, DM Sans, Work Sans) are more humanist/rounded, not real lookalikes. No change.
+
 ### Quick fixes (2026-07-08, fourth pass)
 - [done] Manual light/dark theme toggle, defaulting to dark regardless of OS preference.
   `src/state/themeStore.ts` (zustand + persist, localStorage key `postwipe-theme`) replaces the old
