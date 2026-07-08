@@ -16,16 +16,15 @@ html.is-resizing .ambient-bg__blob {
 }
 
 :root {
-  --bg: #f0f1f5;
-  --surface: rgba(255, 255, 255, 0.82);
+  --bg: #f0f1fa;
+  --surface: rgba(255, 255, 255, 0.85);
   --surface-solid: #ffffff;
-  --surface-hover: rgba(255, 255, 255, 0.92);
-  --border: rgba(20, 20, 30, 0.1);
-  --text: #101114;
-  --text-muted: #4d515a;
-  --accent: #396cd8;
-  --accent-2: #7c3aed;
-  --accent-hover: #2c58b3;
+  --surface-hover: rgba(255, 255, 255, 0.95);
+  --border: rgba(26, 47, 251, 0.12);
+  --text: #0e0f1a;
+  --text-muted: #565b72;
+  --accent: #1a2ffb;
+  --accent-hover: #1526d1;
   --accent-text: #ffffff;
   --stale: #b45309;
   --stale-bg: #fef3c7;
@@ -33,9 +32,9 @@ html.is-resizing .ambient-bg__blob {
   --verified-bg: #dcfce7;
   --danger: #dc2626;
   --success: #16a34a;
-  --blob-1: #7c94ff;
-  --blob-2: #c081fb;
-  --blob-3: #4fe0d0;
+  --blob-1: #3b4dfd;
+  --blob-2: #6a5cff;
+  --blob-3: #3fc4e0;
   --glass-blur: 22px;
 
   font-family: "Inter", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -51,24 +50,23 @@ html.is-resizing .ambient-bg__blob {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #131417;
-    --surface: rgba(30, 31, 35, 0.82);
-    --surface-solid: #26272b;
-    --surface-hover: rgba(47, 48, 53, 0.92);
-    --border: rgba(255, 255, 255, 0.1);
-    --text: #fafafb;
-    --text-muted: #b7bac1;
-    --accent: #6d97ff;
-    --accent-2: #b490ff;
-    --accent-hover: #7ba3f5;
+    --bg: #0b0c16;
+    --surface: rgba(19, 20, 32, 0.85);
+    --surface-solid: #181926;
+    --surface-hover: rgba(30, 32, 48, 0.95);
+    --border: rgba(126, 138, 255, 0.16);
+    --text: #f5f6fb;
+    --text-muted: #a3a7c2;
+    --accent: #4a5bfc;
+    --accent-hover: #6673ff;
     --accent-text: #ffffff;
     --stale: #fbbf24;
     --stale-bg: #3f2f0f;
     --verified: #4ade80;
     --verified-bg: #123a20;
-    --blob-1: #4d6bff;
-    --blob-2: #9d4dff;
-    --blob-3: #17d6c0;
+    --blob-1: #3b4dfd;
+    --blob-2: #6a5cff;
+    --blob-3: #2fb8d6;
   }
 }
 
@@ -136,7 +134,7 @@ h3 {
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
-  opacity: 0.85;
+  opacity: 0.4;
   mix-blend-mode: normal;
   will-change: transform, filter;
   animation: blob-hue-cycle 30s linear infinite;
@@ -152,7 +150,7 @@ h3 {
 
 @media (prefers-color-scheme: light) {
   .ambient-bg__blob {
-    opacity: 0.55;
+    opacity: 0.22;
     mix-blend-mode: multiply;
   }
 }
@@ -179,7 +177,7 @@ h3 {
   bottom: 6vh;
   left: 22vw;
   background: radial-gradient(circle, var(--blob-3), transparent 68%);
-  opacity: 0.6;
+  opacity: 0.28;
 }
 
 .app-shell {
@@ -239,17 +237,14 @@ h3 {
 }
 
 .title-bar__title {
-  background: linear-gradient(120deg, var(--text) 30%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--text);
 }
 
 .title-bar__dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background-color: var(--accent);
   animation: title-bar-dot-pulse 2.4s ease-in-out infinite;
 }
 
@@ -478,7 +473,7 @@ h3 {
   inset: 0;
   z-index: 0;
   border-radius: 7px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background-color: var(--accent);
 }
 
 .os-picker__icon,
@@ -567,7 +562,7 @@ h3 {
 .download-history__count {
   padding: 0.05rem 0.4rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  background-color: var(--accent);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 600;
@@ -667,11 +662,7 @@ h3 {
 }
 
 .sidebar__item--active {
-  background: linear-gradient(
-    135deg,
-    var(--cat-color, var(--accent)),
-    color-mix(in srgb, var(--cat-color, var(--accent-2)) 75%, black 12%)
-  );
+  background-color: var(--cat-color, var(--accent));
   color: #fff;
 }
 
@@ -1010,5 +1001,5 @@ h3 {
 
 .app-row__mini-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  background-color: var(--accent);
 }

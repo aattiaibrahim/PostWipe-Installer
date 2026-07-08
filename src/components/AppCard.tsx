@@ -5,6 +5,7 @@ import {
   startDownload,
   cancelDownload,
   generateScript,
+  findGeneratedScript,
   isScriptPinned,
   pinScriptToStartup,
   unpinScriptFromStartup,
@@ -47,6 +48,14 @@ export function AppCard({ app, os }: AppCardProps) {
     if (!scriptId) return;
     isScriptPinned(scriptId)
       .then(setPinned)
+      .catch(() => {});
+    // A previous session may have already generated this script — without this, "Pin to
+    // Startup" stayed disabled until "Generate Script" was clicked again on every fresh
+    // launch, even though the file was already sitting in Downloads.
+    findGeneratedScript(scriptId)
+      .then((path) => {
+        if (path) setGeneratedPath(path);
+      })
       .catch(() => {});
   }, [scriptId]);
 

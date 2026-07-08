@@ -61,6 +61,20 @@ network resolvers, concurrent downloads, auto-updating via CI.
   don't reach for the heaviest tool (hidden webview) on the strength of a stale assumption in old
   notes — check what a plain `curl` actually returns first. The `webview` resolver itself is still
   correct, tested infrastructure; it's just not needed by anything in the catalog right now.
+- **Regression, same day**: this fix was written up above as done, but the actual `catalog.json`
+  edit got silently discarded a few minutes later by a `git checkout -- catalog/catalog.json` used
+  to undo an unrelated JSON-formatting mistake (a trailing comma while adding the placeholder
+  categories). `git checkout` reverts the *whole file* to its last-committed state, including any
+  other uncommitted changes sitting in it — it doesn't revert "just the mistake." The three apps
+  silently went back to the broken `webview` spec, and the `cargo test` suite kept passing the
+  whole time because `resolver::live_tests` calls the resolver functions directly with hardcoded
+  specs, never actually reading `catalog.json` — so a green test suite gave false confidence that
+  catalog data was fine. Caught only when the user hit the exact same "no element matched selector"
+  error again. Re-applied the fix (this time verified with `diff` between `catalog/catalog.json`
+  and `public/catalog.json` after editing, not just "did the edit tool report success"). **Lesson**:
+  after any `git checkout`/`git restore` used as a fix-it-forward move, re-diff every file it
+  touched against what you intended, especially ones with other in-flight uncommitted changes —
+  and remember unit tests against hardcoded specs don't catch data-file regressions.
 - The original Windscribe "crash" (2026-07-07) was **not** a resolver bug — it was
   `tokio::spawn` being called from a Tauri sync-command thread with no ambient Tokio runtime,
   which panicked across a WebView2 FFI boundary and hard-aborted the process. Fixed by switching
@@ -72,6 +86,31 @@ network resolvers, concurrent downloads, auto-updating via CI.
 ## Backlog
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
+
+### Quick fixes (2026-07-08, third pass)
+- [done] Re-fixed the Windscribe/PyCharm/TeamSpeak resolvers after the regression documented in
+  Known Issues above wiped the catalog.json changes. Verified this time via `diff` between
+  `catalog/catalog.json` and `public/catalog.json`, plus a full `cargo test` run, before moving on.
+- [done] "Pin to Startup" not working: the Rust write/read/delete logic itself was already correct
+  (proved with a new test — `commands::scripts::tests::pin_then_unpin_round_trips_on_the_real_startup_folder`
+  — that exercises the *real* Windows Startup folder on the dev machine, not a temp dir). The real
+  gap: the button only ever unlocked after clicking "Generate Script" again in the *current*
+  session, even if the script was already generated and sitting in Downloads from a previous
+  session — looked exactly like "nothing happens" if you opened the app fresh and went straight
+  for Pin. Added `find_generated_script` (Rust) / `findGeneratedScript` (TS), checked on mount
+  alongside the existing pinned-state check, so an already-generated script is picked up
+  immediately without regenerating.
+- [done] Color palette redesign around user-supplied brand colors (`#1a2ffb` accent / `#f0f1fa`
+  light background), inspired by lusion.co. Removed `--accent-2` and every flat-UI two-tone
+  gradient (title text, brand dot, OS-picker indicator, sidebar active state, download-history
+  badge, progress bar) in favor of solid `--accent` — gradients now only appear on the ambient
+  background blobs, and those got a large opacity cut (0.85/0.55 → 0.4/0.22) for a cleaner, less
+  "candy" look. Dark mode got a matching near-black blue-tinted background (`#0b0c16`).
+- [idea, not done] Lusion's actual display font is "Aeonik," a paid commercial typeface (CoType
+  Foundry) — confirmed by fetching their CSS `@font-face` rules, not guessed. Did **not** copy the
+  font files from their site (that would be redistributing a license we don't have). Kept Inter
+  for now; a free visually-similar alternative (e.g. Fontshare's "General Sans" or "Cabinet
+  Grotesk") would be the legitimate path if the user wants that specific geometric-grotesk look.
 
 ### Quick fixes (2026-07-08, second pass)
 - [done] Wargaming Game Center: `wgc.wargaming.net` didn't resolve at all (dead DNS, not just
@@ -85,9 +124,9 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Expand-toggle chevron switched from a sharp Unicode triangle (▸) to a stroke-based
   rounded SVG chevron (`stroke-linecap/linejoin: round`), matching the rest of the icon set.
 - [done] Sidebar categories color-coded: `src/lib/categoryColors.ts` maps each category id to a
-  color, used to tint the icon (inactive state) and the active-state background gradient via a
-  `--cat-color` CSS custom property set inline per item. "All" has no override, keeps the
-  original accent gradient.
+  color, used to tint the icon (inactive state) and the active-state background via a
+  `--cat-color` CSS custom property set inline per item (flat color as of the third pass below,
+  not a gradient). "All" has no override, keeps the accent color.
 - [done] Ambient blobs now hue-shift continuously (`@keyframes blob-hue-cycle`, 30s linear loop,
   staggered `animation-delay` per blob so they don't move in lockstep) — "rainbow" background.
 - [done] Footer/UI stutter during window resize: backdrop-filter blur (used almost everywhere via

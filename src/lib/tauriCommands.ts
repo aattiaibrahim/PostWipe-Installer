@@ -32,6 +32,10 @@ export function generateScript(scriptId: string): Promise<string> {
   return invoke("generate_script", { scriptId });
 }
 
+export function findGeneratedScript(scriptId: string): Promise<string | null> {
+  return invoke("find_generated_script", { scriptId });
+}
+
 export function isScriptPinned(scriptId: string): Promise<boolean> {
   return invoke("is_script_pinned", { scriptId });
 }
