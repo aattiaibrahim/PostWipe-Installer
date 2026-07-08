@@ -73,6 +73,30 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Quick fixes (2026-07-08, second pass)
+- [done] Wargaming Game Center: `wgc.wargaming.net` didn't resolve at all (dead DNS, not just
+  the wrong app) — switched to `redirect.wargaming.net`'s stable NA-region install redirect,
+  verified live end-to-end. No longer `stale`.
+- [done] Removed `authors = ["..."]` from `src-tauri/Cargo.toml` (was the only place a personal
+  name appeared in the repo). Commit messages already never referenced it.
+- [done] Legibility pass: `--text-muted` darkened/lightened per theme for more contrast, surface
+  backgrounds bumped from ~0.55-0.6 opacity to 0.82 (steadier contrast against blob colors showing
+  through), base font-size 15px → 16px, app row bio text 0.75rem → 0.85rem.
+- [done] Expand-toggle chevron switched from a sharp Unicode triangle (▸) to a stroke-based
+  rounded SVG chevron (`stroke-linecap/linejoin: round`), matching the rest of the icon set.
+- [done] Sidebar categories color-coded: `src/lib/categoryColors.ts` maps each category id to a
+  color, used to tint the icon (inactive state) and the active-state background gradient via a
+  `--cat-color` CSS custom property set inline per item. "All" has no override, keeps the
+  original accent gradient.
+- [done] Ambient blobs now hue-shift continuously (`@keyframes blob-hue-cycle`, 30s linear loop,
+  staggered `animation-delay` per blob so they don't move in lockstep) — "rainbow" background.
+- [done] Footer/UI stutter during window resize: backdrop-filter blur (used almost everywhere via
+  `--glass-blur`) and the new animated blob hue-rotate are expensive to repaint on every frame of
+  a live resize, which is why the footer visibly lagged behind. `useResizeGlitchGuard` toggles an
+  `.is-resizing` class on `<html>` during the resize (200ms debounce after the last event) that
+  zeroes `--glass-blur` and drops blob blur/pauses the hue animation for that window, restoring
+  full quality once resizing settles.
+
 ### Quick fixes
 - [done] Settings panel slide-down animation + cramped title-bar padding
 - [done] Scrollbar should stop under the window's close (X) button, not run flush beside it

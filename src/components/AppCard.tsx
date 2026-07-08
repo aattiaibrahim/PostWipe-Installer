@@ -147,12 +147,18 @@ export function AppCard({ app, os }: AppCardProps) {
                 onClick={() => setExpanded((e) => !e)}
                 aria-label={expanded ? "Hide app info" : "Show app info"}
               >
-                <motion.span
+                <motion.svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   animate={{ rotate: expanded ? 90 : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 >
-                  &#9656;
-                </motion.span>
+                  <path d="M9 6l6 6-6 6" />
+                </motion.svg>
               </button>
             )}
           </div>

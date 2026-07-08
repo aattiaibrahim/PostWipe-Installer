@@ -1,5 +1,7 @@
+import type { CSSProperties } from "react";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
+import { categoryColor } from "../lib/categoryColors";
 import { ALL_CATEGORY_ID } from "../lib/constants";
 
 interface CategorySidebarProps {
@@ -40,6 +42,7 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
           <button
             key={category.id}
             className={`sidebar__item${selectedId === category.id ? " sidebar__item--active" : ""}`}
+            style={{ "--cat-color": categoryColor(category.id) } as CSSProperties}
             onClick={() => onSelect(category.id)}
           >
             <CategoryIcon categoryId={category.id} className="sidebar__icon" />

@@ -60,12 +60,11 @@
           "icon": "wargaming-game-center.ico",
           "domain": "wargaming.net",
           "kind": "download",
-          "notes": "Previous URL pointed at a World of Warships installer, not the WGC launcher itself — needs verification.",
+          "notes": "wgc.wargaming.net doesn't resolve at all (dead DNS) — the previous URL was broken, not just the wrong app. Switched to redirect.wargaming.net's stable NA-region install redirect, verified live end-to-end (200, application/x-msdownload, ~4.8MB).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://wgc.wargaming.net/download/wgc_installer.exe" },
-              "filename": "wgc_installer.exe",
-              "stale": true
+              "resolver": { "type": "static", "url": "https://redirect.wargaming.net/WGC/Wargaming_Game_Center_Install_NA.exe" },
+              "filename": "wgc_installer.exe"
             }
           }
         },
@@ -521,7 +520,7 @@
         {
           "id": "cursor-pack-example",
           "name": "Cursor Pack (example)",
-          "bio": "Custom cursor scheme, installs via install.inf/install.ini and shows Active in green once applied. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "bio": "Custom cursor scheme, installs via install.inf/install.ini and shows Active in green once applied. Waiting on real files — placeholder only, shown to preview the layout.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
           "platforms": { "windows": {} }
@@ -535,7 +534,7 @@
         {
           "id": "font-pack-example",
           "name": "Font Pack (example)",
-          "bio": "Custom font pack with live previews before installing. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "bio": "Custom font pack with live previews before installing. Waiting on real files — placeholder only, shown to preview the layout.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
           "platforms": { "windows": {}, "macos": {} }
@@ -549,7 +548,7 @@
         {
           "id": "peace-equalizer",
           "name": "PeaceSetup + Sennheiser HD650 Oratory EQ",
-          "bio": "Peace parametric EQ plus a Sennheiser HD650 \"Oratory\" profile. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "bio": "Peace parametric EQ plus a Sennheiser HD650 \"Oratory\" profile. Waiting on real files — placeholder only, shown to preview the layout.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
           "platforms": { "windows": {} }
@@ -563,7 +562,7 @@
         {
           "id": "steam-profile-example",
           "name": "Steam Profile / Workshop Pack (example)",
-          "bio": "Custom Steam profile showcase and workshop item pack, with preview. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "bio": "Custom Steam profile showcase and workshop item pack, with preview. Waiting on real files — placeholder only, shown to preview the layout.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
           "platforms": { "windows": {}, "macos": {} }
@@ -577,7 +576,7 @@
         {
           "id": "sound-scheme-example",
           "name": "Sound Scheme (example)",
-          "bio": "Custom Windows system sound scheme. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "bio": "Custom Windows system sound scheme. Waiting on real files — placeholder only, shown to preview the layout.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
           "platforms": { "windows": {} }
@@ -591,7 +590,7 @@
         {
           "id": "wallpaper-pack-example",
           "name": "Wallpaper / Banner / Profile Pic Pack (example)",
-          "bio": "Desktop wallpapers, profile pictures, and banners, with preview. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "bio": "Desktop wallpapers, profile pictures, and banners, with preview. Waiting on real files — placeholder only, shown to preview the layout.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
           "platforms": { "windows": {}, "macos": {} }

@@ -2,7 +2,6 @@
 name = "postwipe-installer"
 version = "0.1.0"
 description = "Post-wipe app installer"
-authors = ["Andrew Attia Ibrahim"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
