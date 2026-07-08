@@ -1,13 +1,14 @@
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "../lib/tauriCommands";
+import { SettingsPanel } from "./SettingsPanel";
 
 const appWindow = isTauri ? getCurrentWindow() : null;
 
-interface TitleBarProps {
-  onToggleSettings: () => void;
-}
+export function TitleBar() {
+  const [showSettings, setShowSettings] = useState(false);
 
-export function TitleBar({ onToggleSettings }: TitleBarProps) {
   return (
     <div className="title-bar" data-tauri-drag-region>
       <div className="title-bar__brand" data-tauri-drag-region>
@@ -15,9 +16,24 @@ export function TitleBar({ onToggleSettings }: TitleBarProps) {
         <span className="title-bar__title">PostWipe Installer</span>
       </div>
       <div className="title-bar__actions">
-        <button className="title-bar__settings-btn" onClick={onToggleSettings}>
-          Settings
-        </button>
+        <div className="title-bar__settings-anchor">
+          <button className="title-bar__settings-btn" onClick={() => setShowSettings((s) => !s)}>
+            Settings
+          </button>
+          <AnimatePresence>
+            {showSettings && (
+              <motion.div
+                className="title-bar__settings-dropdown"
+                initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+              >
+                <SettingsPanel />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         <div className="title-bar__window-controls">
           <button className="title-bar__win-btn" aria-label="Minimize" onClick={() => appWindow?.minimize()}>
             <svg viewBox="0 0 10 10" width="10" height="10">

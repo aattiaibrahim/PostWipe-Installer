@@ -25,17 +25,17 @@ export function OsPicker() {
             className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
             onClick={() => setOsFilter(opt.value)}
           >
-            <svg className="os-picker__icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d={opt.path} />
-            </svg>
-            <span>{opt.label}</span>
             {active && (
               <motion.div
                 className="os-picker__indicator"
                 layoutId="os-picker-indicator"
-                transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                transition={{ type: "spring", stiffness: 700, damping: 46, mass: 0.7 }}
               />
             )}
+            <svg className="os-picker__icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d={opt.path} />
+            </svg>
+            <span>{opt.label}</span>
           </button>
         );
       })}

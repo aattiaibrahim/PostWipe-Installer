@@ -111,6 +111,20 @@
               "stale": true
             }
           }
+        },
+        {
+          "id": "riot-client",
+          "name": "Riot Client",
+          "icon": "riot-client.ico",
+          "domain": "riotgames.com",
+          "kind": "download",
+          "notes": "Verified live against the real riotcdn.net installer URL (installs the shared Riot Client used by all Riot games).",
+          "platforms": {
+            "windows": {
+              "resolver": { "type": "static", "url": "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.na.exe" },
+              "filename": "RiotClientInstaller.exe"
+            }
+          }
         }
       ]
     },

@@ -1,5 +1,6 @@
 import { useCatalogStore } from "../state/catalogStore";
 import { openDownloadsFolder } from "../lib/tauriCommands";
+import { DownloadHistoryPanel } from "./DownloadHistoryPanel";
 
 export function SearchFilterBar() {
   const searchQuery = useCatalogStore((s) => s.searchQuery);
@@ -14,6 +15,7 @@ export function SearchFilterBar() {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
+      <DownloadHistoryPanel />
       <button className="search-filter-bar__folder-btn" onClick={() => openDownloadsFolder()}>
         Open Downloads Folder
       </button>

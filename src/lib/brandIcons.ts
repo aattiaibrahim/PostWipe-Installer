@@ -16,6 +16,7 @@ import {
   siTelegram,
   siTeamspeak,
   siNvidia,
+  siRiotgames,
 } from "simple-icons";
 
 export interface BrandIcon {
@@ -41,6 +42,7 @@ export const BRAND_ICONS: Record<string, BrandIcon> = {
   telegram: siTelegram,
   teamspeak: siTeamspeak,
   "nvidia-profile-inspector": siNvidia,
+  "riot-client": siRiotgames,
 };
 
 const MONOGRAM_COLORS = ["#6d8cff", "#b06cf7", "#4fd1c5", "#f472b6", "#fbbf24", "#34d399", "#60a5fa", "#f87171"];

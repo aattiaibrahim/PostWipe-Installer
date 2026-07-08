@@ -2,10 +2,12 @@ import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { isTauri } from "../lib/tauriCommands";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
+import { useDownloadHistoryStore } from "../state/downloadHistoryStore";
 import type { ProgressEventPayload, StatusEventPayload } from "../types/download";
 
 export function useDownloadEvents() {
   const upsertJob = useDownloadQueueStore((s) => s.upsertJob);
+  const addHistoryEntry = useDownloadHistoryStore((s) => s.addEntry);
 
   useEffect(() => {
     if (!isTauri) return;
@@ -19,9 +21,17 @@ export function useDownloadEvents() {
       listen<ProgressEventPayload>("download://progress", (e) =>
         upsertJob({ jobId: e.payload.jobId, bytesDownloaded: e.payload.bytesDownloaded, totalBytes: e.payload.totalBytes }),
       ),
-      listen<StatusEventPayload>("download://completed", (e) =>
-        upsertJob({ jobId: e.payload.jobId, status: "completed", destPath: e.payload.destPath }),
-      ),
+      listen<StatusEventPayload>("download://completed", (e) => {
+        upsertJob({ jobId: e.payload.jobId, status: "completed", destPath: e.payload.destPath });
+        if (e.payload.destPath) {
+          addHistoryEntry({
+            appId: e.payload.appId,
+            appName: e.payload.appName,
+            destPath: e.payload.destPath,
+            completedAt: Date.now(),
+          });
+        }
+      }),
       listen<StatusEventPayload>("download://failed", (e) =>
         upsertJob({ jobId: e.payload.jobId, status: "failed", error: e.payload.error }),
       ),
@@ -31,5 +41,5 @@ export function useDownloadEvents() {
     return () => {
       unlistenPromises.forEach((p) => p.then((unlisten) => unlisten()));
     };
-  }, [upsertJob]);
+  }, [upsertJob, addHistoryEntry]);
 }
