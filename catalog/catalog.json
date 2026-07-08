@@ -237,12 +237,13 @@
         },
         {
           "id": "timing-configurator",
-          "name": "Timing Configurator",
-          "bio": "GUI front-end for tuning memory timings alongside ZenTimings.",
+          "name": "ASRock Timing Configurator",
+          "bio": "ASRock's GUI for tuning memory timings alongside ZenTimings.",
           "icon": "timing-configurator.ico",
+          "domain": "asrock.com",
           "kind": "download",
-          "notes": "Researched 2026-07-08: timingconfigurator.com is dead (DNS doesn't resolve). This is ASRock's Timing Configurator; the only current hosts are token-gated mirror sites (TechPowerUp etc.) that can't be resolved automatically. Download will fail and fall back to the manual link.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://timingconfigurator.com/download/TimingConfigurator_v4.0.4.zip" }, "filename": "TimingConfigurator.zip", "stale": true } }
+          "notes": "This is ASRock's tool (old timingconfigurator.com domain is dead) — hosted on ASRock's own download server, pinned at v4.0.4 which is its long-final release. Verified live 2026-07-08 (200, application/zip) plus a network-hitting live test.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.asrock.com/Utility/Formula/TimingConfigurator(v4.0.4).zip" }, "filename": "TimingConfigurator.zip" } }
         },
         {
           "id": "ddu",
@@ -251,8 +252,8 @@
           "icon": "ddu.ico",
           "domain": "wagnardsoft.com",
           "kind": "download",
-          "notes": "Researched 2026-07-08: wagnardsoft.com keeps DDU's actual download link out of its static HTML entirely (their Drupal 'Download DDU' pages contain no .exe/.zip hrefs), the forum blocks plain HTTP fetches, and guessed direct-URL patterns 404. A future candidate for the hidden-webview resolver, but that can't be live-verified headlessly, so left stale — download falls back to the manual link.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.wagnardsoft.com/download/DDU_v18.1.0.0.exe" }, "filename": "DDU.exe", "stale": true } }
+          "notes": "wagnardsoft.com and guru3d.com are both Cloudflare-JS-challenged (unfetchable without a real browser), so DDU resolves via majorgeeks.com's mirror page. Its per-session tokenized file URL only exists inside an HTML comment there — hence the html_regex resolver, which regexes the raw body instead of using a CSS selector. Verified live 2026-07-08 end-to-end (fresh resolve → cookie-less download, 200 application/x-msdos-program) plus a network-hitting live test.",
+          "platforms": { "windows": { "resolver": { "type": "html_regex", "page_url": "https://www.majorgeeks.com/mg/getmirror/display_driver_uninstaller,1.html", "url_regex": "https://files[0-9]+\\.majorgeeks\\.com/[a-f0-9]+/drivers/DDU[^<>\"]*?_setup\\.exe" }, "filename": "DDU_setup.exe" } }
         }
       ]
     },

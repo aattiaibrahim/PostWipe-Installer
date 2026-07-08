@@ -13,6 +13,11 @@ export type ResolverSpec =
       url_regex?: string;
     }
   | {
+      type: "html_regex";
+      page_url: string;
+      url_regex: string;
+    }
+  | {
       type: "webview";
       page_url: string;
       selector: string;

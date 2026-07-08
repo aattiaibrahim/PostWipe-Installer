@@ -1,4 +1,5 @@
 pub mod github_release_resolver;
+pub mod html_regex_resolver;
 pub mod html_resolver;
 pub mod static_resolver;
 pub mod webview_resolver;
@@ -48,6 +49,7 @@ pub async fn resolve(app_handle: &tauri::AppHandle, spec: &ResolverSpec) -> Resu
         ResolverSpec::Static { .. } => static_resolver::resolve(spec),
         ResolverSpec::GithubRelease { .. } => github_release_resolver::resolve(spec).await,
         ResolverSpec::Html { .. } => html_resolver::resolve(spec).await,
+        ResolverSpec::HtmlRegex { .. } => html_regex_resolver::resolve(spec).await,
         ResolverSpec::Webview { .. } => webview_resolver::resolve(app_handle, spec).await,
     }
 }
@@ -215,6 +217,50 @@ mod live_tests {
         let url = html_resolver::resolve(&spec).await.expect("should resolve the current HWiNFO installer");
         assert!(url.contains("hwinfo.com/files/hwi64_"), "unexpected url: {url}");
         assert!(url.ends_with(".exe"), "unexpected url: {url}");
+    }
+
+    #[tokio::test]
+    async fn html_regex_resolves_ddu_from_majorgeeks_and_url_downloads() {
+        // wagnardsoft.com and guru3d.com both sit behind Cloudflare JS challenges, so DDU
+        // comes from majorgeeks.com's mirror page instead. Its per-session tokenized file
+        // URL only appears inside an HTML comment (no selector can reach it), hence the
+        // html_regex resolver. The token rotates per fetch, so this also GETs the resolved
+        // URL to prove a cookie-less two-step resolve→download actually works.
+        let spec = ResolverSpec::HtmlRegex {
+            page_url: "https://www.majorgeeks.com/mg/getmirror/display_driver_uninstaller,1.html".to_string(),
+            url_regex: r"https://files[0-9]+\.majorgeeks\.com/[a-f0-9]+/drivers/DDU[^<>\x22]*?_setup\.exe".to_string(),
+        };
+        let url = html_regex_resolver::resolve(&spec).await.expect("should resolve the current DDU installer");
+        assert!(url.ends_with("_setup.exe"), "unexpected url: {url}");
+
+        let client = reqwest::Client::new();
+        let response = client
+            .head(&url)
+            .send()
+            .await
+            .expect("resolved DDU url should be reachable");
+        assert!(response.status().is_success(), "unexpected status: {}", response.status());
+        let content_type = response
+            .headers()
+            .get("content-type")
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("");
+        assert!(
+            !content_type.contains("text/html"),
+            "resolved DDU url served HTML, not a binary: {content_type}"
+        );
+    }
+
+    #[tokio::test]
+    async fn static_resolves_asrock_timing_configurator() {
+        // timingconfigurator.com is dead DNS; the tool is ASRock's, hosted (pinned at its
+        // long-final v4.0.4) on ASRock's own download server.
+        let spec = ResolverSpec::Static {
+            url: "https://download.asrock.com/Utility/Formula/TimingConfigurator(v4.0.4).zip".to_string(),
+        };
+        let url = static_resolver::resolve(&spec).unwrap();
+        let response = reqwest::Client::new().head(&url).send().await.expect("ASRock url should be reachable");
+        assert!(response.status().is_success(), "unexpected status: {}", response.status());
     }
 
     #[tokio::test]

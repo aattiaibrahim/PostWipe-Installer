@@ -94,6 +94,15 @@
         },
         {
           "properties": {
+            "type": { "const": "html_regex" },
+            "page_url": { "type": "string", "format": "uri" },
+            "url_regex": { "type": "string" }
+          },
+          "required": ["type", "page_url", "url_regex"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
             "type": { "const": "webview" },
             "page_url": { "type": "string", "format": "uri" },
             "selector": { "type": "string" },

@@ -36,19 +36,31 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 ## Known issues / stale catalog entries
 
-- **Full stale sweep done 2026-07-08** — every flagged entry was live-verified (HEAD/GET with a
-  browser UA, then network-hitting `resolver::live_tests` for the scraper-based ones). Only two
-  remain stale, both with no automatable source:
-  - `timing-configurator`: timingconfigurator.com is dead DNS; ASRock's tool now only lives on
-    token-gated mirrors (TechPowerUp etc.). Download fails → manual-link fallback.
-  - `ddu`: wagnardsoft.com keeps the real download link out of its static HTML entirely and the
-    forum blocks plain fetches. Candidate for the `webview` resolver, but that can't be
-    live-verified headlessly, so not shipped blind. Download fails → manual-link fallback.
-  Everything else now resolves dynamically; see per-entry `notes` for what changed (highlights:
-  CPU-Z/HWMonitor scrape cpuid.com then rewrite onto download.cpuid.com via `url_regex`+`base_url`;
-  HWiNFO and PuTTY scrape their own download pages; TestMem5 moved to the CoolCmd/TestMem5 GitHub
-  releases; Cinebench upgraded R20→R23 since R20's zip no longer exists anywhere official;
-  Ubisoft moved to static3.cdn.ubi.com after the akamai URL started 401ing).
+- **Full stale sweep done 2026-07-08 — zero stale entries remain.** Every flagged entry was
+  live-verified (HEAD/GET with a browser UA, then network-hitting `resolver::live_tests` for the
+  scraper-based ones). See per-entry `notes` for what changed. Highlights:
+  - CPU-Z/HWMonitor scrape cpuid.com then rewrite onto download.cpuid.com via `url_regex`+`base_url`
+    (the www host serves an HTML interstitial, not the binary); HWiNFO and PuTTY scrape their own
+    download pages; TestMem5 moved to the CoolCmd/TestMem5 GitHub releases; Cinebench upgraded
+    R20→R23 since R20's zip no longer exists anywhere official; Ubisoft moved to
+    static3.cdn.ubi.com after the akamai URL started 401ing.
+  - `timing-configurator`: it's ASRock's tool (renamed in-app accordingly); old domain is dead but
+    ASRock's own server hosts it — `download.asrock.com/Utility/Formula/TimingConfigurator(v4.0.4).zip`,
+    pinned at its long-final version.
+  - `ddu`: wagnardsoft.com and guru3d.com (user's suggestion) are both Cloudflare-JS-challenged —
+    unfetchable by reqwest, and even the `webview` resolver wouldn't help since CF clearance
+    cookies would live in the webview while the download runs through reqwest without them.
+    Solved via majorgeeks.com's mirror instead: its per-session tokenized file URL appears only
+    inside an HTML comment, which no CSS selector can reach — hence the new **`html_regex`
+    resolver** (`html_regex_resolver.rs`: fetch page, regex the raw body, return first match).
+    Token rotates per fetch but each freshly resolved URL downloads cookie-lessly — proven
+    end-to-end by `html_regex_resolves_ddu_from_majorgeeks_and_url_downloads`. Known fragility:
+    it depends on a `<!-- Debug: ... -->` comment majorgeeks leaves in their page; if they remove
+    it, the resolve fails cleanly into the manual-link fallback.
+- **"✓ verified" badge removed 2026-07-08**: with every downloadable entry verified, the badge on
+  all 40+ rows was pure noise, so it's gone from the UI (per user request). The `stale`
+  flag/"needs check" badge machinery stays for future regressions — it just has nothing to show
+  right now.
 - **JS-rendered pages — corrected 2026-07-08**: the `webview` resolver got built and shipped
   first, but real live-testing (once the user actually clicked Download and hit
   `no element matched selector 'a.windows-download'`) showed the earlier assumption was wrong for

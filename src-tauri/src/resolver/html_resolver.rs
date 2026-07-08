@@ -3,11 +3,11 @@ use crate::catalog::model::ResolverSpec;
 use scraper::{Html, Selector};
 use std::time::Duration;
 
-const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
+pub(crate) const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 /// Some vendor sites (e.g. teamspeak.com) sit behind bot-protection that 403s reqwest's
 /// default user agent outright. A realistic desktop-browser UA gets treated like any other
 /// visitor's browser.
-const BROWSER_USER_AGENT: &str =
+pub(crate) const BROWSER_USER_AGENT: &str =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {

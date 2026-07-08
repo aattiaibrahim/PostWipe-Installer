@@ -22,7 +22,7 @@ interface AppCardProps {
 function fallbackUrl(platform: PlatformEntry, domain?: string): string | null {
   const resolver = platform.resolver;
   if (resolver) {
-    if (resolver.type === "html" || resolver.type === "webview") return resolver.page_url;
+    if (resolver.type === "html" || resolver.type === "html_regex" || resolver.type === "webview") return resolver.page_url;
     if (resolver.type === "github_release") return `https://github.com/${resolver.repo}/releases/latest`;
   }
   return domain ? `https://${domain}` : null;
@@ -63,7 +63,6 @@ export function AppCard({ app, os }: AppCardProps) {
 
   const isScript = app.kind === "script";
   const isPlaceholder = app.kind === "placeholder";
-  const verified = !isScript && !isPlaceholder && !platform.stale && !!platform.resolver;
   const hasDetails = !!app.domain || !!app.notes;
 
   const relevantJob = Object.values(jobs)
@@ -140,11 +139,6 @@ export function AppCard({ app, os }: AppCardProps) {
         <div className="app-row__body">
           <div className="app-row__name-line">
             <span className="app-row__name">{app.name}</span>
-            {verified && (
-              <span className="badge badge--verified" title="Verified good to go">
-                ✓ verified
-              </span>
-            )}
             {!isScript && platform.stale && (
               <span className="badge badge--stale" title={app.notes ?? "Needs verification"}>
                 needs check

@@ -928,11 +928,6 @@ h3 {
   background-color: var(--stale-bg);
 }
 
-.badge--verified {
-  color: var(--verified);
-  background-color: var(--verified-bg);
-}
-
 .app-row__action {
   flex-shrink: 0;
   padding: 0.45rem 0.9rem;

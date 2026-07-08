@@ -77,6 +77,12 @@ pub enum ResolverSpec {
         #[serde(default)]
         url_regex: Option<String>,
     },
+    /// Like `Html`, but regexes the raw page body instead of matching a CSS selector —
+    /// for URLs that live outside element attributes (e.g. inside an HTML comment).
+    HtmlRegex {
+        page_url: String,
+        url_regex: String,
+    },
     /// Like `Html`, but for pages whose download link only exists after client-side JS
     /// runs (e.g. Windscribe, TeamSpeak, PyCharm). Resolved via a hidden Tauri webview
     /// instead of a plain HTTP fetch — see `resolver::webview_resolver`.
