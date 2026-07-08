@@ -2,13 +2,15 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useDownloadHistoryStore } from "../state/downloadHistoryStore";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 export function DownloadHistoryPanel() {
   const [open, setOpen] = useState(false);
   const entries = useDownloadHistoryStore((s) => s.entries);
+  const panelRef = useClickOutside<HTMLDivElement>(open, () => setOpen(false));
 
   return (
-    <div className="download-history">
+    <div className="download-history" ref={panelRef}>
       <button className="download-history__toggle" onClick={() => setOpen((o) => !o)}>
         Downloaded{entries.length > 0 && <span className="download-history__count">{entries.length}</span>}
       </button>

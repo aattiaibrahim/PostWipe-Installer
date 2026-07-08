@@ -87,6 +87,18 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Quick fixes (2026-07-08, sixth pass)
+- [done] Font switched again per user request: General Sans → **Geist** (Vercel's typeface, free
+  under the SIL Open Font License, fetched via the Google Fonts API — single variable woff2 at
+  `public/fonts/Geist-Variable.woff2`, weight range 100–900, so no static-weight juggling like
+  General Sans needed). General Sans files removed. Font history: Segoe UI (accidental fallback) →
+  Inter → General Sans (~1 hour) → Geist.
+- [done] Click-outside-to-dismiss for both floating dropdowns (Settings popover, Downloaded
+  history panel). New `useClickOutside` hook (`src/hooks/useClickOutside.ts`): document-level
+  `pointerdown` listener, attached only while the dropdown is open, closes it when the event
+  target is outside the panel's anchor element. Verified both directions: outside click closes,
+  inside click doesn't.
+
 ### Quick fixes (2026-07-08, fifth pass)
 - [done] Light-mode-only bug: hovering an active sidebar category made its icon disappear for as
   long as the pointer stayed over it. Root cause: `.sidebar__item:hover` (specificity 0,2,0 — one
