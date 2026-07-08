@@ -75,7 +75,7 @@ impl DownloadManager {
         let jobs = self.jobs.clone();
         let job_id_task = job_id.clone();
 
-        tokio::spawn(async move {
+        tauri::async_runtime::spawn(async move {
             let _permit = semaphore.acquire().await;
 
             let job_body = async {
@@ -140,5 +140,26 @@ impl DownloadManager {
                 app_name: entry.app_name.clone(),
             })
             .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    /// Regression test for a real crash: `start_download` is a synchronous Tauri
+    /// command, and Tauri does not guarantee sync commands run on a thread with an
+    /// active Tokio runtime. Calling `tokio::spawn` directly from such a thread
+    /// panics with "there is no reactor running" — and because that panic happens
+    /// across a native WebView2 callback boundary, it can't unwind and aborts the
+    /// whole process. `tauri::async_runtime::spawn` doesn't have this requirement
+    /// (it falls back to its own runtime if none is set), which is what
+    /// `DownloadManager::start_download` uses instead. This test spawns from a
+    /// plain OS thread with no Tokio context at all, exactly reproducing the
+    /// conditions that crashed the app.
+    #[test]
+    fn async_runtime_spawn_works_without_ambient_tokio_context() {
+        let handle = std::thread::spawn(|| {
+            tauri::async_runtime::spawn(async {});
+        });
+        handle.join().expect("spawning from a non-tokio thread must not panic");
     }
 }
