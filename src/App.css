@@ -1,7 +1,31 @@
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Variable.woff2") format("woff2-variations"), url("/fonts/Inter-Variable.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Bold.woff2") format("woff2");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -37,7 +61,7 @@ html.is-resizing .ambient-bg__blob {
   --blob-3: #3fc4e0;
   --glass-blur: 22px;
 
-  font-family: "Inter", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "General Sans", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   font-feature-settings: "cv11", "ss01", "cv01";
@@ -48,26 +72,24 @@ html.is-resizing .ambient-bg__blob {
   -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b0c16;
-    --surface: rgba(19, 20, 32, 0.85);
-    --surface-solid: #181926;
-    --surface-hover: rgba(30, 32, 48, 0.95);
-    --border: rgba(126, 138, 255, 0.16);
-    --text: #f5f6fb;
-    --text-muted: #a3a7c2;
-    --accent: #4a5bfc;
-    --accent-hover: #6673ff;
-    --accent-text: #ffffff;
-    --stale: #fbbf24;
-    --stale-bg: #3f2f0f;
-    --verified: #4ade80;
-    --verified-bg: #123a20;
-    --blob-1: #3b4dfd;
-    --blob-2: #6a5cff;
-    --blob-3: #2fb8d6;
-  }
+:root[data-theme="dark"] {
+  --bg: #0b0c16;
+  --surface: rgba(19, 20, 32, 0.85);
+  --surface-solid: #181926;
+  --surface-hover: rgba(30, 32, 48, 0.95);
+  --border: rgba(126, 138, 255, 0.16);
+  --text: #f5f6fb;
+  --text-muted: #a3a7c2;
+  --accent: #4a5bfc;
+  --accent-hover: #6673ff;
+  --accent-text: #ffffff;
+  --stale: #fbbf24;
+  --stale-bg: #3f2f0f;
+  --verified: #4ade80;
+  --verified-bg: #123a20;
+  --blob-1: #3b4dfd;
+  --blob-2: #6a5cff;
+  --blob-3: #2fb8d6;
 }
 
 * {
@@ -110,7 +132,7 @@ h1,
 h2,
 h3 {
   letter-spacing: -0.02em;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .ambient-bg {
@@ -148,11 +170,9 @@ h3 {
   animation-delay: -20s;
 }
 
-@media (prefers-color-scheme: light) {
-  .ambient-bg__blob {
-    opacity: 0.22;
-    mix-blend-mode: multiply;
-  }
+:root[data-theme="light"] .ambient-bg__blob {
+  opacity: 0.22;
+  mix-blend-mode: multiply;
 }
 
 .ambient-bg__blob--1 {
@@ -338,6 +358,22 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.settings-panel__row + .settings-panel__row {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.settings-panel__row--theme {
+  justify-content: space-between;
+}
+
+.settings-panel__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .settings-panel__version {

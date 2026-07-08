@@ -4,7 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri + React + Typescript</title>
+    <title>PostWipe Installer</title>
+    <script>
+      (function () {
+        var theme = "dark";
+        try {
+          var raw = localStorage.getItem("postwipe-theme");
+          var parsed = raw && JSON.parse(raw);
+          if (parsed && parsed.state && (parsed.state.theme === "light" || parsed.state.theme === "dark")) {
+            theme = parsed.state.theme;
+          }
+        } catch (e) {
+          // localStorage unavailable or corrupt — fall back to the default.
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
   </head>
 
   <body>

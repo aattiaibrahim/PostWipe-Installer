@@ -87,6 +87,22 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Quick fixes (2026-07-08, fourth pass)
+- [done] Manual light/dark theme toggle, defaulting to dark regardless of OS preference.
+  `src/state/themeStore.ts` (zustand + persist, localStorage key `postwipe-theme`) replaces the old
+  `@media (prefers-color-scheme)` approach — all theme CSS now keys off `:root[data-theme="dark"]`
+  / `:root[data-theme="light"]` (`useApplyTheme` syncs the store to `document.documentElement`'s
+  `data-theme` attribute). An inline script in `index.html` reads the same localStorage key
+  synchronously before React mounts, so there's no flash of the wrong theme on launch. Toggle UI
+  lives in Settings, reusing the OS-picker's sliding-highlight styling (`ThemeToggle` in
+  `SettingsPanel.tsx`) with hand-drawn sun/moon icons.
+- [done] Chose a font: switched from Inter to **General Sans** (Fontshare, free for commercial
+  use), the closest free alternative to Lusion's paid Aeonik. Self-hosted 4 static weights
+  (400/500/600/700 — `public/fonts/GeneralSans-*.woff2`, fetched from Fontshare's own CDN via their
+  public CSS API, not scraped from lusion.co) since General Sans isn't offered as a single
+  variable-font file the way Inter was. `h1`/`h2`/`h3` weight adjusted 650 → 600 to match an actual
+  available static weight instead of relying on browser nearest-weight fallback.
+
 ### Quick fixes (2026-07-08, third pass)
 - [done] Re-fixed the Windscribe/PyCharm/TeamSpeak resolvers after the regression documented in
   Known Issues above wiped the catalog.json changes. Verified this time via `diff` between
@@ -106,11 +122,10 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   badge, progress bar) in favor of solid `--accent` — gradients now only appear on the ambient
   background blobs, and those got a large opacity cut (0.85/0.55 → 0.4/0.22) for a cleaner, less
   "candy" look. Dark mode got a matching near-black blue-tinted background (`#0b0c16`).
-- [idea, not done] Lusion's actual display font is "Aeonik," a paid commercial typeface (CoType
-  Foundry) — confirmed by fetching their CSS `@font-face` rules, not guessed. Did **not** copy the
-  font files from their site (that would be redistributing a license we don't have). Kept Inter
-  for now; a free visually-similar alternative (e.g. Fontshare's "General Sans" or "Cabinet
-  Grotesk") would be the legitimate path if the user wants that specific geometric-grotesk look.
+- [done] Lusion's actual display font is "Aeonik," a paid commercial typeface (CoType Foundry) —
+  confirmed by fetching their CSS `@font-face` rules, not guessed. Did **not** copy the font files
+  from their site (that would be redistributing a license we don't have). User picked General Sans
+  as the free alternative — see the fourth-pass entry above for what actually shipped.
 
 ### Quick fixes (2026-07-08, second pass)
 - [done] Wargaming Game Center: `wgc.wargaming.net` didn't resolve at all (dead DNS, not just
