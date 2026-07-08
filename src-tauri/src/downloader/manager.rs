@@ -80,7 +80,7 @@ impl DownloadManager {
 
             let job_body = async {
                 events::resolving(&app_handle, &job_id_task, &app_id, &app_name);
-                let url = match resolver::resolve(&resolver_spec).await {
+                let url = match resolver::resolve(&app_handle, &resolver_spec).await {
                     Ok(url) => url,
                     Err(err) => {
                         events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string());

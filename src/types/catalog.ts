@@ -11,6 +11,15 @@ export type ResolverSpec =
       attr: string;
       base_url?: string;
       url_regex?: string;
+    }
+  | {
+      type: "webview";
+      page_url: string;
+      selector: string;
+      attr: string;
+      base_url?: string;
+      url_regex?: string;
+      wait_ms?: number;
     };
 
 export interface PlatformEntry {

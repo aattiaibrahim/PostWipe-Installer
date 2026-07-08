@@ -889,6 +889,38 @@ h3 {
   transform: none;
 }
 
+.app-row__pin-btn {
+  flex-shrink: 0;
+  padding: 0.45rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.app-row__pin-btn:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.app-row__pin-btn:disabled {
+  color: var(--text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.app-row__pin-btn--active {
+  color: var(--verified);
+  background-color: var(--verified-bg);
+  border-color: transparent;
+  opacity: 1;
+}
+
 /* Download queue */
 .download-queue {
   display: flex;

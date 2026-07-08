@@ -15,8 +15,10 @@ network resolvers, concurrent downloads, auto-updating via CI.
   for categories → apps → per-OS resolver spec. Adding/fixing an app is a data edit, not a code
   change. Rust model in `src-tauri/src/catalog/model.rs`, TS mirror in `src/types/catalog.ts`.
 - **Resolvers** (`src-tauri/src/resolver/`): `static` (direct URL), `github_release` (GitHub API +
-  glob asset match), `html` (fetch + CSS selector via `scraper`). No browser-rendering resolver
-  exists yet — see "JS-rendered pages" below.
+  glob asset match), `html` (fetch + CSS selector via `scraper`), `webview` (hidden Tauri
+  `WebviewWindow` for pages whose download link only exists after client-side JS runs — see
+  "JS-rendered pages" below). `html` and `webview` share `apply_base_and_regex` for the
+  optional `base_url`/`url_regex` post-processing step.
 - **Download manager** (`src-tauri/src/downloader/`): semaphore-bounded concurrency, `.part`-file
   atomic writes, connect/stall/safety timeouts, progress events. Commands dispatch via
   `tauri::async_runtime::spawn`, **not** `tokio::spawn` — see Known Issues, this bit us once.
@@ -33,10 +35,18 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 - Entries marked `"stale": true` in the catalog need manual re-verification (pinned versions,
   unconfirmed URLs). Check the `notes` field on each for specifics.
-- **JS-rendered pages the `html` resolver cannot solve**: Windscribe, TeamSpeak, PyCharm. Their
-  download links only exist after client-side JS runs — a plain HTML fetch + CSS selector never
-  sees them. This is a real, solvable problem (not a dead end) — see "Resolver for JS-rendered
-  pages" in the backlog below for the plan.
+- **JS-rendered pages**: Windscribe, TeamSpeak, PyCharm now use the `webview` resolver
+  (`src-tauri/src/resolver/webview_resolver.rs`) instead of `html`. It opens the target page in a
+  hidden `WebviewWindow`, waits `wait_ms` (default 4000ms) for the page's own JS to render the
+  real download button, then reads the matched element's attribute via `eval_with_callback` —
+  never exposes any Tauri API to the untrusted remote page, since the injected script is ours
+  and only reads the DOM. **Compiles and unit-tests clean, but not yet live-verified** — creating
+  a real OS window and running a real browser engine isn't something `cargo test` can exercise
+  headlessly. All three catalog entries are still marked `"stale": true` until someone clicks
+  Download on each in the actual running app and confirms it resolves correctly. If any of them
+  still fail, check first whether the CSS selector (carried over from the old `html` spec) still
+  matches the live page — those were written before this resolver existed and were never
+  confirmed against the real rendered DOM.
 - The original Windscribe "crash" (2026-07-07) was **not** a resolver bug — it was
   `tokio::spawn` being called from a Tauri sync-command thread with no ambient Tokio runtime,
   which panicked across a WebView2 FFI boundary and hard-aborted the process. Fixed by switching
@@ -67,13 +77,14 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   itself) shown by default; a chevron toggle expands a per-row panel with a website link and the
   old verification `notes` text (moved out of the default view, since that was implementation
   detail, not a description of the app).
-- [pending] Script generation: "Pin to Startup" action, greyed out until the script is actually
-  generated. Plan: write a small `.bat` wrapper into the Windows Startup folder
-  (`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`) that calls
-  `powershell -ExecutionPolicy Bypass -File "<absolute path>"`, checking the script file exists at
-  pin-time. Known edge case (flagged by user): if the underlying script is later deleted, the
-  startup entry silently no-ops at next login — Windows just skips a failed startup item, no
-  crash, but no warning either. Not started.
+- [done] Script generation: "Pin to Startup" action (`src-tauri/src/commands/scripts.rs`:
+  `is_script_pinned`/`pin_script_to_startup`/`unpin_script_from_startup`). Writes a `.bat` wrapper
+  into the Windows Startup folder that calls
+  `powershell -ExecutionPolicy Bypass -File "<absolute path>"`. Button is greyed out until the
+  script has been generated this session; re-checks the script file still exists on disk at
+  pin-time and fails with a clear error if it was deleted (the known edge case flagged earlier) —
+  it does not silently pin a broken shortcut. Toggles to a green "✓ Pinned" state; pin state is
+  re-checked from disk on mount so it survives app restarts.
 
 ### Big open discussions (see Decisions section)
 - [done] Full layout revamp — replaced the single long top-to-bottom accordion scroll with a
@@ -81,8 +92,10 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   position) + `CategoryPanel` (selected category's apps). Added a pinned "All" entry
   (`ALL_CATEGORY_ID` in `src/lib/constants.ts`) showing every category at once. Search now matches
   across all categories regardless of sidebar selection, grouped by category heading in the panel.
-- [idea] Resolver for JS-rendered pages (Windscribe/TeamSpeak/PyCharm) — hidden webview vs.
-  external resolver service (Raspberry Pi idea)
+- [done, not live-verified] Resolver for JS-rendered pages — implemented as the `webview` resolver
+  type (see Known Issues above), not the Raspberry-Pi/external-service route. Needs someone to
+  actually click Download on Windscribe/TeamSpeak/PyCharm in the running app before dropping the
+  `stale` flag on those three catalog entries.
 - [idea] Favicon quality — why some are missing/low-res, whether we can upscale/generate better ones
 - [idea] Self-hosted personal content on user's Synology NAS, with optional per-category auth
 

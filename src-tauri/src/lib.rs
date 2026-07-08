@@ -6,7 +6,7 @@ mod scripts;
 
 use commands::catalog::list_categories;
 use commands::download::{cancel_download, list_active_downloads, open_downloads_folder, start_download};
-use commands::scripts::generate_script;
+use commands::scripts::{generate_script, is_script_pinned, pin_script_to_startup, unpin_script_from_startup};
 use downloader::DownloadManager;
 
 /// Writes any Rust panic (message + backtrace) to a fixed log file so a crash
@@ -45,7 +45,10 @@ pub fn run() {
             cancel_download,
             list_active_downloads,
             open_downloads_folder,
-            generate_script
+            generate_script,
+            is_script_pinned,
+            pin_script_to_startup,
+            unpin_script_from_startup
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

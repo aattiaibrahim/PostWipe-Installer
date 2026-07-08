@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { AppEntry, Os, PlatformEntry } from "../types/catalog";
-import { startDownload, generateScript } from "../lib/tauriCommands";
+import {
+  startDownload,
+  generateScript,
+  isScriptPinned,
+  pinScriptToStartup,
+  unpinScriptFromStartup,
+} from "../lib/tauriCommands";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { AppIcon } from "./AppIcon";
@@ -14,7 +20,7 @@ interface AppCardProps {
 function fallbackUrl(platform: PlatformEntry, domain?: string): string | null {
   const resolver = platform.resolver;
   if (resolver) {
-    if (resolver.type === "html") return resolver.page_url;
+    if (resolver.type === "html" || resolver.type === "webview") return resolver.page_url;
     if (resolver.type === "github_release") return `https://github.com/${resolver.repo}/releases/latest`;
   }
   return domain ? `https://${domain}` : null;
@@ -25,15 +31,26 @@ export function AppCard({ app, os }: AppCardProps) {
   const [error, setError] = useState<string | null>(null);
   const [generatedPath, setGeneratedPath] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const [pinBusy, setPinBusy] = useState(false);
+  const [pinError, setPinError] = useState<string | null>(null);
 
   const jobs = useDownloadQueueStore((s) => s.jobs);
 
   const platform = app.platforms[os];
+  const scriptId = platform?.script_id;
+
+  useEffect(() => {
+    if (!scriptId) return;
+    isScriptPinned(scriptId)
+      .then(setPinned)
+      .catch(() => {});
+  }, [scriptId]);
+
   if (!platform) return null;
 
   const isScript = app.kind === "script";
   const verified = !isScript && !platform.stale && !!platform.resolver;
-  const scriptId = platform.script_id;
   const hasDetails = !!app.domain || !!app.notes;
 
   const failedJob = Object.values(jobs)
@@ -61,6 +78,25 @@ export function AppCard({ app, os }: AppCardProps) {
   }
 
   const actionLabel = isScript ? (busy ? "Generating…" : "Generate Script") : busy ? "Starting…" : "Download";
+
+  async function handleTogglePin() {
+    if (!scriptId) return;
+    setPinBusy(true);
+    setPinError(null);
+    try {
+      if (pinned) {
+        await unpinScriptFromStartup(scriptId);
+        setPinned(false);
+      } else if (generatedPath) {
+        await pinScriptToStartup(scriptId, generatedPath);
+        setPinned(true);
+      }
+    } catch (err) {
+      setPinError(String(err));
+    } finally {
+      setPinBusy(false);
+    }
+  }
 
   return (
     <motion.div
@@ -111,7 +147,18 @@ export function AppCard({ app, os }: AppCardProps) {
               </button>
             </p>
           )}
+          {pinError && <p className="app-row__error">{pinError}</p>}
         </div>
+        {isScript && (
+          <button
+            className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}
+            disabled={pinBusy || (!pinned && !generatedPath)}
+            onClick={handleTogglePin}
+            title={!pinned && !generatedPath ? "Generate the script first" : undefined}
+          >
+            {pinned ? "✓ Pinned" : "Pin to Startup"}
+          </button>
+        )}
         <button className="app-row__action" disabled={busy} onClick={handleClick}>
           {actionLabel}
         </button>

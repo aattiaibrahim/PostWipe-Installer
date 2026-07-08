@@ -316,8 +316,8 @@
           "icon": "windscribe.ico",
           "domain": "windscribe.com",
           "kind": "download",
-          "notes": "windscribe.com/download renders its download button client-side via JavaScript, so a static HTML fetch can't see the real link — this needs the hidden-webview resolver (deferred spike), not the plain html resolver. A macOS client also exists but its URL hasn't been verified.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://windscribe.com/download", "selector": "a.windows-download", "attr": "href" }, "filename": "Windscribe-Setup.exe", "stale": true } }
+          "notes": "windscribe.com/download renders its download button client-side via JavaScript, so a static HTML fetch can't see the real link. Switched to the hidden-webview resolver, which actually runs the page's JS — implemented but not yet live-verified in the running app, hence still marked stale. A macOS client also exists but its URL hasn't been verified.",
+          "platforms": { "windows": { "resolver": { "type": "webview", "page_url": "https://windscribe.com/download", "selector": "a.windows-download", "attr": "href" }, "filename": "Windscribe-Setup.exe", "stale": true } }
         }
       ]
     },
@@ -344,10 +344,10 @@
           "icon": "pycharm.ico",
           "domain": "jetbrains.com",
           "kind": "download",
-          "notes": "jetbrains.com/pycharm/download renders its download links client-side via JavaScript, so a static HTML fetch can't see the real link — this needs the hidden-webview resolver (deferred spike), not the plain html resolver.",
+          "notes": "jetbrains.com/pycharm/download renders its download links client-side via JavaScript, so a static HTML fetch can't see the real link. Switched to the hidden-webview resolver, which actually runs the page's JS — implemented but not yet live-verified in the running app, hence still marked stale.",
           "platforms": {
-            "windows": { "resolver": { "type": "html", "page_url": "https://www.jetbrains.com/pycharm/download/?section=windows", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm-installer.exe", "stale": true },
-            "macos": { "resolver": { "type": "html", "page_url": "https://www.jetbrains.com/pycharm/download/?section=mac", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm.dmg", "stale": true }
+            "windows": { "resolver": { "type": "webview", "page_url": "https://www.jetbrains.com/pycharm/download/?section=windows", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm-installer.exe", "stale": true },
+            "macos": { "resolver": { "type": "webview", "page_url": "https://www.jetbrains.com/pycharm/download/?section=mac", "selector": "a.pycharm-download-link", "attr": "href" }, "filename": "pycharm.dmg", "stale": true }
           }
         },
         {
@@ -487,8 +487,8 @@
           "icon": "teamspeak.ico",
           "domain": "teamspeak.com",
           "kind": "download",
-          "notes": "teamspeak.com/en/downloads renders its download buttons client-side via JavaScript, so a static HTML fetch can't see the real link — this needs the hidden-webview resolver (deferred spike), not the plain html resolver.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://teamspeak.com/en/downloads/#ts3client", "selector": "a.download-windows", "attr": "href" }, "filename": "TeamSpeak3-Client-win64.exe", "stale": true } }
+          "notes": "teamspeak.com/en/downloads renders its download buttons client-side via JavaScript, so a static HTML fetch can't see the real link. Switched to the hidden-webview resolver, which actually runs the page's JS — implemented but not yet live-verified in the running app, hence still marked stale.",
+          "platforms": { "windows": { "resolver": { "type": "webview", "page_url": "https://teamspeak.com/en/downloads/#ts3client", "selector": "a.download-windows", "attr": "href" }, "filename": "TeamSpeak3-Client-win64.exe", "stale": true } }
         }
       ]
     },

@@ -74,4 +74,22 @@ pub enum ResolverSpec {
         #[serde(default)]
         url_regex: Option<String>,
     },
+    /// Like `Html`, but for pages whose download link only exists after client-side JS
+    /// runs (e.g. Windscribe, TeamSpeak, PyCharm). Resolved via a hidden Tauri webview
+    /// instead of a plain HTTP fetch — see `resolver::webview_resolver`.
+    Webview {
+        page_url: String,
+        selector: String,
+        attr: String,
+        #[serde(default)]
+        base_url: Option<String>,
+        #[serde(default)]
+        url_regex: Option<String>,
+        #[serde(default = "default_wait_ms")]
+        wait_ms: u64,
+    },
+}
+
+fn default_wait_ms() -> u64 {
+    4000
 }
