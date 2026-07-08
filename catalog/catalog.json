@@ -513,6 +513,90 @@
           "platforms": { "windows": { "script_id": "kill-valorant-process" } }
         }
       ]
+    },
+    {
+      "id": "cursor-packs",
+      "name": "Cursor Packs",
+      "apps": [
+        {
+          "id": "cursor-pack-example",
+          "name": "Cursor Pack (example)",
+          "bio": "Custom cursor scheme, installs via install.inf/install.ini and shows Active in green once applied. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": { "windows": {} }
+        }
+      ]
+    },
+    {
+      "id": "fonts",
+      "name": "Fonts",
+      "apps": [
+        {
+          "id": "font-pack-example",
+          "name": "Font Pack (example)",
+          "bio": "Custom font pack with live previews before installing. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": { "windows": {}, "macos": {} }
+        }
+      ]
+    },
+    {
+      "id": "audio-eq",
+      "name": "Audio & EQ Profiles",
+      "apps": [
+        {
+          "id": "peace-equalizer",
+          "name": "PeaceSetup + Sennheiser HD650 Oratory EQ",
+          "bio": "Peace parametric EQ plus a Sennheiser HD650 \"Oratory\" profile. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": { "windows": {} }
+        }
+      ]
+    },
+    {
+      "id": "steam-profiles",
+      "name": "Steam Profiles",
+      "apps": [
+        {
+          "id": "steam-profile-example",
+          "name": "Steam Profile / Workshop Pack (example)",
+          "bio": "Custom Steam profile showcase and workshop item pack, with preview. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": { "windows": {}, "macos": {} }
+        }
+      ]
+    },
+    {
+      "id": "system-sounds",
+      "name": "Windows Sounds",
+      "apps": [
+        {
+          "id": "sound-scheme-example",
+          "name": "Sound Scheme (example)",
+          "bio": "Custom Windows system sound scheme. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": { "windows": {} }
+        }
+      ]
+    },
+    {
+      "id": "personalization",
+      "name": "Wallpapers & Profile Pics",
+      "apps": [
+        {
+          "id": "wallpaper-pack-example",
+          "name": "Wallpaper / Banner / Profile Pic Pack (example)",
+          "bio": "Desktop wallpapers, profile pictures, and banners, with preview. Waiting on files from Andrew — placeholder only, shown so he can preview the layout.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": { "windows": {}, "macos": {} }
+        }
+      ]
     }
   ]
 }

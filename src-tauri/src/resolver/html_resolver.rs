@@ -4,6 +4,11 @@ use scraper::{Html, Selector};
 use std::time::Duration;
 
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
+/// Some vendor sites (e.g. teamspeak.com) sit behind bot-protection that 403s reqwest's
+/// default user agent outright. A realistic desktop-browser UA gets treated like any other
+/// visitor's browser.
+const BROWSER_USER_AGENT: &str =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
     let (page_url, selector, attr, base_url, url_regex) = match spec {
@@ -24,6 +29,7 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
 
     let body = client
         .get(page_url)
+        .header("User-Agent", BROWSER_USER_AGENT)
         .send()
         .await
         .map_err(|e| ResolveError::Network(e.to_string()))?

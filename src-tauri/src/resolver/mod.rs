@@ -120,19 +120,53 @@ mod live_tests {
     }
 
     #[tokio::test]
-    async fn html_windscribe_page_is_still_js_rendered() {
-        // Documents *why* windscribe.com needs the webview resolver: confirms the plain
-        // html resolver still can't see the download link (a plain fetch never runs the
-        // page's JS). If this ever starts succeeding, windscribe.com started
-        // server-rendering the link and the catalog entry could drop back to `html`.
+    async fn windscribe_download_page_is_js_rendered_but_has_a_stable_redirect() {
+        // The marketing page (windscribe.com/download) really is JS-rendered — a plain fetch
+        // sees an empty Next.js shell with no .exe link anywhere. But windscribe.com also
+        // exposes a stable, versionless redirect endpoint that isn't gated behind any JS at
+        // all, so the `static` resolver can just point at that instead of needing a webview.
+        let marketing_page = reqwest::get("https://windscribe.com/download").await.unwrap().text().await.unwrap();
+        assert!(
+            !marketing_page.contains(".exe"),
+            "windscribe.com/download started containing a direct .exe link — the marketing page may no longer be JS-only"
+        );
+
+        let spec = ResolverSpec::Static {
+            url: "https://windscribe.com/install/desktop/windows".to_string(),
+        };
+        let url = static_resolver::resolve(&spec).unwrap();
+        let response = reqwest::get(&url).await.expect("should follow the redirect to a real installer");
+        assert!(response.url().as_str().ends_with(".exe"), "unexpected final url: {}", response.url());
+    }
+
+    #[tokio::test]
+    async fn html_resolves_pycharm_via_jetbrains_stable_download_api() {
+        // jetbrains.com/pycharm/download itself is JS-rendered, but JetBrains publishes a
+        // stable, versionless API (the same one their own site's download button calls) that
+        // 302s straight to the current installer — no scraping or JS execution needed.
+        let spec = ResolverSpec::Static {
+            url: "https://data.services.jetbrains.com/products/download?code=PCC&platform=windows".to_string(),
+        };
+        let url = static_resolver::resolve(&spec).unwrap();
+        let response = reqwest::get(&url).await.expect("should follow the redirect to a real installer");
+        assert!(response.url().as_str().ends_with(".exe"), "unexpected final url: {}", response.url());
+    }
+
+    #[tokio::test]
+    async fn html_resolves_teamspeak_data_url_attribute() {
+        // teamspeak.com/en/downloads is NOT actually JS-rendered — the real download URL is
+        // right there in the static HTML, just on a <button data-url="..."> instead of an
+        // <a href="...">, which is why the original `a.download-windows` selector never
+        // matched anything (wrong tag, wrong attribute, wrong class).
         let spec = ResolverSpec::Html {
-            page_url: "https://windscribe.com/download".to_string(),
-            selector: "a.windows-download".to_string(),
-            attr: "href".to_string(),
+            page_url: "https://teamspeak.com/en/downloads/#ts3client".to_string(),
+            selector: "button[data-url*='TeamSpeak3-Client-win64']".to_string(),
+            attr: "data-url".to_string(),
             base_url: None,
             url_regex: None,
         };
-        let result = html_resolver::resolve(&spec).await;
-        println!("windscribe html-resolver result (expected to fail): {result:?}");
+        let url = html_resolver::resolve(&spec).await.expect("should resolve a real TeamSpeak download link");
+        assert!(url.contains("TeamSpeak3-Client-win64"), "unexpected url: {url}");
+        assert!(url.ends_with(".exe"), "unexpected url: {url}");
     }
 }

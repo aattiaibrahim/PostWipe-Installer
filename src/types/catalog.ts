@@ -1,5 +1,5 @@
 export type Os = "windows" | "macos";
-export type AppKind = "download" | "script";
+export type AppKind = "download" | "script" | "placeholder";
 
 export type ResolverSpec =
   | { type: "static"; url: string }

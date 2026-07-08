@@ -6,7 +6,6 @@ import { OsPicker } from "../components/OsPicker";
 import { SearchFilterBar } from "../components/SearchFilterBar";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
-import { DownloadQueuePanel } from "../components/DownloadQueuePanel";
 import { ALL_CATEGORY_ID } from "../lib/constants";
 
 export function Browse() {
@@ -48,7 +47,6 @@ export function Browse() {
         <OsPicker />
         <SearchFilterBar />
       </div>
-      <DownloadQueuePanel />
       <div className="browse__body">
         <CategorySidebar
           catalog={catalog}

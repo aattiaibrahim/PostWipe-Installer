@@ -41,6 +41,9 @@ pub enum Os {
 pub enum AppKind {
     Download,
     Script,
+    /// Catalog entry with no working resolver yet — a category preview shown before its
+    /// real content (files provided by the user, plus hosting) is in place.
+    Placeholder,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

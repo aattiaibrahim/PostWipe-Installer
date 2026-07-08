@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { AppEntry, Os, PlatformEntry } from "../types/catalog";
 import {
   startDownload,
+  cancelDownload,
   generateScript,
   isScriptPinned,
   pinScriptToStartup,
@@ -25,6 +26,8 @@ function fallbackUrl(platform: PlatformEntry, domain?: string): string | null {
   }
   return domain ? `https://${domain}` : null;
 }
+
+const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
 export function AppCard({ app, os }: AppCardProps) {
   const [busy, setBusy] = useState(false);
@@ -50,17 +53,27 @@ export function AppCard({ app, os }: AppCardProps) {
   if (!platform) return null;
 
   const isScript = app.kind === "script";
-  const verified = !isScript && !platform.stale && !!platform.resolver;
+  const isPlaceholder = app.kind === "placeholder";
+  const verified = !isScript && !isPlaceholder && !platform.stale && !!platform.resolver;
   const hasDetails = !!app.domain || !!app.notes;
 
-  const failedJob = Object.values(jobs)
+  const relevantJob = Object.values(jobs)
     .reverse()
-    .find((j) => j.appId === app.id && j.status === "failed");
-  const failureMessage = error ?? failedJob?.error ?? null;
-  const showFallback = !isScript && !!failureMessage;
+    .find((j) => j.appId === app.id);
+  const jobStatus = relevantJob?.status;
+  const isDownloadingJob = !isScript && !!jobStatus && ACTIVE_STATUSES.has(jobStatus);
+  const isCompleted = isScript ? !!generatedPath && !error : jobStatus === "completed";
+  const revealPath = isScript ? generatedPath : (relevantJob?.destPath ?? null);
+  const percent = relevantJob?.totalBytes
+    ? Math.min(100, (relevantJob.bytesDownloaded / relevantJob.totalBytes) * 100)
+    : null;
+
+  const failureMessage = error ?? (jobStatus === "failed" ? (relevantJob?.error ?? null) : null);
+  const showFallback = !isScript && !isPlaceholder && !!failureMessage;
   const fallback = fallbackUrl(platform, app.domain);
 
   async function handleClick() {
+    if (isPlaceholder) return;
     setError(null);
     setBusy(true);
     try {
@@ -75,6 +88,10 @@ export function AppCard({ app, os }: AppCardProps) {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function handleCancel() {
+    if (relevantJob) await cancelDownload(relevantJob.jobId);
   }
 
   const actionLabel = isScript ? (busy ? "Generating…" : "Generate Script") : busy ? "Starting…" : "Download";
@@ -97,6 +114,8 @@ export function AppCard({ app, os }: AppCardProps) {
       setPinBusy(false);
     }
   }
+
+  const showStatusArea = isDownloadingJob || !!failureMessage || !!pinError || (isCompleted && !!revealPath);
 
   return (
     <motion.div
@@ -138,30 +157,59 @@ export function AppCard({ app, os }: AppCardProps) {
             )}
           </div>
           {app.bio && <p className="app-row__bio">{app.bio}</p>}
-          {failureMessage && <p className="app-row__error">{failureMessage}</p>}
-          {generatedPath && !error && (
-            <p className="app-row__success">
-              Saved to {generatedPath}.{" "}
-              <button className="app-row__link-btn" onClick={() => revealItemInDir(generatedPath)}>
-                Reveal in folder
-              </button>
-            </p>
-          )}
-          {pinError && <p className="app-row__error">{pinError}</p>}
         </div>
-        {isScript && (
-          <button
-            className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}
-            disabled={pinBusy || (!pinned && !generatedPath)}
-            onClick={handleTogglePin}
-            title={!pinned && !generatedPath ? "Generate the script first" : undefined}
-          >
-            {pinned ? "✓ Pinned" : "Pin to Startup"}
-          </button>
-        )}
-        <button className="app-row__action" disabled={busy} onClick={handleClick}>
-          {actionLabel}
-        </button>
+        <div className="app-row__action-col">
+          <div className="app-row__action-row">
+            {isScript && (
+              <button
+                className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}
+                disabled={pinBusy || (!pinned && !generatedPath)}
+                onClick={handleTogglePin}
+                title={!pinned && !generatedPath ? "Generate the script first" : undefined}
+              >
+                {pinned ? "✓ Pinned" : "Pin to Startup"}
+              </button>
+            )}
+            {isPlaceholder ? (
+              <button className="app-row__action" disabled title="Waiting on files">
+                Coming soon
+              </button>
+            ) : isDownloadingJob ? (
+              <button className="app-row__action app-row__action--cancel" onClick={handleCancel}>
+                Cancel
+              </button>
+            ) : (
+              <button className="app-row__action" disabled={busy} onClick={handleClick}>
+                {actionLabel}
+              </button>
+            )}
+            {isCompleted && (
+              <span className="app-row__complete-check" title="Done">
+                ✓
+              </span>
+            )}
+          </div>
+          {showStatusArea && (
+            <div className="app-row__action-status">
+              {isDownloadingJob && (
+                <div className="app-row__mini-progress-track">
+                  <motion.div
+                    className="app-row__mini-progress-fill"
+                    animate={{ width: percent !== null ? `${percent}%` : "100%" }}
+                    transition={{ type: "spring", stiffness: 200, damping: 30 }}
+                  />
+                </div>
+              )}
+              {!isDownloadingJob && failureMessage && <span className="app-row__error">{failureMessage}</span>}
+              {!isDownloadingJob && pinError && <span className="app-row__error">{pinError}</span>}
+              {!isDownloadingJob && !failureMessage && isCompleted && revealPath && (
+                <button className="app-row__link-btn" onClick={() => revealItemInDir(revealPath)}>
+                  Reveal in folder
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
       <AnimatePresence initial={false}>
         {expanded && hasDetails && (

@@ -16,9 +16,12 @@ network resolvers, concurrent downloads, auto-updating via CI.
   change. Rust model in `src-tauri/src/catalog/model.rs`, TS mirror in `src/types/catalog.ts`.
 - **Resolvers** (`src-tauri/src/resolver/`): `static` (direct URL), `github_release` (GitHub API +
   glob asset match), `html` (fetch + CSS selector via `scraper`), `webview` (hidden Tauri
-  `WebviewWindow` for pages whose download link only exists after client-side JS runs — see
-  "JS-rendered pages" below). `html` and `webview` share `apply_base_and_regex` for the
-  optional `base_url`/`url_regex` post-processing step.
+  `WebviewWindow` for pages that genuinely need client-side JS to run before the link exists —
+  see "JS-rendered pages" below; as of 2026-07-08, no catalog entry actually needs it, but it's
+  kept for the next site that truly requires it). `html` sends a realistic desktop-browser
+  `User-Agent` (`BROWSER_USER_AGENT` in `html_resolver.rs`) since some sites 403 reqwest's default
+  UA. `html` and `webview` share `apply_base_and_regex` for the optional `base_url`/`url_regex`
+  post-processing step.
 - **Download manager** (`src-tauri/src/downloader/`): semaphore-bounded concurrency, `.part`-file
   atomic writes, connect/stall/safety timeouts, progress events. Commands dispatch via
   `tauri::async_runtime::spawn`, **not** `tokio::spawn` — see Known Issues, this bit us once.
@@ -35,18 +38,29 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 - Entries marked `"stale": true` in the catalog need manual re-verification (pinned versions,
   unconfirmed URLs). Check the `notes` field on each for specifics.
-- **JS-rendered pages**: Windscribe, TeamSpeak, PyCharm now use the `webview` resolver
-  (`src-tauri/src/resolver/webview_resolver.rs`) instead of `html`. It opens the target page in a
-  hidden `WebviewWindow`, waits `wait_ms` (default 4000ms) for the page's own JS to render the
-  real download button, then reads the matched element's attribute via `eval_with_callback` —
-  never exposes any Tauri API to the untrusted remote page, since the injected script is ours
-  and only reads the DOM. **Compiles and unit-tests clean, but not yet live-verified** — creating
-  a real OS window and running a real browser engine isn't something `cargo test` can exercise
-  headlessly. All three catalog entries are still marked `"stale": true` until someone clicks
-  Download on each in the actual running app and confirms it resolves correctly. If any of them
-  still fail, check first whether the CSS selector (carried over from the old `html` spec) still
-  matches the live page — those were written before this resolver existed and were never
-  confirmed against the real rendered DOM.
+- **JS-rendered pages — corrected 2026-07-08**: the `webview` resolver got built and shipped
+  first, but real live-testing (once the user actually clicked Download and hit
+  `no element matched selector 'a.windows-download'`) showed the earlier assumption was wrong for
+  all three of the original targets:
+  - **Windscribe**: `windscribe.com/download` really is JS-rendered (Next.js shell, no `.exe` in
+    the raw HTML) — but `windscribe.com/install/desktop/<windows|macos>` is a stable, versionless
+    redirect straight to the current installer, no JS needed at all. Back to `static`.
+  - **PyCharm**: `jetbrains.com/pycharm/download` is JS-rendered, but JetBrains publishes a
+    stable public API — `data.services.jetbrains.com/products/download?code=PCC&platform=<windows|mac>`
+    (`PCC` = Community, the free edition) — that 302s straight to the current installer. Back to
+    `static`.
+  - **TeamSpeak**: `teamspeak.com/en/downloads` is **not actually JS-rendered** — the real
+    download URL was in the static HTML all along, just on `<button data-url="...">` instead of
+    `<a href="...">`, which is why the original `a.download-windows` selector never matched
+    anything (wrong tag, wrong attribute, wrong class). Fixed by using the `html` resolver with
+    selector `button[data-url*="TeamSpeak3-Client-win64"]` / `...macosx` and `attr: "data-url"`.
+    Also needed the new browser `User-Agent` header above (teamspeak.com 403s reqwest's default one).
+
+  All three are now verified live (see the `resolver::live_tests` module — `cargo test` actually
+  hits the network and asserts on the real resolved URL) and no longer marked `stale`. **Lesson**:
+  don't reach for the heaviest tool (hidden webview) on the strength of a stale assumption in old
+  notes — check what a plain `curl` actually returns first. The `webview` resolver itself is still
+  correct, tested infrastructure; it's just not needed by anything in the catalog right now.
 - The original Windscribe "crash" (2026-07-07) was **not** a resolver bug — it was
   `tokio::spawn` being called from a Tauri sync-command thread with no ambient Tokio runtime,
   which panicked across a WebView2 FFI boundary and hard-aborted the process. Fixed by switching
@@ -84,7 +98,29 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   script has been generated this session; re-checks the script file still exists on disk at
   pin-time and fails with a clear error if it was deleted (the known edge case flagged earlier) —
   it does not silently pin a broken shortcut. Toggles to a green "✓ Pinned" state; pin state is
-  re-checked from disk on mount so it survives app restarts.
+  re-checked from disk on mount so it survives app restarts. The user's "nothing happens after I
+  generate" report traced to a UI-feedback problem, not a broken command: success was only a small
+  line of text easy to miss, not a functional bug — see the per-row status redesign below, which
+  fixes the discoverability rather than any actual logic in `generate_script`/`pin_script_to_startup`.
+- [done] Per-row download/script status moved from a separate global `DownloadQueuePanel` (now
+  deleted, fully redundant) to inline UI next to each app's own action button:
+  `.app-row__action-col` holds the button row (Pin button if a script, action/Cancel button, a
+  green ✓ once complete) with a status area below it (progress bar while downloading, error
+  message, or "Reveal in folder" once done). Downloads can now be cancelled inline per-row too.
+- [done] System-tweak scripts (`RestartAudioService.ps1`, `KillValorantProcess.ps1`) now
+  self-elevate: each starts with a check for
+  `[Security.Principal.WindowsBuiltInRole]::Administrator` and re-launches itself via
+  `Start-Process -Verb RunAs` (triggering a UAC prompt) if not already elevated. Needed since
+  restarting a service / force-killing a Vanguard-protected process both require admin rights.
+  Applies regardless of how the script is invoked (double-click, Pin to Startup, or manually).
+- [done, placeholder] Six personal-content categories added to the catalog with one example entry
+  each (`kind: "placeholder"`, new `AppKind` variant) so the user can preview the sidebar/layout
+  before sending real files: Cursor Packs, Fonts, Audio & EQ Profiles, Steam Profiles, Windows
+  Sounds, Wallpapers & Profile Pics. Each placeholder renders a disabled "Coming soon" button, no
+  verified/stale badge, no resolver. **Not the real feature** — no install.ini cursor activation,
+  no font previews, no Steam/wallpaper preview thumbnails yet; those need the actual files and the
+  NAS hosting decision (see Decisions log) before they can be built for real. Delete the example
+  entries once real per-category content design starts.
 
 ### Big open discussions (see Decisions section)
 - [done] Full layout revamp — replaced the single long top-to-bottom accordion scroll with a
@@ -92,14 +128,16 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   position) + `CategoryPanel` (selected category's apps). Added a pinned "All" entry
   (`ALL_CATEGORY_ID` in `src/lib/constants.ts`) showing every category at once. Search now matches
   across all categories regardless of sidebar selection, grouped by category heading in the panel.
-- [done, not live-verified] Resolver for JS-rendered pages — implemented as the `webview` resolver
-  type (see Known Issues above), not the Raspberry-Pi/external-service route. Needs someone to
-  actually click Download on Windscribe/TeamSpeak/PyCharm in the running app before dropping the
-  `stale` flag on those three catalog entries.
+- [done, live-verified] Resolver for JS-rendered pages — built the `webview` resolver first, then
+  live-testing showed none of the three original targets actually needed it (see Known Issues
+  above for what each one really needed instead). The `webview` resolver itself stays in the
+  codebase for a genuine future case.
 - [idea] Favicon quality — why some are missing/low-res, whether we can upscale/generate better ones
 - [idea] Self-hosted personal content on user's Synology NAS, with optional per-category auth
 
-### Blocked on user-provided files (do not build catalog/UI scaffolding until files + hosting are settled)
+### Blocked on user-provided files
+A one-entry placeholder now exists for each of these (see "Medium features" above) purely so the
+user can preview the sidebar/layout. The *real* per-category behavior below is still blocked.
 - [blocked: needs files+hosting] Cursor packs section — install via `install.inf`/`install.ini`
   cursor scheme file, show "Active" in green once applied
 - [blocked: needs files+hosting] Fonts section, with preview

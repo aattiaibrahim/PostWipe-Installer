@@ -36,7 +36,7 @@
         "bio": { "type": "string" },
         "icon": { "type": "string" },
         "domain": { "type": "string" },
-        "kind": { "type": "string", "enum": ["download", "script"] },
+        "kind": { "type": "string", "enum": ["download", "script", "placeholder"] },
         "notes": { "type": "string" },
         "platforms": {
           "type": "object",
