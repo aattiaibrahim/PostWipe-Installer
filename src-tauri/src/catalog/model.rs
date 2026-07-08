@@ -18,6 +18,8 @@ pub struct Category {
 pub struct AppEntry {
     pub id: String,
     pub name: String,
+    #[serde(default)]
+    pub bio: Option<String>,
     pub icon: String,
     #[serde(default)]
     pub domain: Option<String>,

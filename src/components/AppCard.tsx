@@ -24,6 +24,7 @@ export function AppCard({ app, os }: AppCardProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedPath, setGeneratedPath] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const jobs = useDownloadQueueStore((s) => s.jobs);
 
@@ -33,6 +34,7 @@ export function AppCard({ app, os }: AppCardProps) {
   const isScript = app.kind === "script";
   const verified = !isScript && !platform.stale && !!platform.resolver;
   const scriptId = platform.script_id;
+  const hasDetails = !!app.domain || !!app.notes;
 
   const failedJob = Object.values(jobs)
     .reverse()
@@ -84,8 +86,22 @@ export function AppCard({ app, os }: AppCardProps) {
                 needs check
               </span>
             )}
+            {hasDetails && (
+              <button
+                className="app-row__expand-toggle"
+                onClick={() => setExpanded((e) => !e)}
+                aria-label={expanded ? "Hide app info" : "Show app info"}
+              >
+                <motion.span
+                  animate={{ rotate: expanded ? 90 : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                >
+                  &#9656;
+                </motion.span>
+              </button>
+            )}
           </div>
-          {app.notes && <p className="app-row__notes">{app.notes}</p>}
+          {app.bio && <p className="app-row__bio">{app.bio}</p>}
           {failureMessage && <p className="app-row__error">{failureMessage}</p>}
           {generatedPath && !error && (
             <p className="app-row__success">
@@ -100,6 +116,27 @@ export function AppCard({ app, os }: AppCardProps) {
           {actionLabel}
         </button>
       </div>
+      <AnimatePresence initial={false}>
+        {expanded && hasDetails && (
+          <motion.div
+            className="app-row__details-collapse"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 380, damping: 38 }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="app-row__details">
+              {app.domain && (
+                <button className="app-row__link-btn" onClick={() => openUrl(`https://${app.domain}`)}>
+                  Visit {app.domain} ↗
+                </button>
+              )}
+              {app.notes && <p className="app-row__details-notes">{app.notes}</p>}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence initial={false}>
         {showFallback && fallback && (
           <motion.div

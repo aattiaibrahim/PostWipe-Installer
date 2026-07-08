@@ -23,6 +23,7 @@ export interface PlatformEntry {
 export interface AppEntry {
   id: string;
   name: string;
+  bio?: string;
   icon: string;
   domain?: string;
   kind: AppKind;

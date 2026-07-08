@@ -8,6 +8,7 @@
         {
           "id": "steam",
           "name": "Steam",
+          "bio": "Valve's PC gaming storefront and library manager.",
           "icon": "steam.ico",
           "domain": "store.steampowered.com",
           "kind": "download",
@@ -25,6 +26,7 @@
         {
           "id": "epic-games",
           "name": "Epic Games Launcher",
+          "bio": "Epic Games Store client for buying and launching games.",
           "icon": "epic-games.ico",
           "domain": "epicgames.com",
           "kind": "download",
@@ -39,6 +41,7 @@
         {
           "id": "gog-galaxy",
           "name": "GOG Galaxy",
+          "bio": "DRM-free game library and launcher from GOG.com.",
           "icon": "gog.ico",
           "domain": "gog.com",
           "kind": "download",
@@ -53,6 +56,7 @@
         {
           "id": "wargaming-game-center",
           "name": "Wargaming Game Center",
+          "bio": "Launcher for World of Tanks, World of Warships, and other Wargaming titles.",
           "icon": "wargaming-game-center.ico",
           "domain": "wargaming.net",
           "kind": "download",
@@ -68,6 +72,7 @@
         {
           "id": "battle-net",
           "name": "Battle.net",
+          "bio": "Blizzard's launcher for Overwatch, Diablo, WoW, and more.",
           "icon": "battle-net.ico",
           "domain": "battle.net",
           "kind": "download",
@@ -87,6 +92,7 @@
         {
           "id": "ubisoft-connect",
           "name": "Ubisoft Connect",
+          "bio": "Ubisoft's launcher, storefront, and cross-game rewards platform.",
           "icon": "ubisoft-connect.ico",
           "domain": "ubisoft.com",
           "kind": "download",
@@ -101,6 +107,7 @@
         {
           "id": "ea-app",
           "name": "EA App",
+          "bio": "EA's launcher for FIFA, Battlefield, Apex Legends, and other EA titles.",
           "icon": "ea-app.ico",
           "domain": "ea.com",
           "kind": "download",
@@ -115,6 +122,7 @@
         {
           "id": "riot-client",
           "name": "Riot Client",
+          "bio": "Shared launcher for League of Legends, Valorant, and other Riot games.",
           "icon": "riot-client.ico",
           "domain": "riotgames.com",
           "kind": "download",
@@ -135,6 +143,7 @@
         {
           "id": "testmem5",
           "name": "TestMem5",
+          "bio": "RAM stability tester used for tuning memory timings.",
           "icon": "testmem5.ico",
           "kind": "download",
           "notes": "Domain looks placeholder — TestMem5 is typically distributed via community forum threads (HWBOT/Overclockers), not a dedicated vendor site. Needs research.",
@@ -143,6 +152,7 @@
         {
           "id": "zentimings",
           "name": "ZenTimings",
+          "bio": "Reads and tweaks live DRAM timings on AMD Ryzen platforms.",
           "icon": "zentimings.ico",
           "domain": "github.com",
           "kind": "download",
@@ -151,6 +161,7 @@
         {
           "id": "cinebench-r20",
           "name": "Cinebench R20",
+          "bio": "Maxon's CPU benchmark built on the Cinema 4D render engine.",
           "icon": "cinebench-r20.ico",
           "domain": "maxon.net",
           "kind": "download",
@@ -160,6 +171,7 @@
         {
           "id": "cpu-z",
           "name": "CPU-Z",
+          "bio": "Reports detailed CPU, motherboard, and RAM specs.",
           "icon": "cpu-z.ico",
           "domain": "cpuid.com",
           "kind": "download",
@@ -169,6 +181,7 @@
         {
           "id": "hwinfo",
           "name": "HWiNFO",
+          "bio": "In-depth hardware monitoring for every sensor on the system.",
           "icon": "hwinfo.ico",
           "domain": "hwinfo.com",
           "kind": "download",
@@ -178,6 +191,7 @@
         {
           "id": "hwmonitor",
           "name": "HWMonitor x64",
+          "bio": "Lightweight hardware monitoring for temps, voltages, and fan speeds.",
           "icon": "hwmonitor.ico",
           "domain": "cpuid.com",
           "kind": "download",
@@ -187,6 +201,7 @@
         {
           "id": "nvidia-profile-inspector",
           "name": "NVIDIA Profile Inspector",
+          "bio": "Unlocks hidden NVIDIA driver settings not exposed in the GeForce control panel.",
           "icon": "nvidia-profile-inspector.ico",
           "domain": "github.com",
           "kind": "download",
@@ -195,6 +210,7 @@
         {
           "id": "occt",
           "name": "OCCT",
+          "bio": "Stress-tests CPU, GPU, and PSU stability under load.",
           "icon": "occt.ico",
           "domain": "ocbase.com",
           "kind": "download",
@@ -204,6 +220,7 @@
         {
           "id": "prime95",
           "name": "Prime95",
+          "bio": "Classic CPU stress-testing and stability tool.",
           "icon": "prime95.ico",
           "domain": "mersenne.org",
           "kind": "download",
@@ -212,6 +229,7 @@
         {
           "id": "timer-resolution",
           "name": "Timer Resolution",
+          "bio": "Forces a lower Windows timer resolution for smoother frame pacing.",
           "icon": "timer-resolution.ico",
           "domain": "github.com",
           "kind": "download",
@@ -221,6 +239,7 @@
         {
           "id": "timing-configurator",
           "name": "Timing Configurator",
+          "bio": "GUI front-end for tuning memory timings alongside ZenTimings.",
           "icon": "timing-configurator.ico",
           "kind": "download",
           "notes": "Vendor/source unclear — needs research to confirm a legitimate current download location.",
@@ -229,6 +248,7 @@
         {
           "id": "ddu",
           "name": "Display Driver Uninstaller (DDU)",
+          "bio": "Cleanly removes GPU drivers before installing a fresh version.",
           "icon": "ddu.ico",
           "domain": "wagnardsoft.com",
           "kind": "download",
@@ -244,6 +264,7 @@
         {
           "id": "nanazip",
           "name": "NanaZip",
+          "bio": "Modern 7-Zip fork with a Windows 11-style UI and better compression.",
           "icon": "nanazip.ico",
           "domain": "github.com",
           "kind": "download",
@@ -253,6 +274,7 @@
         {
           "id": "winrar",
           "name": "WinRAR",
+          "bio": "The classic RAR/ZIP archive manager.",
           "icon": "winrar.ico",
           "domain": "win-rar.com",
           "kind": "download",
@@ -262,6 +284,7 @@
         {
           "id": "7-zip",
           "name": "7-Zip",
+          "bio": "Free, open-source archive manager with excellent 7z compression.",
           "icon": "7-zip.ico",
           "domain": "7-zip.org",
           "kind": "download",
@@ -277,6 +300,7 @@
         {
           "id": "bitwarden",
           "name": "Bitwarden",
+          "bio": "Open-source password manager with browser and app sync.",
           "icon": "bitwarden.ico",
           "domain": "bitwarden.com",
           "kind": "download",
@@ -288,6 +312,7 @@
         {
           "id": "windscribe",
           "name": "Windscribe",
+          "bio": "VPN and ad/tracker blocker with a generous free tier.",
           "icon": "windscribe.ico",
           "domain": "windscribe.com",
           "kind": "download",
@@ -303,6 +328,7 @@
         {
           "id": "vscode",
           "name": "Visual Studio Code",
+          "bio": "Microsoft's free, extensible source-code editor.",
           "icon": "vscode.ico",
           "domain": "code.visualstudio.com",
           "kind": "download",
@@ -314,6 +340,7 @@
         {
           "id": "pycharm",
           "name": "PyCharm",
+          "bio": "JetBrains' full-featured Python IDE.",
           "icon": "pycharm.ico",
           "domain": "jetbrains.com",
           "kind": "download",
@@ -326,6 +353,7 @@
         {
           "id": "netlimiter",
           "name": "NetLimiter",
+          "bio": "Per-application bandwidth monitoring and throttling for Windows.",
           "icon": "netlimiter.ico",
           "domain": "netlimiter.com",
           "kind": "download",
@@ -334,6 +362,7 @@
         {
           "id": "notepad-plus-plus",
           "name": "Notepad++",
+          "bio": "Lightweight source-code editor with syntax highlighting for dozens of languages.",
           "icon": "notepad-plus-plus.ico",
           "domain": "notepad-plus-plus.org",
           "kind": "download",
@@ -342,6 +371,7 @@
         {
           "id": "putty",
           "name": "PuTTY",
+          "bio": "SSH and telnet client for connecting to remote machines.",
           "icon": "putty.ico",
           "domain": "putty.org",
           "kind": "download",
@@ -351,6 +381,7 @@
         {
           "id": "powertoys",
           "name": "PowerToys",
+          "bio": "Microsoft's set of power-user utilities — FancyZones, PowerToys Run, and more.",
           "icon": "powertoys.ico",
           "domain": "microsoft.com",
           "kind": "download",
@@ -359,6 +390,7 @@
         {
           "id": "process-explorer",
           "name": "Process Explorer",
+          "bio": "Advanced Task Manager replacement showing full process trees and handles.",
           "icon": "process-explorer.ico",
           "domain": "microsoft.com",
           "kind": "download",
@@ -367,6 +399,7 @@
         {
           "id": "autoruns",
           "name": "Autoruns",
+          "bio": "Shows and manages everything configured to start automatically on Windows.",
           "icon": "autoruns.ico",
           "domain": "microsoft.com",
           "kind": "download",
@@ -381,6 +414,7 @@
         {
           "id": "brave",
           "name": "Brave Browser",
+          "bio": "Chromium-based browser with built-in ad and tracker blocking.",
           "icon": "brave.ico",
           "domain": "brave.com",
           "kind": "download",
@@ -392,6 +426,7 @@
         {
           "id": "librewolf",
           "name": "LibreWolf",
+          "bio": "Privacy-hardened Firefox fork with tracking stripped out by default.",
           "icon": "librewolf.ico",
           "domain": "librewolf.net",
           "kind": "download",
@@ -404,6 +439,7 @@
         {
           "id": "zen-browser",
           "name": "Zen Browser",
+          "bio": "Firefox-based browser with a vertical-tab, workspace-driven UI.",
           "icon": "zen-browser.ico",
           "domain": "zen-browser.app",
           "kind": "download",
@@ -422,6 +458,7 @@
         {
           "id": "discord",
           "name": "Discord",
+          "bio": "Voice, video, and text chat built for communities and gaming.",
           "icon": "discord.ico",
           "domain": "discord.com",
           "kind": "download",
@@ -434,6 +471,7 @@
         {
           "id": "telegram",
           "name": "Telegram",
+          "bio": "Cloud-based messaging with large group chats and channels.",
           "icon": "telegram.ico",
           "domain": "telegram.org",
           "kind": "download",
@@ -445,6 +483,7 @@
         {
           "id": "teamspeak",
           "name": "TeamSpeak",
+          "bio": "Low-latency voice chat popular with gaming communities.",
           "icon": "teamspeak.ico",
           "domain": "teamspeak.com",
           "kind": "download",
@@ -460,6 +499,7 @@
         {
           "id": "restart-audio-service",
           "name": "Restart Audio Service",
+          "bio": "Restarts the Windows Audio service — fixes most \"no sound\" glitches without a reboot.",
           "icon": "bat.ico",
           "kind": "script",
           "platforms": { "windows": { "script_id": "restart-audio-service" } }
@@ -467,6 +507,7 @@
         {
           "id": "kill-valorant-process",
           "name": "Kill Valorant Process",
+          "bio": "Force-kills lingering Valorant/Vanguard processes that block a clean relaunch.",
           "icon": "bat.ico",
           "kind": "script",
           "platforms": { "windows": { "script_id": "kill-valorant-process" } }

@@ -33,6 +33,7 @@
       "properties": {
         "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
         "name": { "type": "string" },
+        "bio": { "type": "string" },
         "icon": { "type": "string" },
         "domain": { "type": "string" },
         "kind": { "type": "string", "enum": ["download", "script"] },

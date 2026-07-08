@@ -63,9 +63,10 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 ### Medium features
 - [done] "Downloaded" history box near the Open Downloads Folder button (persisted across
   restarts via `downloadHistoryStore`, localStorage-backed)
-- [pending] App row bios: show an actual one-line description of the app (not download-mechanics
-  text), expandable for more info (website link, longer description). Needs real copy written for
-  ~40 catalog entries — not started.
+- [done] App row bios: each catalog entry now has a `bio` field (one-line description of the app
+  itself) shown by default; a chevron toggle expands a per-row panel with a website link and the
+  old verification `notes` text (moved out of the default view, since that was implementation
+  detail, not a description of the app).
 - [pending] Script generation: "Pin to Startup" action, greyed out until the script is actually
   generated. Plan: write a small `.bat` wrapper into the Windows Startup folder
   (`%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`) that calls
@@ -75,7 +76,11 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   crash, but no warning either. Not started.
 
 ### Big open discussions (see Decisions section)
-- [idea] Full layout revamp — user dislikes the single long top-to-bottom scroll
+- [done] Full layout revamp — replaced the single long top-to-bottom accordion scroll with a
+  sidebar layout: `CategorySidebar` (category nav with per-category icon, live count, sticky
+  position) + `CategoryPanel` (selected category's apps). Added a pinned "All" entry
+  (`ALL_CATEGORY_ID` in `src/lib/constants.ts`) showing every category at once. Search now matches
+  across all categories regardless of sidebar selection, grouped by category heading in the panel.
 - [idea] Resolver for JS-rendered pages (Windscribe/TeamSpeak/PyCharm) — hidden webview vs.
   external resolver service (Raspberry Pi idea)
 - [idea] Favicon quality — why some are missing/low-res, whether we can upscale/generate better ones
@@ -94,6 +99,19 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-07-08 — JS-rendered pages: prefer local-only (hidden WebView), not a networked helper
+Revisited after asking "why not just run Selenium on the user's own machine instead of a Pi?" —
+correct instinct, and it collapses into the hidden-webview plan rather than replacing it. Real
+Selenium/WebDriver would require bundling a driver binary that has to version-match the user's
+installed browser (e.g. `msedgedriver.exe` vs installed Edge) and drive it over the WebDriver wire
+protocol. Tauri already embeds a real Chromium engine (WebView2 on Windows) for free — a
+hidden/off-screen `WebviewWindow` gets the same result (run real JS, read the resolved link) with
+zero extra binaries and zero network dependency, which is strictly better than both the driver-binary
+approach and the Raspberry-Pi-service idea. Only reason to prefer a real, non-embedded browser: a
+site actively fingerprints/blocks embedded or headless browsers. None of the three known JS-rendered
+targets (Windscribe, TeamSpeak, PyCharm) do this — their download buttons are just client-rendered,
+not adversarial — so the hidden-WebView plan stands as the primary approach. Not implemented yet.
 
 ### 2026-07-08 — Personal-content hosting: recommend Synology File Station shared links first
 User has a Synology NAS and wants to host personal files (cursor packs, fonts, EQ profiles, Steam
