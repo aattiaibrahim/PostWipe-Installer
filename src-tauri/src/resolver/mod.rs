@@ -169,4 +169,68 @@ mod live_tests {
         assert!(url.contains("TeamSpeak3-Client-win64"), "unexpected url: {url}");
         assert!(url.ends_with(".exe"), "unexpected url: {url}");
     }
+
+    #[tokio::test]
+    async fn html_resolves_cpuz_latest_via_download_host_rewrite() {
+        // cpuid.com's software pages list every version, newest first, so the first
+        // '-en.exe' match is the current release — but its href points at www.cpuid.com,
+        // which serves an HTML interstitial instead of the binary. The url_regex extracts
+        // just the filename and base_url rejoins it against download.cpuid.com, which
+        // serves the real installer.
+        let spec = ResolverSpec::Html {
+            page_url: "https://www.cpuid.com/softwares/cpu-z.html".to_string(),
+            selector: "a[href*='cpu-z_'][href$='-en.exe']".to_string(),
+            attr: "href".to_string(),
+            base_url: Some("https://download.cpuid.com/cpu-z/".to_string()),
+            url_regex: Some(r"cpu-z_[^/]*-en\.exe".to_string()),
+        };
+        let url = html_resolver::resolve(&spec).await.expect("should resolve the current CPU-Z installer");
+        assert!(url.starts_with("https://download.cpuid.com/cpu-z/cpu-z_"), "unexpected url: {url}");
+        assert!(url.ends_with("-en.exe"), "unexpected url: {url}");
+    }
+
+    #[tokio::test]
+    async fn html_resolves_hwmonitor_latest_via_download_host_rewrite() {
+        let spec = ResolverSpec::Html {
+            page_url: "https://www.cpuid.com/softwares/hwmonitor.html".to_string(),
+            selector: "a[href*='hwmonitor_'][href$='.exe']".to_string(),
+            attr: "href".to_string(),
+            base_url: Some("https://download.cpuid.com/hwmonitor/".to_string()),
+            url_regex: Some(r"hwmonitor_[^/]*\.exe".to_string()),
+        };
+        let url = html_resolver::resolve(&spec).await.expect("should resolve the current HWMonitor installer");
+        assert!(url.starts_with("https://download.cpuid.com/hwmonitor/hwmonitor_"), "unexpected url: {url}");
+        assert!(url.ends_with(".exe"), "unexpected url: {url}");
+    }
+
+    #[tokio::test]
+    async fn html_resolves_hwinfo_latest_installer() {
+        let spec = ResolverSpec::Html {
+            page_url: "https://www.hwinfo.com/download/".to_string(),
+            selector: "a[href*='files/hwi64_'][href$='.exe']".to_string(),
+            attr: "href".to_string(),
+            base_url: None,
+            url_regex: None,
+        };
+        let url = html_resolver::resolve(&spec).await.expect("should resolve the current HWiNFO installer");
+        assert!(url.contains("hwinfo.com/files/hwi64_"), "unexpected url: {url}");
+        assert!(url.ends_with(".exe"), "unexpected url: {url}");
+    }
+
+    #[tokio::test]
+    async fn html_resolves_putty_latest_installer() {
+        // PuTTY's 'latest/' directory alias stays current but the .msi filename inside it is
+        // versioned, so a pinned static URL 404s after every release — scraping their own
+        // latest.html page (plain static HTML) tracks the version automatically.
+        let spec = ResolverSpec::Html {
+            page_url: "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html".to_string(),
+            selector: "a[href*='w64'][href$='installer.msi']".to_string(),
+            attr: "href".to_string(),
+            base_url: None,
+            url_regex: None,
+        };
+        let url = html_resolver::resolve(&spec).await.expect("should resolve the current PuTTY installer");
+        assert!(url.contains("w64"), "unexpected url: {url}");
+        assert!(url.ends_with("installer.msi"), "unexpected url: {url}");
+    }
 }

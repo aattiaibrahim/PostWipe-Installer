@@ -36,8 +36,19 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 ## Known issues / stale catalog entries
 
-- Entries marked `"stale": true` in the catalog need manual re-verification (pinned versions,
-  unconfirmed URLs). Check the `notes` field on each for specifics.
+- **Full stale sweep done 2026-07-08** — every flagged entry was live-verified (HEAD/GET with a
+  browser UA, then network-hitting `resolver::live_tests` for the scraper-based ones). Only two
+  remain stale, both with no automatable source:
+  - `timing-configurator`: timingconfigurator.com is dead DNS; ASRock's tool now only lives on
+    token-gated mirrors (TechPowerUp etc.). Download fails → manual-link fallback.
+  - `ddu`: wagnardsoft.com keeps the real download link out of its static HTML entirely and the
+    forum blocks plain fetches. Candidate for the `webview` resolver, but that can't be
+    live-verified headlessly, so not shipped blind. Download fails → manual-link fallback.
+  Everything else now resolves dynamically; see per-entry `notes` for what changed (highlights:
+  CPU-Z/HWMonitor scrape cpuid.com then rewrite onto download.cpuid.com via `url_regex`+`base_url`;
+  HWiNFO and PuTTY scrape their own download pages; TestMem5 moved to the CoolCmd/TestMem5 GitHub
+  releases; Cinebench upgraded R20→R23 since R20's zip no longer exists anywhere official;
+  Ubisoft moved to static3.cdn.ubi.com after the akamai URL started 401ing).
 - **JS-rendered pages — corrected 2026-07-08**: the `webview` resolver got built and shipped
   first, but real live-testing (once the user actually clicked Download and hit
   `no element matched selector 'a.windows-download'`) showed the earlier assumption was wrong for
@@ -242,7 +253,12 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   live-testing showed none of the three original targets actually needed it (see Known Issues
   above for what each one really needed instead). The `webview` resolver itself stays in the
   codebase for a genuine future case.
-- [idea] Favicon quality — why some are missing/low-res, whether we can upscale/generate better ones
+- [done] Favicon fallback (2026-07-08): user prefers a real favicon (even low-res) over the
+  colored monogram letters. `AppIcon` now tries, in order: simple-icons brand SVG → favicon via
+  Google's s2 favicon service (`google.com/s2/favicons?domain=<app.domain>&sz=64`) → monogram
+  (only for entries with no `domain`, i.e. scripts and placeholders). Covers ~23 previously
+  monogrammed apps including VS Code. Caveat: Google's endpoint returns a globe placeholder
+  instead of erroring for icon-less domains, so `onError` only catches network failures.
 - [idea] Self-hosted personal content on user's Synology NAS, with optional per-category auth
 
 ### Blocked on user-provided files

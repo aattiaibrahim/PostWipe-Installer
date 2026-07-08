@@ -45,11 +45,11 @@
           "icon": "gog.ico",
           "domain": "gog.com",
           "kind": "download",
+          "notes": "Verified live 2026-07-08 (200, application/octet-stream).",
           "platforms": {
             "windows": {
               "resolver": { "type": "static", "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe" },
-              "filename": "GOG_Galaxy_2.0.exe",
-              "stale": true
+              "filename": "GOG_Galaxy_2.0.exe"
             }
           }
         },
@@ -75,16 +75,15 @@
           "icon": "battle-net.ico",
           "domain": "battle.net",
           "kind": "download",
+          "notes": "Verified live 2026-07-08 — getInstallerForGame redirects to the current versioned installer on downloader.battle.net for both OSes.",
           "platforms": {
             "windows": {
               "resolver": { "type": "static", "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE" },
-              "filename": "Battle.net-Setup.exe",
-              "stale": true
+              "filename": "Battle.net-Setup.exe"
             },
             "macos": {
               "resolver": { "type": "static", "url": "https://www.battle.net/download/getInstallerForGame?os=mac&gameProgram=BATTLENET_APP&version=LIVE" },
-              "filename": "Battle.net-Setup.zip",
-              "stale": true
+              "filename": "Battle.net-Setup.zip"
             }
           }
         },
@@ -95,11 +94,11 @@
           "icon": "ubisoft-connect.ico",
           "domain": "ubisoft.com",
           "kind": "download",
+          "notes": "The old ubistatic-a.akamaihd.net URL now returns 401 — switched to Ubisoft's static3.cdn.ubi.com launcher installer, verified live 2026-07-08 (200, application/octet-stream).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://ubistatic-a.akamaihd.net/UplayPC/PostGame/UbisoftConnectInstaller.exe" },
-              "filename": "UbisoftConnectInstaller.exe",
-              "stale": true
+              "resolver": { "type": "static", "url": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe" },
+              "filename": "UbisoftConnectInstaller.exe"
             }
           }
         },
@@ -110,11 +109,11 @@
           "icon": "ea-app.ico",
           "domain": "ea.com",
           "kind": "download",
+          "notes": "Verified live 2026-07-08 (200, binary/octet-stream).",
           "platforms": {
             "windows": {
               "resolver": { "type": "static", "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe" },
-              "filename": "EAappInstaller.exe",
-              "stale": true
+              "filename": "EAappInstaller.exe"
             }
           }
         },
@@ -144,9 +143,10 @@
           "name": "TestMem5",
           "bio": "RAM stability tester used for tuning memory timings.",
           "icon": "testmem5.ico",
+          "domain": "github.com",
           "kind": "download",
-          "notes": "Domain looks placeholder — TestMem5 is typically distributed via community forum threads (HWBOT/Overclockers), not a dedicated vendor site. Needs research.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://testmem5.com/download/TestMem5.zip" }, "filename": "TestMem5.zip", "stale": true } }
+          "notes": "testmem5.com/download 404s (was always a placeholder). Switched to the actively maintained CoolCmd/TestMem5 GitHub project (open-source TM5 continuation with releases) — verified live 2026-07-08 via the GitHub API, latest release ships a TestMem5.7z asset.",
+          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "CoolCmd/TestMem5", "asset_pattern": "TestMem5.7z" }, "filename": "TestMem5.7z" } }
         },
         {
           "id": "zentimings",
@@ -158,14 +158,14 @@
           "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "irusanov/ZenTimings", "asset_pattern": "ZenTimings*.zip" }, "filename": "ZenTimings.zip" } }
         },
         {
-          "id": "cinebench-r20",
-          "name": "Cinebench R20",
+          "id": "cinebench-r23",
+          "name": "Cinebench R23",
           "bio": "Maxon's CPU benchmark built on the Cinema 4D render engine.",
-          "icon": "cinebench-r20.ico",
+          "icon": "cinebench-r23.ico",
           "domain": "maxon.net",
           "kind": "download",
-          "notes": "Verify current Maxon Cinebench R20 download URL — Maxon has reorganized their download infrastructure since this was last checked.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://cinebench.com/download/CinebenchR20.zip" }, "filename": "CinebenchR20.zip", "stale": true } }
+          "notes": "Upgraded from R20: Maxon no longer hosts the R20 zip anywhere official, but R23 has a stable official URL at installer.maxon.net — verified live 2026-07-08 (200, application/x-zip-compressed).",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://installer.maxon.net/cinebench/CinebenchR23.zip" }, "filename": "CinebenchR23.zip" } }
         },
         {
           "id": "cpu-z",
@@ -174,8 +174,8 @@
           "icon": "cpu-z.ico",
           "domain": "cpuid.com",
           "kind": "download",
-          "notes": "Pinned version — verify current build at cpuid.com/softwares/cpu-z.html.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://cpuid.com/downloads/cpu-z/cpu-z_2.00-en.exe" }, "filename": "cpu-z.exe", "stale": true } }
+          "notes": "Resolves the latest version dynamically: scrapes the first (newest) '-en.exe' link off cpuid.com's CPU-Z page, then rewrites it against download.cpuid.com, which serves the real binary (the www. path only serves an HTML interstitial). Verified live 2026-07-08.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.cpuid.com/softwares/cpu-z.html", "selector": "a[href*='cpu-z_'][href$='-en.exe']", "attr": "href", "url_regex": "cpu-z_[^/]*-en\\.exe", "base_url": "https://download.cpuid.com/cpu-z/" }, "filename": "cpu-z-installer.exe" } }
         },
         {
           "id": "hwinfo",
@@ -184,8 +184,8 @@
           "icon": "hwinfo.ico",
           "domain": "hwinfo.com",
           "kind": "download",
-          "notes": "Pinned build number — verify current build at hwinfo.com/download.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.hwinfo.com/download/hwi_716.exe" }, "filename": "hwinfo.exe", "stale": true } }
+          "notes": "Resolves the latest version dynamically: hwinfo.com/download has the current 64-bit installer link (files/hwi64_*.exe) in static HTML. Verified live 2026-07-08 (200, application/x-msdownload).",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.hwinfo.com/download/", "selector": "a[href*='files/hwi64_'][href$='.exe']", "attr": "href" }, "filename": "hwinfo-installer.exe" } }
         },
         {
           "id": "hwmonitor",
@@ -194,8 +194,8 @@
           "icon": "hwmonitor.ico",
           "domain": "cpuid.com",
           "kind": "download",
-          "notes": "Pinned version — verify current build at cpuid.com/softwares/hwmonitor.html.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.cpuid.com/downloads/hwmonitor/hwmonitor_1.45.exe" }, "filename": "hwmonitor.exe", "stale": true } }
+          "notes": "Resolves the latest version dynamically: scrapes the first (newest) installer link off cpuid.com's HWMonitor page, then rewrites it against download.cpuid.com, which serves the real binary. Verified live 2026-07-08.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.cpuid.com/softwares/hwmonitor.html", "selector": "a[href*='hwmonitor_'][href$='.exe']", "attr": "href", "url_regex": "hwmonitor_[^/]*\\.exe", "base_url": "https://download.cpuid.com/hwmonitor/" }, "filename": "hwmonitor-installer.exe" } }
         },
         {
           "id": "nvidia-profile-inspector",
@@ -213,8 +213,8 @@
           "icon": "occt.ico",
           "domain": "ocbase.com",
           "kind": "download",
-          "notes": "Verify OCCT still serves a stable, unversioned zip at this path.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.ocbase.com/download/OCCT.zip" }, "filename": "OCCT.zip", "stale": true } }
+          "notes": "Verified live 2026-07-08 — redirects to /download-bin/OCCT.zip and serves application/octet-stream.",
+          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.ocbase.com/download/OCCT.zip" }, "filename": "OCCT.zip" } }
         },
         {
           "id": "prime95",
@@ -241,7 +241,7 @@
           "bio": "GUI front-end for tuning memory timings alongside ZenTimings.",
           "icon": "timing-configurator.ico",
           "kind": "download",
-          "notes": "Vendor/source unclear — needs research to confirm a legitimate current download location.",
+          "notes": "Researched 2026-07-08: timingconfigurator.com is dead (DNS doesn't resolve). This is ASRock's Timing Configurator; the only current hosts are token-gated mirror sites (TechPowerUp etc.) that can't be resolved automatically. Download will fail and fall back to the manual link.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://timingconfigurator.com/download/TimingConfigurator_v4.0.4.zip" }, "filename": "TimingConfigurator.zip", "stale": true } }
         },
         {
@@ -251,7 +251,7 @@
           "icon": "ddu.ico",
           "domain": "wagnardsoft.com",
           "kind": "download",
-          "notes": "Pinned version — check wagnardsoft.com forum download page for the current DDU release.",
+          "notes": "Researched 2026-07-08: wagnardsoft.com keeps DDU's actual download link out of its static HTML entirely (their Drupal 'Download DDU' pages contain no .exe/.zip hrefs), the forum blocks plain HTTP fetches, and guessed direct-URL patterns 404. A future candidate for the hidden-webview resolver, but that can't be live-verified headlessly, so left stale — download falls back to the manual link.",
           "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.wagnardsoft.com/download/DDU_v18.1.0.0.exe" }, "filename": "DDU.exe", "stale": true } }
         }
       ]
@@ -377,8 +377,8 @@
           "icon": "putty.ico",
           "domain": "putty.org",
           "kind": "download",
-          "notes": "Path itself is PuTTY's own stable 'latest' alias, but confirm the resolved filename/version still matches.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.78-installer.msi" }, "filename": "putty-installer.msi", "stale": true } }
+          "notes": "The old URL 404'd: the 'latest/' directory alias updates but the filename inside it is versioned (was pinned to 0.78, current is 0.84+). Now resolves dynamically by scraping the installer link off PuTTY's own latest.html page (static HTML). Verified live 2026-07-08.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html", "selector": "a[href*='w64'][href$='installer.msi']", "attr": "href" }, "filename": "putty-installer.msi" } }
         },
         {
           "id": "powertoys",

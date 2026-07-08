@@ -816,6 +816,18 @@ h3 {
   height: 17px;
 }
 
+.app-icon--favicon {
+  border: 1px solid var(--border);
+  background-color: var(--surface-solid);
+}
+
+.app-icon__favicon-img {
+  width: 20px;
+  height: 20px;
+  /* Favicons are often 16/32px sources — keep upscaling crisp instead of blurry. */
+  image-rendering: -webkit-optimize-contrast;
+}
+
 .app-icon--monogram {
   color: #fff;
   font-size: 0.8rem;

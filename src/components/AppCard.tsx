@@ -136,7 +136,7 @@ export function AppCard({ app, os }: AppCardProps) {
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
       <div className="app-row">
-        <AppIcon appId={app.id} name={app.name} className="app-row__icon" />
+        <AppIcon appId={app.id} name={app.name} domain={app.domain} className="app-row__icon" />
         <div className="app-row__body">
           <div className="app-row__name-line">
             <span className="app-row__name">{app.name}</span>
