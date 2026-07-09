@@ -36,6 +36,23 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 ## Known issues / stale catalog entries
 
+- **Second sweep 2026-07-08 (after real-app failures) — the first sweep had two blind spots.**
+  User clicked Download in the built app and got five failures the first sweep missed:
+  1. **Verification-client mismatch**: Battle.net + HWiNFO 403'd in the app but passed my checks,
+     because the checks used `curl -A "Mozilla/5.0..."` while the app's *downloader* sent no
+     User-Agent at all (only the page-scraping resolver had one). Fixed by setting
+     `BROWSER_USER_AGENT` on the download client in `downloader/job.rs`. Lesson: verify with the
+     exact client configuration the app uses.
+  2. **Sweep scope**: Prime95, NetLimiter, and Brave had rotted URLs but were never `stale`-flagged,
+     so the flagged-only sweep skipped them. Fixed: Prime95 + NetLimiter now scrape their own
+     download pages (`html` resolver); Brave moved to its official GitHub releases (both OSes) since
+     referrals.brave.com stopped responding. A follow-up full sweep also caught VS Code's macOS URL
+     (`os=darwin` slug no longer exists → canonical `update.code.visualstudio.com/latest/darwin-universal/stable`).
+  Permanent guard: `full_catalog_sweep_every_entry_resolves_and_downloads` (`#[ignore]`d, in
+  `resolver/mod.rs`) resolves *every* catalog entry through the real resolvers and fetches each
+  result with the downloader's own client config. **Run before every release:**
+  `cargo test --lib -- --ignored full_catalog_sweep`. Note: back-to-back runs can trip vendor rate
+  limits (teamspeak's file host 429s on quick repeats) — a 429 on rerun is usually that, not rot.
 - **Full stale sweep done 2026-07-08 — zero stale entries remain.** Every flagged entry was
   live-verified (HEAD/GET with a browser UA, then network-hitting `resolver::live_tests` for the
   scraper-based ones). See per-entry `notes` for what changed. Highlights:

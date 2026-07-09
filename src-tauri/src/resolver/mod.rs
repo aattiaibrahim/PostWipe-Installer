@@ -263,6 +263,70 @@ mod live_tests {
         assert!(response.status().is_success(), "unexpected status: {}", response.status());
     }
 
+    /// Resolves EVERY catalog entry through the real resolver code, then fetches each
+    /// resolved URL with the same client configuration the downloader uses (same
+    /// User-Agent — a curl-with-flags check once passed while the app 403'd, precisely
+    /// because the verification client didn't match the app's). `#[ignore]`d because it
+    /// hammers ~40 vendor sites; run manually before releases:
+    /// `cargo test --lib -- --ignored full_catalog_sweep`
+    #[tokio::test]
+    #[ignore = "hits every vendor site in the catalog — run manually"]
+    async fn full_catalog_sweep_every_entry_resolves_and_downloads() {
+        let catalog = crate::catalog::loader::load_catalog();
+        let client = reqwest::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(15))
+            .user_agent(html_resolver::BROWSER_USER_AGENT)
+            .build()
+            .unwrap();
+
+        let mut failures: Vec<String> = Vec::new();
+
+        for category in &catalog.categories {
+            for app in &category.apps {
+                for (os, platform) in &app.platforms {
+                    let Some(spec) = &platform.resolver else { continue };
+                    let label = format!("{}/{:?}", app.id, os);
+
+                    let resolved = match spec {
+                        ResolverSpec::Static { .. } => static_resolver::resolve(spec),
+                        ResolverSpec::GithubRelease { .. } => github_release_resolver::resolve(spec).await,
+                        ResolverSpec::Html { .. } => html_resolver::resolve(spec).await,
+                        ResolverSpec::HtmlRegex { .. } => html_regex_resolver::resolve(spec).await,
+                        ResolverSpec::Webview { .. } => {
+                            failures.push(format!("{label}: webview specs can't be swept headlessly"));
+                            continue;
+                        }
+                    };
+                    let url = match resolved {
+                        Ok(url) => url,
+                        Err(err) => {
+                            failures.push(format!("{label}: resolve failed: {err}"));
+                            continue;
+                        }
+                    };
+
+                    // GET (not HEAD — some hosts reject HEAD) but drop the body unread.
+                    match client.get(&url).send().await {
+                        Ok(response) if response.status().is_success() => {
+                            let content_type = response
+                                .headers()
+                                .get("content-type")
+                                .and_then(|v| v.to_str().ok())
+                                .unwrap_or("");
+                            if content_type.contains("text/html") {
+                                failures.push(format!("{label}: {url} served text/html, not a download"));
+                            }
+                        }
+                        Ok(response) => failures.push(format!("{label}: {url} returned {}", response.status())),
+                        Err(err) => failures.push(format!("{label}: {url} request failed: {err}")),
+                    }
+                }
+            }
+        }
+
+        assert!(failures.is_empty(), "catalog sweep failures:\n{}", failures.join("\n"));
+    }
+
     #[tokio::test]
     async fn html_resolves_putty_latest_installer() {
         // PuTTY's 'latest/' directory alias stays current but the .msi filename inside it is

@@ -223,7 +223,8 @@
           "icon": "prime95.ico",
           "domain": "mersenne.org",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.mersenne.org/download/prime95.zip" }, "filename": "prime95.zip" } }
+          "notes": "The old unversioned prime95.zip URL 404s now. Resolves dynamically by scraping the current win64 build link off mersenne.org's download page ([href$='.win64.zip'] deliberately excludes the .service.zip variant). Verified live 2026-07-08.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.mersenne.org/download/", "selector": "a[href$='.win64.zip']", "attr": "href" }, "filename": "prime95.zip" } }
         },
         {
           "id": "timer-resolution",
@@ -335,9 +336,10 @@
           "icon": "vscode.ico",
           "domain": "code.visualstudio.com",
           "kind": "download",
+          "notes": "macOS: the old os=darwin slug 404s (Microsoft split it into universal/arm64/x64 builds) — switched to the canonical update.code.visualstudio.com latest endpoint for the universal build. Verified live 2026-07-08.",
           "platforms": {
             "windows": { "resolver": { "type": "static", "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" }, "filename": "VSCodeUserSetup-x64.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://code.visualstudio.com/sha/download?build=stable&os=darwin" }, "filename": "VSCode-darwin.zip" }
+            "macos": { "resolver": { "type": "static", "url": "https://update.code.visualstudio.com/latest/darwin-universal/stable" }, "filename": "VSCode-darwin-universal.zip" }
           }
         },
         {
@@ -360,7 +362,8 @@
           "icon": "netlimiter.ico",
           "domain": "netlimiter.com",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.netlimiter.com/download/nl5setup.exe" }, "filename": "nl5setup.exe" } }
+          "notes": "The old unversioned nl5setup.exe URL 404s now (their file host serves versioned filenames like netlimiter-5.3.26.0.exe). Resolves dynamically by scraping the current installer link off netlimiter.com's download page. Verified live 2026-07-08.",
+          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.netlimiter.com/download", "selector": "a[href*='download.netlimiter.com'][href$='.exe']", "attr": "href" }, "filename": "netlimiter-setup.exe" } }
         },
         {
           "id": "notepad-plus-plus",
@@ -421,9 +424,10 @@
           "icon": "brave.ico",
           "domain": "brave.com",
           "kind": "download",
+          "notes": "referrals.brave.com stopped responding (connection errors in the wild), so both OSes now pull from Brave's official GitHub releases instead — verified live 2026-07-08 via the GitHub API (BraveBrowserSetup.exe / Brave-Browser-universal.dmg on the latest release).",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://referrals.brave.com/latest/Brave-Browser-Setup.exe" }, "filename": "Brave-Browser-Setup.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://referrals.brave.com/latest/Brave-Browser.dmg" }, "filename": "Brave-Browser.dmg" }
+            "windows": { "resolver": { "type": "github_release", "repo": "brave/brave-browser", "asset_pattern": "BraveBrowserSetup.exe" }, "filename": "BraveBrowserSetup.exe" },
+            "macos": { "resolver": { "type": "github_release", "repo": "brave/brave-browser", "asset_pattern": "Brave-Browser-universal.dmg" }, "filename": "Brave-Browser-universal.dmg" }
           }
         },
         {
