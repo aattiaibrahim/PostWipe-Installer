@@ -7,8 +7,8 @@ import {
   generateScript,
   findGeneratedScript,
   isScriptPinned,
-  pinScriptToStartup,
-  unpinScriptFromStartup,
+  pinScriptToStartMenu,
+  unpinScriptFromStartMenu,
 } from "../lib/tauriCommands";
 import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
@@ -110,10 +110,10 @@ export function AppCard({ app, os }: AppCardProps) {
     setPinError(null);
     try {
       if (pinned) {
-        await unpinScriptFromStartup(scriptId);
+        await unpinScriptFromStartMenu(scriptId);
         setPinned(false);
       } else if (generatedPath) {
-        await pinScriptToStartup(scriptId, generatedPath);
+        await pinScriptToStartMenu(scriptId, generatedPath);
         setPinned(true);
       }
     } catch (err) {
@@ -174,9 +174,13 @@ export function AppCard({ app, os }: AppCardProps) {
                 className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}
                 disabled={pinBusy || (!pinned && !generatedPath)}
                 onClick={handleTogglePin}
-                title={!pinned && !generatedPath ? "Generate the script first" : undefined}
+                title={
+                  !pinned && !generatedPath
+                    ? "Generate the script first"
+                    : "Adds the script to your Start menu — it only runs when you click it"
+                }
               >
-                {pinned ? "✓ Pinned" : "Pin to Startup"}
+                {pinned ? "✓ Pinned" : "Pin to Start"}
               </button>
             )}
             {isPlaceholder ? (

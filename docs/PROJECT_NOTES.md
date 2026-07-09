@@ -241,17 +241,19 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   itself) shown by default; a chevron toggle expands a per-row panel with a website link and the
   old verification `notes` text (moved out of the default view, since that was implementation
   detail, not a description of the app).
-- [done] Script generation: "Pin to Startup" action (`src-tauri/src/commands/scripts.rs`:
-  `is_script_pinned`/`pin_script_to_startup`/`unpin_script_from_startup`). Writes a `.bat` wrapper
-  into the Windows Startup folder that calls
-  `powershell -ExecutionPolicy Bypass -File "<absolute path>"`. Button is greyed out until the
-  script has been generated this session; re-checks the script file still exists on disk at
-  pin-time and fails with a clear error if it was deleted (the known edge case flagged earlier) —
-  it does not silently pin a broken shortcut. Toggles to a green "✓ Pinned" state; pin state is
-  re-checked from disk on mount so it survives app restarts. The user's "nothing happens after I
-  generate" report traced to a UI-feedback problem, not a broken command: success was only a small
-  line of text easy to miss, not a functional bug — see the per-row status redesign below, which
-  fixes the discoverability rather than any actual logic in `generate_script`/`pin_script_to_startup`.
+- [done, then REWORKED 2026-07-08] Script generation: "Pin to Start" action
+  (`src-tauri/src/commands/scripts.rs`: `is_script_pinned`/`pin_script_to_start_menu`/
+  `unpin_script_from_start_menu`). **The first version pinned to the wrong place**: it wrote the
+  `.bat` wrapper into `Start Menu\Programs\Startup`, whose contents auto-run at every login — the
+  user got a PowerShell/UAC prompt on every boot (the scripts self-elevate) and reported it. What
+  he wanted was the Start *menu*. Now writes `<menu_label>.bat` into `Start Menu\Programs\PostWipe\`
+  (shows in Start menu all-apps/search, runs only when clicked; folder is removed again when the
+  last pin is unpinned). `cleanup_legacy_startup_pins()` runs at app launch and deletes any
+  `PostWipe-*.bat` the old version left in the Startup folder, so affected machines heal on next
+  launch (the user's machine was also cleaned manually). Button is greyed out until the script has
+  been generated (this session or found on disk from a previous one); re-checks the script file
+  still exists at pin-time; toggles to a green "✓ Pinned" state; pin state re-checked from disk on
+  mount. Tests exercise the real Start menu path and assert pins can't land in the Startup folder.
 - [done] Per-row download/script status moved from a separate global `DownloadQueuePanel` (now
   deleted, fully redundant) to inline UI next to each app's own action button:
   `.app-row__action-col` holds the button row (Pin button if a script, action/Cancel button, a

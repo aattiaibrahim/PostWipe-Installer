@@ -40,10 +40,10 @@ export function isScriptPinned(scriptId: string): Promise<boolean> {
   return invoke("is_script_pinned", { scriptId });
 }
 
-export function pinScriptToStartup(scriptId: string, scriptPath: string): Promise<void> {
-  return invoke("pin_script_to_startup", { scriptId, scriptPath });
+export function pinScriptToStartMenu(scriptId: string, scriptPath: string): Promise<void> {
+  return invoke("pin_script_to_start_menu", { scriptId, scriptPath });
 }
 
-export function unpinScriptFromStartup(scriptId: string): Promise<void> {
-  return invoke("unpin_script_from_startup", { scriptId });
+export function unpinScriptFromStartMenu(scriptId: string): Promise<void> {
+  return invoke("unpin_script_from_start_menu", { scriptId });
 }
