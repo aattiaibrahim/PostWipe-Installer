@@ -1,27 +1,34 @@
 import { create } from "zustand";
+import { SPECIALS_WORKER_URL } from "../lib/specialsConfig";
 
 export const SPECIALS_CATEGORY_ID = "specials";
-
-// Placeholder gate while hosting (NAS/Mega) is figured out. The password lives in a
-// public repo, so this is a curtain, not a lock — real auth comes with the real hosting.
-const SPECIALS_PASSWORD = "aVoid";
 
 interface SpecialsState {
   unlocked: boolean;
   /** Transient: true for a moment right after a successful unlock, to play the burst glyph. */
   justUnlocked: boolean;
-  tryUnlock: (password: string) => boolean;
+  /** The validated key, kept in memory for the session so downloads can authenticate. */
+  sessionKey: string | null;
+  /** Validates the key against the Worker; unlocks + stores it on success. */
+  tryUnlock: (key: string) => Promise<boolean>;
   clearJustUnlocked: () => void;
 }
 
-// Deliberately not persisted — relocks every app launch.
+// Not persisted — relocks every launch, and the key never touches disk.
 export const useSpecialsStore = create<SpecialsState>((set) => ({
   unlocked: false,
   justUnlocked: false,
-  tryUnlock: (password) => {
-    const ok = password === SPECIALS_PASSWORD;
-    if (ok) set({ unlocked: true, justUnlocked: true });
-    return ok;
+  sessionKey: null,
+  tryUnlock: async (key) => {
+    try {
+      const res = await fetch(`${SPECIALS_WORKER_URL}/validate?key=${encodeURIComponent(key)}`);
+      if (!res.ok) return false;
+      set({ unlocked: true, justUnlocked: true, sessionKey: key });
+      return true;
+    } catch {
+      // Network failure (offline, Worker down) — treat as a failed unlock.
+      return false;
+    }
   },
   clearJustUnlocked: () => set({ justUnlocked: false }),
 }));

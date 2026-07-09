@@ -34,6 +34,24 @@ export async function pathsExist(paths: string[]): Promise<boolean[]> {
   return invoke("paths_exist", { paths });
 }
 
+export function startSpecialsDownload(
+  itemId: string,
+  name: string,
+  url: string,
+  filename: string,
+): Promise<{ jobId: string; destPath: string }> {
+  return invoke("start_specials_download", { itemId, name, url, filename });
+}
+
+export function installSpecialsItem(archivePath: string, installType: string): Promise<string> {
+  return invoke("install_specials_item", { archivePath, installType });
+}
+
+export async function specialsItemInstalled(filename: string): Promise<boolean> {
+  if (!isTauri) return false;
+  return invoke("specials_item_installed", { filename });
+}
+
 export function generateScript(scriptId: string): Promise<string> {
   return invoke("generate_script", { scriptId });
 }

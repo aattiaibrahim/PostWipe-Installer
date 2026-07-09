@@ -69,7 +69,11 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
           >
             <CategoryIcon categoryId={category.id} className="sidebar__icon" />
             <span className="sidebar__label">{category.name}</span>
-            {locked ? <LockGlyph /> : <span className="sidebar__count">{count}</span>}
+            {locked ? (
+              <LockGlyph />
+            ) : category.id === SPECIALS_CATEGORY_ID ? null : (
+              <span className="sidebar__count">{count}</span>
+            )}
           </button>
         );
       })}

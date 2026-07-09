@@ -7,9 +7,14 @@ export function SpecialsLock() {
   const tryUnlock = useSpecialsStore((s) => s.tryUnlock);
   const [value, setValue] = useState("");
   const [shakeKey, setShakeKey] = useState(0);
+  const [checking, setChecking] = useState(false);
 
-  function submit() {
-    if (!tryUnlock(value)) {
+  async function submit() {
+    if (checking || !value) return;
+    setChecking(true);
+    const ok = await tryUnlock(value);
+    setChecking(false);
+    if (!ok) {
       setValue("");
       setShakeKey((k) => k + 1);
     }
@@ -76,13 +81,14 @@ export function SpecialsLock() {
           placeholder="Password"
           value={value}
           autoFocus
+          disabled={checking}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") submit();
           }}
         />
-        <button className="specials-lock__submit" onClick={submit}>
-          Enter
+        <button className="specials-lock__submit" onClick={submit} disabled={checking}>
+          {checking ? "Checking…" : "Enter"}
         </button>
       </motion.div>
     </div>

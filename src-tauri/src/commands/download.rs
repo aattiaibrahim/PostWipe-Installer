@@ -1,9 +1,19 @@
-use crate::catalog::{loader, model::Os};
+use crate::catalog::{
+    loader,
+    model::{Os, ResolverSpec},
+};
 use crate::downloader::manager::ActiveDownload;
 use crate::downloader::DownloadManager;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_opener::OpenerExt;
+
+/// Specials files land in their own subfolder so they don't mix with app installers.
+pub fn specials_downloads_dir(app_handle: &AppHandle) -> Result<PathBuf, String> {
+    let dir = postwipe_downloads_dir(app_handle)?.join("Specials");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir)
+}
 
 /// Everything the app writes (downloads and generated scripts) lands in its own
 /// `Downloads\PostWipeDownloads` subfolder instead of littering Downloads itself.
@@ -67,4 +77,32 @@ pub fn open_downloads_folder(app_handle: AppHandle) -> Result<(), String> {
 #[tauri::command]
 pub fn paths_exist(paths: Vec<String>) -> Vec<bool> {
     paths.iter().map(|p| std::path::Path::new(p).exists()).collect()
+}
+
+/// Downloads a Specials item through the Worker (the frontend builds `url` with the
+/// session key already in it) into `PostWipeDownloads/Specials`. Returns the job id and
+/// the destination path so the caller can offer Install once it completes.
+#[tauri::command]
+pub fn start_specials_download(
+    app_handle: AppHandle,
+    manager: State<'_, DownloadManager>,
+    item_id: String,
+    name: String,
+    url: String,
+    filename: String,
+) -> Result<SpecialsDownloadHandle, String> {
+    let dest = specials_downloads_dir(&app_handle)?.join(&filename);
+    let spec = ResolverSpec::Static { url };
+    let job_id = manager.start_download(app_handle.clone(), item_id, name, spec, dest.clone());
+    Ok(SpecialsDownloadHandle {
+        job_id,
+        dest_path: dest.to_string_lossy().to_string(),
+    })
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpecialsDownloadHandle {
+    pub job_id: String,
+    pub dest_path: String,
 }

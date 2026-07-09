@@ -31,6 +31,20 @@ export default {
 
     if (url.pathname === "/validate") return cors(json({ ok: true }));
 
+    // Enumerate objects (optionally under ?prefix=). Lets the app show what's actually
+    // available and lets setup confirm uploads landed. Gated by the key like everything else.
+    if (url.pathname === "/list") {
+      const prefix = url.searchParams.get("prefix") ?? undefined;
+      const listing = await env.SPECIALS_BUCKET.list({ prefix, limit: 1000 });
+      return cors(
+        json({
+          ok: true,
+          truncated: listing.truncated,
+          objects: listing.objects.map((o) => ({ key: o.key, size: o.size })),
+        }),
+      );
+    }
+
     if (url.pathname.startsWith("/file/")) {
       const objectKey = decodeURIComponent(url.pathname.slice("/file/".length));
       if (!objectKey || objectKey.includes("..")) return cors(json({ ok: false, error: "bad-path" }, 400));

@@ -160,6 +160,37 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Specials vault — WIRED (unlock + dynamic listing + download + install) — 2026-07-09
+Deployed and wired end-to-end. Worker lives at
+`https://postwipe-specials-gate.andrewattiaibrahim.workers.dev` (URL constant in
+`src/lib/specialsConfig.ts`). Bucket `postwipe-specials`; files under `Tweaks/<Category>/…`
+(user pre-zipped every cursor pack / font / sound set — 26 cursors, 6 fonts, Sennheiser EQ,
+Steam `.rar`s, sounds, PSD, deprecated themes). Key is a Worker secret the user set; never in
+app/repo.
+- **Unlock is real** (`specialsStore.tryUnlock`): fetches `/validate?key=…` against the Worker;
+  on 200 stores the key in memory (`sessionKey`, session-only, never persisted) and unlocks.
+  Verified live: a wrong key gets a 401 and the lock shakes/clears.
+- **Content is dynamic** (`specialsContentStore` + `SpecialsContent.tsx`): after unlock, fetches
+  `/list?key=…`, groups objects by the `Tweaks/<folder>/` segment, renders sub-sections per
+  `SPECIALS_CATEGORIES` metadata. Anything the user adds to R2 shows up automatically — no catalog
+  edits. The old placeholder Specials entries are no longer rendered (kept in catalog.json only so
+  the sidebar still shows the locked category; excluded from All/search).
+- **Download** (`start_specials_download` Rust cmd): frontend builds
+  `/file/<encoded path>?key=<sessionKey>` and the manager streams it to
+  `PostWipeDownloads/Specials/`.
+- **Install** (`install_specials_item` Rust cmd, greyed until downloaded): `cursor` → unzip via
+  `Expand-Archive`, find `install.inf`, apply with
+  `rundll32 setupapi.dll,InstallHinfSection DefaultInstall 132` (right-click-Install equivalent;
+  writes HKCU, usually no admin — if a pack needs elevation or has multiple `.inf` variants, it
+  opens the folder and tells the user); `font`/`sound` → unzip + open folder for the user to apply;
+  `none` (PSD/Steam/EQ/themes) → download-only, no Install button.
+- **Not yet verified on native**: the actual download+install can't run in the browser preview
+  (needs the Tauri runtime + real Windows), so the user does that smoke test with their key. Also
+  deferred: audio previews for Windows Sounds, font previews, cursor-pack preview images (bucket
+  has zips only; the MEGA previews weren't uploaded separately). Show "no preview available" until
+  then. `specials-gate/worker.js` keeps a gated `/list` (the temporary ungated `/setup-list` used
+  once to enumerate paths has been removed).
+
 ### Specials content hosting — DECIDED: Cloudflare R2 + Worker gate — 2026-07-09
 Background: the user shared the files as a **MEGA folder link**, which the app can't fetch (MEGA is
 E2E-encrypted; no plain HTTP GET — needs MEGA's crypto protocol; `megajs` was used only to

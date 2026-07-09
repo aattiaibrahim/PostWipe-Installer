@@ -6,6 +6,7 @@ import { ALL_CATEGORY_ID } from "../lib/constants";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { SpecialsLock } from "./SpecialsLock";
 import { SpecialsUnlockBurst } from "./SpecialsUnlockBurst";
+import { SpecialsContent } from "./SpecialsContent";
 
 interface CategoryPanelProps {
   catalog: Catalog;
@@ -56,23 +57,23 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
 
-  // The password curtain: selecting Specials while locked shows the gate instead of content.
-  if (!isSearching && selectedCategoryId === SPECIALS_CATEGORY_ID && !specialsUnlocked) {
+  // Specials selected directly: the gate if locked, the live vault contents if unlocked.
+  if (!isSearching && selectedCategoryId === SPECIALS_CATEGORY_ID) {
     return (
       <div className="category-panel">
-        <SpecialsLock />
+        {justUnlocked && <SpecialsUnlockBurst />}
+        {specialsUnlocked ? <SpecialsContent /> : <SpecialsLock />}
       </div>
     );
   }
 
+  // Specials content is dynamic (from the Worker), never rendered as normal catalog rows,
+  // so its placeholder entries stay out of the All view and search entirely.
   const categories = (
     isSearching || selectedCategoryId === ALL_CATEGORY_ID
       ? catalog.categories
       : catalog.categories.filter((c) => c.id === selectedCategoryId)
-  ).filter(
-    // Locked Specials content must not leak through search or the All view.
-    (c) => c.id !== SPECIALS_CATEGORY_ID || specialsUnlocked,
-  );
+  ).filter((c) => c.id !== SPECIALS_CATEGORY_ID);
 
   const showVendorToggle = !isSearching && selectedCategoryId === OVERCLOCKING_CATEGORY_ID;
 
