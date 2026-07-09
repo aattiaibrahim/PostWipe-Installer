@@ -10,7 +10,7 @@ import {
   pinScriptToStartMenu,
   unpinScriptFromStartMenu,
 } from "../lib/tauriCommands";
-import { revealItemInDir, openUrl } from "@tauri-apps/plugin-opener";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { AppIcon } from "./AppIcon";
 
@@ -71,7 +71,6 @@ export function AppCard({ app, os }: AppCardProps) {
   const jobStatus = relevantJob?.status;
   const isDownloadingJob = !isScript && !!jobStatus && ACTIVE_STATUSES.has(jobStatus);
   const isCompleted = isScript ? !!generatedPath && !error : jobStatus === "completed";
-  const revealPath = isScript ? generatedPath : (relevantJob?.destPath ?? null);
 
   const failureMessage = error ?? (jobStatus === "failed" ? (relevantJob?.error ?? null) : null);
   const showFallback = !isScript && !isPlaceholder && !!failureMessage;
@@ -120,7 +119,15 @@ export function AppCard({ app, os }: AppCardProps) {
     }
   }
 
-  const showStatusArea = (!isDownloadingJob && !!failureMessage) || !!pinError || (isCompleted && !!revealPath);
+  const showStatusArea = (!isDownloadingJob && !!failureMessage) || !!pinError;
+
+  const statusClass = isDownloadingJob
+    ? " app-row--downloading"
+    : failureMessage
+      ? " app-row--failed"
+      : isCompleted
+        ? " app-row--completed"
+        : "";
 
   return (
     <motion.div
@@ -131,7 +138,8 @@ export function AppCard({ app, os }: AppCardProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <div className="app-row">
+      <div className={`app-row${statusClass}`}>
+        <span className="app-row__status-glow" aria-hidden="true" />
         <AppIcon appId={app.id} name={app.name} domain={app.domain} className="app-row__icon" />
         <div className="app-row__body">
           <div className="app-row__name-line">
@@ -193,21 +201,11 @@ export function AppCard({ app, os }: AppCardProps) {
                 {actionLabel}
               </button>
             )}
-            {isCompleted && (
-              <span className="app-row__complete-check" title="Done">
-                ✓
-              </span>
-            )}
           </div>
           {showStatusArea && (
             <div className="app-row__action-status">
               {!isDownloadingJob && failureMessage && <span className="app-row__error">{failureMessage}</span>}
               {!isDownloadingJob && pinError && <span className="app-row__error">{pinError}</span>}
-              {!isDownloadingJob && !failureMessage && isCompleted && revealPath && (
-                <button className="app-row__link-btn" onClick={() => revealItemInDir(revealPath)}>
-                  Reveal in folder
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -224,9 +222,12 @@ export function AppCard({ app, os }: AppCardProps) {
           >
             <div className="app-row__details">
               {app.description && <p className="app-row__details-notes">{app.description}</p>}
-              {app.domain && (
-                <button className="app-row__link-btn" onClick={() => openUrl(`https://${app.domain}`)}>
-                  Visit {app.domain} ↗
+              {(app.website || app.domain) && (
+                <button
+                  className="app-row__link-btn"
+                  onClick={() => openUrl(app.website ?? `https://${app.domain}`)}
+                >
+                  Visit {app.website ? app.website.replace(/^https?:\/\//, "") : app.domain} ↗
                 </button>
               )}
             </div>

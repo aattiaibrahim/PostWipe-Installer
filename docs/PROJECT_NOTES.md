@@ -127,6 +127,70 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Second big batch (2026-07-09)
+- [done] Scripts are now self-elevating **`.bat`** files, not `.ps1` (double-clicking a `.ps1` opens
+  Notepad instead of running it — that's why generated scripts looked broken). Templates check
+  `net session` for admin and re-launch themselves elevated via
+  `powershell Start-Process -Verb RunAs`.
+- [done] **Pin to Start finally works**: it now creates a real Start-menu **`.lnk` shortcut** (via
+  `WScript.Shell` COM through a hidden PowerShell call), not a raw `.bat` dropped in the Programs
+  folder. Windows' Start-menu search/all-apps index reliably picks up `.lnk` files but often never
+  shows a bare `.bat` — that was the whole "it does nothing" bug. `cleanup_legacy_startup_pins()`
+  now also removes leftover `.bat` pins from the earlier attempt. Test asserts a real Shell-Link
+  header (`0x4C` first byte) is written, not a text file.
+- [done] Row status = ambient **background glow** on the app row (`.app-row__status-glow`), replacing
+  the green checkmark + "Reveal in folder" link: yellow blink while downloading, soft green breathe
+  when complete, red flash on failure. Reveal-in-folder moved fully into the Downloaded panel.
+- [done] Blobs now have **autonomous sway** — each slowly squishes on out-of-phase X/Y scale
+  oscillation (`morphSpeed` per blob in `AmbientBackground.tsx`), independent of cursor/scroll.
+- [done] **Sticky topbar**: the OS picker / search / Downloaded / Open-Folder row is
+  `position: sticky` and stays pinned while the app list scrolls; the sidebar's sticky `top`
+  bumped to 76px to sit below it.
+- [done] Battlestate Games Launcher added to Gaming (`launcher.escapefromtarkov.com/launcher/download`
+  302s to the current `BsgLauncher.exe` on eft-store.com — verified live; the `prod.` subdomain
+  returns a 403 JSON body, don't use it).
+- [done] Overclocking category gets an **All/Intel/AMD lightswitch** (new `vendor` field, values
+  `intel`/`amd`; absent = works on both). ZenTimings + ASRock Timing Configurator are `amd`; Intel
+  view hides them (10 vs 12). New `Vendor` enum in the Rust model + TS type.
+- [done] New `website` field so GitHub-hosted apps link to their actual repo instead of bare
+  `github.com` (TestMem5, ZenTimings, NVIDIA Profile Inspector, Timer Resolution, NanaZip). The
+  "Visit" link prefers `website` over `domain`.
+- [done] Windows Themes added to Specials as a **deprecated** placeholder entry (the Paranoid
+  Android `.msstyles` pack only worked on Windows 10).
+- [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
+  correct Specials password (`justUnlocked` transient flag in `specialsStore`).
+
+### BLOCKER — Specials content hosting (MEGA can't be fetched by the app) — 2026-07-09
+The user shared the real files as a **MEGA folder link**
+(`mega.nz/folder/wqgRgKhB#...`) and asked to build the cursor-pack / fonts / PSD / Steam-profile /
+Windows-sounds install flows. **The app cannot download from a MEGA folder link.** MEGA is
+end-to-end encrypted: you can't `curl`/HTTP-GET a file out of it — you need MEGA's own protocol
+(fetch metadata via their API, download the encrypted blob, AES-decrypt with the folder key). The
+`megajs` Node library does this and was used to *traverse* the folder for planning (see the
+scratchpad scripts + `docs/MEGA_CONTENTS.md`), but the Tauri app's resolvers are HTTP-only
+(`static`/`github_release`/`html`/`html_regex`/`webview`) — none speak MEGA. So the Specials
+**content** (not the UI) is blocked on a hosting decision. Options put to the user:
+  1. Re-host on the Synology **NAS** with direct HTTP URLs → existing `static` resolver just works.
+  2. Bundle the small stuff **into the app** (cursor packs, fonts, sounds are KB–few MB each;
+     total maybe manageable) and keep only the big items (PSD 50MB, Steam `.rar`s ~13MB) remote.
+  3. Add a **`mega` resolver** in Rust (port the crypto). Heaviest/most fragile; not recommended
+     for a first pass.
+Until one is chosen, do NOT scaffold the cursor/font/sound install UI against unreachable files —
+matches the earlier "don't build features whose content is coming later" feedback. The install
+*mechanics* worth remembering once files land: cursor packs ship an `install.inf` (right-click →
+Install sets the scheme, may need elevation — leave that to the user); fonts install by copying
+`.ttf` to the Fonts folder (or the shell "Install" verb); Windows sounds are `.wav` sets applied
+via a `.theme`/registry sound-scheme, plausibly a generated `.bat`; Steam profiles are `.rar`
+artwork/showcase packs (offer the `.rar` + a short how-to, previews are `.gif`).
+
+### MEGA folder contents (traversed 2026-07-09, for when hosting is settled)
+See `docs/MEGA_CONTENTS.md` for the full tree. Top level under `PostWipeInstaller/`: **Cursors/**
+(~26 packs, most with `install.inf` + `x1`/`x2` PNG cursor images; a few have preview images,
+many don't — show "no preview available"), **Fonts/** (5 `.zip` + one loose `.ttf`), **PSD'S/**
+(one 50MB `.psd`), **Audio & EQ Profiles/Sennheiser 650/**, **Steam Profiles/** (3 `.rar` + `.gif`
+previews + `.txt` instructions per showcase), **Windows Sounds/** (Anime + Linux Ubuntu `.wav`
+sets), **Windows Themes/Paranoid Android/** (Win10-only `.msstyles`, deprecated).
+
 ### Big batch (2026-07-09)
 - [done] All downloads + generated scripts now land in `Downloads\PostWipeDownloads\`
   (`postwipe_downloads_dir()` in `commands/download.rs`, created on demand); "Open Downloads

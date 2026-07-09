@@ -46,34 +46,50 @@ fn pin_dir() -> Result<PathBuf, String> {
     Ok(start_menu_programs_dir()?.join("PostWipe"))
 }
 
-fn pin_bat_path(script_id: &str) -> Result<PathBuf, String> {
+/// Pins are `.lnk` shortcuts, not raw `.bat` files: the Start menu's all-apps list and
+/// search index shortcuts reliably, but often never show a bare `.bat` dropped into the
+/// Programs folder — which is why the previous version looked like it "did nothing".
+fn pin_lnk_path(script_id: &str) -> Result<PathBuf, String> {
     let spec = generator::find(script_id).ok_or_else(|| format!("Unknown script: {script_id}"))?;
-    Ok(pin_dir()?.join(format!("{}.bat", spec.menu_label)))
+    Ok(pin_dir()?.join(format!("{}.lnk", spec.menu_label)))
 }
 
-/// Removes any `PostWipe-*.bat` the old, misconceived version of this feature left in the
-/// auto-run Startup folder. Called once at app launch so affected machines heal themselves.
+/// Removes leftovers from the feature's earlier versions: `PostWipe-*.bat` in the auto-run
+/// Startup folder (v1 pinned there by mistake), and raw `.bat` pins in the Start menu's
+/// PostWipe folder (v2, which Start menu search never indexed). Called once at app launch.
 pub fn cleanup_legacy_startup_pins() {
     let Ok(programs) = start_menu_programs_dir() else { return };
-    let Ok(entries) = std::fs::read_dir(programs.join("Startup")) else { return };
-    for entry in entries.flatten() {
-        let name = entry.file_name();
-        let name = name.to_string_lossy();
-        if name.starts_with("PostWipe-") && name.ends_with(".bat") {
-            let _ = std::fs::remove_file(entry.path());
+    if let Ok(entries) = std::fs::read_dir(programs.join("Startup")) {
+        for entry in entries.flatten() {
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if name.starts_with("PostWipe-") && name.ends_with(".bat") {
+                let _ = std::fs::remove_file(entry.path());
+            }
+        }
+    }
+    if let Ok(entries) = std::fs::read_dir(programs.join("PostWipe")) {
+        for entry in entries.flatten() {
+            if entry.file_name().to_string_lossy().ends_with(".bat") {
+                let _ = std::fs::remove_file(entry.path());
+            }
         }
     }
 }
 
 #[tauri::command]
 pub fn is_script_pinned(script_id: String) -> Result<bool, String> {
-    Ok(pin_bat_path(&script_id)?.exists())
+    Ok(pin_lnk_path(&script_id)?.exists())
 }
 
-/// Writes a small `.bat` wrapper into the Start menu's PostWipe folder that invokes the
-/// already-generated script via PowerShell when clicked. Re-checks the script still exists
-/// on disk at pin time — if the user deleted it from Downloads after generating it, this
-/// fails with a clear error instead of pinning a broken Start menu entry.
+/// PowerShell single-quoted string literal: quotes are escaped by doubling them.
+fn ps_quote(s: &str) -> String {
+    format!("'{}'", s.replace('\'', "''"))
+}
+
+/// Creates a Start menu shortcut (`.lnk`) pointing at the already-generated script.
+/// Re-checks the script still exists on disk at pin time — if the user deleted it after
+/// generating it, this fails with a clear error instead of pinning a dead shortcut.
 #[tauri::command]
 pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Result<(), String> {
     if !std::path::Path::new(&script_path).exists() {
@@ -81,20 +97,49 @@ pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Resul
             "{script_path} no longer exists — generate the script again before pinning it."
         ));
     }
-    let bat_path = pin_bat_path(&script_id)?;
-    if let Some(dir) = bat_path.parent() {
+    let lnk_path = pin_lnk_path(&script_id)?;
+    if let Some(dir) = lnk_path.parent() {
         std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
     }
-    let bat_content = format!("@echo off\r\npowershell -ExecutionPolicy Bypass -File \"{script_path}\"\r\n");
-    std::fs::write(&bat_path, bat_content).map_err(|e| e.to_string())?;
+
+    // .lnk creation needs COM (WScript.Shell); PowerShell is the lightest way to reach it.
+    let ps_script = format!(
+        "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut({lnk}); $s.TargetPath = {target}; $s.WorkingDirectory = {workdir}; $s.Save()",
+        lnk = ps_quote(&lnk_path.to_string_lossy()),
+        target = ps_quote(&script_path),
+        workdir = ps_quote(
+            &std::path::Path::new(&script_path)
+                .parent()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_default()
+        ),
+    );
+
+    let mut cmd = std::process::Command::new("powershell");
+    cmd.args(["-NoProfile", "-NonInteractive", "-Command", &ps_script]);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW — don't flash a console
+    }
+    let output = cmd.output().map_err(|e| format!("failed to run PowerShell: {e}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "shortcut creation failed: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    if !lnk_path.exists() {
+        return Err("shortcut creation reported success but no .lnk was written".to_string());
+    }
     Ok(())
 }
 
 #[tauri::command]
 pub fn unpin_script_from_start_menu(script_id: String) -> Result<(), String> {
-    let bat_path = pin_bat_path(&script_id)?;
-    if bat_path.exists() {
-        std::fs::remove_file(&bat_path).map_err(|e| e.to_string())?;
+    let lnk_path = pin_lnk_path(&script_id)?;
+    if lnk_path.exists() {
+        std::fs::remove_file(&lnk_path).map_err(|e| e.to_string())?;
     }
     // Keep the Start menu tidy: drop the PostWipe folder once its last pin is gone.
     if let Ok(dir) = pin_dir() {
@@ -114,11 +159,11 @@ mod tests {
     /// location the running app writes to is correct, writable, and NOT the auto-run
     /// Startup folder.
     #[test]
-    fn pin_then_unpin_round_trips_in_the_start_menu_not_the_startup_folder() {
-        // Uses a real script id because pin_bat_path derives the menu label from the spec.
+    fn pin_then_unpin_round_trips_a_real_lnk_in_the_start_menu() {
+        // Uses a real script id because pin_lnk_path derives the menu label from the spec.
         let script_id = "restart-audio-service";
-        let script_path = std::env::temp_dir().join("postwipe-selftest-pin.ps1");
-        std::fs::write(&script_path, "# test\n").unwrap();
+        let script_path = std::env::temp_dir().join("postwipe-selftest-pin.bat");
+        std::fs::write(&script_path, "@echo off\r\n").unwrap();
 
         // If the user actually has this pinned, don't stomp it.
         if is_script_pinned(script_id.to_string()).unwrap() {
@@ -129,19 +174,22 @@ mod tests {
         pin_script_to_start_menu(script_id.to_string(), script_path.to_string_lossy().to_string()).unwrap();
         assert!(is_script_pinned(script_id.to_string()).unwrap(), "should report pinned right after pinning");
 
-        let bat_path = pin_bat_path(script_id).unwrap();
-        assert!(bat_path.exists(), "bat should exist at {}", bat_path.display());
+        let lnk_path = pin_lnk_path(script_id).unwrap();
+        assert!(lnk_path.exists(), "lnk should exist at {}", lnk_path.display());
         assert!(
-            !bat_path.to_string_lossy().contains("Startup"),
+            !lnk_path.to_string_lossy().contains("Startup"),
             "pin must NOT land in the auto-run Startup folder: {}",
-            bat_path.display()
+            lnk_path.display()
         );
-        let content = std::fs::read_to_string(&bat_path).unwrap();
-        assert!(content.contains("powershell"), "bat should invoke powershell: {content}");
+        // Shell Link binary format starts with header size 0x4C — proves a real .lnk was
+        // written by COM, not a text file with a .lnk name.
+        let bytes = std::fs::read(&lnk_path).unwrap();
+        assert!(bytes.len() > 76, "lnk suspiciously small: {} bytes", bytes.len());
+        assert_eq!(bytes[0], 0x4C, "not a Shell Link header: first byte {:#x}", bytes[0]);
 
         unpin_script_from_start_menu(script_id.to_string()).unwrap();
         assert!(!is_script_pinned(script_id.to_string()).unwrap(), "should report unpinned after unpinning");
-        assert!(!bat_path.exists(), "bat should be gone after unpinning");
+        assert!(!lnk_path.exists(), "lnk should be gone after unpinning");
 
         std::fs::remove_file(&script_path).ok();
     }

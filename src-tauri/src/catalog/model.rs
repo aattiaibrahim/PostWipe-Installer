@@ -27,6 +27,13 @@ pub struct AppEntry {
     pub icon: String,
     #[serde(default)]
     pub domain: Option<String>,
+    /// Full URL for the "Visit" link when the bare `domain` isn't specific enough
+    /// (e.g. GitHub-hosted apps should link to their repo, not github.com).
+    #[serde(default)]
+    pub website: Option<String>,
+    /// CPU-vendor compatibility for the Overclocking filter; absent = works everywhere.
+    #[serde(default)]
+    pub vendor: Option<Vendor>,
     pub kind: AppKind,
     #[serde(default)]
     pub notes: Option<String>,
@@ -38,6 +45,13 @@ pub struct AppEntry {
 pub enum Os {
     Windows,
     Macos,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Vendor {
+    Intel,
+    Amd,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

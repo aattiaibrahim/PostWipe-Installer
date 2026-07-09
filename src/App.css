@@ -579,17 +579,26 @@ h3 {
 }
 
 .browse {
-  padding: 1.25rem 1.5rem 1.5rem;
+  padding: 0 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 }
 
 .browse__topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
   align-items: center;
   gap: 0.9rem;
   flex-wrap: wrap;
+  /* Bleed to the pane edges so scrolling rows never peek out beside the bar. */
+  margin: 0 -1.5rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
 }
 
 .browse__body {
@@ -801,7 +810,8 @@ h3 {
 /* Category sidebar */
 .sidebar {
   position: sticky;
-  top: 0;
+  /* Sits below the sticky topbar (measured height) instead of sliding under it. */
+  top: 76px;
   flex-shrink: 0;
   width: 208px;
   display: flex;
@@ -954,6 +964,31 @@ h3 {
   filter: brightness(1.1);
 }
 
+/* Quick padlock-open burst on successful unlock */
+.specials-unlock-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.specials-unlock-burst svg {
+  width: 72px;
+  height: 72px;
+  color: #7c3aed;
+}
+
+.specials-unlock-burst__ring {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #7c3aed;
+}
+
 .sidebar__divider {
   height: 1px;
   margin: 0.35rem 0.2rem;
@@ -962,6 +997,7 @@ h3 {
 
 /* Category content panel */
 .category-panel {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;
@@ -990,6 +1026,22 @@ h3 {
   font-size: 0.95rem;
 }
 
+.category-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 0.9rem;
+}
+
+.category-panel__header .category-panel__title {
+  padding-right: 0;
+}
+
+.os-picker--vendor .os-picker__tile {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+}
+
 .category-panel__rows {
   display: flex;
   flex-direction: column;
@@ -998,11 +1050,13 @@ h3 {
 
 /* Horizontal app row */
 .app-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.55rem 0.5rem;
   border-radius: 10px;
+  overflow: hidden;
   transition: background-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
@@ -1010,6 +1064,73 @@ h3 {
   background-color: var(--surface-hover);
   box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
+}
+
+/* Ambient status glow painted into the row background: yellow while downloading,
+   green once done, red on failure. Light and quick — a signal, not a siren. */
+.app-row__status-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(160px 130% at 100% 50%, var(--status-glow, transparent) 0%, transparent 72%);
+}
+
+.app-row > *:not(.app-row__status-glow) {
+  position: relative;
+  z-index: 1;
+}
+
+.app-row--downloading .app-row__status-glow {
+  --status-glow: color-mix(in srgb, #eab308 45%, transparent);
+  animation: status-glow-blink 1.1s ease-in-out infinite;
+}
+
+.app-row--completed .app-row__status-glow {
+  --status-glow: color-mix(in srgb, var(--success) 40%, transparent);
+  animation: status-glow-breathe 2.8s ease-in-out infinite;
+}
+
+.app-row--failed .app-row__status-glow {
+  --status-glow: color-mix(in srgb, var(--danger) 45%, transparent);
+  animation: status-glow-flash 0.55s ease-in-out 4, status-glow-hold 0.1s 2.2s forwards;
+}
+
+@keyframes status-glow-blink {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes status-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes status-glow-flash {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes status-glow-hold {
+  to {
+    opacity: 0.55;
+  }
 }
 
 .app-row-wrapper + .app-row-wrapper {
@@ -1247,12 +1368,6 @@ h3 {
   background-color: var(--surface-hover);
   color: var(--text);
   filter: none;
-}
-
-.app-row__complete-check {
-  color: var(--verified);
-  font-size: 0.95rem;
-  font-weight: 700;
 }
 
 .app-row__action-status {

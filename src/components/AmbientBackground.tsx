@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 
 const BLOBS = [
-  { className: "ambient-bg__blob--1", parallax: 130, driftSpeed: 0.00011, driftRadius: 40, scrollFactor: 0.18 },
-  { className: "ambient-bg__blob--2", parallax: 190, driftSpeed: 0.00016, driftRadius: 55, scrollFactor: -0.24 },
-  { className: "ambient-bg__blob--3", parallax: 90, driftSpeed: 0.00009, driftRadius: 30, scrollFactor: 0.14 },
+  { className: "ambient-bg__blob--1", parallax: 130, driftSpeed: 0.00011, driftRadius: 40, scrollFactor: 0.18, morphSpeed: 0.00045 },
+  { className: "ambient-bg__blob--2", parallax: 190, driftSpeed: 0.00016, driftRadius: 55, scrollFactor: -0.24, morphSpeed: 0.00058 },
+  { className: "ambient-bg__blob--3", parallax: 90, driftSpeed: 0.00009, driftRadius: 30, scrollFactor: 0.14, morphSpeed: 0.00037 },
 ];
 
 export function AmbientBackground() {
@@ -42,7 +42,11 @@ export function AmbientBackground() {
         const driftX = Math.sin(elapsed * blob.driftSpeed + i) * blob.driftRadius;
         const driftY = Math.cos(elapsed * blob.driftSpeed * 1.3 + i) * blob.driftRadius;
         const scrollY = scrollEased.current * blob.scrollFactor;
-        el.style.transform = `translate3d(${parallaxX + driftX}px, ${parallaxY + driftY + scrollY}px, 0)`;
+        // Autonomous sway: each blob slowly squishes on its own axes (out-of-phase X/Y
+        // scale oscillation reads as organic breathing, independent of the cursor).
+        const scaleX = 1 + 0.07 * Math.sin(elapsed * blob.morphSpeed + i * 2.1);
+        const scaleY = 1 + 0.07 * Math.cos(elapsed * blob.morphSpeed * 0.8 + i * 1.4);
+        el.style.transform = `translate3d(${parallaxX + driftX}px, ${parallaxY + driftY + scrollY}px, 0) scale(${scaleX.toFixed(4)}, ${scaleY.toFixed(4)})`;
       });
 
       raf = requestAnimationFrame(tick);

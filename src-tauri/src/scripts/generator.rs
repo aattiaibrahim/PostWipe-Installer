@@ -6,18 +6,21 @@ pub struct ScriptSpec {
     pub content: &'static str,
 }
 
+// .bat, not .ps1: double-clicking a .ps1 opens Notepad by default on Windows instead of
+// running it, which made generated scripts look broken. Batch files run on double-click
+// and each template self-elevates via UAC.
 const SCRIPTS: &[ScriptSpec] = &[
     ScriptSpec {
         id: "restart-audio-service",
-        filename: "RestartAudioService.ps1",
+        filename: "RestartAudioService.bat",
         menu_label: "Restart Audio Service",
-        content: include_str!("templates/restart_audio.ps1"),
+        content: include_str!("templates/restart_audio.bat"),
     },
     ScriptSpec {
         id: "kill-valorant-process",
-        filename: "KillValorantProcess.ps1",
+        filename: "KillValorantProcess.bat",
         menu_label: "Kill Valorant Process",
-        content: include_str!("templates/kill_valorant.ps1"),
+        content: include_str!("templates/kill_valorant.bat"),
     },
 ];
 

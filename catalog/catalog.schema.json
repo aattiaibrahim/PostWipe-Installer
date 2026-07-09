@@ -37,6 +37,8 @@
         "description": { "type": "string" },
         "icon": { "type": "string" },
         "domain": { "type": "string" },
+        "website": { "type": "string", "format": "uri" },
+        "vendor": { "type": "string", "enum": ["intel", "amd"] },
         "kind": { "type": "string", "enum": ["download", "script", "placeholder"] },
         "notes": { "type": "string" },
         "platforms": {

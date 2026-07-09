@@ -1,5 +1,6 @@
 export type Os = "windows" | "macos";
 export type AppKind = "download" | "script" | "placeholder";
+export type Vendor = "intel" | "amd";
 
 export type ResolverSpec =
   | { type: "static"; url: string }
@@ -42,6 +43,10 @@ export interface AppEntry {
   description?: string;
   icon: string;
   domain?: string;
+  /** Full URL for the "Visit" link when `domain` alone is too generic (GitHub apps). */
+  website?: string;
+  /** CPU-vendor compatibility for the Overclocking filter; absent = works everywhere. */
+  vendor?: Vendor;
   kind: AppKind;
   notes?: string;
   platforms: Partial<Record<Os, PlatformEntry>>;
