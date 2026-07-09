@@ -12,6 +12,7 @@ import {
 } from "../lib/tauriCommands";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
+import { useSelectionStore } from "../state/selectionStore";
 import { AppIcon } from "./AppIcon";
 
 interface AppCardProps {
@@ -40,6 +41,8 @@ export function AppCard({ app, os }: AppCardProps) {
   const [pinError, setPinError] = useState<string | null>(null);
 
   const jobs = useDownloadQueueStore((s) => s.jobs);
+  const selected = useSelectionStore((s) => s.selected.includes(app.id));
+  const toggleSelected = useSelectionStore((s) => s.toggle);
 
   const platform = app.platforms[os];
   const scriptId = platform?.script_id;
@@ -64,6 +67,8 @@ export function AppCard({ app, os }: AppCardProps) {
   const isScript = app.kind === "script";
   const isPlaceholder = app.kind === "placeholder";
   const hasDetails = !!app.domain || !!app.description;
+  // Only real downloadable apps can be batch-selected (not scripts or placeholders).
+  const selectable = !isScript && !isPlaceholder && !!platform.resolver;
 
   const relevantJob = Object.values(jobs)
     .reverse()
@@ -138,8 +143,17 @@ export function AppCard({ app, os }: AppCardProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <div className={`app-row${statusClass}`}>
+      <div className={`app-row${statusClass}${selected ? " app-row--selected" : ""}`}>
         <span className="app-row__status-glow" aria-hidden="true" />
+        {selectable && (
+          <input
+            type="checkbox"
+            className="app-row__select"
+            checked={selected}
+            onChange={() => toggleSelected(app.id)}
+            aria-label={`Select ${app.name} for batch download`}
+          />
+        )}
         <AppIcon appId={app.id} name={app.name} domain={app.domain} className="app-row__icon" />
         <div className="app-row__body">
           <div className="app-row__name-line">

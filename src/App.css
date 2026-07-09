@@ -295,7 +295,10 @@ h3 {
   justify-content: space-between;
   height: 40px;
   padding-left: 0.9rem;
-  z-index: 10;
+  /* Must be positioned for z-index to apply, and above the sticky topbar (z-index 30)
+     so the Settings dropdown paints over it instead of hiding behind it. */
+  position: relative;
+  z-index: 40;
   background-color: var(--surface);
   backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
@@ -1090,6 +1093,79 @@ h3 {
 .app-row--completed .app-row__status-glow {
   --status-glow: color-mix(in srgb, var(--success) 40%, transparent);
   animation: status-glow-breathe 2.8s ease-in-out infinite;
+}
+
+.app-row__select {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.app-row--selected {
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* Floating batch-download bar */
+.selection-bar {
+  position: fixed;
+  bottom: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.6rem 0.7rem 0.6rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.45);
+}
+
+.selection-bar__count {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.selection-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.selection-bar__clear {
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.selection-bar__clear:hover {
+  color: var(--text);
+}
+
+.selection-bar__download {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.15s ease;
+}
+
+.selection-bar__download:hover {
+  filter: brightness(1.08);
 }
 
 .app-row--failed .app-row__status-glow {
