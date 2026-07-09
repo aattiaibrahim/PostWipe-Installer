@@ -20,6 +20,10 @@ pub struct AppEntry {
     pub name: String,
     #[serde(default)]
     pub bio: Option<String>,
+    /// Longer user-facing copy for the expanded details panel. `notes` (below) is
+    /// internal maintenance info and must never be rendered in the UI.
+    #[serde(default)]
+    pub description: Option<String>,
     pub icon: String,
     #[serde(default)]
     pub domain: Option<String>,

@@ -127,6 +127,37 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Big batch (2026-07-09)
+- [done] All downloads + generated scripts now land in `Downloads\PostWipeDownloads\`
+  (`postwipe_downloads_dir()` in `commands/download.rs`, created on demand); "Open Downloads
+  Folder" opens that folder.
+- [done] Downloaded panel = source of truth on disk: entries are filtered through the new
+  `paths_exist` command, so deleting a file from the folder removes it from the panel. In-progress
+  downloads now show *inside* the Downloaded dropdown with a live progress bar + percentage
+  (indeterminate slide while size is unknown); the app row keeps only Cancel while downloading.
+  Also fixed the progress bar starting at 100%: unknown `totalBytes` used to map to `width: 100%`.
+- [done] `description` field on every real catalog entry (2–3 sentences of actual app copy, drafted
+  by Claude) rendered in the expanded panel; `notes` is now internal-maintenance-only and never
+  rendered anywhere (it previously leaked verification/bugfix text into the UI, which the user
+  called out).
+- [done] The six placeholder sections merged into ONE password-gated **Specials** category
+  (windows+mac): clicking it shows an animated "void" glyph (rotating dashed rings + breathing
+  core) and a password prompt. Password is `aVoid` — an explicitly-acknowledged placeholder in a
+  public repo (a curtain, not a lock) until real hosting (Mega vs NAS) is decided. Unlock is
+  session-only (`specialsStore`, not persisted); locked Specials are excluded from search, the All
+  view, and the All count, and the sidebar shows a padlock instead of a count.
+- [done] Launch splash (`LaunchSplash.tsx`, ~1.9s): accent orb draws in, fills, pulses once, whole
+  overlay dissolves into the app; random Henry David Thoreau quote beneath, Discord-style.
+- [done] Sidebar hover now mixes from `--text` (12%) instead of `--surface-hover`, which was
+  near-invisible against the sidebar in light mode.
+- [done] Footer is a link to the GitHub repo; heart is red with a heartbeat pulse animation.
+- [done] Update-on-launch prompt (`UpdatePrompt.tsx`): checks once at launch ONLY if the new
+  "Automatically check for updates" setting is on (default on, persisted in `settingsStore`), and
+  only shows UI when an update actually exists — Install & Restart / Later.
+- [done] Red "Download All Apps" button in Settings: queues every downloadable app for the current
+  OS (skips scripts and placeholders). `MAX_CONCURRENT_DOWNLOADS` raised 3 → 6 so it feels
+  genuinely parallel; the rest queue up as slots free.
+
 ### Quick fixes (2026-07-08, sixth pass)
 - [done] Font switched again per user request: General Sans → **Geist** (Vercel's typeface, free
   under the SIL Open Font License, fetched via the Google Fonts API — single variable woff2 at

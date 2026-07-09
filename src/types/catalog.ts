@@ -38,6 +38,8 @@ export interface AppEntry {
   id: string;
   name: string;
   bio?: string;
+  /** Longer user-facing copy for the expanded panel; `notes` is internal-only. */
+  description?: string;
   icon: string;
   domain?: string;
   kind: AppKind;

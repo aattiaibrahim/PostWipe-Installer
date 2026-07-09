@@ -2,6 +2,8 @@ import { AnimatePresence } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
 import { ALL_CATEGORY_ID } from "../lib/constants";
+import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
+import { SpecialsLock } from "./SpecialsLock";
 
 interface CategoryPanelProps {
   catalog: Catalog;
@@ -11,13 +13,27 @@ interface CategoryPanelProps {
 }
 
 export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: CategoryPanelProps) {
+  const specialsUnlocked = useSpecialsStore((s) => s.unlocked);
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
 
-  const categories =
+  // The password curtain: selecting Specials while locked shows the gate instead of content.
+  if (!isSearching && selectedCategoryId === SPECIALS_CATEGORY_ID && !specialsUnlocked) {
+    return (
+      <div className="category-panel">
+        <SpecialsLock />
+      </div>
+    );
+  }
+
+  const categories = (
     isSearching || selectedCategoryId === ALL_CATEGORY_ID
       ? catalog.categories
-      : catalog.categories.filter((c) => c.id === selectedCategoryId);
+      : catalog.categories.filter((c) => c.id === selectedCategoryId)
+  ).filter(
+    // Locked Specials content must not leak through search or the All view.
+    (c) => c.id !== SPECIALS_CATEGORY_ID || specialsUnlocked,
+  );
 
   const sections = categories
     .map((category) => ({

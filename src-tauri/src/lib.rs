@@ -5,7 +5,7 @@ mod resolver;
 mod scripts;
 
 use commands::catalog::list_categories;
-use commands::download::{cancel_download, list_active_downloads, open_downloads_folder, start_download};
+use commands::download::{cancel_download, list_active_downloads, open_downloads_folder, paths_exist, start_download};
 use commands::scripts::{
     cleanup_legacy_startup_pins, find_generated_script, generate_script, is_script_pinned, pin_script_to_start_menu,
     unpin_script_from_start_menu,
@@ -51,6 +51,7 @@ pub fn run() {
             cancel_download,
             list_active_downloads,
             open_downloads_folder,
+            paths_exist,
             generate_script,
             find_generated_script,
             is_script_pinned,

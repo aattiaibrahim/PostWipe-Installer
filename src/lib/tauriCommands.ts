@@ -28,6 +28,12 @@ export function openDownloadsFolder(): Promise<void> {
   return invoke("open_downloads_folder");
 }
 
+export async function pathsExist(paths: string[]): Promise<boolean[]> {
+  // Browser preview has no filesystem access — treat everything as present.
+  if (!isTauri) return paths.map(() => true);
+  return invoke("paths_exist", { paths });
+}
+
 export function generateScript(scriptId: string): Promise<string> {
   return invoke("generate_script", { scriptId });
 }

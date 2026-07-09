@@ -20,6 +20,8 @@ const PATHS: Record<string, string[]> = {
     "M4 12h3M10 12h10",
     "M4 18h10M17 18h3",
   ],
+  // The "void": concentric rings around a solid core, echoing the lock-screen glyph.
+  specials: ["M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18Z", "M12 16.5a4.5 4.5 0 1 0 0-9a4.5 4.5 0 0 0 0 9Z"],
 };
 
 const DOTS: Record<string, { cx: number; cy: number }[]> = {
@@ -28,6 +30,7 @@ const DOTS: Record<string, { cx: number; cy: number }[]> = {
     { cx: 17, cy: 12.5 },
   ],
   overclocking: [{ cx: 12, cy: 15 }],
+  specials: [{ cx: 12, cy: 12 }],
   "system-tweaks": [
     { cx: 14, cy: 6 },
     { cx: 7, cy: 12 },

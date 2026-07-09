@@ -63,7 +63,7 @@ export function AppCard({ app, os }: AppCardProps) {
 
   const isScript = app.kind === "script";
   const isPlaceholder = app.kind === "placeholder";
-  const hasDetails = !!app.domain || !!app.notes;
+  const hasDetails = !!app.domain || !!app.description;
 
   const relevantJob = Object.values(jobs)
     .reverse()
@@ -72,9 +72,6 @@ export function AppCard({ app, os }: AppCardProps) {
   const isDownloadingJob = !isScript && !!jobStatus && ACTIVE_STATUSES.has(jobStatus);
   const isCompleted = isScript ? !!generatedPath && !error : jobStatus === "completed";
   const revealPath = isScript ? generatedPath : (relevantJob?.destPath ?? null);
-  const percent = relevantJob?.totalBytes
-    ? Math.min(100, (relevantJob.bytesDownloaded / relevantJob.totalBytes) * 100)
-    : null;
 
   const failureMessage = error ?? (jobStatus === "failed" ? (relevantJob?.error ?? null) : null);
   const showFallback = !isScript && !isPlaceholder && !!failureMessage;
@@ -123,7 +120,7 @@ export function AppCard({ app, os }: AppCardProps) {
     }
   }
 
-  const showStatusArea = isDownloadingJob || !!failureMessage || !!pinError || (isCompleted && !!revealPath);
+  const showStatusArea = (!isDownloadingJob && !!failureMessage) || !!pinError || (isCompleted && !!revealPath);
 
   return (
     <motion.div
@@ -140,7 +137,7 @@ export function AppCard({ app, os }: AppCardProps) {
           <div className="app-row__name-line">
             <span className="app-row__name">{app.name}</span>
             {!isScript && platform.stale && (
-              <span className="badge badge--stale" title={app.notes ?? "Needs verification"}>
+              <span className="badge badge--stale" title="Needs verification">
                 needs check
               </span>
             )}
@@ -204,15 +201,6 @@ export function AppCard({ app, os }: AppCardProps) {
           </div>
           {showStatusArea && (
             <div className="app-row__action-status">
-              {isDownloadingJob && (
-                <div className="app-row__mini-progress-track">
-                  <motion.div
-                    className="app-row__mini-progress-fill"
-                    animate={{ width: percent !== null ? `${percent}%` : "100%" }}
-                    transition={{ type: "spring", stiffness: 200, damping: 30 }}
-                  />
-                </div>
-              )}
               {!isDownloadingJob && failureMessage && <span className="app-row__error">{failureMessage}</span>}
               {!isDownloadingJob && pinError && <span className="app-row__error">{pinError}</span>}
               {!isDownloadingJob && !failureMessage && isCompleted && revealPath && (
@@ -235,12 +223,12 @@ export function AppCard({ app, os }: AppCardProps) {
             style={{ overflow: "hidden" }}
           >
             <div className="app-row__details">
+              {app.description && <p className="app-row__details-notes">{app.description}</p>}
               {app.domain && (
                 <button className="app-row__link-btn" onClick={() => openUrl(`https://${app.domain}`)}>
                   Visit {app.domain} ↗
                 </button>
               )}
-              {app.notes && <p className="app-row__details-notes">{app.notes}</p>}
             </div>
           </motion.div>
         )}

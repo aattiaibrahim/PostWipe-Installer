@@ -12,7 +12,9 @@ use tokio::sync::Semaphore;
 use tokio_util::sync::CancellationToken;
 use uuid::Uuid;
 
-const MAX_CONCURRENT_DOWNLOADS: usize = 3;
+// High enough that "Download All" feels genuinely parallel, low enough not to open
+// dozens of sockets at once — the rest of the queue starts as slots free up.
+const MAX_CONCURRENT_DOWNLOADS: usize = 6;
 /// Last-resort safety net for the whole resolve+download job. job::run already
 /// has its own connect/stall timeouts, so this only guards against something
 /// unforeseen holding a semaphore permit forever (e.g. a pathologically slow

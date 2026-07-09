@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getVersion } from "@tauri-apps/api/app";
-import { isTauri } from "../lib/tauriCommands";
+import { isTauri, startDownload } from "../lib/tauriCommands";
 import { useThemeStore, type Theme } from "../state/themeStore";
+import { useSettingsStore } from "../state/settingsStore";
+import { useCatalogStore } from "../state/catalogStore";
 
 const SUN_RAYS =
   "M12 4.5V2.5M12 21.5V19.5M6.34 6.34 4.93 4.93M19.07 19.07 17.66 17.66M4.5 12H2.5M21.5 12H19.5M6.34 17.66 4.93 19.07M19.07 4.93 17.66 6.34";
@@ -67,6 +69,11 @@ export function SettingsPanel() {
   const [status, setStatus] = useState<string>("");
   const [busy, setBusy] = useState(false);
   const [version, setVersion] = useState<string | null>(null);
+  const autoCheckUpdates = useSettingsStore((s) => s.autoCheckUpdates);
+  const setAutoCheckUpdates = useSettingsStore((s) => s.setAutoCheckUpdates);
+  const catalog = useCatalogStore((s) => s.catalog);
+  const osFilter = useCatalogStore((s) => s.osFilter);
+  const [downloadAllStatus, setDownloadAllStatus] = useState<string>("");
 
   useEffect(() => {
     if (!isTauri) return;
@@ -95,11 +102,39 @@ export function SettingsPanel() {
     }
   }
 
+  async function handleDownloadAll() {
+    if (!catalog) return;
+    const targets = catalog.categories
+      .flatMap((c) => c.apps)
+      .filter((app) => app.kind === "download" && app.platforms[osFilter]?.resolver);
+    setDownloadAllStatus(`Starting ${targets.length} downloads…`);
+    let started = 0;
+    for (const app of targets) {
+      try {
+        await startDownload(app.id, osFilter);
+        started++;
+      } catch {
+        // Individual failures surface on their own rows; keep going.
+      }
+    }
+    setDownloadAllStatus(`Queued ${started} of ${targets.length} downloads.`);
+  }
+
   return (
     <div className="settings-panel">
       <div className="settings-panel__row settings-panel__row--theme">
         <span className="settings-panel__label">Theme</span>
         <ThemeToggle />
+      </div>
+      <div className="settings-panel__row">
+        <label className="settings-panel__toggle">
+          <input
+            type="checkbox"
+            checked={autoCheckUpdates}
+            onChange={(e) => setAutoCheckUpdates(e.target.checked)}
+          />
+          <span>Automatically check for updates</span>
+        </label>
       </div>
       <div className="settings-panel__row">
         <button className="settings-panel__check-btn" onClick={handleCheckForUpdates} disabled={busy}>
@@ -108,6 +143,12 @@ export function SettingsPanel() {
         {version && <span className="settings-panel__version">Version {version}</span>}
       </div>
       {status && <p className="settings-panel__status">{status}</p>}
+      <div className="settings-panel__row">
+        <button className="settings-panel__download-all" onClick={handleDownloadAll}>
+          Download All Apps
+        </button>
+      </div>
+      {downloadAllStatus && <p className="settings-panel__status">{downloadAllStatus}</p>}
     </div>
   );
 }
