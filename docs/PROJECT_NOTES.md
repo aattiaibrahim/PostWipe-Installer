@@ -160,28 +160,42 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
-### BLOCKER — Specials content hosting (MEGA can't be fetched by the app) — 2026-07-09
-The user shared the real files as a **MEGA folder link**
-(`mega.nz/folder/wqgRgKhB#...`) and asked to build the cursor-pack / fonts / PSD / Steam-profile /
-Windows-sounds install flows. **The app cannot download from a MEGA folder link.** MEGA is
-end-to-end encrypted: you can't `curl`/HTTP-GET a file out of it — you need MEGA's own protocol
-(fetch metadata via their API, download the encrypted blob, AES-decrypt with the folder key). The
-`megajs` Node library does this and was used to *traverse* the folder for planning (see the
-scratchpad scripts + `docs/MEGA_CONTENTS.md`), but the Tauri app's resolvers are HTTP-only
-(`static`/`github_release`/`html`/`html_regex`/`webview`) — none speak MEGA. So the Specials
-**content** (not the UI) is blocked on a hosting decision. Options put to the user:
-  1. Re-host on the Synology **NAS** with direct HTTP URLs → existing `static` resolver just works.
-  2. Bundle the small stuff **into the app** (cursor packs, fonts, sounds are KB–few MB each;
-     total maybe manageable) and keep only the big items (PSD 50MB, Steam `.rar`s ~13MB) remote.
-  3. Add a **`mega` resolver** in Rust (port the crypto). Heaviest/most fragile; not recommended
-     for a first pass.
-Until one is chosen, do NOT scaffold the cursor/font/sound install UI against unreachable files —
-matches the earlier "don't build features whose content is coming later" feedback. The install
-*mechanics* worth remembering once files land: cursor packs ship an `install.inf` (right-click →
-Install sets the scheme, may need elevation — leave that to the user); fonts install by copying
-`.ttf` to the Fonts folder (or the shell "Install" verb); Windows sounds are `.wav` sets applied
-via a `.theme`/registry sound-scheme, plausibly a generated `.bat`; Steam profiles are `.rar`
-artwork/showcase packs (offer the `.rar` + a short how-to, previews are `.gif`).
+### Specials content hosting — DECIDED: Cloudflare R2 + Worker gate — 2026-07-09
+Background: the user shared the files as a **MEGA folder link**, which the app can't fetch (MEGA is
+E2E-encrypted; no plain HTTP GET — needs MEGA's crypto protocol; `megajs` was used only to
+*traverse* it for planning, see `docs/MEGA_CONTENTS.md`). Walked through hosting options; key
+realization the user cared about: **any credential shipped in a public app is extractable**, so a
+private GitHub repo / password-protected NAS link / etc. all give *zero* real protection (the token
+or password has to travel inside the public app or public catalog). GitHub-secret-scanning would
+also auto-revoke a token committed publicly.
+
+**Chosen path (the only one that gives genuine protection): Cloudflare R2 + a Worker gate.** The
+secret never touches the app or repo — it's a Worker secret; friends get the key out-of-band and
+type it into the Specials prompt, which the app sends to the Worker per request. See
+`specials-gate/` (worker.js, wrangler.toml, README) — committed, holds no secrets. R2 free tier
+(10 GB + free egress) covers the whole set; Worker free tier covers the request volume.
+
+**Status: app side is BLOCKED on the user's Cloudflare setup and not yet built** (deliberately — I
+can't build/test the app→Worker path without the deployed Worker; building it blind = contract
+drift + the exact "scaffold unreachable content" trap). The `specials-gate/README.md` is the
+user's setup checklist; when they send back **(1) the Worker URL, (2) a test key, (3) the uploaded
+object paths**, build the app side:
+  - New download path for Specials items: URL = `<WORKER>/file/<object-path>?key=<session key>`.
+    Simplest wiring is the existing `static`/download-manager with the URL built from a configurable
+    Worker base + per-item object path + the key held in `specialsStore` after unlock. (Key in URL
+    is fine over HTTPS for a shared friend-key; downloads go through reqwest so no CORS.)
+  - Make the Specials unlock **real**: the password box calls a Tauri command that GETs
+    `<WORKER>/validate?key=…` (via reqwest, no CORS); on 200, store the key in `specialsStore` for
+    the session and unlock. The current `aVoid` client-only check is replaced by this server check.
+  - Then wire each Specials catalog entry to its object path and build the per-type install flow.
+
+Install *mechanics* to remember when files land (from `MEGA_CONTENTS.md`): cursor packs ship an
+`install.inf` (right-click → Install sets the scheme; may need elevation — leave to the user);
+fonts install by copying `.ttf` to the Fonts folder (or shell "Install" verb); Windows sounds are
+`.wav` sets applied via a `.theme`/registry sound-scheme (plausibly a generated `.bat`); Steam
+profiles are `.rar` artwork/showcase packs (offer the `.rar` + a short how-to; previews are `.gif`);
+PSD and Windows-Themes(deprecated) are download-only. Folder-based items (cursor packs, sound sets)
+must be zipped before upload — noted in the README.
 
 ### MEGA folder contents (traversed 2026-07-09, for when hosting is settled)
 See `docs/MEGA_CONTENTS.md` for the full tree. Top level under `PostWipeInstaller/`: **Cursors/**

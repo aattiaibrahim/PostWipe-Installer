@@ -1,0 +1,15 @@
+# Cloudflare Worker config for the PostWipe Specials gate.
+# Deploy with:  npx wrangler deploy   (from inside this specials-gate/ folder)
+
+name = "postwipe-specials-gate"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Binds your R2 bucket into the Worker as env.SPECIALS_BUCKET.
+# Change bucket_name if you name your bucket something other than "postwipe-specials".
+[[r2_buckets]]
+binding = "SPECIALS_BUCKET"
+bucket_name = "postwipe-specials"
+
+# The key itself is NOT set here. Set it as a secret so it never lands in the repo:
+#   npx wrangler secret put SPECIALS_KEY
