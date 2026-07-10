@@ -488,6 +488,20 @@
           }
         },
         {
+          "id": "firefox",
+          "name": "Firefox",
+          "bio": "Mozilla's independent, open-source browser.",
+          "description": "Firefox is the only major browser not built on Chromium, maintained by the nonprofit Mozilla. Strong tracking protection, container tabs for separating logins, and a massive extension ecosystem — the standard pick for keeping the web from becoming a one-engine monoculture.",
+          "icon": "firefox.ico",
+          "domain": "mozilla.org",
+          "kind": "download",
+          "notes": "download.mozilla.org's product=firefox-latest-ssl endpoint is Mozilla's official versionless alias; it 302s to the current installer on their CDN. Verified live 2026-07-09 for both OSes.",
+          "platforms": {
+            "windows": { "resolver": { "type": "static", "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US" }, "filename": "FirefoxSetup.exe" },
+            "macos": { "resolver": { "type": "static", "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US" }, "filename": "Firefox.dmg" }
+          }
+        },
+        {
           "id": "librewolf",
           "name": "LibreWolf",
           "bio": "Privacy-hardened Firefox fork with tracking stripped out by default.",

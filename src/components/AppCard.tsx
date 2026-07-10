@@ -120,7 +120,7 @@ export function AppCard({ app, os }: AppCardProps) {
         setPinned(true);
         // Windows 11 blocks apps from pinning tiles (E_ACCESSDENIED on the shell verb),
         // so the last step is necessarily the user's — say so instead of looking broken.
-        setPinMsg("Added to Start ▸ All apps ▸ PostWipe. For a tile: right-click it there ▸ Pin to Start.");
+        setPinMsg("Added to Start ▸ All apps (or search its name). For a tile: right-click it there ▸ Pin to Start.");
       }
     } catch (err) {
       setPinError(String(err));

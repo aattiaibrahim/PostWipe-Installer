@@ -9,8 +9,8 @@ export interface SpecialsItem {
   filename: string;
   ext: string;
   size: number;
-  /** Object key of a preview image under previews/, when one exists for this item. */
-  previewKey?: string;
+  /** Object keys of preview images under previews/, main image first. Empty = no preview. */
+  previewKeys: string[];
 }
 
 export interface SpecialsGroup {
@@ -43,14 +43,19 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
       if (!res.ok) throw new Error(`list failed (${res.status})`);
       const data: { objects: { key: string; size: number }[] } = await res.json();
 
-      // Preview images live under previews/<item stem>.<ext> — index them by stem so
-      // items can be matched to their thumbnail.
-      const previewByStem = new Map<string, string>();
+      // Preview images live under previews/<item stem>.<ext> (main) plus optional extra
+      // angles as previews/<item stem>__2.<ext>, __3.<ext>… — index all of them by stem.
+      const previewsByStem = new Map<string, { order: number; key: string }[]>();
       for (const obj of data.objects) {
         if (obj.key.startsWith("previews/") && !obj.key.endsWith("/")) {
           const file = obj.key.slice("previews/".length);
-          const stem = file.replace(/\.[^.]+$/, "");
-          previewByStem.set(stem, obj.key);
+          const noExt = file.replace(/\.[^.]+$/, "");
+          const m = noExt.match(/^(.*?)__(\d+)$/);
+          const stem = m ? m[1] : noExt;
+          const order = m ? parseInt(m[2], 10) : 1;
+          const arr = previewsByStem.get(stem) ?? [];
+          arr.push({ order, key: obj.key });
+          previewsByStem.set(stem, arr);
         }
       }
 
@@ -70,7 +75,7 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
           filename,
           ext,
           size: obj.size,
-          previewKey: previewByStem.get(stem),
+          previewKeys: (previewsByStem.get(stem) ?? []).sort((a, b) => a.order - b.order).map((p) => p.key),
         };
         const arr = byFolder.get(folder) ?? [];
         arr.push(item);

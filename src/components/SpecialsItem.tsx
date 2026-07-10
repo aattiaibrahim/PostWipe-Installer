@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import type { SpecialsItem as Item } from "../state/specialsContentStore";
+import { PreviewLightbox } from "./PreviewLightbox";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
 import { SPECIALS_WORKER_URL } from "../lib/specialsConfig";
 import { useSpecialsStore } from "../state/specialsStore";
@@ -21,6 +23,7 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
   const [error, setError] = useState<string | null>(null);
   const [installing, setInstalling] = useState(false);
   const [installMsg, setInstallMsg] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const job = Object.values(jobs)
     .reverse()
@@ -62,20 +65,34 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
     }
   }
 
-  const previewUrl =
-    item.previewKey && sessionKey
-      ? `${SPECIALS_WORKER_URL}/file/${item.previewKey.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey)}`
-      : null;
+  const previewUrls = sessionKey
+    ? item.previewKeys.map(
+        (k) =>
+          `${SPECIALS_WORKER_URL}/file/${k.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey)}`,
+      )
+    : [];
 
   return (
     <div className="specials-item">
-      {previewUrl ? (
-        <img className="specials-item__preview" src={previewUrl} alt="" loading="lazy" />
+      {previewUrls.length > 0 ? (
+        <button
+          className="specials-item__preview specials-item__preview--clickable"
+          onClick={() => setLightboxOpen(true)}
+          title="Click to expand preview"
+        >
+          <img src={previewUrls[0]} alt="" loading="lazy" />
+          {previewUrls.length > 1 && <span className="specials-item__preview-count">{previewUrls.length}</span>}
+        </button>
       ) : (
         <div className="specials-item__preview specials-item__preview--none">
           <span>No preview</span>
         </div>
       )}
+      <AnimatePresence>
+        {lightboxOpen && previewUrls.length > 0 && (
+          <PreviewLightbox urls={previewUrls} title={item.name} onClose={() => setLightboxOpen(false)} />
+        )}
+      </AnimatePresence>
       <div className="specials-item__info">
         <span className="specials-item__name">{item.name}</span>
         <span className="specials-item__meta">{fmtSize(item.size)}</span>

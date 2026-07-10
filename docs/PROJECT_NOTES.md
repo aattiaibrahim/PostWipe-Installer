@@ -160,6 +160,35 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Settings corner, pins to Programs root, Steam preview galleries, Firefox — 2026-07-09 (third pass)
+- **Settings moved to the bottom-left corner** (`SettingsCorner.tsx`, mounted in `App.tsx`): fixed
+  gear pill at bottom:40/left:16; clicking expands the panel *upward* over a full-screen dimming +
+  blur backdrop (`.settings-corner__backdrop`, z:52) so the app behind it is contrasted down while
+  the panel stays in focus. Esc / click-out closes and everything returns to normal. `TitleBar.tsx`
+  no longer has any settings button — brand + window controls only.
+- **SelectionBar joined it on the left**: now fixed at bottom:92/left:16 (stacks above the gear),
+  with a breathing accent glow (`::before` radial + `status-glow-breathe`) to match the row-glyph
+  treatment.
+- **Pins move to Programs ROOT** (`scripts.rs`): Windows 11 collapses `Programs\<subfolder>`
+  entries in All apps into a folder people never open — that's why "pins still not working". `.lnk`
+  now lands directly in `%APPDATA%\Microsoft\Windows\Start Menu\Programs\<label>.lnk` (dynamic
+  per-user via the APPDATA env var — no hardcoded username). `cleanup_legacy_startup_pins()`
+  migrates any old `Programs\PostWipe\*.lnk` to the root and removes the folder. Tests serialize on
+  `START_MENU_LOCK` (a parallel-test race once deleted the user's real pin — restored by hand).
+  AppCard's post-pin message updated to match (search Start / All apps directly).
+- **Steam profile preview galleries**: the three showcase GIF sets (Kurisu, Rin Tohsaka, Saber)
+  were extracted from the `.rar`s already in R2 with local 7-Zip (the original MEGA link is dead —
+  ENOENT -9) and uploaded as `previews/<stem>.gif` + `__2` + `__3`. Multi-preview convention:
+  `previews/<stem>__N.<ext>` = extra angles, indexed into `previewKeys: string[]` (main first) in
+  `specialsContentStore`.
+- **Clickable preview lightbox** (`PreviewLightbox.tsx`): Specials thumbnails are now buttons
+  (zoom-in cursor, hover lift, "N" count badge when multiple); clicking opens a full-screen viewer
+  with ‹ › arrows + arrow keys, counter, Esc/click-out close. z-index 90, above the settings layer.
+- **Firefox added to Browsers** (catalog id `firefox`): static resolver on
+  `download.mozilla.org/?product=firefox-latest-ssl` for win64 + osx (both verified 200);
+  `siFirefoxbrowser` brand icon. Remember `public/catalog.json` must be re-synced (`cp
+  catalog/catalog.json public/catalog.json`) whenever `catalog/` changes — done this pass.
+
 ### Specials vault fixes + previews — 2026-07-09 (second pass)
 - **Install "can't find install.inf" root cause**: the Install button un-greyed as soon as the
   download *started* (destPath was set from the start handle, not completion), so users could

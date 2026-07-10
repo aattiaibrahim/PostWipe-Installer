@@ -37,26 +37,20 @@ fn start_menu_programs_dir() -> Result<PathBuf, String> {
         .join("Programs"))
 }
 
-/// Windows-only: `...\Start Menu\Programs\PostWipe`. Entries here show up in the Start
-/// menu's all-apps list and search, and run ONLY when the user clicks them. This is
-/// deliberately NOT the sibling `Programs\Startup` folder, whose contents auto-run at
-/// every login — the feature's first version pinned there by mistake, giving the user a
-/// PowerShell/UAC prompt on every boot.
-fn pin_dir() -> Result<PathBuf, String> {
-    Ok(start_menu_programs_dir()?.join("PostWipe"))
-}
-
-/// Pins are `.lnk` shortcuts, not raw `.bat` files: the Start menu's all-apps list and
-/// search index shortcuts reliably, but often never show a bare `.bat` dropped into the
-/// Programs folder — which is why the previous version looked like it "did nothing".
+/// Pins are `.lnk` shortcuts written to the Programs ROOT (not a subfolder, not the
+/// auto-run `Startup` sibling): Windows 11's All-apps list shows subfolders as collapsed
+/// folder entries that are easy to miss and slow to index, while root-level `.lnk`s appear
+/// as plain top-level apps and show up in Start search reliably. The path comes from the
+/// `APPDATA` env var, so it resolves to whichever user is running the app — no hardcoding.
 fn pin_lnk_path(script_id: &str) -> Result<PathBuf, String> {
     let spec = generator::find(script_id).ok_or_else(|| format!("Unknown script: {script_id}"))?;
-    Ok(pin_dir()?.join(format!("{}.lnk", spec.menu_label)))
+    Ok(start_menu_programs_dir()?.join(format!("{}.lnk", spec.menu_label)))
 }
 
 /// Removes leftovers from the feature's earlier versions: `PostWipe-*.bat` in the auto-run
-/// Startup folder (v1 pinned there by mistake), and raw `.bat` pins in the Start menu's
-/// PostWipe folder (v2, which Start menu search never indexed). Called once at app launch.
+/// Startup folder (v1 pinned there by mistake), and the `Programs\PostWipe\` subfolder
+/// (v2/v3, whose contents Windows 11 buried in a collapsed All-apps folder). v3 `.lnk`s in
+/// the old subfolder are migrated to the Programs root rather than dropped.
 pub fn cleanup_legacy_startup_pins() {
     let Ok(programs) = start_menu_programs_dir() else { return };
     if let Ok(entries) = std::fs::read_dir(programs.join("Startup")) {
@@ -68,12 +62,17 @@ pub fn cleanup_legacy_startup_pins() {
             }
         }
     }
-    if let Ok(entries) = std::fs::read_dir(programs.join("PostWipe")) {
+    let old_dir = programs.join("PostWipe");
+    if let Ok(entries) = std::fs::read_dir(&old_dir) {
         for entry in entries.flatten() {
-            if entry.file_name().to_string_lossy().ends_with(".bat") {
+            let name = entry.file_name();
+            if name.to_string_lossy().ends_with(".lnk") {
+                let _ = std::fs::rename(entry.path(), programs.join(&name));
+            } else {
                 let _ = std::fs::remove_file(entry.path());
             }
         }
+        let _ = std::fs::remove_dir(&old_dir);
     }
 }
 
@@ -141,12 +140,6 @@ pub fn unpin_script_from_start_menu(script_id: String) -> Result<(), String> {
     if lnk_path.exists() {
         std::fs::remove_file(&lnk_path).map_err(|e| e.to_string())?;
     }
-    // Keep the Start menu tidy: drop the PostWipe folder once its last pin is gone.
-    if let Ok(dir) = pin_dir() {
-        if std::fs::read_dir(&dir).map(|mut d| d.next().is_none()).unwrap_or(false) {
-            let _ = std::fs::remove_dir(&dir);
-        }
-    }
     Ok(())
 }
 
@@ -154,12 +147,19 @@ pub fn unpin_script_from_start_menu(script_id: String) -> Result<(), String> {
 mod tests {
     use super::*;
 
+    /// These tests mutate the REAL Start menu, and cargo runs tests on parallel threads —
+    /// unserialized, the migration test once moved the user's actual pin into the path of
+    /// the round-trip test's unpin step, which deleted it. Every test touching the Start
+    /// menu must hold this lock.
+    static START_MENU_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
     /// Exercises the real filesystem paths used by pin/unpin, on the real Start menu on
     /// this machine — not a temp dir — since the whole point is to prove the actual
     /// location the running app writes to is correct, writable, and NOT the auto-run
     /// Startup folder.
     #[test]
     fn pin_then_unpin_round_trips_a_real_lnk_in_the_start_menu() {
+        let _guard = START_MENU_LOCK.lock().unwrap();
         // Uses a real script id because pin_lnk_path derives the menu label from the spec.
         let script_id = "restart-audio-service";
         let script_path = std::env::temp_dir().join("postwipe-selftest-pin.bat");
@@ -208,6 +208,7 @@ mod tests {
 
     #[test]
     fn legacy_startup_pins_are_cleaned_up() {
+        let _guard = START_MENU_LOCK.lock().unwrap();
         let startup = start_menu_programs_dir().unwrap().join("Startup");
         let legacy = startup.join("PostWipe-selftest-legacy.bat");
         std::fs::write(&legacy, "@echo off\r\n").unwrap();
@@ -215,5 +216,25 @@ mod tests {
         cleanup_legacy_startup_pins();
 
         assert!(!legacy.exists(), "legacy Startup-folder pin should have been removed");
+    }
+
+    /// Pins from the previous version lived in `Programs\PostWipe\` — Windows 11 buries
+    /// subfolder items in a collapsed All-apps folder, so cleanup must MOVE them to the
+    /// Programs root (where the user can actually find them), not delete them.
+    #[test]
+    fn old_subfolder_lnk_pins_migrate_to_programs_root() {
+        let _guard = START_MENU_LOCK.lock().unwrap();
+        let programs = start_menu_programs_dir().unwrap();
+        let old_dir = programs.join("PostWipe");
+        std::fs::create_dir_all(&old_dir).unwrap();
+        let old_lnk = old_dir.join("PostWipe Selftest Migrate.lnk");
+        std::fs::write(&old_lnk, b"L").unwrap();
+
+        cleanup_legacy_startup_pins();
+
+        let migrated = programs.join("PostWipe Selftest Migrate.lnk");
+        assert!(!old_lnk.exists(), "old subfolder lnk should be gone");
+        assert!(migrated.exists(), "lnk should have moved to the Programs root");
+        std::fs::remove_file(&migrated).ok();
     }
 }

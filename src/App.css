@@ -341,17 +341,6 @@ h3 {
   }
 }
 
-.title-bar__settings-anchor {
-  position: relative;
-}
-
-.title-bar__settings-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 20;
-}
-
 .title-bar__actions {
   display: flex;
   align-items: center;
@@ -359,19 +348,58 @@ h3 {
   height: 100%;
 }
 
-.title-bar__settings-btn {
-  padding: 0.35rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background-color: var(--surface-hover);
-  color: var(--text);
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+/* Settings corner: bottom-left button, panel expands upward, backdrop dims the app */
+.settings-corner {
+  position: fixed;
+  bottom: 40px;
+  left: 16px;
+  z-index: 54;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
 }
 
-.title-bar__settings-btn:hover {
+.settings-corner__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 52;
+  background-color: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(3px) saturate(80%);
+  -webkit-backdrop-filter: blur(3px) saturate(80%);
+}
+
+.settings-corner__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
   background-color: var(--surface-solid);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.35);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.settings-corner__btn:hover {
+  transform: translateY(-1px);
+}
+
+.settings-corner__btn--open {
+  border-color: var(--accent);
+}
+
+.settings-corner__btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.settings-corner__panel {
+  transform-origin: bottom left;
 }
 
 .title-bar__window-controls {
@@ -1032,13 +1060,47 @@ h3 {
 }
 
 .specials-item__preview {
+  position: relative;
   flex-shrink: 0;
   width: 96px;
   height: 54px;
   border-radius: 8px;
-  object-fit: cover;
+  overflow: hidden;
   border: 1px solid var(--border);
   background-color: var(--bg);
+  padding: 0;
+}
+
+.specials-item__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.specials-item__preview--clickable {
+  cursor: zoom-in;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.specials-item__preview--clickable:hover {
+  transform: scale(1.04);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.specials-item__preview-count {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  min-width: 16px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.62);
+  pointer-events: none;
 }
 
 .specials-item__preview--none {
@@ -1048,6 +1110,97 @@ h3 {
   font-size: 0.65rem;
   color: var(--text-muted);
   user-select: none;
+}
+
+/* ---- Preview lightbox ---- */
+
+.preview-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(8px);
+  cursor: zoom-out;
+}
+
+.preview-lightbox__stage {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: min(88vw, 1100px);
+  cursor: default;
+}
+
+.preview-lightbox__img {
+  max-width: min(74vw, 960px);
+  max-height: 72vh;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  background-color: var(--bg);
+}
+
+.preview-lightbox__arrow {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--text) 8%, var(--bg));
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.preview-lightbox__arrow:hover {
+  background-color: color-mix(in srgb, var(--accent) 22%, var(--bg));
+  transform: scale(1.08);
+}
+
+.preview-lightbox__caption {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: default;
+}
+
+.preview-lightbox__counter {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.preview-lightbox__close {
+  position: absolute;
+  top: 52px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--text) 8%, var(--bg));
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.preview-lightbox__close:hover {
+  background-color: color-mix(in srgb, #ef4444 30%, var(--bg));
 }
 
 .specials-item__info {
@@ -1261,13 +1414,13 @@ h3 {
   background-color: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-/* Floating batch-download bar */
+/* Floating batch-download bar — lives bottom-left, stacked above the Settings corner,
+   with the same ambient-glow treatment as the app rows. */
 .selection-bar {
   position: fixed;
-  bottom: 44px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 55;
+  bottom: 92px;
+  left: 16px;
+  z-index: 50;
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -1276,6 +1429,22 @@ h3 {
   border-radius: 999px;
   background-color: var(--surface-solid);
   box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.selection-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(140px 130% at 0% 50%, color-mix(in srgb, var(--accent) 35%, transparent) 0%, transparent 70%);
+  animation: status-glow-breathe 2.8s ease-in-out infinite;
+}
+
+.selection-bar > * {
+  position: relative;
+  z-index: 1;
 }
 
 .selection-bar__count {
