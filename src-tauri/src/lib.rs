@@ -12,7 +12,7 @@ use commands::scripts::{
     cleanup_legacy_startup_pins, find_generated_script, generate_script, is_script_pinned, pin_script_to_start_menu,
     unpin_script_from_start_menu,
 };
-use commands::specials::{install_specials_item, specials_item_installed};
+use commands::specials::{apply_cursor_variant, install_specials_item, list_cursor_variants, specials_item_installed};
 use downloader::DownloadManager;
 
 /// Writes any Rust panic (message + backtrace) to a fixed log file so a crash
@@ -62,7 +62,9 @@ pub fn run() {
             unpin_script_from_start_menu,
             start_specials_download,
             install_specials_item,
-            specials_item_installed
+            specials_item_installed,
+            list_cursor_variants,
+            apply_cursor_variant
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

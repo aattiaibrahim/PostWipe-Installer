@@ -1,12 +1,20 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { SpecialsItem as Item } from "../state/specialsContentStore";
-import { PreviewLightbox } from "./PreviewLightbox";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
 import { SPECIALS_WORKER_URL } from "../lib/specialsConfig";
 import { useSpecialsStore } from "../state/specialsStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
-import { startSpecialsDownload, installSpecialsItem } from "../lib/tauriCommands";
+import {
+  startSpecialsDownload,
+  installSpecialsItem,
+  listCursorVariants,
+  applyCursorVariant,
+  type CursorVariant,
+} from "../lib/tauriCommands";
+import { PreviewLightbox } from "./PreviewLightbox";
+import { SoundPreview } from "./SoundPreview";
+import { CursorVariantPicker } from "./CursorVariantPicker";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
@@ -24,6 +32,8 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
   const [installing, setInstalling] = useState(false);
   const [installMsg, setInstallMsg] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [soundsOpen, setSoundsOpen] = useState(false);
+  const [variants, setVariants] = useState<CursorVariant[] | null>(null);
 
   const job = Object.values(jobs)
     .reverse()
@@ -38,13 +48,15 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
 
   const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
 
+  function gatedUrl(objectKey: string): string {
+    return `${SPECIALS_WORKER_URL}/file/${objectKey.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey ?? "")}`;
+  }
+
   async function download() {
     if (!sessionKey) return;
     setError(null);
-    const encoded = item.objectKey.split("/").map(encodeURIComponent).join("/");
-    const url = `${SPECIALS_WORKER_URL}/file/${encoded}?key=${encodeURIComponent(sessionKey)}`;
     try {
-      const { destPath: dp } = await startSpecialsDownload(item.objectKey, item.name, url, item.filename);
+      const { destPath: dp } = await startSpecialsDownload(item.objectKey, item.name, gatedUrl(item.objectKey), item.filename);
       setDestPath(dp);
     } catch (err) {
       setError(String(err));
@@ -56,6 +68,15 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
     setInstalling(true);
     setInstallMsg(null);
     try {
+      // Cursor packs may ship several schemes (dark/light, sizes, colors) as separate
+      // install.inf files — enumerate them and let the user pick which one to apply.
+      if (meta.install === "cursor" && item.ext === "zip") {
+        const found = await listCursorVariants(path);
+        if (found.length > 1) {
+          setVariants(found);
+          return;
+        }
+      }
       const msg = await installSpecialsItem(path, meta.install);
       setInstallMsg(msg);
     } catch (err) {
@@ -65,16 +86,26 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
     }
   }
 
-  const previewUrls = sessionKey
-    ? item.previewKeys.map(
-        (k) =>
-          `${SPECIALS_WORKER_URL}/file/${k.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey)}`,
-      )
-    : [];
+  async function pickVariant(variant: CursorVariant) {
+    setInstalling(true);
+    try {
+      const msg = await applyCursorVariant(variant.inf_path);
+      setInstallMsg(msg);
+      setVariants(null);
+    } catch (err) {
+      setInstallMsg(String(err));
+      setVariants(null);
+    } finally {
+      setInstalling(false);
+    }
+  }
+
+  const previewUrls = sessionKey ? item.previewKeys.map(gatedUrl) : [];
+  const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key) })) : [];
 
   return (
     <div className="specials-item">
-      {previewUrls.length > 0 ? (
+      {previewUrls.length > 0 && (
         <button
           className="specials-item__preview specials-item__preview--clickable"
           onClick={() => setLightboxOpen(true)}
@@ -83,14 +114,35 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
           <img src={previewUrls[0]} alt="" loading="lazy" />
           {previewUrls.length > 1 && <span className="specials-item__preview-count">{previewUrls.length}</span>}
         </button>
-      ) : (
-        <div className="specials-item__preview specials-item__preview--none">
-          <span>No preview</span>
-        </div>
+      )}
+      {previewUrls.length === 0 && sounds.length > 0 && (
+        <button
+          className="specials-item__preview specials-item__preview--sound"
+          onClick={() => setSoundsOpen(true)}
+          title="Preview the sounds"
+        >
+          <span className="specials-item__sound-glyph">♪</span>
+          <span>Preview</span>
+        </button>
       )}
       <AnimatePresence>
         {lightboxOpen && previewUrls.length > 0 && (
           <PreviewLightbox urls={previewUrls} title={item.name} onClose={() => setLightboxOpen(false)} />
+        )}
+        {soundsOpen && sounds.length > 0 && (
+          <SoundPreview title={item.name} sounds={sounds} onClose={() => setSoundsOpen(false)} />
+        )}
+        {variants && (
+          <CursorVariantPicker
+            title={item.name}
+            variants={variants}
+            busy={installing}
+            onPick={pickVariant}
+            onClose={() => {
+              setVariants(null);
+              setInstalling(false);
+            }}
+          />
         )}
       </AnimatePresence>
       <div className="specials-item__info">

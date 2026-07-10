@@ -3,6 +3,7 @@ import { useCatalogStore } from "../state/catalogStore";
 import { useOsDetect } from "../hooks/useOsDetect";
 import { useDownloadEvents } from "../hooks/useDownloadEvents";
 import { OsPicker } from "../components/OsPicker";
+import { VendorToggle } from "../components/VendorToggle";
 import { SearchFilterBar } from "../components/SearchFilterBar";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
@@ -45,6 +46,7 @@ export function Browse() {
     <div className="browse">
       <div className="browse__topbar">
         <OsPicker />
+        <VendorToggle />
         <SearchFilterBar />
       </div>
       <div className="browse__body">

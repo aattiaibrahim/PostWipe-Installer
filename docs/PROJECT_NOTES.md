@@ -160,6 +160,55 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Big previews/UX batch — 2026-07-10
+- **Settings moved INTO the sidebar** (`SidebarSettings.tsx` inside `CategorySidebar`, replacing
+  `SettingsCorner.tsx` — user disliked the full-screen blur): gear row at the sidebar bottom;
+  opening expands the panel upward *in* the sidebar (full sidebar width, sidebar widened
+  208→236px) while `.sidebar--settings-open .sidebar__categories` dims (opacity .3, saturate .5,
+  scale .965, pointer-events none); gear again / Esc / click-away restores. No backdrop.
+- **SelectionBar moved into the title bar** next to the brand (slides down from the very top,
+  `initial y:-34`); compact pill, same count/Clear/Download info. `TitleBar` wraps brand +
+  SelectionBar in `.title-bar__left`.
+- **Rows click-to-expand**: clicking anywhere on an `.app-row` (except buttons/inputs/links)
+  toggles the bio panel — not just the chevron.
+- **Intel/AMD toggle is global**: `vendorFilter` lives in `catalogStore`, `VendorToggle.tsx`
+  renders in the Browse topbar always; vendor-tagged apps hide under the other vendor, untagged
+  always show. (Only ZenTimings + ASRock TC are tagged, both `amd`.)
+- **Cursor previews for the 11 pack zips with no internal image**: scratchpad
+  `cursor-previews.cjs` extracts each pack's Normal Select `.cur`/`.ani`, decodes the ICO/RIFF
+  (32/24/8/4/1-bpp BMP DIB + AND mask, PNG-compressed entries, first .ani "icon" chunk),
+  composites centered on 192×108 transparent PNG (integer nearest-neighbor upscale), uploaded as
+  `previews/<zip stem>.png`. Watch out: "Alternate Select" is the up-arrow — the name scorer must
+  prefer normal/arrow/default and negative-match alternate/text/help/etc.
+- **Font previews**: extracted a representative `.ttf`/`.otf` per font zip, rendered 480×270
+  sample PNGs via PowerShell GDI+ (`PrivateFontCollection`, dark card, name + alphabet + pangram),
+  uploaded as `previews/<zip stem>.png`. All 6 fonts covered.
+- **Sound previews are playable in-app**: all 31 wavs from Anime Sounds + Linux Ubuntu extracted
+  and uploaded under `previews-audio/<zip stem>/<file>.wav`; `specialsContentStore` indexes them
+  into `item.audioPreviews`; sound items show a "♪ Preview" chip → `SoundPreview.tsx` overlay
+  listing every sound with play/stop (one `Audio` at a time, gated URLs).
+- **Nested Specials folders**: `Tweaks/<cat>/<sub>/<file>` (e.g. Audio & EQ ▸ "Sennheiser 650")
+  renders as an expandable folder row (`SubfolderRow` in `SpecialsContent`). Also fixes downloads
+  of nested files (filename is now the basename, was "sub/file").
+- **No-preview placeholder removed**: items with neither image nor audio previews (PSD, themes,
+  EQ files) show no preview box at all.
+- **Cursor install variant picker**: `list_cursor_variants` (Rust) extracts + enumerates every
+  `install.inf` labeled by its `SCHEME_NAME` (UTF-16 aware) or folder; >1 → `CursorVariantPicker`
+  overlay; pick → `apply_cursor_variant` runs that .inf via InstallHinfSection. Single-inf packs
+  apply directly as before.
+- **CI builds macOS too**: release.yml split into a `version` job (bump+push once) and a
+  `build` matrix (windows-latest + macos-latest `--target universal-apple-darwin`); both publish
+  to the same tag via tauri-action. bundle.targets already had dmg/app. NOTE: the mac build is
+  unsigned — Gatekeeper will warn (right-click ▸ Open).
+- **Pin to Start** (user asked again): `.lnk` at Programs root is correct and verified on disk;
+  the *pinned tiles* grid is `start2.bin` (a binary database, NOT a folder) — no file move can
+  pin, and Win11 returns E_ACCESSDENIED for the programmatic pin verb for all normal apps. Other
+  installers don't do it either; syspin/start2.bin hacks stay rejected. Restored the user's
+  "Restart Audio Service" pin manually once more.
+- **Browser-preview gotcha**: in the occluded preview pane rAF is suspended → framer-motion
+  exit animations never run → AnimatePresence keeps filtered-out rows in the DOM. Verify filter
+  logic via a non-animated branch (e.g. the empty-state message), not row counts.
+
 ### Settings corner, pins to Programs root, Steam preview galleries, Firefox — 2026-07-09 (third pass)
 - **Settings moved to the bottom-left corner** (`SettingsCorner.tsx`, mounted in `App.tsx`): fixed
   gear pill at bottom:40/left:16; clicking expands the panel *upward* over a full-screen dimming +

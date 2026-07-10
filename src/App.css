@@ -306,6 +306,13 @@ h3 {
   user-select: none;
 }
 
+.title-bar__left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+}
+
 .title-bar__brand {
   display: flex;
   align-items: center;
@@ -348,58 +355,72 @@ h3 {
   height: 100%;
 }
 
-/* Settings corner: bottom-left button, panel expands upward, backdrop dims the app */
-.settings-corner {
-  position: fixed;
-  bottom: 40px;
-  left: 16px;
-  z-index: 54;
+/* Settings: bottom of the category sidebar. Opening expands the panel upward IN the
+   sidebar (full sidebar width); the categories above dim + shrink out of the way. */
+.sidebar-settings {
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.6rem;
+  gap: 0.4rem;
 }
 
-.settings-corner__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 52;
-  background-color: color-mix(in srgb, var(--bg) 55%, transparent);
-  backdrop-filter: blur(3px) saturate(80%);
-  -webkit-backdrop-filter: blur(3px) saturate(80%);
-}
-
-.settings-corner__btn {
-  display: inline-flex;
+.sidebar-settings__btn {
+  display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background-color: var(--surface-solid);
-  color: var(--text);
-  font-size: 0.82rem;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
   font-weight: 500;
+  text-align: left;
   cursor: pointer;
-  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.35);
-  transition: background-color 0.15s ease, transform 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.settings-corner__btn:hover {
-  transform: translateY(-1px);
+.sidebar-settings__btn:hover {
+  background-color: color-mix(in srgb, var(--text) 12%, transparent);
+  color: var(--text);
 }
 
-.settings-corner__btn--open {
-  border-color: var(--accent);
+.sidebar-settings__btn--open {
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
 }
 
-.settings-corner__btn svg {
-  width: 15px;
-  height: 15px;
+.sidebar-settings__btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
-.settings-corner__panel {
+.sidebar-settings__panel {
   transform-origin: bottom left;
+}
+
+.sidebar-settings__panel .settings-panel {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 10px 32px -12px rgba(0, 0, 0, 0.4);
+}
+
+.sidebar__categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease;
+}
+
+.sidebar--settings-open .sidebar__categories {
+  opacity: 0.3;
+  filter: saturate(0.5);
+  transform: scale(0.965);
+  pointer-events: none;
 }
 
 .title-bar__window-controls {
@@ -430,15 +451,14 @@ h3 {
   color: #fff;
 }
 
+/* Sized by its container (the sidebar settings slot) — chrome comes from
+   .sidebar-settings__panel .settings-panel. */
 .settings-panel {
-  width: 260px;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background-color: var(--surface-solid);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.35);
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .settings-panel__row {
@@ -844,7 +864,8 @@ h3 {
   /* Sits below the sticky topbar (measured height) instead of sliding under it. */
   top: 76px;
   flex-shrink: 0;
-  width: 208px;
+  /* Wide enough that the expanded settings panel doesn't feel cramped. */
+  width: 236px;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -1203,6 +1224,201 @@ h3 {
   background-color: color-mix(in srgb, #ef4444 30%, var(--bg));
 }
 
+/* ---- Sound preview / variant picker overlay card ---- */
+
+.sound-preview {
+  width: min(88vw, 440px);
+  max-height: 74vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  cursor: default;
+  overflow: hidden;
+}
+
+.sound-preview__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.9rem 1rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sound-preview__title {
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.sound-preview__count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.sound-preview__list {
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sound-preview__row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.sound-preview__row:hover {
+  background-color: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.sound-preview__row--playing {
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.sound-preview__play {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  background-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+}
+
+.sound-preview__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sound-preview__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.sound-preview__bars i {
+  width: 3px;
+  border-radius: 2px;
+  background-color: var(--accent);
+  animation: sound-bar-bounce 0.9s ease-in-out infinite;
+}
+
+.sound-preview__bars i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.sound-preview__bars i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes sound-bar-bounce {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 12px;
+  }
+}
+
+/* Sound sets have no image — the preview slot becomes a "♪ Preview" chip instead. */
+.specials-item__preview--sound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.specials-item__preview--sound:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.specials-item__sound-glyph {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ---- Nested Specials folder (e.g. Audio & EQ ▸ Sennheiser 650) ---- */
+
+.specials-folder__head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.65rem 0.5rem;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 550;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.specials-folder__head:hover {
+  background-color: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.specials-folder__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.specials-folder__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.specials-folder__chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.specials-folder__items {
+  margin-left: 1.3rem;
+  border-left: 1px solid var(--border);
+  padding-left: 0.4rem;
+}
+
 .specials-item__info {
   flex: 1;
   min-width: 0;
@@ -1370,6 +1586,10 @@ h3 {
   transition: background-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
+.app-row--expandable {
+  cursor: pointer;
+}
+
 .app-row:hover {
   background-color: var(--surface-hover);
   box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.25);
@@ -1414,21 +1634,18 @@ h3 {
   background-color: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-/* Floating batch-download bar — lives bottom-left, stacked above the Settings corner,
-   with the same ambient-glow treatment as the app rows. */
+/* Batch-download pill — slides down from the very top, inside the title bar next to the
+   brand, with the same ambient-glow treatment as the app rows. */
 .selection-bar {
-  position: fixed;
-  bottom: 92px;
-  left: 16px;
-  z-index: 50;
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 0.6rem 0.7rem 0.6rem 1.1rem;
+  gap: 0.8rem;
+  margin-left: 0.9rem;
+  padding: 2px 4px 2px 0.8rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background-color: var(--surface-solid);
-  box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.45);
   overflow: hidden;
 }
 
@@ -1448,7 +1665,7 @@ h3 {
 }
 
 .selection-bar__count {
-  font-size: 0.85rem;
+  font-size: 0.76rem;
   font-weight: 500;
   color: var(--text);
   white-space: nowrap;
@@ -1457,16 +1674,16 @@ h3 {
 .selection-bar__actions {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.25rem;
 }
 
 .selection-bar__clear {
-  padding: 0.45rem 0.85rem;
+  padding: 0.28rem 0.6rem;
   border-radius: 999px;
   border: none;
   background: none;
   color: var(--text-muted);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   cursor: pointer;
 }
 
@@ -1475,12 +1692,12 @@ h3 {
 }
 
 .selection-bar__download {
-  padding: 0.45rem 1.1rem;
+  padding: 0.28rem 0.8rem;
   border-radius: 999px;
   border: none;
   background-color: var(--accent);
   color: var(--accent-text);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;

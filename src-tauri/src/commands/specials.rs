@@ -104,23 +104,106 @@ pub fn install_specials_item(app_handle: AppHandle, archive_path: String, instal
                         Ok("This pack has no Windows installer (it looks like a Linux/macOS cursor set) — opened the folder so you can see what's inside.".into())
                     }
                 }
-                1 => match apply_inf(&infs[0]) {
+                // One or many variants: the frontend uses list_cursor_variants + a picker for
+                // the multi-inf case; landing here means a single scheme — apply it directly.
+                _ => match apply_inf(&infs[0]) {
                     Ok(()) => Ok("Cursor scheme applied. If it didn't change, pick it under Mouse settings ▸ Pointers.".into()),
                     Err(e) => {
                         open_folder(&app_handle, &folder);
                         Err(format!("Couldn't auto-apply ({e}). Opened the folder — right-click install.inf ▸ Install."))
                     }
                 },
-                _ => {
-                    open_folder(&app_handle, &folder);
-                    Ok("This pack has multiple variants — opened the folder; right-click the install.inf you want ▸ Install.".into())
-                }
             }
         }
         // font / sound / anything else: extract and let the user apply from the folder.
         _ => {
             open_folder(&app_handle, &folder);
             Ok("Extracted — opened the folder. Right-click the files ▸ Install (fonts) or apply the sound set.".into())
+        }
+    }
+}
+
+#[derive(serde::Serialize)]
+pub struct CursorVariant {
+    pub label: String,
+    pub inf_path: String,
+}
+
+/// Reads the cursor scheme's display name out of an install.inf ([Strings] SCHEME_NAME).
+fn inf_scheme_name(inf: &Path) -> Option<String> {
+    let raw = std::fs::read(inf).ok()?;
+    // .inf files are frequently UTF-16LE; fall back to lossy UTF-8 otherwise.
+    let text = if raw.len() >= 2 && raw[0] == 0xFF && raw[1] == 0xFE {
+        String::from_utf16_lossy(
+            &raw[2..raw.len() - raw.len() % 2]
+                .chunks_exact(2)
+                .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                .collect::<Vec<_>>(),
+        )
+    } else {
+        String::from_utf8_lossy(&raw).to_string()
+    };
+    for line in text.lines() {
+        let line = line.trim();
+        if let Some(rest) = line.strip_prefix("SCHEME_NAME") {
+            let value = rest.trim_start().strip_prefix('=')?.trim();
+            let value = value.trim_matches('"').trim();
+            if !value.is_empty() {
+                return Some(value.to_string());
+            }
+        }
+    }
+    None
+}
+
+/// Extracts the pack (if needed) and lists every install.inf variant inside it, labeled by
+/// the scheme name from the inf itself (falling back to its folder name). The UI shows these
+/// as a "which one do you want?" picker before applying.
+#[tauri::command]
+pub fn list_cursor_variants(archive_path: String) -> Result<Vec<CursorVariant>, String> {
+    let archive = PathBuf::from(&archive_path);
+    if !archive.exists() {
+        return Err(format!("{archive_path} not found — download it again."));
+    }
+    let is_zip = archive.extension().map(|e| e.eq_ignore_ascii_case("zip")).unwrap_or(false);
+    if !is_zip {
+        return Ok(Vec::new());
+    }
+    let folder = expand_zip(&archive)?;
+    let mut infs = find_by_ext(&folder, &["inf"]);
+    infs.sort();
+
+    let variants: Vec<CursorVariant> = infs
+        .into_iter()
+        .map(|inf| {
+            let label = inf_scheme_name(&inf)
+                .or_else(|| {
+                    inf.parent()
+                        .filter(|p| *p != folder)
+                        .and_then(|p| p.file_name())
+                        .map(|n| n.to_string_lossy().to_string())
+                })
+                .unwrap_or_else(|| {
+                    inf.file_stem().map(|s| s.to_string_lossy().to_string()).unwrap_or_else(|| "Cursor scheme".into())
+                });
+            CursorVariant { label, inf_path: inf.to_string_lossy().to_string() }
+        })
+        .collect();
+    Ok(variants)
+}
+
+/// Applies one specific install.inf chosen in the variant picker.
+#[tauri::command]
+pub fn apply_cursor_variant(app_handle: AppHandle, inf_path: String) -> Result<String, String> {
+    let inf = PathBuf::from(&inf_path);
+    if !inf.exists() {
+        return Err(format!("{inf_path} not found — reinstall the pack."));
+    }
+    match apply_inf(&inf) {
+        Ok(()) => Ok("Cursor scheme applied. If it didn't change, pick it under Mouse settings ▸ Pointers.".into()),
+        Err(e) => {
+            reveal(&app_handle, &inf);
+            Err(format!("Couldn't auto-apply ({e}). Opened the folder — right-click the .inf ▸ Install."))
         }
     }
 }

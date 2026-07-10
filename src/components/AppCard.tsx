@@ -148,7 +148,16 @@ export function AppCard({ app, os }: AppCardProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <div className={`app-row${statusClass}${selected ? " app-row--selected" : ""}`}>
+      <div
+        className={`app-row${statusClass}${selected ? " app-row--selected" : ""}${hasDetails ? " app-row--expandable" : ""}`}
+        onClick={(e) => {
+          // The whole row toggles the info panel — but not when the click was really
+          // aimed at a control inside it (checkbox, download/pin buttons, links).
+          if (!hasDetails) return;
+          if ((e.target as HTMLElement).closest("button, input, a, label")) return;
+          setExpanded((x) => !x);
+        }}
+      >
         <span className="app-row__status-glow" aria-hidden="true" />
         {selectable && (
           <input

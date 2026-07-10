@@ -47,6 +47,20 @@ export function installSpecialsItem(archivePath: string, installType: string): P
   return invoke("install_specials_item", { archivePath, installType });
 }
 
+export interface CursorVariant {
+  label: string;
+  inf_path: string;
+}
+
+/** Extracts a cursor pack and lists every install.inf scheme inside it (for the variant picker). */
+export function listCursorVariants(archivePath: string): Promise<CursorVariant[]> {
+  return invoke("list_cursor_variants", { archivePath });
+}
+
+export function applyCursorVariant(infPath: string): Promise<string> {
+  return invoke("apply_cursor_variant", { infPath });
+}
+
 export async function specialsItemInstalled(filename: string): Promise<boolean> {
   if (!isTauri) return false;
   return invoke("specials_item_installed", { filename });

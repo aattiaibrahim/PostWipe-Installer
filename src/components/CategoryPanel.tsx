@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import type { Catalog, Os, Vendor } from "../types/catalog";
+import { AnimatePresence } from "framer-motion";
+import type { Catalog, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
 import { ALL_CATEGORY_ID } from "../lib/constants";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
+import { useCatalogStore } from "../state/catalogStore";
 import { SpecialsLock } from "./SpecialsLock";
 import { SpecialsUnlockBurst } from "./SpecialsUnlockBurst";
 import { SpecialsContent } from "./SpecialsContent";
@@ -15,45 +15,11 @@ interface CategoryPanelProps {
   selectedCategoryId: string | null;
 }
 
-const OVERCLOCKING_CATEGORY_ID = "overclocking";
-type VendorFilter = "all" | Vendor;
-const VENDOR_OPTIONS: { value: VendorFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "intel", label: "Intel" },
-  { value: "amd", label: "AMD" },
-];
-
-/** All/Intel/AMD lightswitch for the Overclocking category, styled like the OS picker. */
-function VendorToggle({ value, onChange }: { value: VendorFilter; onChange: (v: VendorFilter) => void }) {
-  return (
-    <div className="os-picker os-picker--vendor">
-      {VENDOR_OPTIONS.map((opt) => {
-        const active = value === opt.value;
-        return (
-          <button
-            key={opt.value}
-            className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
-            onClick={() => onChange(opt.value)}
-          >
-            {active && (
-              <motion.div
-                className="os-picker__indicator"
-                layoutId="vendor-toggle-indicator"
-                transition={{ type: "spring", stiffness: 700, damping: 46, mass: 0.7 }}
-              />
-            )}
-            <span>{opt.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: CategoryPanelProps) {
   const specialsUnlocked = useSpecialsStore((s) => s.unlocked);
   const justUnlocked = useSpecialsStore((s) => s.justUnlocked);
-  const [vendorFilter, setVendorFilter] = useState<VendorFilter>("all");
+  // Vendor filter lives in the topbar now (VendorToggle) and applies to every category.
+  const vendorFilter = useCatalogStore((s) => s.vendorFilter);
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
 
@@ -75,15 +41,13 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
       : catalog.categories.filter((c) => c.id === selectedCategoryId)
   ).filter((c) => c.id !== SPECIALS_CATEGORY_ID);
 
-  const showVendorToggle = !isSearching && selectedCategoryId === OVERCLOCKING_CATEGORY_ID;
-
   const sections = categories
     .map((category) => ({
       category,
       apps: category.apps.filter((app) => {
         if (!app.platforms[os]) return false;
-        // Vendor filter applies only while browsing the Overclocking category directly.
-        if (showVendorToggle && vendorFilter !== "all" && app.vendor && app.vendor !== vendorFilter) return false;
+        // Vendor-tagged apps hide when the other vendor is selected; untagged apps always show.
+        if (vendorFilter !== "all" && app.vendor && app.vendor !== vendorFilter) return false;
         if (!query) return true;
         return app.name.toLowerCase().includes(query);
       }),
@@ -94,8 +58,6 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
     return (
       <div className="category-panel">
         {justUnlocked && <SpecialsUnlockBurst />}
-        {/* Keep the toggle reachable so a vendor filter that empties the list can be undone. */}
-        {showVendorToggle && <VendorToggle value={vendorFilter} onChange={setVendorFilter} />}
         <p className="category-panel__empty">
           {isSearching ? "No apps match your search." : "No apps in this category yet."}
         </p>
@@ -110,9 +72,6 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
         <section key={category.id} className="category-panel__section">
           <div className="category-panel__header">
             <h2 className="category-panel__title">{category.name}</h2>
-            {showVendorToggle && category.id === OVERCLOCKING_CATEGORY_ID && (
-              <VendorToggle value={vendorFilter} onChange={setVendorFilter} />
-            )}
           </div>
           <div className="category-panel__rows">
             <AnimatePresence initial={false}>
