@@ -473,8 +473,21 @@ h3 {
   border-top: 1px solid var(--border);
 }
 
+/* Stacked: the Light/Dark toggle is wider than the sidebar panel leaves room for beside
+   the label, and side-by-side it clipped out of bounds. */
 .settings-panel__row--theme {
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+.settings-panel__row--theme .os-picker {
+  align-self: stretch;
+}
+
+.settings-panel__row--theme .os-picker__tile {
+  flex: 1;
+  justify-content: center;
 }
 
 .settings-panel__label {
@@ -944,7 +957,10 @@ h3 {
   width: 13px;
   height: 13px;
   flex-shrink: 0;
-  opacity: 0.75;
+  /* currentColor is the muted row color — too dark against the dark sidebar; the lock
+     needs to read at a glance, so lift it to full text color. --active keeps it white. */
+  color: var(--text);
+  opacity: 0.95;
 }
 
 /* Specials password curtain */

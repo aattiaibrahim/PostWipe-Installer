@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 
 /** Overlay listing every sound in a set with a play button per sound. One sound plays at a
@@ -40,7 +41,8 @@ export function SoundPreview({
     setPlaying(sound.name);
   }
 
-  return (
+  // Portaled to <body> so ancestor transforms can't trap the fixed overlay (see PreviewLightbox).
+  return createPortal(
     <motion.div
       className="preview-lightbox"
       initial={{ opacity: 0 }}
@@ -75,6 +77,7 @@ export function SoundPreview({
       <button className="preview-lightbox__close" onClick={onClose} aria-label="Close sound preview">
         ✕
       </button>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }

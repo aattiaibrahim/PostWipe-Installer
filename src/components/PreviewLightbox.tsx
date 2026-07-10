@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 /** Full-screen preview viewer: click-out or Esc closes, arrows/keys page through images. */
@@ -31,7 +32,9 @@ export function PreviewLightbox({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, step, many]);
 
-  return (
+  // Portaled to <body>: ancestors of the Specials rows carry framer-motion transforms,
+  // which hijack position:fixed and would trap the lightbox inside the category panel.
+  return createPortal(
     <motion.div
       className="preview-lightbox"
       initial={{ opacity: 0 }}
@@ -75,6 +78,7 @@ export function PreviewLightbox({
       <button className="preview-lightbox__close" onClick={onClose} aria-label="Close preview">
         ✕
       </button>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }

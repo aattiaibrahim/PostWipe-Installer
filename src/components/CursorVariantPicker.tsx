@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import type { CursorVariant } from "../lib/tauriCommands";
 
@@ -25,7 +26,8 @@ export function CursorVariantPicker({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  return (
+  // Portaled to <body> so ancestor transforms can't trap the fixed overlay (see PreviewLightbox).
+  return createPortal(
     <motion.div
       className="preview-lightbox"
       initial={{ opacity: 0 }}
@@ -56,6 +58,7 @@ export function CursorVariantPicker({
       <button className="preview-lightbox__close" onClick={onClose} aria-label="Close picker">
         ✕
       </button>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }
