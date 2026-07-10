@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 
+// driftSpeed/driftRadius = autonomous wandering; morphSpeed = self-squish. Tuned up on
+// request ("give them autonomy but not crazy fast"): larger orbits + squish, same pace.
 const BLOBS = [
-  { className: "ambient-bg__blob--1", parallax: 130, driftSpeed: 0.00011, driftRadius: 40, scrollFactor: 0.18, morphSpeed: 0.00045 },
-  { className: "ambient-bg__blob--2", parallax: 190, driftSpeed: 0.00016, driftRadius: 55, scrollFactor: -0.24, morphSpeed: 0.00058 },
-  { className: "ambient-bg__blob--3", parallax: 90, driftSpeed: 0.00009, driftRadius: 30, scrollFactor: 0.14, morphSpeed: 0.00037 },
+  { className: "ambient-bg__blob--1", parallax: 130, driftSpeed: 0.00019, driftRadius: 110, scrollFactor: 0.18, morphSpeed: 0.00045 },
+  { className: "ambient-bg__blob--2", parallax: 190, driftSpeed: 0.00026, driftRadius: 150, scrollFactor: -0.24, morphSpeed: 0.00058 },
+  { className: "ambient-bg__blob--3", parallax: 90, driftSpeed: 0.00015, driftRadius: 85, scrollFactor: 0.14, morphSpeed: 0.00037 },
 ];
 
 export function AmbientBackground() {
@@ -44,8 +46,8 @@ export function AmbientBackground() {
         const scrollY = scrollEased.current * blob.scrollFactor;
         // Autonomous sway: each blob slowly squishes on its own axes (out-of-phase X/Y
         // scale oscillation reads as organic breathing, independent of the cursor).
-        const scaleX = 1 + 0.07 * Math.sin(elapsed * blob.morphSpeed + i * 2.1);
-        const scaleY = 1 + 0.07 * Math.cos(elapsed * blob.morphSpeed * 0.8 + i * 1.4);
+        const scaleX = 1 + 0.14 * Math.sin(elapsed * blob.morphSpeed + i * 2.1);
+        const scaleY = 1 + 0.14 * Math.cos(elapsed * blob.morphSpeed * 0.8 + i * 1.4);
         el.style.transform = `translate3d(${parallaxX + driftX}px, ${parallaxY + driftY + scrollY}px, 0) scale(${scaleX.toFixed(4)}, ${scaleY.toFixed(4)})`;
       });
 

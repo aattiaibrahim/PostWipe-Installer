@@ -48,8 +48,8 @@ fn expand_zip(zip: &Path) -> Result<PathBuf, String> {
     Ok(dest)
 }
 
-/// Recursively collect `.inf` files under `dir`.
-fn find_infs(dir: &Path) -> Vec<PathBuf> {
+/// Recursively collect files with any of the given extensions under `dir`.
+fn find_by_ext(dir: &Path, exts: &[&str]) -> Vec<PathBuf> {
     let mut out = Vec::new();
     let mut stack = vec![dir.to_path_buf()];
     while let Some(d) = stack.pop() {
@@ -58,7 +58,11 @@ fn find_infs(dir: &Path) -> Vec<PathBuf> {
             let p = entry.path();
             if p.is_dir() {
                 stack.push(p);
-            } else if p.extension().map(|e| e.eq_ignore_ascii_case("inf")).unwrap_or(false) {
+            } else if p
+                .extension()
+                .map(|e| exts.iter().any(|x| e.eq_ignore_ascii_case(x)))
+                .unwrap_or(false)
+            {
                 out.push(p);
             }
         }
@@ -89,11 +93,16 @@ pub fn install_specials_item(app_handle: AppHandle, archive_path: String, instal
 
     match install_type.as_str() {
         "cursor" => {
-            let infs = find_infs(&folder);
+            let infs = find_by_ext(&folder, &["inf"]);
             match infs.len() {
                 0 => {
                     open_folder(&app_handle, &folder);
-                    Ok("Extracted, but no install.inf was found — opened the folder to apply manually.".into())
+                    let has_windows_cursors = !find_by_ext(&folder, &["cur", "ani"]).is_empty();
+                    if has_windows_cursors {
+                        Ok("This pack has no install.inf — opened the folder. Apply it via Mouse settings ▸ Pointers ▸ Browse to these .cur/.ani files.".into())
+                    } else {
+                        Ok("This pack has no Windows installer (it looks like a Linux/macOS cursor set) — opened the folder so you can see what's inside.".into())
+                    }
                 }
                 1 => match apply_inf(&infs[0]) {
                     Ok(()) => Ok("Cursor scheme applied. If it didn't change, pick it under Mouse settings ▸ Pointers.".into()),

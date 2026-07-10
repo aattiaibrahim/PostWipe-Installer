@@ -27,8 +27,10 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
     .find((j) => j.appId === item.objectKey);
   const downloading = !!job && ACTIVE_STATUSES.has(job.status);
   const failed = job?.status === "failed";
-  const downloaded = !!destPath || job?.status === "completed";
-  const path = destPath ?? job?.destPath ?? null;
+  // Only a COMPLETED job counts as downloaded — enabling Install as soon as the download
+  // *started* let people unzip a half-written archive and "install.inf not found".
+  const downloaded = job?.status === "completed";
+  const path = downloaded ? (job?.destPath ?? destPath) : null;
   const canInstall = meta.install !== "none";
 
   const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
@@ -60,8 +62,20 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
     }
   }
 
+  const previewUrl =
+    item.previewKey && sessionKey
+      ? `${SPECIALS_WORKER_URL}/file/${item.previewKey.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey)}`
+      : null;
+
   return (
     <div className="specials-item">
+      {previewUrl ? (
+        <img className="specials-item__preview" src={previewUrl} alt="" loading="lazy" />
+      ) : (
+        <div className="specials-item__preview specials-item__preview--none">
+          <span>No preview</span>
+        </div>
+      )}
       <div className="specials-item__info">
         <span className="specials-item__name">{item.name}</span>
         <span className="specials-item__meta">{fmtSize(item.size)}</span>

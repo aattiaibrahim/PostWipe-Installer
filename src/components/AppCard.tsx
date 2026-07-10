@@ -39,6 +39,7 @@ export function AppCard({ app, os }: AppCardProps) {
   const [pinned, setPinned] = useState(false);
   const [pinBusy, setPinBusy] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
+  const [pinMsg, setPinMsg] = useState<string | null>(null);
 
   const jobs = useDownloadQueueStore((s) => s.jobs);
   const selected = useSelectionStore((s) => s.selected.includes(app.id));
@@ -109,6 +110,7 @@ export function AppCard({ app, os }: AppCardProps) {
     if (!scriptId) return;
     setPinBusy(true);
     setPinError(null);
+    setPinMsg(null);
     try {
       if (pinned) {
         await unpinScriptFromStartMenu(scriptId);
@@ -116,6 +118,9 @@ export function AppCard({ app, os }: AppCardProps) {
       } else if (generatedPath) {
         await pinScriptToStartMenu(scriptId, generatedPath);
         setPinned(true);
+        // Windows 11 blocks apps from pinning tiles (E_ACCESSDENIED on the shell verb),
+        // so the last step is necessarily the user's — say so instead of looking broken.
+        setPinMsg("Added to Start ▸ All apps ▸ PostWipe. For a tile: right-click it there ▸ Pin to Start.");
       }
     } catch (err) {
       setPinError(String(err));
@@ -124,7 +129,7 @@ export function AppCard({ app, os }: AppCardProps) {
     }
   }
 
-  const showStatusArea = (!isDownloadingJob && !!failureMessage) || !!pinError;
+  const showStatusArea = (!isDownloadingJob && !!failureMessage) || !!pinError || !!pinMsg;
 
   const statusClass = isDownloadingJob
     ? " app-row--downloading"
@@ -220,6 +225,7 @@ export function AppCard({ app, os }: AppCardProps) {
             <div className="app-row__action-status">
               {!isDownloadingJob && failureMessage && <span className="app-row__error">{failureMessage}</span>}
               {!isDownloadingJob && pinError && <span className="app-row__error">{pinError}</span>}
+              {!isDownloadingJob && !pinError && pinMsg && <span className="app-row__pin-msg">{pinMsg}</span>}
             </div>
           )}
         </div>

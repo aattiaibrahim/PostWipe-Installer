@@ -160,6 +160,31 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Specials vault fixes + previews — 2026-07-09 (second pass)
+- **Install "can't find install.inf" root cause**: the Install button un-greyed as soon as the
+  download *started* (destPath was set from the start handle, not completion), so users could
+  unzip a half-written archive. Now `downloaded` requires `job.status === "completed"`. Also:
+  several packs (Posy's, macOS, diamos, Maverick, Simplify Circle/Handy/Minimal/Tip, ubuntu,
+  cursor_concept_2*, kami) genuinely have **no** `install.inf` — the message now distinguishes
+  "has .cur/.ani but no installer → apply via Mouse settings ▸ Pointers" from "Linux/macOS-format
+  pack". (*cursor_concept_2 actually has `Install.inf` per dark/light subfolder — multi-inf case
+  opens the folder.)
+- **Pin to Start, final verdict**: user means the Start menu *tiles*. Verified on this machine that
+  Windows 11 returns `E_ACCESSDENIED` when a program invokes the shell's "Pin to Start" verb —
+  Microsoft restricts tile-pinning to real user clicks / MDM. The app does the maximum allowed:
+  `.lnk` into Start ▸ All apps ▸ PostWipe (+ search), and after pinning now shows "right-click it
+  there ▸ Pin to Start for a tile". Don't ship syspin/start2.bin hacks.
+- **Previews extracted from inside the pack zips** (user confirmed they're in there): scratchpad
+  script pulls each zip from R2 via wrangler, picks the best internal image (name matches
+  /preview|screenshot|cover/i, else largest ≥25KB, cap 8MB), uploads as `previews/<zip-stem>.<ext>`.
+  17 uploaded; the rest contain no images at all → UI shows a "No preview" placeholder (user OK'd).
+  `specialsContentStore` indexes `previews/*` by stem and attaches `previewKey`; `SpecialsItem`
+  renders a 96×54 thumbnail via the Worker `/file` URL with the session key.
+- **Display names**: curated `DISPLAY_NAMES` map in `specialsConfig.ts` for the messy upload
+  filenames (deviantart suffixes, VSTHEMES.ORG tags, hashes) + `displayName()` heuristic fallback
+  for anything unmapped.
+- **Blob autonomy** turned up (driftRadius ~2.7x, driftSpeed ~1.7x, squish amplitude 0.07→0.14).
+
 ### Specials vault — WIRED (unlock + dynamic listing + download + install) — 2026-07-09
 Deployed and wired end-to-end. Worker lives at
 `https://postwipe-specials-gate.andrewattiaibrahim.workers.dev` (URL constant in
