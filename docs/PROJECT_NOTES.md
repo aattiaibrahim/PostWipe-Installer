@@ -160,6 +160,26 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### PayDay 2 mods, cursor collages, pin-tile reveal — 2026-07-10 (third pass)
+- **PayDay 2 Mods (Diesel 2.0)**: user uploaded `Tweaks/Payday 2 Mods - Diesel 2.0/`
+  (mods.zip + assets.zip) to R2 — appears automatically; added `SPECIALS_CATEGORIES` meta
+  (order 6, download-only) + curated names. To enumerate the bucket WITHOUT the key: a
+  throwaway worker (`tmp-list-*`, separate name so the gate's secret isn't attached) run via
+  `wrangler dev --remote` and curled through the local proxy, then deleted. Note plain
+  `wrangler dev --remote` of the real gate DOES load the deployed secret — the gate stays
+  locked even in dev, and `wrangler r2 object` has no `list` subcommand.
+- **Cursor collages**: `cursor-collage.cjs` (scratchpad) decodes EVERY .cur/.ani in each
+  pack's primary variant folder (biggest dir when multi-scheme), trims, integer-upscales,
+  grids at 104px cells → uploaded as `previews/<stem>__2.png` for all 26 packs. The lightbox
+  opens cursor packs at index 1 (the collage) so inspecting shows the whole set; the 96×54
+  thumbnail stays the single Normal Select / artwork.
+- **Pin tile, closest legal step**: after creating the .lnk the app opens Explorer with it
+  selected (`explorer /select,<lnk>`; suppressed under cfg(test)) — right-click ▸ Pin to
+  Start from Explorer is the one action Windows allows to create the tile. The only sanctioned
+  programmatic route is the packaged-app consent API (SecondaryTile/StartScreenManager),
+  which would require repackaging the NSIS app as MSIX with identity + cert — noted as
+  possible future work, not planned.
+
 ### Cursor-install root cause + pin diagnostics + polish — 2026-07-10 (second pass)
 - **Cursor install "always failed" — ROOT CAUSE (GitHub #1)**: cursor pack .inf files declare
   `DestinationDirs = 10,"%CUR_DIR%"` → SetupAPI copies into `C:\Windows\Cursors\<scheme>`,

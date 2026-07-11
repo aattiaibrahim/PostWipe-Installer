@@ -152,6 +152,18 @@ pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Resul
         return Err("shortcut creation reported success but no .lnk was written".to_string());
     }
     pin_log(&format!("PIN {script_id}: OK -> {}", lnk_path.display()));
+
+    // Windows 11 gives no API to place a Start TILE (that grid lives in start2.bin and the
+    // pin verb returns E_ACCESSDENIED for every normal app) — but right-click ▸ Pin to Start
+    // on the .lnk in Explorer works. So put the user one right-click away: open Explorer
+    // with the fresh shortcut already selected. (Not under test — no windows during cargo test.)
+    #[cfg(not(test))]
+    {
+        let mut reveal = std::process::Command::new("explorer.exe");
+        reveal.arg(format!("/select,{}", lnk_path.to_string_lossy()));
+        let _ = reveal.spawn();
+    }
+
     Ok(lnk_path.to_string_lossy().to_string())
 }
 
