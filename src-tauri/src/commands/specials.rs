@@ -107,10 +107,10 @@ pub fn install_specials_item(app_handle: AppHandle, archive_path: String, instal
                 // One or many variants: the frontend uses list_cursor_variants + a picker for
                 // the multi-inf case; landing here means a single scheme — apply it directly.
                 _ => match apply_inf(&infs[0]) {
-                    Ok(()) => Ok("Cursor scheme applied. If it didn't change, pick it under Mouse settings ▸ Pointers.".into()),
+                    Ok(()) => Ok("Cursor scheme installed (approve the admin prompt when it appears). Select it under Mouse settings ▸ Pointers ▸ Scheme.".into()),
                     Err(e) => {
                         open_folder(&app_handle, &folder);
-                        Err(format!("Couldn't auto-apply ({e}). Opened the folder — right-click install.inf ▸ Install."))
+                        Err(format!("Couldn't install ({e}). Opened the folder — right-click install.inf ▸ Install."))
                     }
                 },
             }
@@ -200,20 +200,49 @@ pub fn apply_cursor_variant(app_handle: AppHandle, inf_path: String) -> Result<S
         return Err(format!("{inf_path} not found — reinstall the pack."));
     }
     match apply_inf(&inf) {
-        Ok(()) => Ok("Cursor scheme applied. If it didn't change, pick it under Mouse settings ▸ Pointers.".into()),
+        Ok(()) => Ok("Cursor scheme installed. Select it under Mouse settings ▸ Pointers ▸ Scheme.".into()),
         Err(e) => {
             reveal(&app_handle, &inf);
-            Err(format!("Couldn't auto-apply ({e}). Opened the folder — right-click the .inf ▸ Install."))
+            Err(format!("Couldn't install ({e}). Opened the folder — right-click the .inf ▸ Install."))
         }
     }
 }
 
 /// Right-click "Install" for an .inf is `InstallHinfSection DefaultInstall`. 132 = quiet, no reboot.
+///
+/// Cursor-pack .inf files copy their files into `%WINDIR%\Cursors` (`DestinationDirs = 10`),
+/// which needs administrator rights — Explorer's right-click ▸ Install elevates via UAC.
+/// Running rundll32 UNelevated is why every install reported "failed" (GitHub issue #1):
+/// SetupAPI couldn't write the destination. So: elevate exactly like Explorer does (the user
+/// sees the standard UAC prompt), then confirm the scheme actually landed in the registry.
 fn apply_inf(inf: &Path) -> Result<(), String> {
-    run(
-        "rundll32.exe",
-        &["setupapi.dll,InstallHinfSection", "DefaultInstall", "132", &inf.to_string_lossy()],
-    )
+    // The inf path is passed UNQUOTED after the mode flag — InstallHinfSection treats the
+    // rest of the line as the path (same as the shell's own `%1` install verb), and it does
+    // not understand quotes around paths with spaces.
+    let ps = format!(
+        "$p = Start-Process rundll32.exe -ArgumentList {} -Verb RunAs -PassThru -Wait; exit $p.ExitCode",
+        ps_quote(&format!(
+            "setupapi.dll,InstallHinfSection DefaultInstall 132 {}",
+            inf.to_string_lossy()
+        )),
+    );
+    run("powershell", &["-NoProfile", "-NonInteractive", "-Command", &ps]).map_err(|e| {
+        if e.to_lowercase().contains("cancel") {
+            "the Windows admin prompt was declined — cursor schemes install into Windows\\Cursors, which needs it".to_string()
+        } else {
+            e
+        }
+    })?;
+
+    // rundll32's exit code is not trustworthy — verify the scheme is really registered.
+    if let Some(name) = inf_scheme_name(inf) {
+        run(
+            "reg",
+            &["query", r"HKCU\Control Panel\Cursors\Schemes", "/v", &name],
+        )
+        .map_err(|_| format!("Windows finished but the \"{name}\" scheme didn't register — try right-clicking the .inf ▸ Install"))?;
+    }
+    Ok(())
 }
 
 fn open_folder(app_handle: &AppHandle, dir: &Path) {

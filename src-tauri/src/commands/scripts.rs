@@ -86,12 +86,29 @@ fn ps_quote(s: &str) -> String {
     format!("'{}'", s.replace('\'', "''"))
 }
 
-/// Creates a Start menu shortcut (`.lnk`) pointing at the already-generated script.
-/// Re-checks the script still exists on disk at pin time — if the user deleted it after
-/// generating it, this fails with a clear error instead of pinning a dead shortcut.
+/// Appends one line to %TEMP%\postwipe-pin.log. Pinning has been reported broken several
+/// times with no artifacts to inspect afterwards — this log is the evidence trail for the
+/// next report (what was pinned, where, and what PowerShell said).
+fn pin_log(msg: &str) {
+    let path = std::env::temp_dir().join("postwipe-pin.log");
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+        use std::io::Write;
+        let _ = writeln!(f, "[{ts}] {msg}");
+    }
+}
+
+/// Creates a Start menu shortcut (`.lnk`) pointing at the already-generated script and
+/// returns the shortcut's full path (shown in the UI so "where did it go" is never a
+/// mystery). Re-checks the script still exists on disk at pin time — if the user deleted
+/// it after generating it, this fails with a clear error instead of pinning a dead shortcut.
 #[tauri::command]
-pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Result<(), String> {
+pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Result<String, String> {
     if !std::path::Path::new(&script_path).exists() {
+        pin_log(&format!("PIN {script_id}: script missing at {script_path}"));
         return Err(format!(
             "{script_path} no longer exists — generate the script again before pinning it."
         ));
@@ -121,17 +138,21 @@ pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Resul
         use std::os::windows::process::CommandExt;
         cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW — don't flash a console
     }
-    let output = cmd.output().map_err(|e| format!("failed to run PowerShell: {e}"))?;
+    let output = cmd.output().map_err(|e| {
+        pin_log(&format!("PIN {script_id}: PowerShell didn't start: {e}"));
+        format!("failed to run PowerShell: {e}")
+    })?;
     if !output.status.success() {
-        return Err(format!(
-            "shortcut creation failed: {}",
-            String::from_utf8_lossy(&output.stderr).trim()
-        ));
+        let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
+        pin_log(&format!("PIN {script_id}: PowerShell exit {:?}: {stderr}", output.status.code()));
+        return Err(format!("shortcut creation failed: {stderr}"));
     }
     if !lnk_path.exists() {
+        pin_log(&format!("PIN {script_id}: PowerShell succeeded but {} missing", lnk_path.display()));
         return Err("shortcut creation reported success but no .lnk was written".to_string());
     }
-    Ok(())
+    pin_log(&format!("PIN {script_id}: OK -> {}", lnk_path.display()));
+    Ok(lnk_path.to_string_lossy().to_string())
 }
 
 #[tauri::command]
@@ -139,6 +160,9 @@ pub fn unpin_script_from_start_menu(script_id: String) -> Result<(), String> {
     let lnk_path = pin_lnk_path(&script_id)?;
     if lnk_path.exists() {
         std::fs::remove_file(&lnk_path).map_err(|e| e.to_string())?;
+        pin_log(&format!("UNPIN {script_id}: removed {}", lnk_path.display()));
+    } else {
+        pin_log(&format!("UNPIN {script_id}: nothing at {}", lnk_path.display()));
     }
     Ok(())
 }

@@ -78,7 +78,8 @@ export function isScriptPinned(scriptId: string): Promise<boolean> {
   return invoke("is_script_pinned", { scriptId });
 }
 
-export function pinScriptToStartMenu(scriptId: string, scriptPath: string): Promise<void> {
+/** Resolves with the full path of the created Start-menu .lnk. */
+export function pinScriptToStartMenu(scriptId: string, scriptPath: string): Promise<string> {
   return invoke("pin_script_to_start_menu", { scriptId, scriptPath });
 }
 

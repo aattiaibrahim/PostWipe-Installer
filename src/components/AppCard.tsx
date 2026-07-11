@@ -116,11 +116,15 @@ export function AppCard({ app, os }: AppCardProps) {
         await unpinScriptFromStartMenu(scriptId);
         setPinned(false);
       } else if (generatedPath) {
-        await pinScriptToStartMenu(scriptId, generatedPath);
+        const lnkPath = await pinScriptToStartMenu(scriptId, generatedPath);
         setPinned(true);
+        const lnkName = lnkPath.split("\\").pop()?.replace(/\.lnk$/i, "") ?? app.name;
         // Windows 11 blocks apps from pinning tiles (E_ACCESSDENIED on the shell verb),
-        // so the last step is necessarily the user's — say so instead of looking broken.
-        setPinMsg("Added to Start ▸ All apps (or search its name). For a tile: right-click it there ▸ Pin to Start.");
+        // so the last step is necessarily the user's — say exactly where it landed instead
+        // of looking broken.
+        setPinMsg(
+          `Shortcut created: search "${lnkName}" in Start (it's under All apps). For a tile: right-click it there ▸ Pin to Start.`,
+        );
       }
     } catch (err) {
       setPinError(String(err));

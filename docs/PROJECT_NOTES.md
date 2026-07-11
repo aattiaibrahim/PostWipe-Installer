@@ -160,6 +160,25 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Cursor-install root cause + pin diagnostics + polish — 2026-07-10 (second pass)
+- **Cursor install "always failed" — ROOT CAUSE (GitHub #1)**: cursor pack .inf files declare
+  `DestinationDirs = 10,"%CUR_DIR%"` → SetupAPI copies into `C:\Windows\Cursors\<scheme>`,
+  which needs ADMIN. Explorer's right-click ▸ Install elevates via UAC; the app's rundll32 ran
+  unelevated → copy failed every time. Fixed in `apply_inf`: `Start-Process rundll32 -Verb
+  RunAs -Wait` (path passed UNQUOTED after the 132 flag — InstallHinfSection doesn't parse
+  quotes; the shell's own inffile verb also passes %1 unquoted), then verify `SCHEME_NAME`
+  actually appeared under `HKCU\Control Panel\Cursors\Schemes` because rundll32's exit code is
+  meaningless. Declined UAC → friendly error. Confirmed by INSPECTION of the .inf files — do
+  NOT live-run installs on the user's machine (see feedback memory; he was rightly upset).
+- **Pin to Start diagnostics (GitHub #2)**: pin/unpin now log every step to
+  `%TEMP%\postwipe-pin.log`; `pin_script_to_start_menu` returns the created .lnk path and the
+  UI names it ("search \"X\" in Start"). The tiles-grid limitation stands (start2.bin, no API).
+- **Polish**: batch checkboxes are custom-drawn 20px circles (native checkboxes can't be
+  circular) with a CSS checkmark; unlock burst is now a ~2.4s sequence (glow, springy shackle
+  with overshoot, keyhole blink, staggered double ring, 10 radiating sparks); WebView2's
+  built-in password-reveal eye (`input::-ms-reveal`) is inverted in dark mode — it's drawn
+  black and was invisible on the dark input.
+
 ### Big previews/UX batch — 2026-07-10
 - **Settings moved INTO the sidebar** (`SidebarSettings.tsx` inside `CategorySidebar`, replacing
   `SettingsCorner.tsx` — user disliked the full-screen blur): gear row at the sidebar bottom;

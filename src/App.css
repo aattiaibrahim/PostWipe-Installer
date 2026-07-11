@@ -956,6 +956,12 @@ h3 {
   opacity: 0.95;
 }
 
+/* WebView2's built-in password-reveal eye is drawn black; invert it in dark mode so it's
+   visible on the dark input. */
+:root[data-theme="dark"] input::-ms-reveal {
+  filter: invert(1);
+}
+
 /* Specials password curtain */
 .specials-lock {
   display: flex;
@@ -1048,6 +1054,23 @@ h3 {
   height: 90px;
   border-radius: 50%;
   border: 2px solid #7c3aed;
+}
+
+.specials-unlock-burst__glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, #7c3aed 45%, transparent) 0%, transparent 70%);
+}
+
+.specials-unlock-burst__spark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #7c3aed;
+  box-shadow: 0 0 8px color-mix(in srgb, #7c3aed 80%, transparent);
 }
 
 /* Specials vault content (dynamic items from the Worker) */
@@ -1631,12 +1654,42 @@ h3 {
   animation: status-glow-breathe 2.8s ease-in-out infinite;
 }
 
+/* Custom-drawn so it can be circular (native checkboxes can't be). */
 .app-row__select {
+  appearance: none;
+  -webkit-appearance: none;
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  accent-color: var(--accent);
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  display: grid;
+  place-content: center;
   cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.app-row__select:hover {
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+
+.app-row__select:checked {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+/* The checkmark: a rotated border "L". */
+.app-row__select:checked::before {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .app-row--selected {
