@@ -68,10 +68,16 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
 
     let release: Release = response.json().await.map_err(|e| ResolveError::Network(e.to_string()))?;
 
+    // Among all assets matching the pattern, pick the SHORTEST name. When a project ships
+    // a standard build plus a longer-named variant (e.g. qBittorrent's
+    // `qbittorrent_5.2.3_x64_setup.exe` vs `qbittorrent_5.2.3_lt20_x64_setup.exe`), a
+    // `*` glob matches both and asset order isn't guaranteed — the shortest name is
+    // reliably the plain/standard build.
     release
         .assets
         .into_iter()
-        .find(|asset| glob_match(asset_pattern, &asset.name))
+        .filter(|asset| glob_match(asset_pattern, &asset.name))
+        .min_by_key(|asset| asset.name.len())
         .map(|asset| asset.browser_download_url)
         .ok_or_else(|| ResolveError::NotFound(format!("no release asset matching '{asset_pattern}' in {repo}")))
 }
