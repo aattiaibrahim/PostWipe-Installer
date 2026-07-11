@@ -1,21 +1,24 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useCatalogStore } from "../state/catalogStore";
 import { SettingsPanel } from "./SettingsPanel";
 
-/** Settings lives at the bottom of the category sidebar. Opening it expands the panel
- *  upward *inside* the sidebar (full sidebar width) while the categories above dim and
- *  shrink out of the way; closing (gear again, Esc, or clicking anywhere else) contracts
- *  the panel and restores the categories. No full-screen backdrop. */
-export function SidebarSettings({ open, onToggle, onClose }: { open: boolean; onToggle: () => void; onClose: () => void }) {
+/** Settings lives in its own little dock fixed to the very bottom-left, below the category
+ *  sidebar. Because it's anchored to the bottom of the window it can only expand UPWARD —
+ *  it can never grow out of view. While open, the category sidebar dims out of the way
+ *  (state shared via catalogStore); gear again / Esc / click-away closes it. */
+export function SidebarSettings() {
+  const open = useCatalogStore((s) => s.settingsOpen);
+  const setOpen = useCatalogStore((s) => s.setSettingsOpen);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") setOpen(false);
     }
     function onDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     document.addEventListener("mousedown", onDown);
@@ -23,14 +26,14 @@ export function SidebarSettings({ open, onToggle, onClose }: { open: boolean; on
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("mousedown", onDown);
     };
-  }, [open, onClose]);
+  }, [open, setOpen]);
 
   return (
-    <div className="sidebar-settings" ref={ref}>
+    <div className="settings-dock" ref={ref}>
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
-            className="sidebar-settings__panel"
+            className="settings-dock__panel"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -43,7 +46,7 @@ export function SidebarSettings({ open, onToggle, onClose }: { open: boolean; on
       </AnimatePresence>
       <button
         className={`sidebar-settings__btn${open ? " sidebar-settings__btn--open" : ""}`}
-        onClick={onToggle}
+        onClick={() => setOpen(!open)}
         aria-label={open ? "Close settings" : "Open settings"}
         title="Settings"
       >

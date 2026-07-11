@@ -348,13 +348,30 @@ h3 {
   height: 100%;
 }
 
-/* Settings: bottom of the category sidebar. Opening expands the panel upward IN the
-   sidebar (full sidebar width); the categories above dim + shrink out of the way. */
-.sidebar-settings {
-  margin-top: 0.5rem;
+/* Settings dock: its own little sidebar fixed to the very bottom-left. Anchored to the
+   window bottom, so the panel can only expand UPWARD — it can never grow out of view. */
+.settings-dock {
+  position: fixed;
+  left: 24px;
+  bottom: 40px;
+  z-index: 54;
+  width: 236px;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
+  padding: 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.45);
+}
+
+.settings-dock__panel {
+  transform-origin: bottom left;
+}
+
+.settings-dock .settings-panel {
+  border-top: 1px solid var(--border);
 }
 
 .sidebar-settings__btn {
@@ -388,18 +405,6 @@ h3 {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-}
-
-.sidebar-settings__panel {
-  transform-origin: bottom left;
-}
-
-.sidebar-settings__panel .settings-panel {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background-color: var(--surface-solid);
-  box-shadow: 0 10px 32px -12px rgba(0, 0, 0, 0.4);
 }
 
 .sidebar__categories {
@@ -444,8 +449,7 @@ h3 {
   color: #fff;
 }
 
-/* Sized by its container (the sidebar settings slot) — chrome comes from
-   .sidebar-settings__panel .settings-panel. */
+/* Sized by its container (the settings dock). */
 .settings-panel {
   width: 100%;
   padding: 0.75rem 0.85rem;
@@ -1445,10 +1449,10 @@ h3 {
   color: var(--text-muted);
 }
 
+/* Files inside a folder render exactly like top-level items — no indent/rail, so the
+   list stays visually consistent whether or not something lives in a subfolder. */
 .specials-folder__items {
-  margin-left: 1.3rem;
-  border-left: 1px solid var(--border);
-  padding-left: 0.4rem;
+  margin-left: 0;
 }
 
 .specials-item__info {
@@ -1622,10 +1626,11 @@ h3 {
   cursor: pointer;
 }
 
+/* No translateY lift here — the rows sit between 1px divider lines, and shifting the
+   highlighted row up made its background overlap the divider above it. */
 .app-row:hover {
   background-color: var(--surface-hover);
   box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.25);
-  transform: translateY(-1px);
 }
 
 /* Ambient status glow painted into the row background: yellow while downloading,

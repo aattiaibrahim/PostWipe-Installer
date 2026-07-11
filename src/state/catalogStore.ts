@@ -13,10 +13,13 @@ interface CatalogState {
   vendorFilter: VendorFilter;
   searchQuery: string;
   selectedCategoryId: string | null;
+  /** Whether the bottom-left settings dock is expanded — the category sidebar dims while it is. */
+  settingsOpen: boolean;
   setOsFilter: (os: Os) => void;
   setVendorFilter: (vendor: VendorFilter) => void;
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (id: string) => void;
+  setSettingsOpen: (open: boolean) => void;
   load: () => Promise<void>;
 }
 
@@ -28,6 +31,8 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   vendorFilter: "all",
   searchQuery: "",
   selectedCategoryId: ALL_CATEGORY_ID,
+  settingsOpen: false,
+  setSettingsOpen: (open) => set({ settingsOpen: open }),
   // Intel/AMD only means anything on Windows — leaving macOS clears any vendor filter so
   // a hidden filter can't silently trim the list while its toggle isn't rendered.
   setOsFilter: (os) => set(os === "windows" ? { osFilter: os } : { osFilter: os, vendorFilter: "all" }),
