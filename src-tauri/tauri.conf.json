@@ -28,6 +28,7 @@
   },
   "bundle": {
     "active": true,
+    "publisher": "Andrew Attia Ibrahim",
     "createUpdaterArtifacts": true,
     "targets": [
       "nsis",

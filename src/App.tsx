@@ -5,6 +5,7 @@ import { AmbientBackground } from "./components/AmbientBackground";
 import { TitleBar } from "./components/TitleBar";
 import { LaunchSplash } from "./components/LaunchSplash";
 import { UpdatePrompt } from "./components/UpdatePrompt";
+import { SidebarSettings } from "./components/SidebarSettings";
 import { useResizeGlitchGuard } from "./hooks/useResizeGlitchGuard";
 import { useApplyTheme } from "./hooks/useApplyTheme";
 import { isTauri } from "./lib/tauriCommands";
@@ -29,6 +30,7 @@ function App() {
     <main className="app-shell">
       {!splashDone && <LaunchSplash onDone={() => setSplashDone(true)} />}
       <UpdatePrompt />
+      <SidebarSettings />
       <AmbientBackground />
       <TitleBar />
       <div className="app-content">

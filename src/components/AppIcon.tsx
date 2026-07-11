@@ -1,5 +1,20 @@
 import { useState } from "react";
 import { BRAND_ICONS, monogramColor, relativeLuminance } from "../lib/brandIcons";
+import nanazipIcon from "../assets/app-icons/nanazip.png";
+import testmem5Icon from "../assets/app-icons/testmem5.png";
+import zentimingsIcon from "../assets/app-icons/zentimings.png";
+import timerResolutionIcon from "../assets/app-icons/timer-resolution.png";
+import puttyIcon from "../assets/app-icons/putty.ico";
+
+/** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
+ *  icon / the icon embedded in their own executable — extracted offline). */
+const BUNDLED_ICONS: Record<string, string> = {
+  nanazip: nanazipIcon,
+  testmem5: testmem5Icon,
+  zentimings: zentimingsIcon,
+  "timer-resolution": timerResolutionIcon,
+  putty: puttyIcon,
+};
 
 interface AppIconProps {
   appId: string;
@@ -13,6 +28,15 @@ export function AppIcon({ appId, name, domain, className }: AppIconProps) {
   // generic monogram letter. Only network/load failures flip this — Google's favicon
   // endpoint returns a globe placeholder rather than erroring for domains with no icon.
   const [faviconFailed, setFaviconFailed] = useState(false);
+
+  const bundled = BUNDLED_ICONS[appId];
+  if (bundled) {
+    return (
+      <div className={`app-icon app-icon--favicon ${className ?? ""}`}>
+        <img className="app-icon__favicon-img" src={bundled} alt="" loading="lazy" />
+      </div>
+    );
+  }
 
   const brand = BRAND_ICONS[appId];
 

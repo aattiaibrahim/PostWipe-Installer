@@ -1,10 +1,10 @@
-import { useState, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
 import { categoryColor } from "../lib/categoryColors";
 import { ALL_CATEGORY_ID } from "../lib/constants";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
-import { SidebarSettings } from "./SidebarSettings";
+import { useCatalogStore } from "../state/catalogStore";
 
 interface CategorySidebarProps {
   catalog: Catalog;
@@ -34,13 +34,21 @@ function LockGlyph() {
 
 export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect }: CategorySidebarProps) {
   const specialsUnlocked = useSpecialsStore((s) => s.unlocked);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsOpen = useCatalogStore((s) => s.settingsOpen);
+  const vendorFilter = useCatalogStore((s) => s.vendorFilter);
   const query = searchQuery.trim().toLowerCase();
+
+  // Counts mirror exactly what the panel shows: platform + vendor + search filters.
+  const countIn = (category: (typeof catalog.categories)[number]) =>
+    category.apps.filter((app) => {
+      if (!app.platforms[os]) return false;
+      if (vendorFilter !== "all" && app.vendor && app.vendor !== vendorFilter) return false;
+      return !query || app.name.toLowerCase().includes(query);
+    }).length;
 
   const allCount = catalog.categories.reduce((total, category) => {
     if (category.id === SPECIALS_CATEGORY_ID && !specialsUnlocked) return total;
-    const available = category.apps.filter((app) => app.platforms[os]);
-    return total + (query ? available.filter((app) => app.name.toLowerCase().includes(query)).length : available.length);
+    return total + countIn(category);
   }, 0);
 
   return (
@@ -58,11 +66,8 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
         </button>
         <div className="sidebar__divider" />
         {catalog.categories.map((category) => {
-          const available = category.apps.filter((app) => app.platforms[os]);
-          if (available.length === 0) return null;
-          const count = query
-            ? available.filter((app) => app.name.toLowerCase().includes(query)).length
-            : available.length;
+          if (!category.apps.some((app) => app.platforms[os])) return null;
+          const count = countIn(category);
           const locked = category.id === SPECIALS_CATEGORY_ID && !specialsUnlocked;
 
           return (
@@ -83,11 +88,6 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
           );
         })}
       </div>
-      <SidebarSettings
-        open={settingsOpen}
-        onToggle={() => setSettingsOpen((o) => !o)}
-        onClose={() => setSettingsOpen(false)}
-      />
     </nav>
   );
 }
