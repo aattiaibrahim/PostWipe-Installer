@@ -447,6 +447,7 @@
         {
           "id": "msi-afterburner",
           "name": "MSI Afterburner",
+          "icon": "msi-afterburner.png",
           "bio": "The standard GPU overclocking & monitoring tool.",
           "description": "MSI Afterburner is the de-facto GPU tuning utility — clock/voltage/fan control, custom fan curves, and the RivaTuner on-screen display for in-game FPS and sensor overlays. Works on any brand of card, not just MSI.",
           "domain": "msi.com",
@@ -973,6 +974,7 @@
         {
           "id": "spotify",
           "name": "Spotify",
+          "icon": "spotify.png",
           "bio": "The mainstream music streaming app.",
           "description": "Spotify's desktop client — streaming, playlists, and local-file playback. The download.scdn.co installer is Spotify's own always-current web installer.",
           "domain": "spotify.com",
@@ -997,6 +999,7 @@
         {
           "id": "tidal",
           "name": "TIDAL",
+          "icon": "tidal.png",
           "bio": "Hi-fi / lossless music streaming.",
           "description": "TIDAL streams lossless FLAC and hi-res audio, aimed at listeners who want better-than-Spotify fidelity. TIDAL blocks automated downloads, so this opens their official download page.",
           "domain": "tidal.com",
@@ -1015,6 +1018,7 @@
         {
           "id": "qobuz",
           "name": "Qobuz",
+          "icon": "qobuz.png",
           "bio": "Audiophile hi-res music streaming & store.",
           "description": "Qobuz focuses on studio-quality hi-res streaming and purchases, popular with audiophiles. Their site gates the desktop installer behind JS, so this opens the official download page.",
           "domain": "qobuz.com",
@@ -1033,6 +1037,7 @@
         {
           "id": "music-presence",
           "name": "Music Presence",
+          "icon": "music-presence.png",
           "bio": "Shows your currently-playing song as Discord Rich Presence.",
           "description": "Music Presence (ungive/discord-music-presence) detects what you're playing — Spotify, Apple Music, TIDAL, and more — and displays it as your Discord status with album art. The community successor to the old Premid-style presence tools.",
           "domain": "github.com",
@@ -1067,6 +1072,7 @@
         {
           "id": "qbittorrent",
           "name": "qBittorrent",
+          "icon": "qbittorrent.png",
           "bio": "Open-source, ad-free BitTorrent client.",
           "description": "qBittorrent is the go-to free BitTorrent client — no ads, no bundled junk, a built-in search and RSS, and a clean Qt interface. The standard replacement for the ad-riddled uTorrent.",
           "domain": "qbittorrent.org",
@@ -1094,6 +1100,7 @@
         {
           "id": "deluge",
           "name": "Deluge",
+          "icon": "deluge.png",
           "bio": "Lightweight, plugin-driven BitTorrent client.",
           "description": "Deluge is a lightweight BitTorrent client built around a plugin system and a daemon/thin-client design, so you can run the torrent engine headless and control it remotely. A long-standing free-software favourite.",
           "domain": "deluge-torrent.org",
@@ -1118,6 +1125,7 @@
         {
           "id": "sharex",
           "name": "ShareX",
+          "icon": "sharex.png",
           "bio": "Open-source screen capture, recording, and sharing.",
           "description": "ShareX is the most capable free screenshot/screen-record tool on Windows — region capture, scrolling capture, GIF recording, OCR, and fully customizable after-capture workflows and upload destinations. A power-user staple.",
           "domain": "getsharex.com",
@@ -1137,6 +1145,7 @@
         {
           "id": "twinkle-tray",
           "name": "Twinkle Tray",
+          "icon": "twinkle-tray.png",
           "bio": "Adjust monitor brightness from the taskbar.",
           "description": "Twinkle Tray adds a taskbar slider for the hardware brightness of external monitors (via DDC/CI) and your laptop panel, with time-based automatic adjustments. Fills a gap Windows itself never has for desktop monitors.",
           "domain": "twinkletray.com",
@@ -1156,6 +1165,7 @@
         {
           "id": "flux",
           "name": "f.lux",
+          "icon": "flux.png",
           "bio": "Warms your screen color after sunset to help sleep.",
           "description": "f.lux gradually shifts your display toward warmer colors as the sun goes down, reducing blue light in the evening. The original and still most-configurable of the night-light tools, with per-location sunrise/sunset scheduling.",
           "domain": "justgetflux.com",
