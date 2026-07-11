@@ -28,7 +28,9 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   vendorFilter: "all",
   searchQuery: "",
   selectedCategoryId: ALL_CATEGORY_ID,
-  setOsFilter: (os) => set({ osFilter: os }),
+  // Intel/AMD only means anything on Windows — leaving macOS clears any vendor filter so
+  // a hidden filter can't silently trim the list while its toggle isn't rendered.
+  setOsFilter: (os) => set(os === "windows" ? { osFilter: os } : { osFilter: os, vendorFilter: "all" }),
   setVendorFilter: (vendor) => set({ vendorFilter: vendor }),
   setSearchQuery: (query) => set({ searchQuery: query }),
   setSelectedCategory: (id) => set({ selectedCategoryId: id }),

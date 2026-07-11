@@ -306,13 +306,6 @@ h3 {
   user-select: none;
 }
 
-.title-bar__left {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  height: 100%;
-}
-
 .title-bar__brand {
   display: flex;
   align-items: center;
@@ -1650,14 +1643,17 @@ h3 {
   background-color: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-/* Batch-download pill — slides down from the very top, inside the title bar next to the
-   brand, with the same ambient-glow treatment as the app rows. */
+/* Batch-download pill — slides down from the very top, dead-center in the title bar,
+   with the same ambient-glow treatment as the app rows. Horizontal centering is
+   left:50% + framer x:"-50%" (set in the component, since framer owns transform). */
 .selection-bar {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  margin-left: 0.9rem;
   padding: 2px 4px 2px 0.8rem;
   border: 1px solid var(--border);
   border-radius: 999px;

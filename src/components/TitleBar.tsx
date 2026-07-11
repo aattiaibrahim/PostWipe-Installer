@@ -7,13 +7,11 @@ const appWindow = isTauri ? getCurrentWindow() : null;
 export function TitleBar() {
   return (
     <div className="title-bar" data-tauri-drag-region>
-      <div className="title-bar__left" data-tauri-drag-region>
-        <div className="title-bar__brand" data-tauri-drag-region>
-          <span className="title-bar__dot" />
-          <span className="title-bar__title">PostWipe Installer</span>
-        </div>
-        <SelectionBar />
+      <div className="title-bar__brand" data-tauri-drag-region>
+        <span className="title-bar__dot" />
+        <span className="title-bar__title">PostWipe Installer</span>
       </div>
+      <SelectionBar />
       <div className="title-bar__actions">
         <div className="title-bar__window-controls">
           <button className="title-bar__win-btn" aria-label="Minimize" onClick={() => appWindow?.minimize()}>

@@ -13,6 +13,10 @@ const VENDOR_OPTIONS: { value: VendorFilter; label: string }[] = [
 export function VendorToggle() {
   const value = useCatalogStore((s) => s.vendorFilter);
   const onChange = useCatalogStore((s) => s.setVendorFilter);
+  const os = useCatalogStore((s) => s.osFilter);
+  // CPU-vendor tools are Windows-only; on macOS the toggle disappears and the search
+  // bar (flex: 1) stretches into its space.
+  if (os !== "windows") return null;
   return (
     <div className="os-picker os-picker--vendor" title="Filter vendor-specific tools (Intel/AMD)">
       {VENDOR_OPTIONS.map((opt) => {
