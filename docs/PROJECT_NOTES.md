@@ -160,6 +160,32 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Music/Torrenting/Utilities categories + more apps — 2026-07-11
+- **Three new categories**: Music Players (spotify, tidal, qobuz, music-presence), Torrenting
+  (qbittorrent, deluge), General Utilities (sharex, twinkle-tray, flux). Added category icons
+  (`categoryIcons.tsx`) + colors (`categoryColors.ts`). **MSI Afterburner** added to
+  overclocking.
+- **Resolvers verified live 2026-07-11**: Spotify static (win+mac scdn.co), flux static
+  (win+mac), ShareX/Twinkle Tray/qBittorrent/Music-Presence github_release, Deluge static-pinned
+  to 2.2.0 win64 on the osuosl mirror (bump when newer; the dir keeps old versions so an html
+  selector would grab the wrong one).
+- **qBittorrent dual build**: ships standard + longer `_lt20` (libtorrent 1.2) variant; a `*`
+  glob matches both and asset order isn't guaranteed. Fixed the github_release resolver to pick
+  the **shortest matching asset name** (`min_by_key(name.len())`) = the standard build.
+- **Site-only apps** (Tidal, Qobuz, MSI Afterburner): vendor blocks direct/automated download
+  (403 or JS-gated), so their entry has NO resolver + a `website`. AppCard now renders a
+  "Get from site ↗" button (opens the official page) for any non-script/placeholder download
+  entry lacking a resolver — clean path instead of the old error-then-fallback. Proper fix later
+  = the deferred webview resolver.
+- Brand icons added: spotify, tidal, qbittorrent, deluge, sharex, msi-afterburner (simple-icons).
+  Qobuz/flux/music-presence use favicon fallback (siFlux is the wrong "Flux"; Qobuz absent).
+
+### DECLINED: "Cracked Programs" / Adobe cracked migration — 2026-07-11
+User asked to move `\\Voyager\Tweaks\Programs\{Adobe Programs Cracked, Cracked Programs}` into
+`postwipe-specials/Tweaks/Cracked Programs/{Adobe,General}/`. Declined: that's pirated commercial
+software (copyright infringement to host/redistribute), independent of it being the user's own
+vault. Did NOT upload anything. The legitimate freeware in the same message was all completed.
+
 ### PayDay 2 mods, cursor collages, pin-tile reveal — 2026-07-10 (third pass)
 - **PayDay 2 Mods (Diesel 2.0)**: user uploaded `Tweaks/Payday 2 Mods - Diesel 2.0/`
   (mods.zip + assets.zip) to R2 — appears automatically; added `SPECIALS_CATEGORIES` meta

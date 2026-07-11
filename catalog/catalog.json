@@ -15,11 +15,17 @@
           "kind": "download",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe" },
+              "resolver": {
+                "type": "static",
+                "url": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+              },
               "filename": "SteamSetup.exe"
             },
             "macos": {
-              "resolver": { "type": "static", "url": "https://media.steampowered.com/client/installer/steam.dmg" },
+              "resolver": {
+                "type": "static",
+                "url": "https://media.steampowered.com/client/installer/steam.dmg"
+              },
               "filename": "steam.dmg"
             }
           }
@@ -35,7 +41,10 @@
           "notes": "Epic dropped official macOS launcher support in 2019; Windows-only entry.",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi" },
+              "resolver": {
+                "type": "static",
+                "url": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi"
+              },
               "filename": "EpicGamesLauncherInstaller.msi"
             }
           }
@@ -51,7 +60,10 @@
           "notes": "Verified live 2026-07-08 (200, application/octet-stream).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe" },
+              "resolver": {
+                "type": "static",
+                "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe"
+              },
               "filename": "GOG_Galaxy_2.0.exe"
             }
           }
@@ -67,7 +79,10 @@
           "notes": "wgc.wargaming.net doesn't resolve at all (dead DNS) — the previous URL was broken, not just the wrong app. Switched to redirect.wargaming.net's stable NA-region install redirect, verified live end-to-end (200, application/x-msdownload, ~4.8MB).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://redirect.wargaming.net/WGC/Wargaming_Game_Center_Install_NA.exe" },
+              "resolver": {
+                "type": "static",
+                "url": "https://redirect.wargaming.net/WGC/Wargaming_Game_Center_Install_NA.exe"
+              },
               "filename": "wgc_installer.exe"
             }
           }
@@ -83,11 +98,17 @@
           "notes": "Verified live 2026-07-08 — getInstallerForGame redirects to the current versioned installer on downloader.battle.net for both OSes.",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE" },
+              "resolver": {
+                "type": "static",
+                "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE"
+              },
               "filename": "Battle.net-Setup.exe"
             },
             "macos": {
-              "resolver": { "type": "static", "url": "https://www.battle.net/download/getInstallerForGame?os=mac&gameProgram=BATTLENET_APP&version=LIVE" },
+              "resolver": {
+                "type": "static",
+                "url": "https://www.battle.net/download/getInstallerForGame?os=mac&gameProgram=BATTLENET_APP&version=LIVE"
+              },
               "filename": "Battle.net-Setup.zip"
             }
           }
@@ -103,7 +124,10 @@
           "notes": "The old ubistatic-a.akamaihd.net URL now returns 401 — switched to Ubisoft's static3.cdn.ubi.com launcher installer, verified live 2026-07-08 (200, application/octet-stream).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe" },
+              "resolver": {
+                "type": "static",
+                "url": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe"
+              },
               "filename": "UbisoftConnectInstaller.exe"
             }
           }
@@ -119,7 +143,10 @@
           "notes": "Verified live 2026-07-08 (200, binary/octet-stream).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe" },
+              "resolver": {
+                "type": "static",
+                "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe"
+              },
               "filename": "EAappInstaller.exe"
             }
           }
@@ -135,7 +162,10 @@
           "notes": "launcher.escapefromtarkov.com/launcher/download is the versionless endpoint their own site uses; it 302s to the current installer on cdn-*.eft-store.com. Verified live 2026-07-09 (200, application/octet-stream). prod.escapefromtarkov.com/launcher/download looks similar but returns a 403 JSON body.",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://launcher.escapefromtarkov.com/launcher/download" },
+              "resolver": {
+                "type": "static",
+                "url": "https://launcher.escapefromtarkov.com/launcher/download"
+              },
               "filename": "BsgLauncher.exe"
             }
           }
@@ -151,7 +181,10 @@
           "notes": "Verified live against the real riotcdn.net installer URL (installs the shared Riot Client used by all Riot games).",
           "platforms": {
             "windows": {
-              "resolver": { "type": "static", "url": "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.na.exe" },
+              "resolver": {
+                "type": "static",
+                "url": "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.na.exe"
+              },
               "filename": "RiotClientInstaller.exe"
             }
           }
@@ -172,7 +205,16 @@
           "website": "https://github.com/CoolCmd/TestMem5",
           "kind": "download",
           "notes": "testmem5.com/download 404s (was always a placeholder). Switched to the actively maintained CoolCmd/TestMem5 GitHub project (open-source TM5 continuation with releases) — verified live 2026-07-08 via the GitHub API, latest release ships a TestMem5.7z asset.",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "CoolCmd/TestMem5", "asset_pattern": "TestMem5.7z" }, "filename": "TestMem5.7z" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "CoolCmd/TestMem5",
+                "asset_pattern": "TestMem5.7z"
+              },
+              "filename": "TestMem5.7z"
+            }
+          }
         },
         {
           "id": "zentimings",
@@ -184,7 +226,16 @@
           "website": "https://github.com/irusanov/ZenTimings",
           "vendor": "amd",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "irusanov/ZenTimings", "asset_pattern": "ZenTimings*.zip" }, "filename": "ZenTimings.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "irusanov/ZenTimings",
+                "asset_pattern": "ZenTimings*.zip"
+              },
+              "filename": "ZenTimings.zip"
+            }
+          }
         },
         {
           "id": "cinebench-r23",
@@ -195,7 +246,15 @@
           "domain": "maxon.net",
           "kind": "download",
           "notes": "Upgraded from R20: Maxon no longer hosts the R20 zip anywhere official, but R23 has a stable official URL at installer.maxon.net — verified live 2026-07-08 (200, application/x-zip-compressed).",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://installer.maxon.net/cinebench/CinebenchR23.zip" }, "filename": "CinebenchR23.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://installer.maxon.net/cinebench/CinebenchR23.zip"
+              },
+              "filename": "CinebenchR23.zip"
+            }
+          }
         },
         {
           "id": "cpu-z",
@@ -206,7 +265,19 @@
           "domain": "cpuid.com",
           "kind": "download",
           "notes": "Resolves the latest version dynamically: scrapes the first (newest) '-en.exe' link off cpuid.com's CPU-Z page, then rewrites it against download.cpuid.com, which serves the real binary (the www. path only serves an HTML interstitial). Verified live 2026-07-08.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.cpuid.com/softwares/cpu-z.html", "selector": "a[href*='cpu-z_'][href$='-en.exe']", "attr": "href", "url_regex": "cpu-z_[^/]*-en\\.exe", "base_url": "https://download.cpuid.com/cpu-z/" }, "filename": "cpu-z-installer.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.cpuid.com/softwares/cpu-z.html",
+                "selector": "a[href*='cpu-z_'][href$='-en.exe']",
+                "attr": "href",
+                "url_regex": "cpu-z_[^/]*-en\\.exe",
+                "base_url": "https://download.cpuid.com/cpu-z/"
+              },
+              "filename": "cpu-z-installer.exe"
+            }
+          }
         },
         {
           "id": "hwinfo",
@@ -217,7 +288,17 @@
           "domain": "hwinfo.com",
           "kind": "download",
           "notes": "Resolves the latest version dynamically: hwinfo.com/download has the current 64-bit installer link (files/hwi64_*.exe) in static HTML. Verified live 2026-07-08 (200, application/x-msdownload).",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.hwinfo.com/download/", "selector": "a[href*='files/hwi64_'][href$='.exe']", "attr": "href" }, "filename": "hwinfo-installer.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.hwinfo.com/download/",
+                "selector": "a[href*='files/hwi64_'][href$='.exe']",
+                "attr": "href"
+              },
+              "filename": "hwinfo-installer.exe"
+            }
+          }
         },
         {
           "id": "hwmonitor",
@@ -228,7 +309,19 @@
           "domain": "cpuid.com",
           "kind": "download",
           "notes": "Resolves the latest version dynamically: scrapes the first (newest) installer link off cpuid.com's HWMonitor page, then rewrites it against download.cpuid.com, which serves the real binary. Verified live 2026-07-08.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.cpuid.com/softwares/hwmonitor.html", "selector": "a[href*='hwmonitor_'][href$='.exe']", "attr": "href", "url_regex": "hwmonitor_[^/]*\\.exe", "base_url": "https://download.cpuid.com/hwmonitor/" }, "filename": "hwmonitor-installer.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.cpuid.com/softwares/hwmonitor.html",
+                "selector": "a[href*='hwmonitor_'][href$='.exe']",
+                "attr": "href",
+                "url_regex": "hwmonitor_[^/]*\\.exe",
+                "base_url": "https://download.cpuid.com/hwmonitor/"
+              },
+              "filename": "hwmonitor-installer.exe"
+            }
+          }
         },
         {
           "id": "nvidia-profile-inspector",
@@ -239,7 +332,16 @@
           "domain": "github.com",
           "website": "https://github.com/Orbmu2k/nvidiaProfileInspector",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "Orbmu2k/nvidiaProfileInspector", "asset_pattern": "nvidiaProfileInspector.zip" }, "filename": "nvidiaProfileInspector.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Orbmu2k/nvidiaProfileInspector",
+                "asset_pattern": "nvidiaProfileInspector.zip"
+              },
+              "filename": "nvidiaProfileInspector.zip"
+            }
+          }
         },
         {
           "id": "occt",
@@ -250,7 +352,15 @@
           "domain": "ocbase.com",
           "kind": "download",
           "notes": "Verified live 2026-07-08 — redirects to /download-bin/OCCT.zip and serves application/octet-stream.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://www.ocbase.com/download/OCCT.zip" }, "filename": "OCCT.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://www.ocbase.com/download/OCCT.zip"
+              },
+              "filename": "OCCT.zip"
+            }
+          }
         },
         {
           "id": "prime95",
@@ -261,7 +371,17 @@
           "domain": "mersenne.org",
           "kind": "download",
           "notes": "The old unversioned prime95.zip URL 404s now. Resolves dynamically by scraping the current win64 build link off mersenne.org's download page ([href$='.win64.zip'] deliberately excludes the .service.zip variant). Verified live 2026-07-08.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.mersenne.org/download/", "selector": "a[href$='.win64.zip']", "attr": "href" }, "filename": "prime95.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.mersenne.org/download/",
+                "selector": "a[href$='.win64.zip']",
+                "attr": "href"
+              },
+              "filename": "prime95.zip"
+            }
+          }
         },
         {
           "id": "timer-resolution",
@@ -273,7 +393,16 @@
           "website": "https://github.com/valleyofdoom/TimerResolution",
           "kind": "download",
           "notes": "Tool is published as \"SetTimerResolution\" under this repo, not a \"TimerResolution*.zip\" as previously assumed.",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "valleyofdoom/TimerResolution", "asset_pattern": "SetTimerResolution.exe" }, "filename": "SetTimerResolution.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "valleyofdoom/TimerResolution",
+                "asset_pattern": "SetTimerResolution.exe"
+              },
+              "filename": "SetTimerResolution.exe"
+            }
+          }
         },
         {
           "id": "timing-configurator",
@@ -285,7 +414,15 @@
           "vendor": "amd",
           "kind": "download",
           "notes": "This is ASRock's tool (old timingconfigurator.com domain is dead) — hosted on ASRock's own download server, pinned at v4.0.4 which is its long-final release. Verified live 2026-07-08 (200, application/zip) plus a network-hitting live test.",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.asrock.com/Utility/Formula/TimingConfigurator(v4.0.4).zip" }, "filename": "TimingConfigurator.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.asrock.com/Utility/Formula/TimingConfigurator(v4.0.4).zip"
+              },
+              "filename": "TimingConfigurator.zip"
+            }
+          }
         },
         {
           "id": "ddu",
@@ -296,7 +433,31 @@
           "domain": "wagnardsoft.com",
           "kind": "download",
           "notes": "wagnardsoft.com and guru3d.com are both Cloudflare-JS-challenged (unfetchable without a real browser), so DDU resolves via majorgeeks.com's mirror page. Its per-session tokenized file URL only exists inside an HTML comment there — hence the html_regex resolver, which regexes the raw body instead of using a CSS selector. Verified live 2026-07-08 end-to-end (fresh resolve → cookie-less download, 200 application/x-msdos-program) plus a network-hitting live test.",
-          "platforms": { "windows": { "resolver": { "type": "html_regex", "page_url": "https://www.majorgeeks.com/mg/getmirror/display_driver_uninstaller,1.html", "url_regex": "https://files[0-9]+\\.majorgeeks\\.com/[a-f0-9]+/drivers/DDU[^<>\"]*?_setup\\.exe" }, "filename": "DDU_setup.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://www.majorgeeks.com/mg/getmirror/display_driver_uninstaller,1.html",
+                "url_regex": "https://files[0-9]+\\.majorgeeks\\.com/[a-f0-9]+/drivers/DDU[^<>\"]*?_setup\\.exe"
+              },
+              "filename": "DDU_setup.exe"
+            }
+          }
+        },
+        {
+          "id": "msi-afterburner",
+          "name": "MSI Afterburner",
+          "bio": "The standard GPU overclocking & monitoring tool.",
+          "description": "MSI Afterburner is the de-facto GPU tuning utility — clock/voltage/fan control, custom fan curves, and the RivaTuner on-screen display for in-game FPS and sensor overlays. Works on any brand of card, not just MSI.",
+          "domain": "msi.com",
+          "website": "https://www.msi.com/Landing/afterburner/graphics-cards",
+          "kind": "download",
+          "notes": "MSI's download page is JS-gated and the zip has no stable direct URL — site-only entry until the webview resolver lands.",
+          "platforms": {
+            "windows": {
+              "filename": "MSIAfterburnerSetup.exe"
+            }
+          }
         }
       ]
     },
@@ -314,7 +475,16 @@
           "website": "https://github.com/M2Team/NanaZip",
           "kind": "download",
           "notes": "Corrected from \"NanoZip\" (an unrelated, likely-abandoned tool) to NanaZip, the actively maintained modern 7-Zip fork. Verified against the live M2Team/NanaZip GitHub repo.",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "M2Team/NanaZip", "asset_pattern": "NanaZip_*.msixbundle" }, "filename": "NanaZip.msixbundle" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "M2Team/NanaZip",
+                "asset_pattern": "NanaZip_*.msixbundle"
+              },
+              "filename": "NanaZip.msixbundle"
+            }
+          }
         },
         {
           "id": "winrar",
@@ -325,7 +495,18 @@
           "domain": "win-rar.com",
           "kind": "download",
           "notes": "Verified against the live win-rar.com/download.html page structure.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.win-rar.com/download.html", "selector": "a[href*='winrar-x64-'][href$='.exe']", "attr": "href", "base_url": "https://www.win-rar.com/" }, "filename": "winrar-x64.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.win-rar.com/download.html",
+                "selector": "a[href*='winrar-x64-'][href$='.exe']",
+                "attr": "href",
+                "base_url": "https://www.win-rar.com/"
+              },
+              "filename": "winrar-x64.exe"
+            }
+          }
         },
         {
           "id": "7-zip",
@@ -336,7 +517,16 @@
           "domain": "7-zip.org",
           "kind": "download",
           "notes": "7-Zip moved its releases to GitHub (ip7z/7zip) in 2024; verified against the live repo.",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "ip7z/7zip", "asset_pattern": "7z*-x64.exe" }, "filename": "7z-x64.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ip7z/7zip",
+                "asset_pattern": "7z*-x64.exe"
+              },
+              "filename": "7z-x64.exe"
+            }
+          }
         }
       ]
     },
@@ -353,8 +543,20 @@
           "domain": "bitwarden.com",
           "kind": "download",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://vault.bitwarden.com/download/?app=desktop&platform=windows" }, "filename": "Bitwarden-Installer.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://vault.bitwarden.com/download/?app=desktop&platform=macos" }, "filename": "Bitwarden.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://vault.bitwarden.com/download/?app=desktop&platform=windows"
+              },
+              "filename": "Bitwarden-Installer.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://vault.bitwarden.com/download/?app=desktop&platform=macos"
+              },
+              "filename": "Bitwarden.dmg"
+            }
           }
         },
         {
@@ -367,8 +569,20 @@
           "kind": "download",
           "notes": "windscribe.com/download itself is JS-rendered (Next.js, no .exe link in the raw HTML), but windscribe.com/install/desktop/<os> is a stable, versionless redirect straight to the current installer — verified live, no JS execution needed.",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://windscribe.com/install/desktop/windows" }, "filename": "Windscribe-Setup.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://windscribe.com/install/desktop/macos" }, "filename": "Windscribe.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://windscribe.com/install/desktop/windows"
+              },
+              "filename": "Windscribe-Setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://windscribe.com/install/desktop/macos"
+              },
+              "filename": "Windscribe.dmg"
+            }
           }
         }
       ]
@@ -387,8 +601,20 @@
           "kind": "download",
           "notes": "macOS: the old os=darwin slug 404s (Microsoft split it into universal/arm64/x64 builds) — switched to the canonical update.code.visualstudio.com latest endpoint for the universal build. Verified live 2026-07-08.",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" }, "filename": "VSCodeUserSetup-x64.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://update.code.visualstudio.com/latest/darwin-universal/stable" }, "filename": "VSCode-darwin-universal.zip" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user"
+              },
+              "filename": "VSCodeUserSetup-x64.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://update.code.visualstudio.com/latest/darwin-universal/stable"
+              },
+              "filename": "VSCode-darwin-universal.zip"
+            }
           }
         },
         {
@@ -401,8 +627,20 @@
           "kind": "download",
           "notes": "jetbrains.com/pycharm/download itself is JS-rendered, but JetBrains publishes a stable, versionless download API (the same one their own site's download button calls) that redirects straight to the current PyCharm Community installer — verified live, no scraping needed.",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://data.services.jetbrains.com/products/download?code=PCC&platform=windows" }, "filename": "pycharm-community-installer.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://data.services.jetbrains.com/products/download?code=PCC&platform=mac" }, "filename": "pycharm-community.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://data.services.jetbrains.com/products/download?code=PCC&platform=windows"
+              },
+              "filename": "pycharm-community-installer.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://data.services.jetbrains.com/products/download?code=PCC&platform=mac"
+              },
+              "filename": "pycharm-community.dmg"
+            }
           }
         },
         {
@@ -414,7 +652,17 @@
           "domain": "netlimiter.com",
           "kind": "download",
           "notes": "The old unversioned nl5setup.exe URL 404s now (their file host serves versioned filenames like netlimiter-5.3.26.0.exe). Resolves dynamically by scraping the current installer link off netlimiter.com's download page. Verified live 2026-07-08.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.netlimiter.com/download", "selector": "a[href*='download.netlimiter.com'][href$='.exe']", "attr": "href" }, "filename": "netlimiter-setup.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.netlimiter.com/download",
+                "selector": "a[href*='download.netlimiter.com'][href$='.exe']",
+                "attr": "href"
+              },
+              "filename": "netlimiter-setup.exe"
+            }
+          }
         },
         {
           "id": "notepad-plus-plus",
@@ -424,7 +672,16 @@
           "icon": "notepad-plus-plus.ico",
           "domain": "notepad-plus-plus.org",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "notepad-plus-plus/notepad-plus-plus", "asset_pattern": "npp.*.Installer.x64.exe" }, "filename": "npp-installer-x64.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "notepad-plus-plus/notepad-plus-plus",
+                "asset_pattern": "npp.*.Installer.x64.exe"
+              },
+              "filename": "npp-installer-x64.exe"
+            }
+          }
         },
         {
           "id": "putty",
@@ -435,7 +692,17 @@
           "domain": "putty.org",
           "kind": "download",
           "notes": "The old URL 404'd: the 'latest/' directory alias updates but the filename inside it is versioned (was pinned to 0.78, current is 0.84+). Now resolves dynamically by scraping the installer link off PuTTY's own latest.html page (static HTML). Verified live 2026-07-08.",
-          "platforms": { "windows": { "resolver": { "type": "html", "page_url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html", "selector": "a[href*='w64'][href$='installer.msi']", "attr": "href" }, "filename": "putty-installer.msi" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html",
+                "selector": "a[href*='w64'][href$='installer.msi']",
+                "attr": "href"
+              },
+              "filename": "putty-installer.msi"
+            }
+          }
         },
         {
           "id": "powertoys",
@@ -445,7 +712,16 @@
           "icon": "powertoys.ico",
           "domain": "microsoft.com",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "github_release", "repo": "microsoft/PowerToys", "asset_pattern": "PowerToysUserSetup-*-x64.exe" }, "filename": "PowerToysUserSetup-x64.exe" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "microsoft/PowerToys",
+                "asset_pattern": "PowerToysUserSetup-*-x64.exe"
+              },
+              "filename": "PowerToysUserSetup-x64.exe"
+            }
+          }
         },
         {
           "id": "process-explorer",
@@ -455,7 +731,15 @@
           "icon": "process-explorer.ico",
           "domain": "microsoft.com",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.sysinternals.com/files/ProcessExplorer.zip" }, "filename": "ProcessExplorer.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.sysinternals.com/files/ProcessExplorer.zip"
+              },
+              "filename": "ProcessExplorer.zip"
+            }
+          }
         },
         {
           "id": "autoruns",
@@ -465,7 +749,15 @@
           "icon": "autoruns.ico",
           "domain": "microsoft.com",
           "kind": "download",
-          "platforms": { "windows": { "resolver": { "type": "static", "url": "https://download.sysinternals.com/files/Autoruns.zip" }, "filename": "Autoruns.zip" } }
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.sysinternals.com/files/Autoruns.zip"
+              },
+              "filename": "Autoruns.zip"
+            }
+          }
         }
       ]
     },
@@ -483,8 +775,22 @@
           "kind": "download",
           "notes": "referrals.brave.com stopped responding (connection errors in the wild), so both OSes now pull from Brave's official GitHub releases instead — verified live 2026-07-08 via the GitHub API (BraveBrowserSetup.exe / Brave-Browser-universal.dmg on the latest release).",
           "platforms": {
-            "windows": { "resolver": { "type": "github_release", "repo": "brave/brave-browser", "asset_pattern": "BraveBrowserSetup.exe" }, "filename": "BraveBrowserSetup.exe" },
-            "macos": { "resolver": { "type": "github_release", "repo": "brave/brave-browser", "asset_pattern": "Brave-Browser-universal.dmg" }, "filename": "Brave-Browser-universal.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "brave/brave-browser",
+                "asset_pattern": "BraveBrowserSetup.exe"
+              },
+              "filename": "BraveBrowserSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "brave/brave-browser",
+                "asset_pattern": "Brave-Browser-universal.dmg"
+              },
+              "filename": "Brave-Browser-universal.dmg"
+            }
           }
         },
         {
@@ -497,8 +803,20 @@
           "kind": "download",
           "notes": "download.mozilla.org's product=firefox-latest-ssl endpoint is Mozilla's official versionless alias; it 302s to the current installer on their CDN. Verified live 2026-07-09 for both OSes.",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US" }, "filename": "FirefoxSetup.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US" }, "filename": "Firefox.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US"
+              },
+              "filename": "FirefoxSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US"
+              },
+              "filename": "Firefox.dmg"
+            }
           }
         },
         {
@@ -511,8 +829,24 @@
           "kind": "download",
           "notes": "Verified against the live librewolf.net installation pages; targets the x86_64 build on both platforms.",
           "platforms": {
-            "windows": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/windows/", "selector": "a[href*='windows-x86_64-setup.exe']", "attr": "href" }, "filename": "LibreWolf_Setup.exe" },
-            "macos": { "resolver": { "type": "html", "page_url": "https://librewolf.net/installation/macos/", "selector": "a[href*='dl.librewolf.net'][href*='macos-x86_64'][href$='.dmg']", "attr": "href" }, "filename": "LibreWolf.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://librewolf.net/installation/windows/",
+                "selector": "a[href*='windows-x86_64-setup.exe']",
+                "attr": "href"
+              },
+              "filename": "LibreWolf_Setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://librewolf.net/installation/macos/",
+                "selector": "a[href*='dl.librewolf.net'][href*='macos-x86_64'][href$='.dmg']",
+                "attr": "href"
+              },
+              "filename": "LibreWolf.dmg"
+            }
           }
         },
         {
@@ -525,8 +859,22 @@
           "kind": "download",
           "notes": "Verified against the live zen-browser/desktop GitHub releases.",
           "platforms": {
-            "windows": { "resolver": { "type": "github_release", "repo": "zen-browser/desktop", "asset_pattern": "zen.installer.exe" }, "filename": "zen.installer.exe" },
-            "macos": { "resolver": { "type": "github_release", "repo": "zen-browser/desktop", "asset_pattern": "zen.macos-universal.dmg" }, "filename": "zen.macos-universal.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "zen-browser/desktop",
+                "asset_pattern": "zen.installer.exe"
+              },
+              "filename": "zen.installer.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "zen-browser/desktop",
+                "asset_pattern": "zen.macos-universal.dmg"
+              },
+              "filename": "zen.macos-universal.dmg"
+            }
           }
         }
       ]
@@ -545,8 +893,20 @@
           "kind": "download",
           "notes": "Fixed from the previous canary-build endpoint to Discord's stable release endpoint.",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://discord.com/api/download?platform=win" }, "filename": "DiscordSetup.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://discord.com/api/download?platform=osx" }, "filename": "Discord.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://discord.com/api/download?platform=win"
+              },
+              "filename": "DiscordSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://discord.com/api/download?platform=osx"
+              },
+              "filename": "Discord.dmg"
+            }
           }
         },
         {
@@ -558,8 +918,20 @@
           "domain": "telegram.org",
           "kind": "download",
           "platforms": {
-            "windows": { "resolver": { "type": "static", "url": "https://telegram.org/dl/desktop/win" }, "filename": "telegram-setup.exe" },
-            "macos": { "resolver": { "type": "static", "url": "https://osx.telegram.org/updates/Telegram.dmg" }, "filename": "Telegram.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://telegram.org/dl/desktop/win"
+              },
+              "filename": "telegram-setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://osx.telegram.org/updates/Telegram.dmg"
+              },
+              "filename": "Telegram.dmg"
+            }
           }
         },
         {
@@ -572,8 +944,238 @@
           "kind": "download",
           "notes": "teamspeak.com/en/downloads is NOT actually JS-rendered — the real download URL is right there in the static HTML, just on a <button data-url=\"...\"> instead of an <a href=\"...\">, which is why the original a.download-windows selector never matched anything. Needs a browser-like User-Agent header or the site 403s. Verified live.",
           "platforms": {
-            "windows": { "resolver": { "type": "html", "page_url": "https://teamspeak.com/en/downloads/#ts3client", "selector": "button[data-url*=\"TeamSpeak3-Client-win64\"]", "attr": "data-url" }, "filename": "TeamSpeak3-Client-win64.exe" },
-            "macos": { "resolver": { "type": "html", "page_url": "https://teamspeak.com/en/downloads/#ts3client", "selector": "button[data-url*=\"TeamSpeak3-Client-macosx\"]", "attr": "data-url" }, "filename": "TeamSpeak3-Client-macosx.dmg" }
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://teamspeak.com/en/downloads/#ts3client",
+                "selector": "button[data-url*=\"TeamSpeak3-Client-win64\"]",
+                "attr": "data-url"
+              },
+              "filename": "TeamSpeak3-Client-win64.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://teamspeak.com/en/downloads/#ts3client",
+                "selector": "button[data-url*=\"TeamSpeak3-Client-macosx\"]",
+                "attr": "data-url"
+              },
+              "filename": "TeamSpeak3-Client-macosx.dmg"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "name": "Music Players",
+      "apps": [
+        {
+          "id": "spotify",
+          "name": "Spotify",
+          "bio": "The mainstream music streaming app.",
+          "description": "Spotify's desktop client — streaming, playlists, and local-file playback. The download.scdn.co installer is Spotify's own always-current web installer.",
+          "domain": "spotify.com",
+          "kind": "download",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.scdn.co/SpotifySetup.exe"
+              },
+              "filename": "SpotifySetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.scdn.co/Spotify.dmg"
+              },
+              "filename": "Spotify.dmg"
+            }
+          }
+        },
+        {
+          "id": "tidal",
+          "name": "TIDAL",
+          "bio": "Hi-fi / lossless music streaming.",
+          "description": "TIDAL streams lossless FLAC and hi-res audio, aimed at listeners who want better-than-Spotify fidelity. TIDAL blocks automated downloads, so this opens their official download page.",
+          "domain": "tidal.com",
+          "website": "https://tidal.com/download",
+          "kind": "download",
+          "notes": "download.tidal.com 403s to non-browser clients (and to our downloader UA) — no reliable direct URL, so this is a site-only entry until the webview resolver lands.",
+          "platforms": {
+            "windows": {
+              "filename": "TIDAL Setup.exe"
+            },
+            "macos": {
+              "filename": "TIDAL.dmg"
+            }
+          }
+        },
+        {
+          "id": "qobuz",
+          "name": "Qobuz",
+          "bio": "Audiophile hi-res music streaming & store.",
+          "description": "Qobuz focuses on studio-quality hi-res streaming and purchases, popular with audiophiles. Their site gates the desktop installer behind JS, so this opens the official download page.",
+          "domain": "qobuz.com",
+          "website": "https://www.qobuz.com/us-en/download",
+          "kind": "download",
+          "notes": "Download page is JS-rendered and static.qobuz.com 403s — site-only entry until the webview resolver lands.",
+          "platforms": {
+            "windows": {
+              "filename": "Qobuz Setup.exe"
+            },
+            "macos": {
+              "filename": "Qobuz.dmg"
+            }
+          }
+        },
+        {
+          "id": "music-presence",
+          "name": "Music Presence",
+          "bio": "Shows your currently-playing song as Discord Rich Presence.",
+          "description": "Music Presence (ungive/discord-music-presence) detects what you're playing — Spotify, Apple Music, TIDAL, and more — and displays it as your Discord status with album art. The community successor to the old Premid-style presence tools.",
+          "domain": "github.com",
+          "website": "https://github.com/ungive/discord-music-presence",
+          "kind": "download",
+          "notes": "GitHub ungive/discord-music-presence, verified live 2026-07-11: ships musicpresence-<ver>-windows-x64-installer.exe and mac-arm64/x86_64 dmgs.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ungive/discord-music-presence",
+                "asset_pattern": "musicpresence-*-windows-x64-installer.exe"
+              },
+              "filename": "MusicPresenceSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ungive/discord-music-presence",
+                "asset_pattern": "musicpresence-*-mac-arm64.dmg"
+              },
+              "filename": "MusicPresence.dmg"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "torrenting",
+      "name": "Torrenting",
+      "apps": [
+        {
+          "id": "qbittorrent",
+          "name": "qBittorrent",
+          "bio": "Open-source, ad-free BitTorrent client.",
+          "description": "qBittorrent is the go-to free BitTorrent client — no ads, no bundled junk, a built-in search and RSS, and a clean Qt interface. The standard replacement for the ad-riddled uTorrent.",
+          "domain": "qbittorrent.org",
+          "kind": "download",
+          "notes": "GitHub qbittorrent/qBittorrent. Ships a standard build and a longer-named _lt20 (libtorrent 1.2) variant; the resolver's shortest-match tiebreak selects the standard build. Verified live 2026-07-11.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "qbittorrent/qBittorrent",
+                "asset_pattern": "qbittorrent_*_x64_setup.exe"
+              },
+              "filename": "qbittorrent_setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "qbittorrent/qBittorrent",
+                "asset_pattern": "qbittorrent-*.dmg"
+              },
+              "filename": "qbittorrent.dmg"
+            }
+          }
+        },
+        {
+          "id": "deluge",
+          "name": "Deluge",
+          "bio": "Lightweight, plugin-driven BitTorrent client.",
+          "description": "Deluge is a lightweight BitTorrent client built around a plugin system and a daemon/thin-client design, so you can run the torrent engine headless and control it remotely. A long-standing free-software favourite.",
+          "domain": "deluge-torrent.org",
+          "kind": "download",
+          "notes": "osuosl mirror. Static-pinned to the current 2.2.0 win64 installer (verified 2026-07-11); Deluge releases very rarely — bump the URL when a newer win64-setup.exe appears in the mirror directory.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://ftp.osuosl.org/pub/deluge/windows/deluge-2.2.0-win64-setup.exe"
+              },
+              "filename": "deluge-win64-setup.exe"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "utilities",
+      "name": "General Utilities",
+      "apps": [
+        {
+          "id": "sharex",
+          "name": "ShareX",
+          "bio": "Open-source screen capture, recording, and sharing.",
+          "description": "ShareX is the most capable free screenshot/screen-record tool on Windows — region capture, scrolling capture, GIF recording, OCR, and fully customizable after-capture workflows and upload destinations. A power-user staple.",
+          "domain": "getsharex.com",
+          "kind": "download",
+          "notes": "GitHub ShareX/ShareX, asset ShareX-<ver>-setup-x64.exe. Verified live 2026-07-11.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ShareX/ShareX",
+                "asset_pattern": "ShareX-*-setup-x64.exe"
+              },
+              "filename": "ShareX-setup.exe"
+            }
+          }
+        },
+        {
+          "id": "twinkle-tray",
+          "name": "Twinkle Tray",
+          "bio": "Adjust monitor brightness from the taskbar.",
+          "description": "Twinkle Tray adds a taskbar slider for the hardware brightness of external monitors (via DDC/CI) and your laptop panel, with time-based automatic adjustments. Fills a gap Windows itself never has for desktop monitors.",
+          "domain": "twinkletray.com",
+          "kind": "download",
+          "notes": "GitHub xanderfrangos/twinkle-tray, asset Twinkle.Tray.<ver>.exe. Verified live 2026-07-11.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "xanderfrangos/twinkle-tray",
+                "asset_pattern": "Twinkle.Tray.*.exe"
+              },
+              "filename": "TwinkleTray-setup.exe"
+            }
+          }
+        },
+        {
+          "id": "flux",
+          "name": "f.lux",
+          "bio": "Warms your screen color after sunset to help sleep.",
+          "description": "f.lux gradually shifts your display toward warmer colors as the sun goes down, reducing blue light in the evening. The original and still most-configurable of the night-light tools, with per-location sunrise/sunset scheduling.",
+          "domain": "justgetflux.com",
+          "kind": "download",
+          "notes": "justgetflux.com direct installers. Verified live 2026-07-11 (win + mac).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://justgetflux.com/flux-setup.exe"
+              },
+              "filename": "flux-setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://justgetflux.com/mac/Flux.zip"
+              },
+              "filename": "Flux.zip"
+            }
           }
         }
       ]
@@ -589,7 +1191,11 @@
           "description": "Generates a PowerShell script that restarts the Windows Audio service — the classic fix when sound suddenly dies, a device switch goes wrong, or an app hijacks the output. Self-elevates via UAC and saves you a full reboot.",
           "icon": "bat.ico",
           "kind": "script",
-          "platforms": { "windows": { "script_id": "restart-audio-service" } }
+          "platforms": {
+            "windows": {
+              "script_id": "restart-audio-service"
+            }
+          }
         },
         {
           "id": "kill-valorant-process",
@@ -598,7 +1204,11 @@
           "description": "Generates a PowerShell script that force-kills a stuck VALORANT process, which the Vanguard anti-cheat can leave lingering after a crash and block relaunching. Self-elevates via UAC so the kill actually sticks.",
           "icon": "bat.ico",
           "kind": "script",
-          "platforms": { "windows": { "script_id": "kill-valorant-process" } }
+          "platforms": {
+            "windows": {
+              "script_id": "kill-valorant-process"
+            }
+          }
         }
       ]
     },
@@ -612,7 +1222,10 @@
           "bio": "Custom cursor schemes — installs via install.inf and shows Active in green once applied.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {}, "macos": {} }
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
         },
         {
           "id": "font-pack-example",
@@ -620,7 +1233,10 @@
           "bio": "Curated font packs with live previews before installing.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {}, "macos": {} }
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
         },
         {
           "id": "peace-equalizer",
@@ -628,7 +1244,10 @@
           "bio": "Peace parametric EQ plus a Sennheiser HD650 \"Oratory\" profile.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {}, "macos": {} }
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
         },
         {
           "id": "steam-profile-example",
@@ -636,7 +1255,10 @@
           "bio": "Custom Steam profile showcases and workshop packs, with previews.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {}, "macos": {} }
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
         },
         {
           "id": "sound-scheme-example",
@@ -644,7 +1266,10 @@
           "bio": "Custom Windows system sound schemes.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {}, "macos": {} }
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
         },
         {
           "id": "wallpaper-pack-example",
@@ -652,7 +1277,10 @@
           "bio": "Desktop wallpapers, profile pictures, and banners, with previews.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {}, "macos": {} }
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
         },
         {
           "id": "windows-themes-deprecated",
@@ -661,7 +1289,9 @@
           "description": "The Paranoid Android theme pack (.theme/.msstyles + patched shellstyle.dll) targeted Windows 10's theme engine and doesn't work on Windows 11. Kept listed for the archive, but not installable.",
           "icon": "placeholder.ico",
           "kind": "placeholder",
-          "platforms": { "windows": {} }
+          "platforms": {
+            "windows": {}
+          }
         }
       ]
     }

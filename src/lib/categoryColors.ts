@@ -6,6 +6,9 @@ const COLORS: Record<string, string> = {
   "dev-tools": "#3b82f6",
   browsers: "#a855f7",
   social: "#ec4899",
+  music: "#10b981",
+  torrenting: "#06b6d4",
+  utilities: "#8b5cf6",
   "system-tweaks": "#eab308",
   specials: "#7c3aed",
 };

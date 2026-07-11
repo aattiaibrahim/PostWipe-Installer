@@ -68,7 +68,11 @@ export function AppCard({ app, os }: AppCardProps) {
   const isScript = app.kind === "script";
   const isPlaceholder = app.kind === "placeholder";
   const hasDetails = !!app.domain || !!app.description;
-  // Only real downloadable apps can be batch-selected (not scripts or placeholders).
+  // Some vendors (Tidal, Qobuz, MSI Afterburner) block direct/automated downloads, so their
+  // catalog entry has no resolver — the action opens the official site instead of downloading.
+  const siteOnly = !isScript && !isPlaceholder && !platform.resolver;
+  const siteUrl = app.website ?? (app.domain ? `https://${app.domain}` : null);
+  // Only real auto-downloadable apps can be batch-selected (not scripts, placeholders, site-only).
   const selectable = !isScript && !isPlaceholder && !!platform.resolver;
 
   const relevantJob = Object.values(jobs)
@@ -223,6 +227,14 @@ export function AppCard({ app, os }: AppCardProps) {
             {isPlaceholder ? (
               <button className="app-row__action" disabled title="Waiting on files">
                 Coming soon
+              </button>
+            ) : siteOnly ? (
+              <button
+                className="app-row__action"
+                onClick={() => siteUrl && openUrl(siteUrl)}
+                title="This vendor blocks direct downloads — opens their official download page"
+              >
+                Get from site ↗
               </button>
             ) : isDownloadingJob ? (
               <button className="app-row__action app-row__action--cancel" onClick={handleCancel}>

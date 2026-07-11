@@ -18,6 +18,12 @@ import {
   siTeamspeak,
   siNvidia,
   siRiotgames,
+  siSpotify,
+  siTidal,
+  siQbittorrent,
+  siDeluge,
+  siSharex,
+  siMsi,
 } from "simple-icons";
 
 export interface BrandIcon {
@@ -45,6 +51,12 @@ export const BRAND_ICONS: Record<string, BrandIcon> = {
   teamspeak: siTeamspeak,
   "nvidia-profile-inspector": siNvidia,
   "riot-client": siRiotgames,
+  spotify: siSpotify,
+  tidal: siTidal,
+  qbittorrent: siQbittorrent,
+  deluge: siDeluge,
+  sharex: siSharex,
+  "msi-afterburner": siMsi,
 };
 
 const MONOGRAM_COLORS = ["#6d8cff", "#b06cf7", "#4fd1c5", "#f472b6", "#fbbf24", "#34d399", "#60a5fa", "#f87171"];
