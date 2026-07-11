@@ -20,8 +20,14 @@ export const SPECIALS_CATEGORIES: Record<string, SpecialsCategoryMeta> = {
   "Windows Sounds": { label: "Windows Sounds", order: 3, install: "sound", blurb: "Preview and install custom system sound sets." },
   "Audio & EQ Profiles": { label: "Audio & EQ", order: 4, install: "none", blurb: "Peace/EqualizerAPO EQ profiles — download and import in Peace." },
   "Steam Profiles": { label: "Steam Profiles", order: 5, install: "none", blurb: "Artwork/showcase packs — download the archive and apply in Steam." },
-  "PSD's": { label: "PSDs", order: 6, install: "none", blurb: "Photoshop layer-style packs — download only." },
-  "Windows Themes": { label: "Windows Themes (deprecated)", order: 7, install: "none", blurb: "Only worked on Windows 10; kept for the archive." },
+  "Payday 2 Mods - Diesel 2.0": {
+    label: "PayDay 2 Mods (Diesel 2.0)",
+    order: 6,
+    install: "none",
+    blurb: "Mods for PAYDAY 2's Diesel 2.0 engine — extract into your PAYDAY 2 install folder (steamapps\\common\\PAYDAY 2).",
+  },
+  "PSD's": { label: "PSDs", order: 7, install: "none", blurb: "Photoshop layer-style packs — download only." },
+  "Windows Themes": { label: "Windows Themes (deprecated)", order: 8, install: "none", blurb: "Only worked on Windows 10; kept for the archive." },
 };
 
 export function categoryMeta(folder: string): SpecialsCategoryMeta {
@@ -63,6 +69,8 @@ export const DISPLAY_NAMES: Record<string, string> = {
   "keep_calm.zip": "Keep Calm",
   "Mononoki.zip": "Mononoki",
   "komika_axis.zip": "Komika Axis",
+  "mods.zip": "Mods Pack (goes in PAYDAY 2\\mods)",
+  "assets.zip": "Assets Pack (goes in PAYDAY 2\\assets)",
   "Anime Sounds.zip": "Anime Sounds",
   "Linux Ubuntu.zip": "Linux Ubuntu Sounds",
   "Paranoid Android.zip": "Paranoid Android (Windows 10 only)",

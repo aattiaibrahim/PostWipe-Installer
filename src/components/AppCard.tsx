@@ -119,11 +119,11 @@ export function AppCard({ app, os }: AppCardProps) {
         const lnkPath = await pinScriptToStartMenu(scriptId, generatedPath);
         setPinned(true);
         const lnkName = lnkPath.split("\\").pop()?.replace(/\.lnk$/i, "") ?? app.name;
-        // Windows 11 blocks apps from pinning tiles (E_ACCESSDENIED on the shell verb),
-        // so the last step is necessarily the user's — say exactly where it landed instead
-        // of looking broken.
+        // Windows 11 blocks apps from placing Start tiles (E_ACCESSDENIED on the shell
+        // verb), so the app opens Explorer with the shortcut selected — the tile is then
+        // one right-click away, which is the closest any app can legally get.
         setPinMsg(
-          `Shortcut created: search "${lnkName}" in Start (it's under All apps). For a tile: right-click it there ▸ Pin to Start.`,
+          `"${lnkName}" is in your Start menu (All apps / search). Explorer just opened with it selected — right-click ▸ Pin to Start for the tile.`,
         );
       }
     } catch (err) {

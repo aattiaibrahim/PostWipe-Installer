@@ -127,7 +127,14 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
       )}
       <AnimatePresence>
         {lightboxOpen && previewUrls.length > 0 && (
-          <PreviewLightbox urls={previewUrls} title={item.name} onClose={() => setLightboxOpen(false)} />
+          <PreviewLightbox
+            urls={previewUrls}
+            title={item.name}
+            // Cursor packs: the second image is the full-set collage — inspecting should
+            // show every cursor, not just the thumbnail's Normal Select.
+            startIndex={meta.install === "cursor" && previewUrls.length > 1 ? 1 : 0}
+            onClose={() => setLightboxOpen(false)}
+          />
         )}
         {soundsOpen && sounds.length > 0 && (
           <SoundPreview title={item.name} sounds={sounds} onClose={() => setSoundsOpen(false)} />
