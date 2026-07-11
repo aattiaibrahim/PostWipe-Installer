@@ -90,6 +90,16 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      # The catalog is embedded via include_str! and only parsed at RUNTIME, so a malformed
+      # or schema-invalid catalog.json builds fine but crashes the app on launch. These tests
+      # (which include catalog_json_parses) fail the release instead. Live/network sweeps are
+      # skipped so a flaky host can't block a release. Windows runner only — the check is
+      # platform-independent and this keeps the mac build fast.
+      - name: Validate catalog + unit tests
+        if: matrix.platform == 'windows-latest'
+        working-directory: src-tauri
+        run: cargo test --lib -- --skip live_tests --skip full_catalog_sweep
+
       - name: Build, sign, and publish release
         uses: tauri-apps/tauri-action@v0
         env:
