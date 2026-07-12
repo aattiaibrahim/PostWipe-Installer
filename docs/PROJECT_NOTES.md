@@ -160,6 +160,17 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Release publishes as draft-until-complete — 2026-07-12
+- "Update check failed: None of the fallback platforms [windows-x86_64-nsis, …] were found"
+  was a RELEASE-WINDOW RACE, not an updater bug: tauri-action published the release as soon as
+  the first (mac) build uploaded, so latest.json briefly contained only darwin platforms while
+  the slower Windows build ran. Any Windows update check in that ~5-10 min window failed.
+- Fix in release.yml: `releaseDraft: true` + a `publish` job (needs: [version, build]) that
+  `gh release edit --draft=false --latest` only after BOTH platforms uploaded. While building,
+  releases/latest keeps serving the previous complete release; a failed build leaves the draft
+  unpublished. tauri-action merges latest.json platforms across jobs into the same tagged
+  (draft) release, so the published manifest always has all four platform keys.
+
 ### Sidebar slide indicator, TIDAL/Qobuz direct downloads, icons, confirm modal — 2026-07-11
 - **Sidebar active pill slides** between categories (framer `layoutId="sidebar-active-indicator"`,
   vertical version of the OS-picker effect). Background moved off `.sidebar__item--active` onto

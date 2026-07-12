@@ -100,7 +100,11 @@ jobs:
         working-directory: src-tauri
         run: cargo test --lib -- --skip live_tests --skip full_catalog_sweep
 
-      - name: Build, sign, and publish release
+      # Draft until EVERY platform has uploaded. The mac build finishes first, and a live
+      # release at that moment serves a latest.json with only darwin platforms — Windows
+      # update checks in that window fail with "none of the fallback platforms were found".
+      # The publish job below flips the draft live only once all builds succeed.
+      - name: Build, sign, and upload to draft release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,6 +114,18 @@ jobs:
           tagName: v${{ needs.version.outputs.version }}
           releaseName: v${{ needs.version.outputs.version }}
           releaseBody: Automated release built from the latest push to master.
-          releaseDraft: false
+          releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+  # Publishes the draft only when both platform builds succeeded, so releases/latest (and the
+  # updater's latest.json) always points at a complete release. A failed build leaves the
+  # draft unpublished and users stay on the previous version.
+  publish:
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "v${{ needs.version.outputs.version }}" --repo "${{ github.repository }}" --draft=false --latest
