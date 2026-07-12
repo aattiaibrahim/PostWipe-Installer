@@ -1,111 +1,208 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSpecialsStore } from "../state/specialsStore";
-import { useSpecialsContentStore, type SpecialsGroup, type SpecialsSubfolder } from "../state/specialsContentStore";
-import { SpecialsItem, tileGradient } from "./SpecialsItem";
+import {
+  useSpecialsContentStore,
+  type SpecialsGroup,
+  type SpecialsItem as Item,
+  type SpecialsSubfolder,
+} from "../state/specialsContentStore";
+import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
+import { SpecialsCard, tileGradient, gatedUrl } from "./SpecialsCard";
+import { SpecialsDetail } from "./SpecialsDetail";
 
-/** A nested folder (e.g. Audio & EQ ▸ Sennheiser 650) shown as a cover card on the shelf;
- *  clicking it swaps the shelf to that folder's contents (back chip in the header). */
-function FolderCard({ subfolder, onOpen }: { subfolder: SpecialsSubfolder; onOpen: () => void }) {
+/** Up to four preview images pulled from a set of items, for a cover collage. */
+function collageImages(items: Item[], sessionKey: string | null): string[] {
+  const out: string[] = [];
+  for (const it of items) {
+    if (it.previewKeys.length > 0) out.push(gatedUrl(it.previewKeys[0], sessionKey));
+    if (out.length === 4) break;
+  }
+  return out;
+}
+
+/** A big department cover: a 2×2 collage (real previews where available, gradient tiles to
+ *  fill) with the name + count. Clicking opens that category / subfolder as its own grid. */
+function CoverCard({
+  title,
+  count,
+  images,
+  seed,
+  folder,
+  onOpen,
+}: {
+  title: string;
+  count: number;
+  images: string[];
+  seed: string;
+  folder?: boolean;
+  onOpen: () => void;
+}) {
+  const cells = Array.from({ length: 4 }, (_, i) => images[i] ?? null);
   return (
-    <button className="specials-card specials-card--folder" onClick={onOpen}>
-      <div className="specials-card__media" style={{ background: tileGradient(subfolder.name) }}>
-        <svg
-          className="specials-card__folder-glyph"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+    <button className="specials-cover" onClick={onOpen}>
+      <div className="specials-cover__collage">
+        {cells.map((url, i) =>
+          url ? (
+            <img key={i} src={url} alt="" loading="lazy" />
+          ) : (
+            <span key={i} style={{ background: tileGradient(seed + i) }} />
+          ),
+        )}
+      </div>
+      {folder && (
+        <svg className="specials-cover__folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
         </svg>
-        <span className="specials-card__badge">{subfolder.items.length}</span>
-      </div>
-      <div className="specials-card__body">
-        <span className="specials-card__name">{subfolder.name}</span>
-        <span className="specials-card__meta">
-          {subfolder.items.length} {subfolder.items.length === 1 ? "item" : "items"}
-        </span>
+      )}
+      <div className="specials-cover__label">
+        <span className="specials-cover__name">{title}</span>
+        <span className="specials-cover__count">{count} {count === 1 ? "item" : "items"}</span>
       </div>
     </button>
   );
 }
 
-/** One category = one umbrel-style shelf: header row, then a horizontally-scrolling rail
- *  of cards. Opening a subfolder swaps the rail to its contents with a back chip. */
-function Shelf({ group }: { group: SpecialsGroup }) {
-  const [openFolder, setOpenFolder] = useState<string | null>(null);
-  const folder = group.subfolders.find((s) => s.name === openFolder) ?? null;
-  const total = group.items.length + group.subfolders.reduce((n, s) => n + s.items.length, 0);
-
+/** A grid of item cards + (optionally) subfolder covers, with a back header. */
+function ItemGrid({
+  title,
+  crumb,
+  items,
+  subfolders,
+  meta,
+  onBack,
+  onOpenSub,
+  onOpenItem,
+}: {
+  title: string;
+  crumb?: string;
+  items: Item[];
+  subfolders: SpecialsSubfolder[];
+  meta: SpecialsCategoryMeta;
+  onBack: () => void;
+  onOpenSub: (name: string) => void;
+  onOpenItem: (item: Item) => void;
+}) {
+  const sessionKey = useSpecialsStore((s) => s.sessionKey);
   return (
-    <section className="category-panel__section specials-shelf-section">
-      <div className="category-panel__header specials-shelf__header">
-        {folder ? (
-          <>
-            <button className="specials-shelf__back" onClick={() => setOpenFolder(null)} aria-label="Back to all">
-              ←
-            </button>
-            <h2 className="category-panel__title">
-              {group.meta.label} <span className="specials-shelf__crumb">▸ {folder.name}</span>
-            </h2>
-            <span className="specials-group__count">{folder.items.length}</span>
-          </>
-        ) : (
-          <>
-            <h2 className="category-panel__title">{group.meta.label}</h2>
-            <span className="specials-group__count">{total}</span>
-          </>
-        )}
+    <motion.div
+      className="specials-page"
+      initial={{ opacity: 0, x: 18 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -18 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+    >
+      <div className="specials-page__header">
+        <button className="specials-page__back" onClick={onBack} aria-label="Back">
+          ←
+        </button>
+        <h2 className="specials-page__title">
+          {title}
+          {crumb && <span className="specials-page__crumb"> ▸ {crumb}</span>}
+        </h2>
       </div>
-      {!folder && group.meta.blurb && <p className="specials-group__blurb">{group.meta.blurb}</p>}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={folder ? folder.name : "__root__"}
-          className="specials-shelf"
-          initial={{ opacity: 0, x: folder ? 24 : -24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: folder ? -24 : 24 }}
-          transition={{ duration: 0.16, ease: "easeOut" }}
-        >
-          {folder
-            ? folder.items.map((item) => <SpecialsItem key={item.objectKey} item={item} meta={group.meta} />)
-            : [
-                ...group.subfolders.map((subfolder) => (
-                  <FolderCard key={subfolder.name} subfolder={subfolder} onOpen={() => setOpenFolder(subfolder.name)} />
-                )),
-                ...group.items.map((item) => <SpecialsItem key={item.objectKey} item={item} meta={group.meta} />),
-              ]}
-        </motion.div>
-      </AnimatePresence>
-    </section>
+      {meta.blurb && !crumb && <p className="specials-page__blurb">{meta.blurb}</p>}
+      <div className="specials-grid">
+        {subfolders.map((sf) => (
+          <CoverCard
+            key={sf.name}
+            title={sf.name}
+            count={sf.items.length}
+            images={collageImages(sf.items, sessionKey)}
+            seed={sf.name}
+            folder
+            onOpen={() => onOpenSub(sf.name)}
+          />
+        ))}
+        {items.map((item) => (
+          <SpecialsCard key={item.objectKey} item={item} onOpen={onOpenItem} />
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
-/** Rendered in place of the placeholder Specials rows once unlocked: fetches the vault
- *  listing from the Worker and lays each category out as a horizontal gallery shelf. */
+/** Rendered once the vault is unlocked: a landing grid of category covers → each opens that
+ *  category as its own grid → clicking an item opens the detail sheet. Pure vertical scroll. */
 export function SpecialsContent() {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
   const { loaded, loading, error, groups, load } = useSpecialsContentStore();
+
+  const [openFolder, setOpenFolder] = useState<string | null>(null);
+  const [openSub, setOpenSub] = useState<string | null>(null);
+  const [detail, setDetail] = useState<{ item: Item; meta: SpecialsCategoryMeta } | null>(null);
 
   useEffect(() => {
     if (sessionKey && !loaded && !loading) load(sessionKey);
   }, [sessionKey, loaded, loading, load]);
 
-  if (loading && !loaded) {
-    return <p className="category-panel__empty">Loading the vault…</p>;
-  }
-  if (error) {
-    return <p className="category-panel__empty">Couldn't load the vault: {error}</p>;
-  }
+  if (loading && !loaded) return <p className="category-panel__empty">Loading the vault…</p>;
+  if (error) return <p className="category-panel__empty">Couldn't load the vault: {error}</p>;
+
+  const group: SpecialsGroup | undefined = groups.find((g) => g.folder === openFolder);
+  const subfolder = group?.subfolders.find((s) => s.name === openSub);
 
   return (
     <>
-      {groups.map((group) => (
-        <Shelf key={group.folder} group={group} />
-      ))}
+      <AnimatePresence mode="wait">
+        {!group ? (
+          <motion.div
+            key="__root__"
+            className="specials-page"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, x: -18 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            <div className="specials-grid specials-grid--covers">
+              {groups.map((g) => {
+                const allItems = [...g.items, ...g.subfolders.flatMap((s) => s.items)];
+                const count = allItems.length;
+                return (
+                  <CoverCard
+                    key={g.folder}
+                    title={g.meta.label}
+                    count={count}
+                    images={collageImages(allItems, sessionKey)}
+                    seed={g.folder}
+                    onOpen={() => {
+                      setOpenFolder(g.folder);
+                      setOpenSub(null);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </motion.div>
+        ) : subfolder ? (
+          <ItemGrid
+            key={`${group.folder}/${subfolder.name}`}
+            title={group.meta.label}
+            crumb={subfolder.name}
+            items={subfolder.items}
+            subfolders={[]}
+            meta={group.meta}
+            onBack={() => setOpenSub(null)}
+            onOpenSub={() => {}}
+            onOpenItem={(item) => setDetail({ item, meta: group.meta })}
+          />
+        ) : (
+          <ItemGrid
+            key={group.folder}
+            title={group.meta.label}
+            items={group.items}
+            subfolders={group.subfolders}
+            meta={group.meta}
+            onBack={() => setOpenFolder(null)}
+            onOpenSub={(name) => setOpenSub(name)}
+            onOpenItem={(item) => setDetail({ item, meta: group.meta })}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {detail && <SpecialsDetail item={detail.item} meta={detail.meta} onClose={() => setDetail(null)} />}
+      </AnimatePresence>
     </>
   );
 }

@@ -160,6 +160,23 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Specials → category covers + detail sheet (dropped horizontal scroll) — 2026-07-12 (fifth pass)
+- User found horizontal shelves tedious on a desktop. Showed a 6-direction mockup board (built
+  as an artifact, screenshotted via the vite server since claude.ai is blocked in the browser
+  pane); user picked **#5 category covers + #6 detail sheet**. Everything is vertical-scroll now.
+- New flow (`SpecialsContent.tsx`): landing = grid of **department cover cards** (2×2 collage of
+  real item previews, gradient-tile fill, name + count) → click opens that category as its own
+  **vertical grid** with a ← back header → clicking an item opens the **detail sheet**
+  (`SpecialsDetail.tsx`, portal modal: big preview carousel / sound players / gradient glyph on
+  the left, name + size + Download/Install on the right). Subfolders (Audio ▸ Sennheiser) are
+  folder cover cards inside the category that drill one level deeper (breadcrumb + back).
+- Component split: `SpecialsItem.tsx` DELETED; presentational tile is `SpecialsCard.tsx`
+  (exports `tileGradient`, `fmtSize`, `gatedUrl`), all download/install/cursor-variant logic
+  moved into `SpecialsDetail.tsx`. Cards no longer carry hover-scrim buttons — a click opens the
+  sheet where the actions live.
+- Verified in preview with mock groups: covers → category → subfolder → items → back all work,
+  detail sheet opens/closes, gated Install hint shows, console clean, tsc passes.
+
 ### Specials gallery — AppleTV polish pass + unlock-burst fix — 2026-07-12 (fourth pass)
 - First shelves cut looked cramped/"disgusting": each shelf was trapped in the inherited
   `.category-panel__section` bordered-glass box (box-in-a-box) whose `overflow: hidden` also
