@@ -358,7 +358,9 @@ h3 {
   width: 236px;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  /* NO gap here: the panel stays mounted at height 0 when closed, and a flex gap would
+     still reserve space above the Settings button. The open-state spacing lives inside
+     the panel's measured content (padding-bottom below) so it clips away with it. */
   padding: 0.45rem;
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -368,6 +370,10 @@ h3 {
 
 .settings-dock__panel {
   transform-origin: bottom left;
+}
+
+.settings-dock__panel-inner {
+  padding-bottom: 0.35rem;
 }
 
 

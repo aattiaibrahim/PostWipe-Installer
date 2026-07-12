@@ -56,7 +56,7 @@ export function SidebarSettings() {
         style={{ overflow: "hidden", pointerEvents: open ? "auto" : "none" }}
         aria-hidden={!open}
       >
-        <div ref={innerRef}>
+        <div ref={innerRef} className="settings-dock__panel-inner">
           <SettingsPanel />
         </div>
       </motion.div>
