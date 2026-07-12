@@ -7,6 +7,10 @@ import timerResolutionIcon from "../assets/app-icons/timer-resolution.png";
 import puttyIcon from "../assets/app-icons/putty.ico";
 import qobuzIcon from "../assets/app-icons/qobuz.png";
 import musicPresenceIcon from "../assets/app-icons/music-presence.png";
+import deceiveIcon from "../assets/app-icons/deceive.ico";
+import losslesscutIcon from "../assets/app-icons/losslesscut.png";
+import translucenttbIcon from "../assets/app-icons/translucenttb.png";
+import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
  *  icon / the icon embedded in their own executable — extracted offline). */
@@ -21,6 +25,13 @@ const BUNDLED_ICONS: Record<string, string> = {
   // render the GitHub favicon; this is their real mark (white, needs the dark chip below).
   qobuz: qobuzIcon,
   "music-presence": musicPresenceIcon,
+  // GitHub-hosted apps whose domain would otherwise render the GitHub favicon.
+  deceive: deceiveIcon,
+  losslesscut: losslesscutIcon,
+  translucenttb: translucenttbIcon,
+  // Script entries have no domain — they'd fall through to a monogram letter.
+  "restart-audio-service": batIcon,
+  "kill-valorant-process": batIcon,
 };
 
 /** Bundled marks that are near-white get a fixed dark chip (theme-independent), mirroring

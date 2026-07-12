@@ -160,6 +160,29 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Real logos, Start-menu wording, *arr stack, dock spacing — 2026-07-12 (second pass)
+- **Bundled real icons** for Deceive (repo Resources/deceive.ico), LosslessCut
+  (static.mifi.no dist-icons 180px), TranslucentTB (AppPackage/Assets-Release
+  Square44x44Logo.targetsize-256.png), and the two script rows now show `bat.ico` instead of
+  a monogram letter. RULE (also in assistant memory): when adding an app, check what AppIcon
+  will actually render — `domain: github.com` means the GITHUB favicon, no domain means a
+  monogram — and bundle the real mark in `src/assets/app-icons/` + `BUNDLED_ICONS`. The
+  catalog `icon` field is decorative; AppIcon never reads it.
+- **"Pin to Start" → "Add to Start Menu"** (button: "✓ In Start Menu" when active): the old
+  label promised a tile the app cannot legally place, which read as broken. The success toast
+  now gives the quick manual step (Explorer opens with the .lnk selected → right-click ▸ Pin
+  to Start). Scripts/system-tweaks are Windows-only in the catalog (no macos platform) so the
+  category already disappears under the macOS filter.
+- ***arr stack added to Torrenting** (user picked Prowlarr + Lidarr when asked what "flickrr"
+  meant): Sonarr (assets say `win-x64`, NOT `windows` like the others!), Radarr, Prowlarr,
+  Lidarr — all github_release, x64 installer + osx-app arm64 zip, verified live 2026-07-12.
+  Their sonarr.tv/radarr.video/prowlarr.com/lidarr.audio favicons are the real logos, so no
+  bundling needed.
+- **Settings dock spacing**: the keep-mounted panel (snap fix below) still earned the dock's
+  flex `gap` at height 0 → dead space above the Settings button. Gap removed; the open-state
+  spacing is `padding-bottom` INSIDE the measured/clipped panel content
+  (`.settings-dock__panel-inner`). Button now sits 8px/8px symmetric.
+
 ### Settings panel snap fix, 7 new apps, MSI re-probe — 2026-07-12
 - **Settings panel open/close snapped** (the real one this time — the earlier fix was the
   checkbox): framer spring animating `height: 0 → "auto"` jump-cuts to final size (measured:

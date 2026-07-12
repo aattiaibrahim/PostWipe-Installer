@@ -1177,6 +1177,122 @@
               "filename": "deluge-win64-setup.exe"
             }
           }
+        },
+        {
+          "id": "sonarr",
+          "name": "Sonarr",
+          "icon": "sonarr.png",
+          "bio": "Automatically grabs, sorts, and renames TV shows.",
+          "description": "Sonarr monitors the shows you follow, grabs new episodes from your indexers via your torrent/usenet client, then sorts and renames everything into a clean library. Set it up once and your TV folder maintains itself.",
+          "domain": "sonarr.tv",
+          "website": "https://sonarr.tv",
+          "kind": "download",
+          "notes": "GitHub Sonarr/Sonarr, verified live 2026-07-12: win-x64-installer.exe (note: 'win', not 'windows' like Radarr) + osx-arm64-app.zip. Their services.sonarr.tv download API redirects to these same GitHub assets.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Sonarr/Sonarr",
+                "asset_pattern": "Sonarr.main.*.win-x64-installer.exe"
+              },
+              "filename": "SonarrSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Sonarr/Sonarr",
+                "asset_pattern": "Sonarr.main.*.osx-arm64-app.zip"
+              },
+              "filename": "Sonarr-osx.zip"
+            }
+          }
+        },
+        {
+          "id": "radarr",
+          "name": "Radarr",
+          "icon": "radarr.png",
+          "bio": "Automatically grabs, sorts, and renames movies.",
+          "description": "Radarr is Sonarr's movie-side sibling — add films to your watchlist and it grabs them via your download client when available, upgrades quality over time, and keeps your movie library organized and renamed.",
+          "domain": "radarr.video",
+          "website": "https://radarr.video",
+          "kind": "download",
+          "notes": "GitHub Radarr/Radarr, verified live 2026-07-12: windows-core-x64-installer.exe + osx-app-core-arm64.zip (asset naming differs from Sonarr's).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Radarr/Radarr",
+                "asset_pattern": "Radarr.master.*.windows-core-x64-installer.exe"
+              },
+              "filename": "RadarrSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Radarr/Radarr",
+                "asset_pattern": "Radarr.master.*.osx-app-core-arm64.zip"
+              },
+              "filename": "Radarr-osx.zip"
+            }
+          }
+        },
+        {
+          "id": "prowlarr",
+          "name": "Prowlarr",
+          "icon": "prowlarr.png",
+          "bio": "Manages all your indexers in one place for Sonarr/Radarr.",
+          "description": "Prowlarr is the indexer manager for the *arr stack — add your torrent and usenet indexers once and it syncs them into Sonarr, Radarr, and Lidarr automatically, with unified searching and stats.",
+          "domain": "prowlarr.com",
+          "website": "https://prowlarr.com",
+          "kind": "download",
+          "notes": "GitHub Prowlarr/Prowlarr, verified live 2026-07-12: windows-core-x64-installer.exe + osx-app-core-arm64.zip (same asset scheme as Radarr).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Prowlarr/Prowlarr",
+                "asset_pattern": "Prowlarr.master.*.windows-core-x64-installer.exe"
+              },
+              "filename": "ProwlarrSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Prowlarr/Prowlarr",
+                "asset_pattern": "Prowlarr.master.*.osx-app-core-arm64.zip"
+              },
+              "filename": "Prowlarr-osx.zip"
+            }
+          }
+        },
+        {
+          "id": "lidarr",
+          "name": "Lidarr",
+          "icon": "lidarr.png",
+          "bio": "Automatically grabs, sorts, and renames music.",
+          "description": "Lidarr rounds out the *arr family for music — follow artists and it grabs new albums via your download client, organizes them, and keeps metadata and file naming consistent across your library.",
+          "domain": "lidarr.audio",
+          "website": "https://lidarr.audio",
+          "kind": "download",
+          "notes": "GitHub Lidarr/Lidarr, verified live 2026-07-12: windows-core-x64-installer.exe + osx-app-core-arm64.zip (same asset scheme as Radarr/Prowlarr).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Lidarr/Lidarr",
+                "asset_pattern": "Lidarr.master.*.windows-core-x64-installer.exe"
+              },
+              "filename": "LidarrSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Lidarr/Lidarr",
+                "asset_pattern": "Lidarr.master.*.osx-app-core-arm64.zip"
+              },
+              "filename": "Lidarr-osx.zip"
+            }
+          }
         }
       ]
     },

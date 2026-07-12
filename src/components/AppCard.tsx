@@ -125,9 +125,11 @@ export function AppCard({ app, os }: AppCardProps) {
         const lnkName = lnkPath.split("\\").pop()?.replace(/\.lnk$/i, "") ?? app.name;
         // Windows 11 blocks apps from placing Start tiles (E_ACCESSDENIED on the shell
         // verb), so the app opens Explorer with the shortcut selected — the tile is then
-        // one right-click away, which is the closest any app can legally get.
+        // one right-click away, which is the closest any app can legally get. The UI
+        // deliberately says "Add to Start Menu", NOT "Pin to Start": the button can't
+        // deliver the tile itself, and promising it read as broken.
         setPinMsg(
-          `"${lnkName}" is in your Start menu (All apps / search). Explorer just opened with it selected — right-click ▸ Pin to Start for the tile.`,
+          `"${lnkName}" was added to your Start menu — find it by typing its name in Start search. Want it as a tile too? Explorer just opened with the shortcut selected: right-click it ▸ Pin to Start. Done.`,
         );
       }
     } catch (err) {
@@ -218,10 +220,10 @@ export function AppCard({ app, os }: AppCardProps) {
                 title={
                   !pinned && !generatedPath
                     ? "Generate the script first"
-                    : "Adds the script to your Start menu — it only runs when you click it"
+                    : "Adds a shortcut to your Start menu — it only runs when you click it"
                 }
               >
-                {pinned ? "✓ Pinned" : "Pin to Start"}
+                {pinned ? "✓ In Start Menu" : "Add to Start Menu"}
               </button>
             )}
             {isPlaceholder ? (
