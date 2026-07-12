@@ -130,3 +130,10 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
     }
   },
 }));
+
+// Dev-only escape hatch: the vault is key-gated and the gate never persists, so the
+// browser preview can't reach this UI otherwise. Lets layout work be verified with
+// mock groups (window.__specialsContent.setState({loaded: true, groups: [...]})).
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__specialsContent = useSpecialsContentStore;
+}
