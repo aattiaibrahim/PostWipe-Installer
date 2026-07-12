@@ -780,6 +780,27 @@
               "filename": "Autoruns.zip"
             }
           }
+        },
+        {
+          "id": "git",
+          "name": "Git (Git Bash)",
+          "icon": "git.png",
+          "bio": "Version control + the Git Bash terminal for Windows.",
+          "description": "Git for Windows installs the git version-control tooling along with Git Bash, a proper Unix-style terminal with bash, ssh, and the usual GNU utilities. The first thing most dev setups need. On macOS, git ships with the Xcode Command Line Tools instead (run 'git' once and accept the prompt).",
+          "domain": "git-scm.com",
+          "website": "https://git-scm.com/downloads/win",
+          "kind": "download",
+          "notes": "GitHub git-for-windows/git, verified live 2026-07-12: one Git-<ver>-64-bit.exe installer asset per release. Windows-only — macOS gets git from Xcode CLT/Homebrew, there's no maintained standalone installer.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "git-for-windows/git",
+                "asset_pattern": "Git-*-64-bit.exe"
+              },
+              "filename": "GitSetup.exe"
+            }
+          }
         }
       ]
     },
