@@ -14,10 +14,14 @@ export function SidebarSettings() {
 
   useEffect(() => {
     if (!open) return;
+    // While the Download-All confirm dialog (portaled to <body>) is up, its clicks and
+    // Esc belong to the dialog — closing the dock would unmount the dialog mid-choice.
+    const confirmIsOpen = () => document.querySelector(".confirm-overlay") !== null;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape" && !confirmIsOpen()) setOpen(false);
     }
     function onDown(e: MouseEvent) {
+      if (confirmIsOpen()) return;
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
     window.addEventListener("keydown", onKey);

@@ -5,6 +5,8 @@ import testmem5Icon from "../assets/app-icons/testmem5.png";
 import zentimingsIcon from "../assets/app-icons/zentimings.png";
 import timerResolutionIcon from "../assets/app-icons/timer-resolution.png";
 import puttyIcon from "../assets/app-icons/putty.ico";
+import qobuzIcon from "../assets/app-icons/qobuz.png";
+import musicPresenceIcon from "../assets/app-icons/music-presence.png";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
  *  icon / the icon embedded in their own executable — extracted offline). */
@@ -14,6 +16,17 @@ const BUNDLED_ICONS: Record<string, string> = {
   zentimings: zentimingsIcon,
   "timer-resolution": timerResolutionIcon,
   putty: puttyIcon,
+  // qobuz.com's own favicon/touch-icon ships opaque white corners — this copy has them
+  // flood-filled to transparent. music-presence's domain is github.com, which used to
+  // render the GitHub favicon; this is their real mark (white, needs the dark chip below).
+  qobuz: qobuzIcon,
+  "music-presence": musicPresenceIcon,
+};
+
+/** Bundled marks that are near-white get a fixed dark chip (theme-independent), mirroring
+ *  the luminance-picked chip the single-color brand icons use. */
+const BUNDLED_CHIP_BG: Record<string, string> = {
+  "music-presence": "#1c1d21",
 };
 
 interface AppIconProps {
@@ -31,8 +44,12 @@ export function AppIcon({ appId, name, domain, className }: AppIconProps) {
 
   const bundled = BUNDLED_ICONS[appId];
   if (bundled) {
+    const chipBg = BUNDLED_CHIP_BG[appId];
     return (
-      <div className={`app-icon app-icon--favicon ${className ?? ""}`}>
+      <div
+        className={`app-icon app-icon--favicon ${className ?? ""}`}
+        style={chipBg ? { backgroundColor: chipBg } : undefined}
+      >
         <img className="app-icon__favicon-img" src={bundled} alt="" loading="lazy" />
       </div>
     );

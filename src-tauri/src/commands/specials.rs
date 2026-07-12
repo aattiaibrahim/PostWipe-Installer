@@ -106,8 +106,8 @@ pub fn install_specials_item(app_handle: AppHandle, archive_path: String, instal
                 }
                 // One or many variants: the frontend uses list_cursor_variants + a picker for
                 // the multi-inf case; landing here means a single scheme — apply it directly.
-                _ => match apply_inf(&infs[0]) {
-                    Ok(()) => Ok("Cursor scheme installed (approve the admin prompt when it appears). Select it under Mouse settings ▸ Pointers ▸ Scheme.".into()),
+                _ => match apply_inf_and_equip(&infs[0]) {
+                    Ok(msg) => Ok(msg),
                     Err(e) => {
                         open_folder(&app_handle, &folder);
                         Err(format!("Couldn't install ({e}). Opened the folder — right-click install.inf ▸ Install."))
@@ -199,8 +199,8 @@ pub fn apply_cursor_variant(app_handle: AppHandle, inf_path: String) -> Result<S
     if !inf.exists() {
         return Err(format!("{inf_path} not found — reinstall the pack."));
     }
-    match apply_inf(&inf) {
-        Ok(()) => Ok("Cursor scheme installed. Select it under Mouse settings ▸ Pointers ▸ Scheme.".into()),
+    match apply_inf_and_equip(&inf) {
+        Ok(msg) => Ok(msg),
         Err(e) => {
             reveal(&app_handle, &inf);
             Err(format!("Couldn't install ({e}). Opened the folder — right-click the .inf ▸ Install."))
@@ -243,6 +243,47 @@ fn apply_inf(inf: &Path) -> Result<(), String> {
         .map_err(|_| format!("Windows finished but the \"{name}\" scheme didn't register — try right-clicking the .inf ▸ Install"))?;
     }
     Ok(())
+}
+
+/// Installs the .inf, then equips the scheme it registered. Equipping is best-effort: the
+/// .inf install alone already matches the old behavior (scheme available, user selects it
+/// by hand), so an equip failure downgrades the success message instead of failing.
+fn apply_inf_and_equip(inf: &Path) -> Result<String, String> {
+    apply_inf(inf)?;
+    let equipped = inf_scheme_name(inf).map(|n| equip_scheme(&n).is_ok()).unwrap_or(false);
+    Ok(if equipped {
+        "Cursor scheme installed and equipped — your pointer has changed.".into()
+    } else {
+        "Cursor scheme installed. Select it under Mouse settings ▸ Pointers ▸ Scheme.".into()
+    })
+}
+
+/// Makes a registered scheme the ACTIVE pointer set — what the Mouse control panel does on
+/// Apply: copy the scheme's cursor paths into the live `HKCU\Control Panel\Cursors` values,
+/// then broadcast SPI_SETCURSORS so everything picks the change up immediately (no logoff).
+/// Runs as the user (HKCU only) — no elevation needed.
+fn equip_scheme(name: &str) -> Result<(), String> {
+    // A scheme value is one comma-separated string; slot order is fixed (it's the order
+    // main.cpl reads and writes). Older packs stop at Hand — Pin/Person slots then reset
+    // to empty, which Windows renders as the default pointer for those two.
+    let ps = format!(
+        r#"$n = {name}
+$s = (Get-ItemProperty 'HKCU:\Control Panel\Cursors\Schemes' -ErrorAction Stop).$n
+if (-not $s) {{ throw "scheme '$n' is not registered" }}
+$parts = $s -split ','
+$slots = 'Arrow','Help','AppStarting','Wait','Crosshair','IBeam','NWPen','No','SizeNS','SizeWE','SizeNWSE','SizeNESW','SizeAll','UpArrow','Hand','Pin','Person'
+$k = 'HKCU:\Control Panel\Cursors'
+Set-ItemProperty -Path $k -Name '(default)' -Value $n
+New-ItemProperty -Path $k -Name 'Scheme Source' -Value 1 -PropertyType DWord -Force | Out-Null
+for ($i = 0; $i -lt $slots.Count; $i++) {{
+    $v = if ($i -lt $parts.Count) {{ $parts[$i].Trim() }} else {{ '' }}
+    New-ItemProperty -Path $k -Name $slots[$i] -Value $v -PropertyType ExpandString -Force | Out-Null
+}}
+Add-Type -Namespace Win32 -Name Spi -MemberDefinition '[DllImport("user32.dll", SetLastError = true)] public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, string pvParam, uint fWinIni);'
+if (-not [Win32.Spi]::SystemParametersInfo(0x0057, 0, $null, 3)) {{ throw "SystemParametersInfo failed" }}"#,
+        name = ps_quote(name)
+    );
+    run("powershell", &["-NoProfile", "-NonInteractive", "-Command", &ps])
 }
 
 fn open_folder(app_handle: &AppHandle, dir: &Path) {

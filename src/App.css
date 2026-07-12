@@ -370,9 +370,6 @@ h3 {
   transform-origin: bottom left;
 }
 
-.settings-dock .settings-panel {
-  border-top: 1px solid var(--border);
-}
 
 .sidebar-settings__btn {
   display: flex;
@@ -532,11 +529,117 @@ h3 {
   user-select: none;
 }
 
+/* The native checkbox stays in the tree for keyboard/screen-reader semantics but is
+   visually replaced by .toggle-switch, which can actually animate. */
 .settings-panel__toggle input {
-  accent-color: var(--accent);
-  width: 15px;
-  height: 15px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-switch {
+  flex-shrink: 0;
+  width: 34px;
+  height: 20px;
+  padding: 2px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--text) 22%, transparent);
+  transition: background-color 0.25s ease;
+}
+
+.settings-panel__toggle input:checked + .toggle-switch {
+  background-color: var(--accent);
+}
+
+.settings-panel__toggle input:focus-visible + .toggle-switch {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.toggle-switch__knob {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  /* Overshooting ease = the smooth settle instead of the native checkbox snap. */
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.settings-panel__toggle input:checked + .toggle-switch .toggle-switch__knob {
+  transform: translateX(14px);
+}
+
+/* Centered confirmation dialog (Download All). Portaled to <body>. */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.confirm-dialog {
+  width: min(360px, 90vw);
+  padding: 1.15rem 1.25rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.55);
+}
+
+.confirm-dialog__title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.confirm-dialog__body {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.confirm-dialog__btn {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.12s ease, filter 0.12s ease;
+}
+
+.confirm-dialog__btn:hover {
+  background-color: var(--surface-hover);
+}
+
+.confirm-dialog__btn--primary {
+  border-color: var(--danger);
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.confirm-dialog__btn--primary:hover {
+  background-color: var(--danger);
+  filter: brightness(1.1);
 }
 
 .settings-panel__download-all {
@@ -868,6 +971,84 @@ h3 {
   background-color: var(--surface-hover);
 }
 
+.download-history__row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.download-history__row .download-history__item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* EXE / DMG / MSI… file-type tag, derived from the downloaded file's extension. */
+.download-history__ext {
+  flex-shrink: 0;
+  padding: 0.1rem 0.35rem;
+  border-radius: 5px;
+  background-color: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.download-history__delete {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--danger);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.download-history__delete:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+}
+
+.download-history__confirm {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.download-history__confirm-btn {
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.download-history__confirm-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.download-history__confirm-btn--delete {
+  border-color: var(--danger);
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.download-history__confirm-btn--delete:hover {
+  background-color: var(--danger);
+  color: #fff;
+  filter: brightness(1.1);
+}
+
 /* Category sidebar */
 .sidebar {
   position: sticky;
@@ -890,6 +1071,7 @@ h3 {
 }
 
 .sidebar__item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -905,6 +1087,22 @@ h3 {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+/* The colored pill behind the active row. It's a shared framer layoutId element, so
+   selecting another category SLIDES it vertically instead of jump-cutting. Row content
+   sits above it via z-index. */
+.sidebar__active-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 9px;
+  background-color: var(--cat-color, var(--accent));
+}
+
+.sidebar__item > :not(.sidebar__active-bg) {
+  position: relative;
+  z-index: 1;
+}
+
 .sidebar__item:hover {
   /* Mixed from --text so it reads clearly against the sidebar surface in BOTH themes —
      the old --surface-hover was nearly invisible against the sidebar in light mode. */
@@ -913,7 +1111,7 @@ h3 {
 }
 
 .sidebar__item--active {
-  background-color: var(--cat-color, var(--accent));
+  /* Background lives on .sidebar__active-bg (the sliding pill), not the button. */
   color: #fff;
 }
 
@@ -921,7 +1119,7 @@ h3 {
    the icon's separate --active-scoped color rule below), leaving a white icon stranded on
    the plain near-white hover surface in light mode — invisible until the pointer moves off. */
 .sidebar__item--active:hover {
-  background-color: var(--cat-color, var(--accent));
+  background-color: transparent;
   color: #fff;
 }
 

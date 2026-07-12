@@ -79,6 +79,26 @@ pub fn paths_exist(paths: Vec<String>) -> Vec<bool> {
     paths.iter().map(|p| std::path::Path::new(p).exists()).collect()
 }
 
+/// Deletes one downloaded file (the ✕ in the Downloaded panel). Canonicalizes and refuses
+/// anything outside `PostWipeDownloads`, so a stale or tampered history entry can never
+/// reach into the rest of the filesystem.
+#[tauri::command]
+pub fn delete_download(app_handle: AppHandle, path: String) -> Result<(), String> {
+    let file = PathBuf::from(&path)
+        .canonicalize()
+        .map_err(|e| format!("{path}: {e}"))?;
+    let root = postwipe_downloads_dir(&app_handle)?
+        .canonicalize()
+        .map_err(|e| e.to_string())?;
+    if !file.starts_with(&root) {
+        return Err("refusing to delete a file outside PostWipeDownloads".into());
+    }
+    if !file.is_file() {
+        return Err(format!("{path} is not a file"));
+    }
+    std::fs::remove_file(&file).map_err(|e| e.to_string())
+}
+
 /// Downloads a Specials item through the Worker (the frontend builds `url` with the
 /// session key already in it) into `PostWipeDownloads/Specials`. Returns the job id and
 /// the destination path so the caller can offer Install once it completes.
