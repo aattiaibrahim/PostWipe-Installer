@@ -160,6 +160,22 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Specials gallery — AppleTV polish pass + unlock-burst fix — 2026-07-12 (fourth pass)
+- First shelves cut looked cramped/"disgusting": each shelf was trapped in the inherited
+  `.category-panel__section` bordered-glass box (box-in-a-box) whose `overflow: hidden` also
+  CLIPPED the card hover-lift. Fixed by floating shelves on the page bg
+  (`.category-panel__section.specials-shelf-section` — DOUBLE-class needed because
+  `.category-panel__section` is defined later in the file and won on source order).
+- Cards: bigger (210px), 16px radius, real drop shadow, AppleTV-style hover = lift + scale(1.045)
+  + accent glow ring (cubic-bezier 0.22,1,0.36,1). Rail hides its scrollbar, vertical padding
+  (14/22px) gives the lift room since `overflow-x:auto` forces `overflow-y:auto`. Next card peeks
+  at the edge to signal scroll. Media has a top vignette; badge/actions/bar z-indexed above it.
+- **Unlock burst regression fixed**: `.specials-unlock-burst` was `position: absolute` inside
+  `.category-panel`, which is now very tall (all shelves) → the lock centered ~1000px down,
+  off-screen, so it "stopped appearing". Changed to `position: fixed; inset:0; z-index:60`
+  (viewport-centered). Verified in-preview: fixed, covers viewport, lock glyph centered + on
+  screen.
+
 ### Specials → umbrelOS-style gallery shelves — 2026-07-12 (third pass)
 - User asked for a "gallery-esque" Specials taking inspiration from umbrelOS, picked the
   **shelves** option: each category is now a horizontally-scrolling rail of big rounded cards
