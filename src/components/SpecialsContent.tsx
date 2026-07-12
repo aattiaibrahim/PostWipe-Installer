@@ -1,68 +1,91 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSpecialsStore } from "../state/specialsStore";
-import { useSpecialsContentStore, type SpecialsSubfolder } from "../state/specialsContentStore";
-import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
-import { SpecialsItem } from "./SpecialsItem";
+import { useSpecialsContentStore, type SpecialsGroup, type SpecialsSubfolder } from "../state/specialsContentStore";
+import { SpecialsItem, tileGradient } from "./SpecialsItem";
 
-/** A nested folder (e.g. Audio & EQ ▸ Sennheiser 650) rendered as one entry that expands
- *  to all of its files. */
-function SubfolderRow({ subfolder, meta }: { subfolder: SpecialsSubfolder; meta: SpecialsCategoryMeta }) {
-  const [open, setOpen] = useState(false);
+/** A nested folder (e.g. Audio & EQ ▸ Sennheiser 650) shown as a cover card on the shelf;
+ *  clicking it swaps the shelf to that folder's contents (back chip in the header). */
+function FolderCard({ subfolder, onOpen }: { subfolder: SpecialsSubfolder; onOpen: () => void }) {
   return (
-    <div className="specials-folder">
-      <button className="specials-folder__head" onClick={() => setOpen((o) => !o)}>
+    <button className="specials-card specials-card--folder" onClick={onOpen}>
+      <div className="specials-card__media" style={{ background: tileGradient(subfolder.name) }}>
         <svg
-          className="specials-folder__icon"
+          className="specials-card__folder-glyph"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.7"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
           <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
         </svg>
-        <span className="specials-folder__name">{subfolder.name}</span>
-        <span className="specials-group__count">{subfolder.items.length}</span>
-        <motion.svg
-          className="specials-folder__chevron"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          animate={{ rotate: open ? 90 : 0 }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        >
-          <path d="M9 6l6 6-6 6" />
-        </motion.svg>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            className="specials-folder__body"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 380, damping: 38 }}
-            style={{ overflow: "hidden" }}
-          >
-            <div className="specials-group__items specials-folder__items">
-              {subfolder.items.map((item) => (
-                <SpecialsItem key={item.objectKey} item={item} meta={meta} />
-              ))}
-            </div>
-          </motion.div>
+        <span className="specials-card__badge">{subfolder.items.length}</span>
+      </div>
+      <div className="specials-card__body">
+        <span className="specials-card__name">{subfolder.name}</span>
+        <span className="specials-card__meta">
+          {subfolder.items.length} {subfolder.items.length === 1 ? "item" : "items"}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+/** One category = one umbrel-style shelf: header row, then a horizontally-scrolling rail
+ *  of cards. Opening a subfolder swaps the rail to its contents with a back chip. */
+function Shelf({ group }: { group: SpecialsGroup }) {
+  const [openFolder, setOpenFolder] = useState<string | null>(null);
+  const folder = group.subfolders.find((s) => s.name === openFolder) ?? null;
+  const total = group.items.length + group.subfolders.reduce((n, s) => n + s.items.length, 0);
+
+  return (
+    <section className="category-panel__section specials-shelf-section">
+      <div className="category-panel__header specials-shelf__header">
+        {folder ? (
+          <>
+            <button className="specials-shelf__back" onClick={() => setOpenFolder(null)} aria-label="Back to all">
+              ←
+            </button>
+            <h2 className="category-panel__title">
+              {group.meta.label} <span className="specials-shelf__crumb">▸ {folder.name}</span>
+            </h2>
+            <span className="specials-group__count">{folder.items.length}</span>
+          </>
+        ) : (
+          <>
+            <h2 className="category-panel__title">{group.meta.label}</h2>
+            <span className="specials-group__count">{total}</span>
+          </>
         )}
+      </div>
+      {!folder && group.meta.blurb && <p className="specials-group__blurb">{group.meta.blurb}</p>}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={folder ? folder.name : "__root__"}
+          className="specials-shelf"
+          initial={{ opacity: 0, x: folder ? 24 : -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: folder ? -24 : 24 }}
+          transition={{ duration: 0.16, ease: "easeOut" }}
+        >
+          {folder
+            ? folder.items.map((item) => <SpecialsItem key={item.objectKey} item={item} meta={group.meta} />)
+            : [
+                ...group.subfolders.map((subfolder) => (
+                  <FolderCard key={subfolder.name} subfolder={subfolder} onOpen={() => setOpenFolder(subfolder.name)} />
+                )),
+                ...group.items.map((item) => <SpecialsItem key={item.objectKey} item={item} meta={group.meta} />),
+              ]}
+        </motion.div>
       </AnimatePresence>
-    </div>
+    </section>
   );
 }
 
 /** Rendered in place of the placeholder Specials rows once unlocked: fetches the vault
- *  listing from the Worker and groups it into sub-sections (Cursor Packs, Fonts, …). */
+ *  listing from the Worker and lays each category out as a horizontal gallery shelf. */
 export function SpecialsContent() {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
   const { loaded, loading, error, groups, load } = useSpecialsContentStore();
@@ -81,23 +104,7 @@ export function SpecialsContent() {
   return (
     <>
       {groups.map((group) => (
-        <section key={group.folder} className="category-panel__section">
-          <div className="category-panel__header">
-            <h2 className="category-panel__title">{group.meta.label}</h2>
-            <span className="specials-group__count">
-              {group.items.length + group.subfolders.reduce((n, s) => n + s.items.length, 0)}
-            </span>
-          </div>
-          {group.meta.blurb && <p className="specials-group__blurb">{group.meta.blurb}</p>}
-          <div className="specials-group__items">
-            {group.subfolders.map((subfolder) => (
-              <SubfolderRow key={subfolder.name} subfolder={subfolder} meta={group.meta} />
-            ))}
-            {group.items.map((item) => (
-              <SpecialsItem key={item.objectKey} item={item} meta={group.meta} />
-            ))}
-          </div>
-        </section>
+        <Shelf key={group.folder} group={group} />
       ))}
     </>
   );

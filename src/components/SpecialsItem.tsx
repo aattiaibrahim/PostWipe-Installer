@@ -24,6 +24,18 @@ function fmtSize(n: number): string {
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
 }
 
+/** Deterministic per-name gradient for cards with no preview image — the umbrel-style
+ *  colored tile. Dark-leaning so white glyph/initial text reads in both themes. */
+export function tileGradient(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  const hue = ((hash % 360) + 360) % 360;
+  return `linear-gradient(135deg, hsl(${hue} 48% 38%), hsl(${(hue + 46) % 360} 55% 22%))`;
+}
+
+/** One vault entry as a gallery card: preview media on top (click to inspect), name/size
+ *  below, Download/Install revealed over the media on hover. All download/install flow
+ *  matches the old list rows — only the layout is new. */
 export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategoryMeta }) {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
   const jobs = useDownloadQueueStore((s) => s.jobs);
@@ -102,31 +114,53 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
 
   const previewUrls = sessionKey ? item.previewKeys.map(gatedUrl) : [];
   const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key) })) : [];
+  const hasImage = previewUrls.length > 0;
+  const hasSound = sounds.length > 0;
+
+  // Keep the action buttons pinned visible (not hover-only) whenever there's live state
+  // the user is mid-flow on: downloading, ready-to-install, or a fresh result message.
+  const pinActions = downloading || downloaded || installing || !!installMsg || !!error || failed;
+
+  function inspect() {
+    if (hasImage) setLightboxOpen(true);
+    else if (hasSound) setSoundsOpen(true);
+  }
 
   return (
-    <div className="specials-item">
-      {previewUrls.length > 0 && (
-        <button
-          className="specials-item__preview specials-item__preview--clickable"
-          onClick={() => setLightboxOpen(true)}
-          title="Click to expand preview"
-        >
+    <div className={`specials-card${pinActions ? " specials-card--active" : ""}`}>
+      <div
+        className={`specials-card__media${hasImage || hasSound ? " specials-card__media--inspectable" : ""}`}
+        style={hasImage ? undefined : { background: tileGradient(item.name) }}
+        onClick={inspect}
+        role={hasImage || hasSound ? "button" : undefined}
+        title={hasImage ? "Click to expand preview" : hasSound ? "Preview the sounds" : undefined}
+      >
+        {hasImage ? (
           <img src={previewUrls[0]} alt="" loading="lazy" />
-          {previewUrls.length > 1 && <span className="specials-item__preview-count">{previewUrls.length}</span>}
-        </button>
-      )}
-      {previewUrls.length === 0 && sounds.length > 0 && (
-        <button
-          className="specials-item__preview specials-item__preview--sound"
-          onClick={() => setSoundsOpen(true)}
-          title="Preview the sounds"
-        >
-          <span className="specials-item__sound-glyph">♪</span>
-          <span>Preview</span>
-        </button>
-      )}
+        ) : hasSound ? (
+          <span className="specials-card__glyph">♪</span>
+        ) : (
+          <span className="specials-card__glyph specials-card__glyph--initial">{item.name.charAt(0).toUpperCase()}</span>
+        )}
+        {previewUrls.length > 1 && <span className="specials-card__badge">{previewUrls.length}</span>}
+        <div className="specials-card__actions" onClick={(e) => e.stopPropagation()}>
+          {canInstall && (
+            <button className="specials-card__btn specials-card__btn--install" disabled={!downloaded || installing} onClick={install}>
+              {installing ? "Installing…" : "Install"}
+            </button>
+          )}
+          <button className="specials-card__btn" disabled={downloading} onClick={download}>
+            {downloading ? "Downloading…" : downloaded ? "Re-download" : "Download"}
+          </button>
+        </div>
+        {downloading && (
+          <div className="specials-card__bar">
+            <div className="specials-card__bar-fill" style={{ width: percent !== null ? `${percent}%` : "40%" }} />
+          </div>
+        )}
+      </div>
       <AnimatePresence>
-        {lightboxOpen && previewUrls.length > 0 && (
+        {lightboxOpen && hasImage && (
           <PreviewLightbox
             urls={previewUrls}
             title={item.name}
@@ -136,9 +170,7 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
             onClose={() => setLightboxOpen(false)}
           />
         )}
-        {soundsOpen && sounds.length > 0 && (
-          <SoundPreview title={item.name} sounds={sounds} onClose={() => setSoundsOpen(false)} />
-        )}
+        {soundsOpen && hasSound && <SoundPreview title={item.name} sounds={sounds} onClose={() => setSoundsOpen(false)} />}
         {variants && (
           <CursorVariantPicker
             title={item.name}
@@ -152,28 +184,13 @@ export function SpecialsItem({ item, meta }: { item: Item; meta: SpecialsCategor
           />
         )}
       </AnimatePresence>
-      <div className="specials-item__info">
-        <span className="specials-item__name">{item.name}</span>
-        <span className="specials-item__meta">{fmtSize(item.size)}</span>
-        {(error || (failed && job?.error)) && (
-          <span className="specials-item__error">{error ?? job?.error}</span>
-        )}
-        {installMsg && <span className="specials-item__msg">{installMsg}</span>}
-        {downloading && (
-          <div className="specials-item__bar">
-            <div className="specials-item__bar-fill" style={{ width: percent !== null ? `${percent}%` : "40%" }} />
-          </div>
-        )}
-      </div>
-      <div className="specials-item__actions">
-        {canInstall && (
-          <button className="specials-item__install" disabled={!downloaded || installing} onClick={install}>
-            {installing ? "Installing…" : "Install"}
-          </button>
-        )}
-        <button className="specials-item__download" disabled={downloading} onClick={download}>
-          {downloading ? "Downloading…" : downloaded ? "Re-download" : "Download"}
-        </button>
+      <div className="specials-card__body">
+        <span className="specials-card__name" title={item.name}>
+          {item.name}
+        </span>
+        <span className="specials-card__meta">{fmtSize(item.size)}</span>
+        {(error || (failed && job?.error)) && <span className="specials-card__error">{error ?? job?.error}</span>}
+        {installMsg && <span className="specials-card__msg">{installMsg}</span>}
       </div>
     </div>
   );

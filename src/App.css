@@ -1297,80 +1297,240 @@ h3 {
   color: var(--text-muted);
 }
 
-.specials-group__items {
-  display: flex;
-  flex-direction: column;
-  padding: 0 0.6rem 0.6rem;
-}
+/* ---- Specials gallery shelves (umbrel-style) ---- */
 
-.specials-item {
+.specials-shelf__header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.55rem 0.5rem;
-  border-radius: 10px;
-  transition: background-color 0.15s ease;
+  gap: 0.5rem;
 }
 
-.specials-item:hover {
-  background-color: color-mix(in srgb, var(--text) 6%, transparent);
-}
-
-.specials-item + .specials-item {
-  border-top: 1px solid var(--border);
-}
-
-.specials-item__preview {
-  position: relative;
+.specials-shelf__back {
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
-  width: 96px;
-  height: 54px;
-  border-radius: 8px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border);
-  background-color: var(--bg);
-  padding: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
 }
 
-.specials-item__preview img {
+.specials-shelf__back:hover {
+  background-color: var(--surface-hover);
+}
+
+.specials-shelf__crumb {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* The horizontal rail. Vertical page scroll moves between shelves; each shelf scrolls
+   sideways on its own with snap points. */
+.specials-shelf {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.35rem 0.9rem 0.8rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text) 22%, transparent) transparent;
+}
+
+.specials-shelf::-webkit-scrollbar {
+  height: 7px;
+}
+
+.specials-shelf::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--text) 18%, transparent);
+}
+
+.specials-card {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  width: 188px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: var(--surface-solid);
+  text-align: left;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.specials-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.5);
+}
+
+.specials-card--folder {
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.specials-card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+  overflow: hidden;
+}
+
+.specials-card__media--inspectable {
+  cursor: zoom-in;
+}
+
+.specials-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.25s ease;
 }
 
-.specials-item__preview--clickable {
-  cursor: zoom-in;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+.specials-card:hover .specials-card__media img {
+  transform: scale(1.05);
 }
 
-.specials-item__preview--clickable:hover {
-  transform: scale(1.04);
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 25%, transparent);
+.specials-card__glyph {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.92);
+  user-select: none;
 }
 
-.specials-item__preview-count {
+.specials-card__glyph--initial {
+  font-weight: 700;
+}
+
+.specials-card__folder-glyph {
+  width: 44px;
+  height: 44px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-card__badge {
   position: absolute;
-  right: 4px;
-  bottom: 4px;
-  min-width: 16px;
-  padding: 1px 5px;
+  right: 6px;
+  top: 6px;
+  min-width: 17px;
+  padding: 1px 6px;
   border-radius: 999px;
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.62);
   pointer-events: none;
 }
 
-.specials-item__preview--none {
+/* Download/Install live on a scrim over the media — hidden until hover (or pinned while
+   a download/install is actually in flight, so state never hides). */
+.specials-card__actions {
+  position: absolute;
+  inset: auto 0 0 0;
   display: flex;
-  align-items: center;
+  gap: 0.35rem;
   justify-content: center;
-  font-size: 0.65rem;
+  padding: 1.4rem 0.5rem 0.5rem;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.72));
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.specials-card:hover .specials-card__actions,
+.specials-card:focus-within .specials-card__actions,
+.specials-card--active .specials-card__actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.specials-card__btn {
+  padding: 0.3rem 0.65rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background-color 0.12s ease;
+}
+
+.specials-card__btn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
+.specials-card__btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.specials-card__btn--install {
+  background-color: var(--accent);
+}
+
+.specials-card__btn--install:hover:not(:disabled) {
+  background-color: var(--accent);
+  filter: brightness(1.15);
+}
+
+.specials-card__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.specials-card__bar-fill {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.specials-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  padding: 0.55rem 0.65rem 0.6rem;
+}
+
+.specials-card__name {
+  font-size: 0.82rem;
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.specials-card__meta {
+  font-size: 0.7rem;
   color: var(--text-muted);
-  user-select: none;
+}
+
+.specials-card__error {
+  font-size: 0.7rem;
+  color: var(--danger);
+}
+
+.specials-card__msg {
+  font-size: 0.7rem;
+  color: var(--text-muted);
 }
 
 /* ---- Preview lightbox ---- */
@@ -1581,178 +1741,6 @@ h3 {
   50% {
     height: 12px;
   }
-}
-
-/* Sound sets have no image — the preview slot becomes a "♪ Preview" chip instead. */
-.specials-item__preview--sound {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.specials-item__preview--sound:hover {
-  color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 25%, transparent);
-}
-
-.specials-item__sound-glyph {
-  font-size: 1rem;
-  line-height: 1;
-}
-
-/* ---- Nested Specials folder (e.g. Audio & EQ ▸ Sennheiser 650) ---- */
-
-.specials-folder__head {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  padding: 0.65rem 0.5rem;
-  border: none;
-  border-radius: 10px;
-  background: none;
-  color: var(--text);
-  font-size: 0.9rem;
-  font-weight: 550;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.specials-folder__head:hover {
-  background-color: color-mix(in srgb, var(--text) 6%, transparent);
-}
-
-.specials-folder__icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  color: var(--accent);
-}
-
-.specials-folder__name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.specials-folder__chevron {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  color: var(--text-muted);
-}
-
-/* Files inside a folder render exactly like top-level items — no indent/rail, so the
-   list stays visually consistent whether or not something lives in a subfolder. */
-.specials-folder__items {
-  margin-left: 0;
-}
-
-.specials-item__info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.specials-item__name {
-  font-size: 0.9rem;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.specials-item__meta {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-.specials-item__error {
-  font-size: 0.75rem;
-  color: var(--danger);
-}
-
-.specials-item__msg {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.specials-item__bar {
-  margin-top: 0.2rem;
-  height: 4px;
-  border-radius: 999px;
-  background-color: var(--bg);
-  overflow: hidden;
-}
-
-.specials-item__bar-fill {
-  height: 100%;
-  background-color: #7c3aed;
-  transition: width 0.2s ease;
-}
-
-.specials-item__actions {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.specials-item__download {
-  padding: 0.4rem 0.85rem;
-  border-radius: 9px;
-  border: none;
-  background-color: #7c3aed;
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: filter 0.15s ease;
-}
-
-.specials-item__download:hover:not(:disabled) {
-  filter: brightness(1.1);
-}
-
-.specials-item__download:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.specials-item__install {
-  padding: 0.4rem 0.85rem;
-  border-radius: 9px;
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--text);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.15s ease;
-}
-
-.specials-item__install:hover:not(:disabled) {
-  background-color: color-mix(in srgb, var(--text) 8%, transparent);
-}
-
-.specials-item__install:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .sidebar__divider {

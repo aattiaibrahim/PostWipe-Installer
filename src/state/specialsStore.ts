@@ -32,3 +32,9 @@ export const useSpecialsStore = create<SpecialsState>((set) => ({
   },
   clearJustUnlocked: () => set({ justUnlocked: false }),
 }));
+
+// Dev-only escape hatch, pairing with __specialsContent (see specialsContentStore): lets
+// the browser preview open the gated UI without the real key. Never set in production.
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__specialsGate = useSpecialsStore;
+}

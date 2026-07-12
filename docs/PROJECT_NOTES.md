@@ -160,6 +160,25 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Specials → umbrelOS-style gallery shelves — 2026-07-12 (third pass)
+- User asked for a "gallery-esque" Specials taking inspiration from umbrelOS, picked the
+  **shelves** option: each category is now a horizontally-scrolling rail of big rounded cards
+  (`SpecialsContent.tsx` → `Shelf`), vertical page-scroll moves between shelves. Replaced the
+  old vertical list of `.specials-item` rows.
+- `SpecialsItem.tsx` fully rewritten as a **card**: preview image (or a deterministic
+  `tileGradient(name)` tile with a ♪ glyph for sound sets / initial letter for file-only items)
+  fills the top; Download/Install sit on a hover scrim over the media (`.specials-card__actions`,
+  revealed on `:hover`/`:focus-within`, and PINNED via `--active` whenever a download/install is
+  in flight so state never hides); name + size below. All the download/install/cursor-variant
+  flow is unchanged — only the shell moved.
+- **Subfolders** (e.g. Audio & EQ ▸ Sennheiser 650) are now `FolderCard`s on the shelf; clicking
+  one swaps that shelf's rail to the folder's contents with a ← back chip + breadcrumb
+  (AnimatePresence slide), instead of the old inline height-expand.
+- Dev-only escape hatches added so the KEY-GATED vault UI is verifiable in the browser preview:
+  `window.__specialsGate` / `window.__specialsContent` (both `import.meta.env.DEV`-guarded, never
+  in prod). Verified with mock groups AND against the real vault listing (folder cards, counts,
+  gradients, hover-reveal, drill-in/back all confirmed).
+
 ### Real logos, Start-menu wording, *arr stack, dock spacing — 2026-07-12 (second pass)
 - **Bundled real icons** for Deceive (repo Resources/deceive.ico), LosslessCut
   (static.mifi.no dist-icons 180px), TranslucentTB (AppPackage/Assets-Release
