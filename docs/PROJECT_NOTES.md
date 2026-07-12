@@ -160,6 +160,19 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Gallery dark-mode text fix + Death Note preview combine — 2026-07-12 (sixth pass)
+- **Dark-mode black text**: `.specials-card` is a `<button>` and buttons don't inherit text color,
+  so the item name fell back to the UA near-black default — invisible on the dark card. Added
+  `color: var(--text)` to `.specials-card`. Verified both themes in preview (dark: name is
+  near-white on dark card; light: dark name on white card; detail sheet reads in both).
+- **Death Note Steam-profile preview**: it was showing only the main art (B, 506×900); the zip
+  `Tweaks/Steam Profiles/Death Note.zip` holds two 48-frame gif halves (A 100×900 strip + B). The
+  other profiles are 606 wide (506+100), so stitched B(left)+A(right) into one 606×900 animated
+  gif with Python/PIL (per-frame composite, preserved 40ms delays + loop) and uploaded as
+  `previews/Death Note.gif`. B-left/A-right is the continuous layout AND matches the user's "on
+  the right" instruction; A-left leaves a dead gap. rclone `r2:` remote is configured now (see
+  assistant memory) — did NOT commit anything for this; it's a vault asset, live immediately.
+
 ### Specials → category covers + detail sheet (dropped horizontal scroll) — 2026-07-12 (fifth pass)
 - User found horizontal shelves tedious on a desktop. Showed a 6-direction mockup board (built
   as an artifact, screenshotted via the vite server since claude.ai is blocked in the browser
