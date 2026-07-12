@@ -188,6 +188,27 @@
               "filename": "RiotClientInstaller.exe"
             }
           }
+        },
+        {
+          "id": "deceive",
+          "name": "Deceive",
+          "icon": "deceive.png",
+          "bio": "Appear offline in League/Valorant while still playing.",
+          "description": "Deceive lets you appear offline to your friends list in League of Legends, Valorant, and other Riot games while still queuing and playing normally. Launch Riot games through Deceive instead of the Riot Client and your presence stays hidden.",
+          "domain": "github.com",
+          "website": "https://github.com/molenzwiebel/Deceive",
+          "kind": "download",
+          "notes": "GitHub molenzwiebel/Deceive, verified live 2026-07-12: single portable Deceive.exe asset, no installer. Windows-only.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "molenzwiebel/Deceive",
+                "asset_pattern": "Deceive.exe"
+              },
+              "filename": "Deceive.exe"
+            }
+          }
         }
       ]
     },
@@ -453,7 +474,7 @@
           "domain": "msi.com",
           "website": "https://www.msi.com/Landing/afterburner/graphics-cards",
           "kind": "download",
-          "notes": "MSI's download page is JS-gated and the zip has no stable direct URL — site-only entry until the webview resolver lands.",
+          "notes": "Re-probed 2026-07-12, still genuinely blocked: the once-stable download.msi.com/uti_exe/vga/MSIAfterburnerSetup.zip now 302s to the landing page (which 403s non-browser clients; Referer + ?ver params don't help — Akamai bot-gating), msi.com refuses automated browsers outright, and the Guru3D mirrors (ftp.nluug.nl etc.) were shut down in favor of their JS download gate. Unlike TIDAL/Qobuz this one is blocked at the mechanism level, not a stale URL. Site-only until the webview resolver lands.",
           "platforms": {
             "windows": {
               "filename": "MSIAfterburnerSetup.exe"
@@ -1205,6 +1226,174 @@
                 "url": "https://justgetflux.com/mac/Flux.zip"
               },
               "filename": "Flux.zip"
+            }
+          }
+        },
+        {
+          "id": "anki",
+          "name": "Anki",
+          "icon": "anki.png",
+          "bio": "Spaced-repetition flashcards that make things stick.",
+          "description": "Anki is the standard spaced-repetition flashcard app — it schedules reviews right before you'd forget, syncs across devices via AnkiWeb, and has community decks for languages, medicine, and more.",
+          "domain": "ankiweb.net",
+          "website": "https://apps.ankiweb.net",
+          "kind": "download",
+          "notes": "GitHub ankitects/anki, verified live 2026-07-12: ships anki-<ver>-win-x64.msi (moved from .exe to .msi installers) and mac-apple/mac-intel dmgs.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ankitects/anki",
+                "asset_pattern": "anki-*-win-x64.msi"
+              },
+              "filename": "AnkiSetup.msi"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ankitects/anki",
+                "asset_pattern": "anki-*-mac-apple.dmg"
+              },
+              "filename": "Anki.dmg"
+            }
+          }
+        },
+        {
+          "id": "handbrake",
+          "name": "HandBrake",
+          "icon": "handbrake.png",
+          "bio": "Open-source video transcoder for converting anything.",
+          "description": "HandBrake converts video from nearly any format to modern codecs (H.264/H.265/AV1) with sensible presets for devices and the web. The go-to free tool for shrinking recordings and re-encoding media.",
+          "domain": "handbrake.fr",
+          "website": "https://handbrake.fr",
+          "kind": "download",
+          "notes": "GitHub HandBrake/HandBrake, verified live 2026-07-12: <ver>-x86_64-Win_GUI.exe installer + a single (Apple Silicon) .dmg. The .sig assets don't match the glob (ends-with check).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "HandBrake/HandBrake",
+                "asset_pattern": "HandBrake-*-x86_64-Win_GUI.exe"
+              },
+              "filename": "HandBrakeSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "HandBrake/HandBrake",
+                "asset_pattern": "HandBrake-*.dmg"
+              },
+              "filename": "HandBrake.dmg"
+            }
+          }
+        },
+        {
+          "id": "losslesscut",
+          "name": "LosslessCut",
+          "icon": "losslesscut.png",
+          "bio": "Trim & cut video instantly without re-encoding.",
+          "description": "LosslessCut cuts, trims, and joins video/audio without re-encoding — operations finish in seconds with zero quality loss. Perfect for chopping game clips and screen recordings before sharing.",
+          "domain": "github.com",
+          "website": "https://github.com/mifi/lossless-cut",
+          "kind": "download",
+          "notes": "GitHub mifi/lossless-cut, verified live 2026-07-12. The free GitHub Windows build is a PORTABLE .7z only (the installer variant is the paid Store version) — needs 7-Zip/NanaZip to extract. Mac gets the arm64 dmg; avoid the *-DONT-USE-THIS-FILE.* assets.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "mifi/lossless-cut",
+                "asset_pattern": "LosslessCut-win-x64.7z"
+              },
+              "filename": "LosslessCut-win-x64.7z"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "mifi/lossless-cut",
+                "asset_pattern": "LosslessCut-mac-arm64.dmg"
+              },
+              "filename": "LosslessCut.dmg"
+            }
+          }
+        },
+        {
+          "id": "plex",
+          "name": "Plex",
+          "icon": "plex.png",
+          "bio": "Stream your own media library anywhere.",
+          "description": "Plex Desktop streams movies, shows, and music from a Plex Media Server (like one on a NAS) with a polished interface, watch state sync, and offline downloads. This installs the desktop player app — the server itself runs on the machine hosting your library.",
+          "domain": "plex.tv",
+          "website": "https://www.plex.tv/media-server-downloads/?cat=plex+desktop",
+          "kind": "download",
+          "notes": "plex.tv/api/downloads/6.json is the Plex DESKTOP feed (5.json is the media server, 7.json is HTPC) — plain JSON with versioned downloads.plex.tv URLs, regexed out via html_regex. Verified live 2026-07-12.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://plex.tv/api/downloads/6.json",
+                "url_regex": "https://downloads\\.plex\\.tv/plex-desktop/[^\"]+/windows/Plex-[^\"]+-x86_64\\.exe"
+              },
+              "filename": "PlexSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://plex.tv/api/downloads/6.json",
+                "url_regex": "https://downloads\\.plex\\.tv/plex-desktop/[^\"]+/macos/Plex-[^\"]+-universal\\.zip"
+              },
+              "filename": "Plex-macos.zip"
+            }
+          }
+        },
+        {
+          "id": "translucenttb",
+          "name": "TranslucentTB",
+          "icon": "translucenttb.png",
+          "bio": "Makes the Windows taskbar transparent or blurred.",
+          "description": "TranslucentTB turns the Windows taskbar fully transparent, blurred, or acrylic — with different states for maximized windows and the Start menu. Tiny footprint, runs in the tray.",
+          "domain": "github.com",
+          "website": "https://github.com/TranslucentTB/TranslucentTB",
+          "kind": "download",
+          "notes": "GitHub TranslucentTB/TranslucentTB, verified live 2026-07-12: .appinstaller is the official install method (App Installer opens it and pulls bundle.msixbundle); portable zips exist as fallback if a machine has ms-appinstaller policy-disabled. Windows-only.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "TranslucentTB/TranslucentTB",
+                "asset_pattern": "TranslucentTB.appinstaller"
+              },
+              "filename": "TranslucentTB.appinstaller"
+            }
+          }
+        },
+        {
+          "id": "focusrite-control",
+          "name": "Focusrite Control (Scarlett 3rd Gen)",
+          "icon": "focusrite.png",
+          "bio": "Driver + mixer software for Scarlett 3rd Gen interfaces.",
+          "description": "Focusrite Control is the official driver and monitor-mix software for Scarlett 3rd Gen interfaces like the Solo — needed on Windows for low-latency ASIO and sample-rate control. On macOS the interface is class-compliant; Control adds the mixer.",
+          "domain": "focusrite.com",
+          "website": "https://downloads.focusrite.com/focusrite/scarlett-3rd-gen/scarlett-solo-3rd-gen",
+          "kind": "download",
+          "notes": "downloads.focusrite.com's Solo 3rd Gen page is static HTML with direct fael-downloads-prod.focusrite.com hrefs, newest first — html resolver takes the first focusrite_control .exe/.dmg. Verified live 2026-07-12 (v3.27.0).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://downloads.focusrite.com/focusrite/scarlett-3rd-gen/scarlett-solo-3rd-gen",
+                "selector": "a[href*='focusrite_control'][href$='.exe']",
+                "attr": "href"
+              },
+              "filename": "FocusriteControlSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://downloads.focusrite.com/focusrite/scarlett-3rd-gen/scarlett-solo-3rd-gen",
+                "selector": "a[href*='focusrite_control'][href$='.dmg']",
+                "attr": "href"
+              },
+              "filename": "FocusriteControl.dmg"
             }
           }
         }

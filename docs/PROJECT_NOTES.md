@@ -160,6 +160,26 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Settings panel snap fix, 7 new apps, MSI re-probe — 2026-07-12
+- **Settings panel open/close snapped** (the real one this time — the earlier fix was the
+  checkbox): framer spring animating `height: 0 → "auto"` jump-cuts to final size (measured:
+  full 305px on the first frame). Fix in `SidebarSettings.tsx`: panel stays MOUNTED,
+  a ResizeObserver measures the content's px height, and the spring runs between numbers
+  (0 ↔ contentHeight) with opacity + pointer-events/aria-hidden gating. Verified tweening
+  0→41→235→305 over ~600ms.
+- **New apps** (all verified live through the real resolvers; full_catalog_sweep passed):
+  Deceive (gaming; github portable exe), Anki (msi now, not exe), HandBrake (.sig assets
+  don't match the glob — ends_with saves us), LosslessCut (free GitHub Windows build is
+  portable .7z ONLY, installer is the paid Store version), Plex Desktop
+  (plex.tv/api/downloads/**6**.json = desktop, 5 = server, 7 = HTPC; html_regex over the JSON),
+  TranslucentTB (.appinstaller official path; portable zip fallback if ms-appinstaller is
+  policy-blocked), Focusrite Control for Scarlett 3rd Gen (downloads.focusrite.com page is
+  static HTML, newest-first hrefs on fael-downloads-prod).
+- **MSI Afterburner stays site-only — mechanism-blocked, not stale**: download.msi.com zip now
+  302s to the landing page, landing 403s non-browser clients (Akamai; Referer/?ver don't help),
+  msi.com refuses automated browsers, Guru3D mirrors (ftp.nluug.nl) shut down → their JS gate.
+  Needs the webview resolver (backlog) — this is the honest answer to "why can't MSI work".
+
 ### Release publishes as draft-until-complete — 2026-07-12
 - "Update check failed: None of the fallback platforms [windows-x86_64-nsis, …] were found"
   was a RELEASE-WINDOW RACE, not an updater bug: tauri-action published the release as soon as
