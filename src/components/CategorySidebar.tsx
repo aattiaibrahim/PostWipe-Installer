@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
 import { categoryColor } from "../lib/categoryColors";
@@ -12,6 +13,18 @@ interface CategorySidebarProps {
   searchQuery: string;
   selectedId: string | null;
   onSelect: (id: string) => void;
+}
+
+/** The active row's colored pill. One shared layoutId across every row makes framer slide
+ *  it vertically between rows on selection — same effect as the Windows/macOS picker. */
+function ActiveIndicator() {
+  return (
+    <motion.div
+      className="sidebar__active-bg"
+      layoutId="sidebar-active-indicator"
+      transition={{ type: "spring", stiffness: 550, damping: 42, mass: 0.8 }}
+    />
+  );
 }
 
 function LockGlyph() {
@@ -60,6 +73,7 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
           className={`sidebar__item${selectedId === ALL_CATEGORY_ID ? " sidebar__item--active" : ""}`}
           onClick={() => onSelect(ALL_CATEGORY_ID)}
         >
+          {selectedId === ALL_CATEGORY_ID && <ActiveIndicator />}
           <CategoryIcon categoryId={ALL_CATEGORY_ID} className="sidebar__icon" />
           <span className="sidebar__label">All</span>
           <span className="sidebar__count">{allCount}</span>
@@ -77,6 +91,7 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
               style={{ "--cat-color": categoryColor(category.id) } as CSSProperties}
               onClick={() => onSelect(category.id)}
             >
+              {selectedId === category.id && <ActiveIndicator />}
               <CategoryIcon categoryId={category.id} className="sidebar__icon" />
               <span className="sidebar__label">{category.name}</span>
               {locked ? (

@@ -11,6 +11,7 @@ export interface HistoryEntry {
 interface DownloadHistoryState {
   entries: HistoryEntry[];
   addEntry: (entry: HistoryEntry) => void;
+  removeEntry: (destPath: string) => void;
   clear: () => void;
 }
 
@@ -22,6 +23,8 @@ export const useDownloadHistoryStore = create<DownloadHistoryState>()(
         set((state) => ({
           entries: [entry, ...state.entries.filter((e) => e.destPath !== entry.destPath)].slice(0, 100),
         })),
+      removeEntry: (destPath) =>
+        set((state) => ({ entries: state.entries.filter((e) => e.destPath !== destPath) })),
       clear: () => set({ entries: [] }),
     }),
     { name: "postwipe-download-history" },

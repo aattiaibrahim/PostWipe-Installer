@@ -1001,16 +1001,24 @@
           "name": "TIDAL",
           "icon": "tidal.png",
           "bio": "Hi-fi / lossless music streaming.",
-          "description": "TIDAL streams lossless FLAC and hi-res audio, aimed at listeners who want better-than-Spotify fidelity. TIDAL blocks automated downloads, so this opens their official download page.",
+          "description": "TIDAL streams lossless FLAC and hi-res audio, aimed at listeners who want better-than-Spotify fidelity.",
           "domain": "tidal.com",
           "website": "https://tidal.com/download",
           "kind": "download",
-          "notes": "download.tidal.com 403s to non-browser clients (and to our downloader UA) — no reliable direct URL, so this is a site-only entry until the webview resolver lands.",
+          "notes": "download.tidal.com serves the installer fine with a browser UA (verified live 2026-07-11: TIDALSetup.exe = MZ header, 192MB; TIDAL.dmg = apple-diskimage). The earlier 403s were the wrong paths — 'TIDAL Setup.exe' and 'TIDAL.exe' 403, 'TIDALSetup.exe' works.",
           "platforms": {
             "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.tidal.com/desktop/TIDALSetup.exe"
+              },
               "filename": "TIDAL Setup.exe"
             },
             "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.tidal.com/desktop/TIDAL.dmg"
+              },
               "filename": "TIDAL.dmg"
             }
           }
@@ -1020,16 +1028,28 @@
           "name": "Qobuz",
           "icon": "qobuz.png",
           "bio": "Audiophile hi-res music streaming & store.",
-          "description": "Qobuz focuses on studio-quality hi-res streaming and purchases, popular with audiophiles. Their site gates the desktop installer behind JS, so this opens the official download page.",
+          "description": "Qobuz focuses on studio-quality hi-res streaming and purchases, popular with audiophiles.",
           "domain": "qobuz.com",
-          "website": "https://www.qobuz.com/us-en/download",
+          "website": "https://www.qobuz.com/us-en/discover/apps-qobuz",
           "kind": "download",
-          "notes": "Download page is JS-rendered and static.qobuz.com 403s — site-only entry until the webview resolver lands.",
+          "notes": "The old /us-en/download page 404s now — apps-qobuz is the current page, and its installer links (desktop.qobuz.com/releases/<platform>/.../<ver>/...) sit in the static HTML, so the html resolver tracks version bumps. Verified live 2026-07-11 (exe = MZ header). Guessing other desktop.qobuz.com paths 403s; only exact released paths work.",
           "platforms": {
             "windows": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.qobuz.com/us-en/discover/apps-qobuz",
+                "selector": "a[href*='Qobuz_Installer'][href$='.exe']",
+                "attr": "href"
+              },
               "filename": "Qobuz Setup.exe"
             },
             "macos": {
+              "resolver": {
+                "type": "html",
+                "page_url": "https://www.qobuz.com/us-en/discover/apps-qobuz",
+                "selector": "a[href*='/darwin/arm64/'][href$='Qobuz.dmg']",
+                "attr": "href"
+              },
               "filename": "Qobuz.dmg"
             }
           }

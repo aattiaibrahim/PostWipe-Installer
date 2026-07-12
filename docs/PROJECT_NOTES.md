@@ -160,6 +160,57 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Sidebar slide indicator, TIDAL/Qobuz direct downloads, icons, confirm modal — 2026-07-11
+- **Sidebar active pill slides** between categories (framer `layoutId="sidebar-active-indicator"`,
+  vertical version of the OS-picker effect). Background moved off `.sidebar__item--active` onto
+  the absolutely-positioned `.sidebar__active-bg`; row content z-indexed above it.
+- **TIDAL is downloadable directly now**: `download.tidal.com/desktop/TIDALSetup.exe` (and
+  `TIDAL.dmg`) serve fine with a browser UA — the old "403s to everything" note was wrong about
+  the path, not the host ('TIDAL Setup.exe' / 'TIDAL.exe' 403; 'TIDALSetup.exe' works). Static
+  resolvers on both platforms, verified MZ header + 192MB full fetch.
+- **Qobuz is downloadable directly now**: their old `/us-en/download` page 404s; the current
+  `/us-en/discover/apps-qobuz` page carries versioned installer links
+  (`desktop.qobuz.com/releases/...`) in static HTML → html resolvers
+  (`a[href*='Qobuz_Installer'][href$='.exe']`, darwin/arm64 dmg for mac). Guessing any other
+  desktop.qobuz.com path 403s — only exact released paths work. `website` updated to the new page.
+- **Icons**: bundled real `qobuz.png` (their apple-touch-icon has OPAQUE WHITE corners — the
+  "white dots"; flood-filled from the edges to transparent, keeping the white "qbz" glyphs) and
+  `music-presence.png` (domain github.com meant the GitHub favicon showed; real mark fetched from
+  musicpresence.app/logo-dark.png, 512→96px). New `BUNDLED_CHIP_BG` map gives the white
+  Music-Presence donut a fixed dark chip so it survives light theme.
+- **Settings panel top border removed** (`.settings-dock .settings-panel { border-top }` — the
+  faint line).
+- **Download All now confirms first**: centered `.confirm-overlay/.confirm-dialog` portaled to
+  <body> ("This queues N installers for <OS>…", Cancel / Download All). SidebarSettings'
+  Esc/click-outside handlers ignore events while the overlay exists, else the dock would unmount
+  the dialog mid-choice.
+
+### Settings switch + Downloaded panel delete — 2026-07-11
+- **Settings on/off animates**: the native checkbox (which can only snap) is visually replaced by
+  a `.toggle-switch` pill + sliding knob (0.3s overshoot cubic-bezier); the real `<input>` stays
+  visually-hidden in the tree for keyboard/screen-reader semantics (`:checked + .toggle-switch`
+  drives the visuals, `:focus-visible` ring kept).
+- **Downloaded panel**: each row now shows a file-type tag (EXE/DMG/MSI…, derived from the
+  destPath extension) and a red ✕ at the right. ✕ swaps the row's actions to Delete?/Keep
+  (inline confirm, one row at a time, reset when the dropdown closes). Delete calls new
+  `delete_download` Rust command — canonicalizes and refuses anything outside PostWipeDownloads —
+  then drops the history entry (`removeEntry` added to `downloadHistoryStore`).
+- Verified in the browser preview with seeded history entries (badges, confirm flow, toggle
+  transition all checked); `cargo check` + `tsc` clean.
+
+### Cursor schemes now auto-equip after install — 2026-07-11
+- The .inf install only ever REGISTERED the scheme (`HKCU\Control Panel\Cursors\Schemes`); the
+  user still had to pick it in Mouse settings. New `equip_scheme` in `specials.rs` does what the
+  control panel's Apply does: read the scheme's comma-separated value, write the 17 slots
+  (Arrow…Hand, Pin, Person — older 15-slot packs blank the last two) into
+  `HKCU\Control Panel\Cursors` as ExpandString, set `(default)` + `Scheme Source=1`, then
+  broadcast `SystemParametersInfo(SPI_SETCURSORS, …, SPIF_UPDATEINIFILE|SPIF_SENDCHANGE)` via
+  PowerShell Add-Type — applies instantly, no logoff, no elevation (HKCU only).
+- Equip is best-effort inside `apply_inf_and_equip`: if it fails, install still succeeds with the
+  old "select it manually" message. Both install paths (single-inf + variant picker) use it.
+- Verified read-only against the live registry: all 8 registered schemes split into slots in
+  exactly the expected order. Did NOT live-toggle the user's active cursors.
+
 ### Music/Torrenting/Utilities categories + more apps — 2026-07-11
 - **Three new categories**: Music Players (spotify, tidal, qobuz, music-presence), Torrenting
   (qbittorrent, deluge), General Utilities (sharex, twinkle-tray, flux). Added category icons

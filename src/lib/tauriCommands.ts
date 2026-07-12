@@ -34,6 +34,11 @@ export async function pathsExist(paths: string[]): Promise<boolean[]> {
   return invoke("paths_exist", { paths });
 }
 
+/** Deletes a downloaded file. The backend refuses anything outside PostWipeDownloads. */
+export function deleteDownload(path: string): Promise<void> {
+  return invoke("delete_download", { path });
+}
+
 export function startSpecialsDownload(
   itemId: string,
   name: string,
