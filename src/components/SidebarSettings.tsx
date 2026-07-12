@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useCatalogStore } from "../state/catalogStore";
 import { SettingsPanel } from "./SettingsPanel";
 
@@ -11,6 +11,20 @@ export function SidebarSettings() {
   const open = useCatalogStore((s) => s.settingsOpen);
   const setOpen = useCatalogStore((s) => s.setSettingsOpen);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Animating framer's height to the "auto" KEYWORD with a spring jump-cuts to the final
+  // size (the "snapping" bug report) — so the panel stays mounted, its natural height is
+  // measured for real, and the spring runs between two plain numbers instead.
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setContentHeight(el.offsetHeight));
+    ro.observe(el);
+    setContentHeight(el.offsetHeight);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -34,20 +48,18 @@ export function SidebarSettings() {
 
   return (
     <div className="settings-dock" ref={ref}>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            className="settings-dock__panel"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 380, damping: 36 }}
-            style={{ overflow: "hidden" }}
-          >
-            <SettingsPanel />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        className="settings-dock__panel"
+        initial={false}
+        animate={{ height: open ? contentHeight : 0, opacity: open ? 1 : 0 }}
+        transition={{ type: "spring", stiffness: 380, damping: 36 }}
+        style={{ overflow: "hidden", pointerEvents: open ? "auto" : "none" }}
+        aria-hidden={!open}
+      >
+        <div ref={innerRef}>
+          <SettingsPanel />
+        </div>
+      </motion.div>
       <button
         className={`sidebar-settings__btn${open ? " sidebar-settings__btn--open" : ""}`}
         onClick={() => setOpen(!open)}
