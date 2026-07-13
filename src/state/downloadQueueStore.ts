@@ -26,3 +26,9 @@ export const useDownloadQueueStore = create<DownloadQueueState>((set) => ({
       };
     }),
 }));
+
+// Dev-only handle so download-progress UI (spinner, cancel, bars) can be exercised in the
+// browser preview, which has no Tauri backend to produce real jobs. Never set in production.
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__downloadQueue = useDownloadQueueStore;
+}

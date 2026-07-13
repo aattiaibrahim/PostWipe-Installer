@@ -8,8 +8,10 @@ import {
   type SpecialsSubfolder,
 } from "../state/specialsContentStore";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
+import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 import { SpecialsCard, tileGradient, gatedUrl } from "./SpecialsCard";
 import { SpecialsDetail } from "./SpecialsDetail";
+import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
 
 /** Up to four preview images pulled from a set of items, for a cover collage. */
 function collageImages(items: Item[], sessionKey: string | null): string[] {
@@ -84,6 +86,7 @@ function ItemGrid({
   onOpenItem: (item: Item) => void;
 }) {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
+  const selecting = useSpecialsSelectionStore((s) => s.selected.length > 0);
   return (
     <motion.div
       className="specials-page"
@@ -102,7 +105,7 @@ function ItemGrid({
         </h2>
       </div>
       {meta.blurb && !crumb && <p className="specials-page__blurb">{meta.blurb}</p>}
-      <div className="specials-grid">
+      <div className={`specials-grid${selecting ? " specials-grid--selecting" : ""}`}>
         {subfolders.map((sf) => (
           <CoverCard
             key={sf.name}
@@ -144,6 +147,7 @@ export function SpecialsContent() {
 
   return (
     <>
+      <SpecialsSelectionBar />
       <AnimatePresence mode="wait">
         {!group ? (
           <motion.div

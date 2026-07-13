@@ -3,8 +3,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useDownloadHistoryStore } from "../state/downloadHistoryStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
-import { deleteDownload, pathsExist } from "../lib/tauriCommands";
+import { cancelDownload, deleteDownload, pathsExist } from "../lib/tauriCommands";
 import { useClickOutside } from "../hooks/useClickOutside";
+import { DownloadSpinner } from "./DownloadSpinner";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
@@ -91,19 +92,30 @@ export function DownloadHistoryPanel() {
                     : null;
                   return (
                     <li key={job.jobId} className="download-history__active-item">
-                      <div className="download-history__active-row">
-                        <span className="download-history__active-name">{job.appName}</span>
-                        <span className="download-history__active-percent">
-                          {percent !== null ? `${Math.round(percent)}%` : job.status}
-                        </span>
+                      <DownloadSpinner />
+                      <div className="download-history__active-body">
+                        <div className="download-history__active-row">
+                          <span className="download-history__active-name">{job.appName}</span>
+                          <span className="download-history__active-percent">
+                            {percent !== null ? `${Math.round(percent)}%` : job.status}
+                          </span>
+                        </div>
+                        <div className="download-history__bar-track">
+                          <motion.div
+                            className={`download-history__bar-fill${percent === null ? " download-history__bar-fill--indeterminate" : ""}`}
+                            animate={{ width: `${percent ?? 30}%` }}
+                            transition={{ type: "spring", stiffness: 200, damping: 30 }}
+                          />
+                        </div>
                       </div>
-                      <div className="download-history__bar-track">
-                        <motion.div
-                          className={`download-history__bar-fill${percent === null ? " download-history__bar-fill--indeterminate" : ""}`}
-                          animate={{ width: `${percent ?? 30}%` }}
-                          transition={{ type: "spring", stiffness: 200, damping: 30 }}
-                        />
-                      </div>
+                      <button
+                        className="download-history__cancel"
+                        onClick={() => cancelDownload(job.jobId)}
+                        aria-label={`Cancel ${job.appName} download`}
+                        title="Cancel download"
+                      >
+                        ✕
+                      </button>
                     </li>
                   );
                 })}

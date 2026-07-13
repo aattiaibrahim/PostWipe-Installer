@@ -1,6 +1,7 @@
 import type { SpecialsItem as Item } from "../state/specialsContentStore";
 import { SPECIALS_WORKER_URL } from "../lib/specialsConfig";
 import { useSpecialsStore } from "../state/specialsStore";
+import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
@@ -28,6 +29,8 @@ export function gatedUrl(objectKey: string, sessionKey: string | null): string {
 export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item) => void }) {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
   const jobs = useDownloadQueueStore((s) => s.jobs);
+  const selected = useSpecialsSelectionStore((s) => s.selected.includes(item.objectKey));
+  const toggleSelected = useSpecialsSelectionStore((s) => s.toggle);
 
   const job = Object.values(jobs)
     .reverse()
@@ -41,7 +44,18 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
   const firstImage = hasImage ? gatedUrl(item.previewKeys[0], sessionKey) : null;
 
   return (
-    <button className="specials-card" onClick={() => onOpen(item)}>
+    <div
+      className={`specials-card${selected ? " specials-card--selected" : ""}`}
+      role="button"
+      tabIndex={0}
+      onClick={() => onOpen(item)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen(item);
+        }
+      }}
+    >
       <div
         className="specials-card__media"
         style={firstImage ? undefined : { background: tileGradient(item.name) }}
@@ -53,6 +67,15 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
         ) : (
           <span className="specials-card__glyph specials-card__glyph--initial">{item.name.charAt(0).toUpperCase()}</span>
         )}
+        <button
+          className={`specials-card__check${selected ? " specials-card__check--on" : ""}`}
+          aria-label={selected ? `Deselect ${item.name}` : `Select ${item.name}`}
+          aria-pressed={selected}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSelected(item.objectKey);
+          }}
+        />
         {item.previewKeys.length > 1 && <span className="specials-card__badge">{item.previewKeys.length}</span>}
         {downloaded && (
           <span className="specials-card__state" title="Downloaded">
@@ -71,6 +94,6 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
         </span>
         <span className="specials-card__meta">{fmtSize(item.size)}</span>
       </div>
-    </button>
+    </div>
   );
 }

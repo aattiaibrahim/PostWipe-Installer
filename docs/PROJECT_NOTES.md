@@ -160,6 +160,24 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Specials multi-select + download spinner/cancel — 2026-07-12 (seventh pass)
+- **Specials gallery multi-select**: new `specialsSelectionStore` (selected R2 objectKeys, parallel
+  to the catalog's `selectionStore`). `SpecialsCard` is now a `<div role="button">` (was `<button>`
+  — can't nest the checkbox `<button>` inside one) with a circular check top-left that reveals on
+  hover / while any is selected / when checked; clicking it `stopPropagation`s so it toggles
+  selection instead of opening the detail. Selected cards get an accent ring. `SpecialsSelectionBar`
+  (reuses `.selection-bar` visuals, sticky-centered at the top of the gallery) shows "N selected /
+  Clear / Download N" and batch-downloads each via `startSpecialsDownload` with the gated URL.
+- **Download spinner + cancel** in the Downloaded panel: each active job now leads with
+  `DownloadSpinner` (a green `--verified` ring chasing around a download-arrow icon,
+  `dl-spin 0.9s`, reduced-motion aware) and ends with a ✕ `download-history__cancel` button wired to
+  the existing `cancelDownload(jobId)`. Layout of `.download-history__active-item` went flex-row
+  (spinner · body · cancel).
+- Dev-only `window.__downloadQueue` handle added (DEV-guarded, like the specials ones) so
+  download-progress UI is exercisable in the browser preview (no Tauri backend there).
+- Verified in preview: spinner animates green + cancel present (2 seeded jobs); checkbox selects
+  without opening detail, card-body click still opens detail, Clear empties + dismisses the bar.
+
 ### Gallery dark-mode text fix + Death Note preview combine — 2026-07-12 (sixth pass)
 - **Dark-mode black text**: `.specials-card` is a `<button>` and buttons don't inherit text color,
   so the item name fell back to the UA near-black default — invisible on the dark card. Added

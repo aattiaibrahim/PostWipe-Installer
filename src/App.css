@@ -1509,6 +1509,61 @@ h3 {
   pointer-events: none;
 }
 
+/* Multi-select checkbox — hidden until hover / while selecting / when checked. */
+.specials-card__check {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  opacity: 0;
+  display: grid;
+  place-content: center;
+  transition: opacity 0.14s ease, background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.specials-card:hover .specials-card__check,
+.specials-grid--selecting .specials-card__check,
+.specials-card__check--on {
+  opacity: 1;
+}
+
+.specials-card__check--on {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+.specials-card__check--on::before {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.specials-card--selected {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* Sticky batch-download pill at the top of the gallery (reuses .selection-bar visuals but
+   sits in the normal flow, centered, instead of the title-bar absolute placement). */
+.specials-selection-bar {
+  position: sticky;
+  top: 4px;
+  left: auto;
+  transform: none;
+  align-self: center;
+  z-index: 20;
+}
+
 .specials-card__state {
   position: absolute;
   left: 8px;
@@ -2529,7 +2584,15 @@ h3 {
 
 /* Live progress rows inside the Downloaded dropdown */
 .download-history__active-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   padding: 0.4rem 0.5rem;
+}
+
+.download-history__active-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .download-history__active-row {
@@ -2538,6 +2601,76 @@ h3 {
   justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.3rem;
+}
+
+/* Spinning green ring chasing a download arrow — the "downloading" indicator. */
+.dl-spinner {
+  position: relative;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+}
+
+.dl-spinner__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: dl-spin 0.9s linear infinite;
+}
+
+.dl-spinner__track {
+  stroke: color-mix(in srgb, var(--verified) 22%, transparent);
+  stroke-width: 3;
+}
+
+.dl-spinner__arc {
+  stroke: var(--verified);
+  stroke-width: 3;
+  stroke-linecap: round;
+  /* r=15 → circumference ≈ 94; ~26 on, rest off = a chasing arc */
+  stroke-dasharray: 26 94;
+}
+
+.dl-spinner__icon {
+  width: 13px;
+  height: 13px;
+  color: var(--verified);
+}
+
+@keyframes dl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-spinner__ring {
+    animation: none;
+  }
+}
+
+.download-history__cancel {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.download-history__cancel:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
 }
 
 .download-history__active-name {
