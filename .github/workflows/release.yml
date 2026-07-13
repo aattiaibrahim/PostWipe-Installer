@@ -119,7 +119,7 @@ jobs:
       # update checks in that window fail with "none of the fallback platforms were found".
       # The publish job below flips the draft live only once all builds succeed.
       - name: Build, sign, and upload to draft release
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
