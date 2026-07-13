@@ -160,6 +160,28 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Perf + nesting + ScreenToGif — 2026-07-13 (second pass)
+- **Cursor install no longer freezes the UI**: `install_specials_item`, `apply_cursor_variant`,
+  `list_cursor_variants` are now `async` wrappers over `_impl` fns run via
+  `tauri::async_runtime::spawn_blocking` — the elevated PowerShell install blocks until UAC
+  finishes, and doing that on the command thread froze the whole window.
+- **GIF grid lag fixed**: `FrozenGif.tsx` draws only the first frame of a GIF into a `<canvas>`
+  (display-only, cross-origin taint is fine since we never read back), so a Profile-Pics grid of
+  30+ animated GIFs stops pegging the CPU. Used in `SpecialsCard` when `ext==='gif'` and it's the
+  own-image case; the detail sheet still uses a real `<img>` so opening one animates it.
+- **Nested folders now work**: `specialsContentStore` builds a RECURSIVE tree (was one subfolder
+  level, which flattened Wallpapers & Profile Pics ▸ Profile Pics ▸ Evangelion/Rin Tohsaka/… into
+  one bucket). `SpecialsContent` navigates a `subPath: string[]` with breadcrumbs + back.
+  `flattenGroup`/`flattenSubfolder` helpers added (used by covers' counts/collages + the selection
+  bar). Verified 3 levels deep + back-nav in preview.
+- **ScreenToGif** added to General Utilities (github NickeManarin/ScreenToGif, `Setup.x64.msi`,
+  real Logo.ico bundled) and its **stray 80MB MSI removed from the vault** Profile Pics folder
+  (it was misplaced there; backed up locally first).
+- **DEFERRED — mass file rename**: the Wallpapers/Profile-Pics files have ugly names (wallhaven
+  hashes, tumblr/steamuserimages, fb numerics). Renaming needs viewing each image + R2
+  download→reupload→delete (server-side copy is denied on the token), so it's a separate focused
+  pass — not done this turn.
+
 ### CI/CD hardening — 2026-07-13
 - Existing pipeline is `release.yml` (push to master → version-bump job → dual-platform
   tauri-action build+sign → draft-until-both-succeed → publish; wired to the app updater via

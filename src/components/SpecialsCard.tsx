@@ -3,6 +3,7 @@ import { useSpecialsStore } from "../state/specialsStore";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { resolvePreviews } from "../lib/specialsPreview";
+import { FrozenGif } from "./FrozenGif";
 
 // Re-exported so existing imports (`from "./SpecialsCard"`) keep working.
 export { gatedUrl } from "../lib/specialsPreview";
@@ -60,7 +61,13 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
         style={firstImage ? undefined : { background: tileGradient(item.name) }}
       >
         {firstImage ? (
-          <img src={firstImage} alt="" loading="lazy" />
+          // Own-image GIFs (Profile Pics) are frozen to a static frame in the grid to avoid
+          // dozens animating at once; everything else is a plain lazy <img>.
+          item.ext === "gif" && item.previewKeys.length === 0 ? (
+            <FrozenGif src={firstImage} className="specials-card__frozen" />
+          ) : (
+            <img src={firstImage} alt="" loading="lazy" decoding="async" />
+          )
         ) : hasSound ? (
           <span className="specials-card__glyph">♪</span>
         ) : (

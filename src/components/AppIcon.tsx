@@ -10,6 +10,7 @@ import musicPresenceIcon from "../assets/app-icons/music-presence.png";
 import deceiveIcon from "../assets/app-icons/deceive.ico";
 import losslesscutIcon from "../assets/app-icons/losslesscut.png";
 import translucenttbIcon from "../assets/app-icons/translucenttb.png";
+import screentogifIcon from "../assets/app-icons/screentogif.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
@@ -29,6 +30,7 @@ const BUNDLED_ICONS: Record<string, string> = {
   deceive: deceiveIcon,
   losslesscut: losslesscutIcon,
   translucenttb: translucenttbIcon,
+  screentogif: screentogifIcon,
   // Script entries have no domain — they'd fall through to a monogram letter.
   "restart-audio-service": batIcon,
   "kill-valorant-process": batIcon,

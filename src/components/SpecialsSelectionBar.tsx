@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
-import { useSpecialsContentStore } from "../state/specialsContentStore";
+import { useSpecialsContentStore, flattenGroup } from "../state/specialsContentStore";
 import { useSpecialsStore } from "../state/specialsStore";
 import { startSpecialsDownload } from "../lib/tauriCommands";
 import { gatedUrl } from "./SpecialsCard";
@@ -14,7 +14,7 @@ export function SpecialsSelectionBar() {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
 
   async function downloadSelected() {
-    const all = groups.flatMap((g) => [...g.items, ...g.subfolders.flatMap((sf) => sf.items)]);
+    const all = groups.flatMap(flattenGroup);
     const targets = all.filter((i) => selected.includes(i.objectKey));
     for (const item of targets) {
       try {

@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSpecialsStore } from "../state/specialsStore";
 import {
   useSpecialsContentStore,
+  flattenGroup,
+  flattenSubfolder,
   type SpecialsGroup,
   type SpecialsItem as Item,
   type SpecialsSubfolder,
@@ -66,10 +68,11 @@ function CoverCard({
   );
 }
 
-/** A grid of item cards + (optionally) subfolder covers, with a back header. */
+/** A grid of item cards + subfolder covers for the current tree node, with a back header
+ *  and a breadcrumb of the nested path. */
 function ItemGrid({
   title,
-  crumb,
+  crumbs,
   items,
   subfolders,
   meta,
@@ -78,7 +81,7 @@ function ItemGrid({
   onOpenItem,
 }: {
   title: string;
-  crumb?: string;
+  crumbs: string[];
   items: Item[];
   subfolders: SpecialsSubfolder[];
   meta: SpecialsCategoryMeta;
@@ -88,6 +91,7 @@ function ItemGrid({
 }) {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
   const selecting = useSpecialsSelectionStore((s) => s.selected.length > 0);
+  const atRoot = crumbs.length === 0;
   return (
     <motion.div
       className="specials-page"
@@ -102,22 +106,27 @@ function ItemGrid({
         </button>
         <h2 className="specials-page__title">
           {title}
-          {crumb && <span className="specials-page__crumb"> ▸ {crumb}</span>}
+          {crumbs.map((c) => (
+            <span key={c} className="specials-page__crumb"> ▸ {c}</span>
+          ))}
         </h2>
       </div>
-      {meta.blurb && !crumb && <p className="specials-page__blurb">{meta.blurb}</p>}
+      {meta.blurb && atRoot && <p className="specials-page__blurb">{meta.blurb}</p>}
       <div className={`specials-grid${selecting ? " specials-grid--selecting" : ""}`}>
-        {subfolders.map((sf) => (
-          <CoverCard
-            key={sf.name}
-            title={sf.name}
-            count={sf.items.length}
-            images={collageImages(sf.items, sessionKey)}
-            seed={sf.name}
-            folder
-            onOpen={() => onOpenSub(sf.name)}
-          />
-        ))}
+        {subfolders.map((sf) => {
+          const all = flattenSubfolder(sf);
+          return (
+            <CoverCard
+              key={sf.name}
+              title={sf.name}
+              count={all.length}
+              images={collageImages(all, sessionKey)}
+              seed={sf.name}
+              folder
+              onOpen={() => onOpenSub(sf.name)}
+            />
+          );
+        })}
         {items.map((item) => (
           <SpecialsCard key={item.objectKey} item={item} onOpen={onOpenItem} />
         ))}
@@ -127,13 +136,14 @@ function ItemGrid({
 }
 
 /** Rendered once the vault is unlocked: a landing grid of category covers → each opens that
- *  category as its own grid → clicking an item opens the detail sheet. Pure vertical scroll. */
+ *  category as its own grid → nested folders drill deeper (breadcrumb + back) → clicking an
+ *  item opens the detail sheet. Pure vertical scroll. */
 export function SpecialsContent() {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
   const { loaded, loading, error, groups, load } = useSpecialsContentStore();
 
   const [openFolder, setOpenFolder] = useState<string | null>(null);
-  const [openSub, setOpenSub] = useState<string | null>(null);
+  const [subPath, setSubPath] = useState<string[]>([]);
   const [detail, setDetail] = useState<{ item: Item; meta: SpecialsCategoryMeta } | null>(null);
 
   useEffect(() => {
@@ -144,7 +154,20 @@ export function SpecialsContent() {
   if (error) return <p className="category-panel__empty">Couldn't load the vault: {error}</p>;
 
   const group: SpecialsGroup | undefined = groups.find((g) => g.folder === openFolder);
-  const subfolder = group?.subfolders.find((s) => s.name === openSub);
+
+  // Walk the nested path from the category root to the node we're viewing.
+  let items = group?.items ?? [];
+  let subfolders = group?.subfolders ?? [];
+  const crumbs: string[] = [];
+  if (group) {
+    for (const seg of subPath) {
+      const next = subfolders.find((s) => s.name === seg);
+      if (!next) break;
+      crumbs.push(seg);
+      items = next.items;
+      subfolders = next.subfolders;
+    }
+  }
 
   return (
     <>
@@ -160,45 +183,36 @@ export function SpecialsContent() {
           >
             <div className="specials-grid specials-grid--covers">
               {groups.map((g) => {
-                const allItems = [...g.items, ...g.subfolders.flatMap((s) => s.items)];
-                const count = allItems.length;
+                const all = flattenGroup(g);
                 return (
                   <CoverCard
                     key={g.folder}
                     title={g.meta.label}
-                    count={count}
-                    images={collageImages(allItems, sessionKey)}
+                    count={all.length}
+                    images={collageImages(all, sessionKey)}
                     seed={g.folder}
                     onOpen={() => {
                       setOpenFolder(g.folder);
-                      setOpenSub(null);
+                      setSubPath([]);
                     }}
                   />
                 );
               })}
             </div>
           </motion.div>
-        ) : subfolder ? (
-          <ItemGrid
-            key={`${group.folder}/${subfolder.name}`}
-            title={group.meta.label}
-            crumb={subfolder.name}
-            items={subfolder.items}
-            subfolders={[]}
-            meta={group.meta}
-            onBack={() => setOpenSub(null)}
-            onOpenSub={() => {}}
-            onOpenItem={(item) => setDetail({ item, meta: group.meta })}
-          />
         ) : (
           <ItemGrid
-            key={group.folder}
+            key={`${group.folder}/${crumbs.join("/")}`}
             title={group.meta.label}
-            items={group.items}
-            subfolders={group.subfolders}
+            crumbs={crumbs}
+            items={items}
+            subfolders={subfolders}
             meta={group.meta}
-            onBack={() => setOpenFolder(null)}
-            onOpenSub={(name) => setOpenSub(name)}
+            onBack={() => {
+              if (subPath.length > 0) setSubPath(subPath.slice(0, -1));
+              else setOpenFolder(null);
+            }}
+            onOpenSub={(name) => setSubPath([...subPath, name])}
             onOpenItem={(item) => setDetail({ item, meta: group.meta })}
           />
         )}
