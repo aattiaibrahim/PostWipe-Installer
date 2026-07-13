@@ -75,8 +75,17 @@ fn find_by_ext(dir: &Path, exts: &[&str]) -> Vec<PathBuf> {
 ///   Cursor schemes write to HKCU and normally don't need admin; if one does, that's surfaced
 ///   rather than forced. Multiple `.inf` variants (e.g. color sets) → open the folder to choose.
 /// - `font` / `sound`: unzip and open the folder so the user runs the per-file Install/apply.
+/// Async wrapper: the body shells out to an elevated PowerShell install that BLOCKS until the
+/// UAC install finishes. Running that on the command thread froze the whole UI, so it's offloaded
+/// to a blocking task and awaited instead.
 #[tauri::command]
-pub fn install_specials_item(app_handle: AppHandle, archive_path: String, install_type: String) -> Result<String, String> {
+pub async fn install_specials_item(app_handle: AppHandle, archive_path: String, install_type: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || install_specials_item_impl(app_handle, archive_path, install_type))
+        .await
+        .map_err(|e| format!("install task failed: {e}"))?
+}
+
+fn install_specials_item_impl(app_handle: AppHandle, archive_path: String, install_type: String) -> Result<String, String> {
     let archive = PathBuf::from(&archive_path);
     if !archive.exists() {
         return Err(format!("{archive_path} not found — download it again."));
@@ -160,7 +169,13 @@ fn inf_scheme_name(inf: &Path) -> Option<String> {
 /// the scheme name from the inf itself (falling back to its folder name). The UI shows these
 /// as a "which one do you want?" picker before applying.
 #[tauri::command]
-pub fn list_cursor_variants(archive_path: String) -> Result<Vec<CursorVariant>, String> {
+pub async fn list_cursor_variants(archive_path: String) -> Result<Vec<CursorVariant>, String> {
+    tauri::async_runtime::spawn_blocking(move || list_cursor_variants_impl(archive_path))
+        .await
+        .map_err(|e| format!("variant scan failed: {e}"))?
+}
+
+fn list_cursor_variants_impl(archive_path: String) -> Result<Vec<CursorVariant>, String> {
     let archive = PathBuf::from(&archive_path);
     if !archive.exists() {
         return Err(format!("{archive_path} not found — download it again."));
@@ -192,9 +207,16 @@ pub fn list_cursor_variants(archive_path: String) -> Result<Vec<CursorVariant>, 
     Ok(variants)
 }
 
-/// Applies one specific install.inf chosen in the variant picker.
+/// Applies one specific install.inf chosen in the variant picker. Async for the same reason as
+/// install_specials_item — the elevated install blocks until UAC completes.
 #[tauri::command]
-pub fn apply_cursor_variant(app_handle: AppHandle, inf_path: String) -> Result<String, String> {
+pub async fn apply_cursor_variant(app_handle: AppHandle, inf_path: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || apply_cursor_variant_impl(app_handle, inf_path))
+        .await
+        .map_err(|e| format!("install task failed: {e}"))?
+}
+
+fn apply_cursor_variant_impl(app_handle: AppHandle, inf_path: String) -> Result<String, String> {
     let inf = PathBuf::from(&inf_path);
     if !inf.exists() {
         return Err(format!("{inf_path} not found — reinstall the pack."));

@@ -68,11 +68,20 @@ export function DownloadHistoryPanel() {
 
   return (
     <div className="download-history" ref={panelRef}>
-      <button className="download-history__toggle" onClick={() => setOpen((o) => !o)}>
-        Downloaded
+      <button
+        className="download-history__toggle download-history__toggle--icon"
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Downloads"
+        title="Downloads"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3v12" />
+          <path d="M7 11l5 5 5-5" />
+          <path d="M5 20h14" />
+        </svg>
         {downloadedEntries.length > 0 && <span className="download-history__count">{downloadedEntries.length}</span>}
         {activeJobs.length > 0 && (
-          <span className="download-history__count download-history__count--active">{activeJobs.length}↓</span>
+          <span className="download-history__count download-history__count--active">{activeJobs.length}</span>
         )}
       </button>
       <AnimatePresence>

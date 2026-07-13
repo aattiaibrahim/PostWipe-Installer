@@ -1311,7 +1311,52 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0 0.2rem;
+  padding: 0.5rem 0.2rem;
+  /* Stays pinned at the top while the grid scrolls, so the back arrow is always reachable. */
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: linear-gradient(180deg, var(--bg) 62%, transparent);
+}
+
+/* Square icon buttons for the header (download / open-folder). */
+.download-history__toggle--icon,
+.search-filter-bar__folder-btn--icon {
+  position: relative;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-history__toggle--icon svg,
+.search-filter-bar__folder-btn--icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.download-history__toggle--icon .download-history__count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.download-history__toggle--icon .download-history__count--active {
+  top: auto;
+  bottom: -5px;
+  right: -5px;
+  color: #fff;
 }
 
 .specials-page__back {
@@ -1351,6 +1396,18 @@ h3 {
   margin: 0 0 0.2rem 0.2rem;
   font-size: 0.82rem;
   color: var(--text-muted);
+}
+
+/* Full-width category banner (Payday) — the one image that represents the whole pack,
+   shown in full (natural aspect, no crop). */
+.specials-page__hero {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  border-radius: 14px;
+  margin: 0.2rem 0 0.8rem;
+  box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.5);
 }
 
 /* Responsive vertical grid — the whole point of this direction: scroll only up and down. */
@@ -1647,6 +1704,18 @@ h3 {
   display: block;
 }
 
+/* A single preview (a PSD/Payday tile, one wallpaper, one pfp) fills the whole panel. */
+.specials-detail__img--fill {
+  object-fit: cover;
+}
+
+.specials-detail__pdf {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+
 .specials-detail__glyph {
   font-size: 4rem;
   color: rgba(255, 255, 255, 0.9);
@@ -1719,24 +1788,98 @@ h3 {
 .specials-detail__sounds {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.3rem;
   margin: 0.2rem 0;
+  max-height: 220px;
+  overflow-y: auto;
 }
 
-.specials-detail__sound {
+/* Modern one-tap sound row (replaces native <audio controls>). */
+.sound-row {
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.specials-detail__sound-name {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.specials-detail__sound audio {
+  align-items: center;
+  gap: 0.65rem;
   width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: none;
+  border-radius: 10px;
+  background-color: color-mix(in srgb, var(--text) 5%, transparent);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.sound-row:hover {
+  background-color: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.sound-row--playing {
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.sound-row__btn {
+  flex-shrink: 0;
+  width: 30px;
   height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  background-color: var(--accent);
+}
+
+.sound-row__btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sound-row__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sound-row__eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 15px;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+.sound-row--playing .sound-row__eq {
+  opacity: 1;
+}
+
+.sound-row__eq i {
+  width: 3px;
+  border-radius: 2px;
+  background-color: var(--accent);
+  height: 4px;
+  animation: sound-bar-bounce 0.9s ease-in-out infinite;
+}
+
+.sound-row__eq i:nth-child(2) { animation-delay: 0.15s; }
+.sound-row__eq i:nth-child(3) { animation-delay: 0.35s; }
+.sound-row__eq i:nth-child(4) { animation-delay: 0.5s; }
+
+/* Modern music note used as the tile art / detail glyph for sound sets. */
+.specials-card__music {
+  width: 40%;
+  height: 40%;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-detail__music {
+  width: 72px;
+  height: 72px;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .specials-detail__error {

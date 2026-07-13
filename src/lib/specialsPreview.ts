@@ -2,12 +2,20 @@ import type { SpecialsItem } from "../state/specialsContentStore";
 import { SPECIALS_WORKER_URL } from "./specialsConfig";
 import paydayTile from "../assets/app-icons/payday2-mods.png";
 import photoshopTile from "../assets/app-icons/photoshop.png";
+import sennheiserTile from "../assets/app-icons/sennheiser-hd650.png";
 
 const IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "avif", "bmp"]);
 const PAYDAY_FOLDER = "Payday 2 Mods - Diesel 2.0";
+const AUDIO_EQ_FOLDER = "Audio & EQ Profiles";
 
 export function gatedUrl(objectKey: string, sessionKey: string | null): string {
   return `${SPECIALS_WORKER_URL}/file/${objectKey.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey ?? "")}`;
+}
+
+/** A full-width banner image for categories that are really "one thing" — the Payday mod
+ *  pack shows its composite across the whole gallery. Null for normal categories. */
+export function categoryHeroImage(folder: string): string | null {
+  return folder === PAYDAY_FOLDER ? paydayTile : null;
 }
 
 /** The `Tweaks/<folder>/...` category folder an item lives in. */
@@ -32,6 +40,8 @@ export function resolvePreviews(item: SpecialsItem, sessionKey: string | null): 
   if (item.previewKeys.length > 0) return item.previewKeys.map((k) => gatedUrl(k, sessionKey));
   if (IMAGE_EXTS.has(item.ext)) return [gatedUrl(item.objectKey, sessionKey)];
   if (item.ext === "psd") return [photoshopTile];
-  if (itemFolder(item) === PAYDAY_FOLDER) return [paydayTile];
+  const folder = itemFolder(item);
+  if (folder === PAYDAY_FOLDER) return [paydayTile];
+  if (folder === AUDIO_EQ_FOLDER) return [sennheiserTile];
   return [];
 }

@@ -10,9 +10,14 @@ import {
   type SpecialsSubfolder,
 } from "../state/specialsContentStore";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
+import { useCatalogStore } from "../state/catalogStore";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
+
+// On macOS only these vault categories are relevant (the rest are Windows-only: cursors,
+// sounds, themes, the programs folders). Everything shows on Windows.
+const MAC_FOLDERS = new Set(["PSD's", "Steam Profiles", "Fonts", "Wallpapers & Profile Pics"]);
 import { SpecialsCard, tileGradient } from "./SpecialsCard";
-import { resolvePreviews } from "../lib/specialsPreview";
+import { resolvePreviews, categoryHeroImage } from "../lib/specialsPreview";
 import { SpecialsDetail } from "./SpecialsDetail";
 
 /** Up to four preview images pulled from a set of items, for a cover collage. */
@@ -76,6 +81,7 @@ function ItemGrid({
   items,
   subfolders,
   meta,
+  hero,
   onBack,
   onOpenSub,
   onOpenItem,
@@ -85,6 +91,7 @@ function ItemGrid({
   items: Item[];
   subfolders: SpecialsSubfolder[];
   meta: SpecialsCategoryMeta;
+  hero: string | null;
   onBack: () => void;
   onOpenSub: (name: string) => void;
   onOpenItem: (item: Item) => void;
@@ -111,6 +118,7 @@ function ItemGrid({
           ))}
         </h2>
       </div>
+      {hero && atRoot && <img className="specials-page__hero" src={hero} alt={title} />}
       {meta.blurb && atRoot && <p className="specials-page__blurb">{meta.blurb}</p>}
       <div className={`specials-grid${selecting ? " specials-grid--selecting" : ""}`}>
         {subfolders.map((sf) => {
@@ -140,7 +148,9 @@ function ItemGrid({
  *  item opens the detail sheet. Pure vertical scroll. */
 export function SpecialsContent() {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
-  const { loaded, loading, error, groups, load } = useSpecialsContentStore();
+  const osFilter = useCatalogStore((s) => s.osFilter);
+  const { loaded, loading, error, groups: allGroups, load } = useSpecialsContentStore();
+  const groups = osFilter === "macos" ? allGroups.filter((g) => MAC_FOLDERS.has(g.folder)) : allGroups;
 
   const [openFolder, setOpenFolder] = useState<string | null>(null);
   const [subPath, setSubPath] = useState<string[]>([]);
@@ -208,6 +218,7 @@ export function SpecialsContent() {
             items={items}
             subfolders={subfolders}
             meta={group.meta}
+            hero={categoryHeroImage(group.folder)}
             onBack={() => {
               if (subPath.length > 0) setSubPath(subPath.slice(0, -1));
               else setOpenFolder(null);

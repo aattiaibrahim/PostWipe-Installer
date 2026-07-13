@@ -4,6 +4,7 @@ import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { resolvePreviews } from "../lib/specialsPreview";
 import { FrozenGif } from "./FrozenGif";
+import { MusicGlyph } from "./MusicGlyph";
 
 // Re-exported so existing imports (`from "./SpecialsCard"`) keep working.
 export { gatedUrl } from "../lib/specialsPreview";
@@ -69,7 +70,7 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
             <img src={firstImage} alt="" loading="lazy" decoding="async" />
           )
         ) : hasSound ? (
-          <span className="specials-card__glyph">♪</span>
+          <MusicGlyph className="specials-card__glyph specials-card__music" />
         ) : (
           <span className="specials-card__glyph specials-card__glyph--initial">{item.name.charAt(0).toUpperCase()}</span>
         )}
