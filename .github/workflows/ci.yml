@@ -1,0 +1,59 @@
+name: CI
+
+# Pre-merge quality gates. Runs on feature-branch pushes and on PRs into master
+# (including Dependabot's). Master pushes are covered by the Release workflow's own
+# build + test, so we skip them here to avoid duplicate runs.
+on:
+  push:
+    branches-ignore: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # `npm run build` is `tsc && vite build`, so this is the typecheck + build gate.
+      - name: Typecheck and build
+        run: npm run build
+
+  rust:
+    # Windows matches the Release runner (no apt system deps needed for the Tauri crate).
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      # The real gate: catalog parse + unit tests (skip live/network sweeps).
+      - name: Tests
+        working-directory: src-tauri
+        run: cargo test --lib -- --skip live_tests --skip full_catalog_sweep
+      # Informational only — the codebase uses a deliberately wide manual style that isn't
+      # rustfmt-default-clean, so these report without failing the build.
+      - name: Format (informational)
+        working-directory: src-tauri
+        run: cargo fmt --check
+        continue-on-error: true
+      - name: Clippy (informational)
+        working-directory: src-tauri
+        run: cargo clippy --lib --no-deps
+        continue-on-error: true

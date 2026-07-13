@@ -19,6 +19,7 @@ jobs:
     outputs:
       version: ${{ steps.bump.outputs.version }}
       sha: ${{ steps.bump.outputs.sha }}
+      notes: ${{ steps.bump.outputs.notes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,6 +39,19 @@ jobs:
           IFS='.' read -r major minor patch <<< "$current"
           new_version="$major.$minor.$((patch + 1))"
           echo "version=$new_version" >> "$GITHUB_OUTPUT"
+
+          # Release notes = commit subjects since the last release tag, minus merges and the
+          # bot's own [skip ci] bump commits. Computed before we make this release's bump commit.
+          prev=$(git describe --tags --match 'v*' --abbrev=0 2>/dev/null || true)
+          notes=$(git log ${prev:+$prev..}HEAD --no-merges --pretty=format:'- %s' \
+            | grep -viE '\[skip ci\]' || true)
+          [ -z "$notes" ] && notes="- Maintenance release."
+          {
+            echo "notes<<__NOTES_EOF__"
+            echo "### Changes"
+            echo "$notes"
+            echo "__NOTES_EOF__"
+          } >> "$GITHUB_OUTPUT"
           npm version "$new_version" --no-git-tag-version --allow-same-version
           node -e "
             const fs = require('fs');
@@ -113,7 +127,7 @@ jobs:
         with:
           tagName: v${{ needs.version.outputs.version }}
           releaseName: v${{ needs.version.outputs.version }}
-          releaseBody: Automated release built from the latest push to master.
+          releaseBody: ${{ needs.version.outputs.notes }}
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
