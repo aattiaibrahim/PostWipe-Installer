@@ -30,10 +30,12 @@ export function SpecialsSelectionBar() {
     <AnimatePresence>
       {selected.length > 0 && (
         <motion.div
-          className="selection-bar specials-selection-bar"
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
+          className="selection-bar"
+          // Same title-bar placement as the catalog SelectionBar (absolute, left:50%): x:"-50%"
+          // rides along in every state or framer overwrites the horizontal centering.
+          initial={{ opacity: 0, y: -34, x: "-50%" }}
+          animate={{ opacity: 1, y: 0, x: "-50%" }}
+          exit={{ opacity: 0, y: -34, x: "-50%" }}
           transition={{ type: "spring", stiffness: 420, damping: 32 }}
         >
           <span className="selection-bar__count">{selected.length} selected</span>

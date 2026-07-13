@@ -160,6 +160,26 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Selection bar in header, click sounds, category previews — 2026-07-12 (eighth pass)
+- **Specials selection bar moved to the title bar** (was sticky inside the gallery). It now uses
+  the exact `.selection-bar` title-bar placement as the catalog one (`SpecialsSelectionBar`
+  rendered in `TitleBar` beside `SelectionBar`, both absolute-centered — only one shows at a time).
+  Dropped the `.specials-selection-bar` sticky override.
+- **UI click sounds** (user asked for "ubuntu sounds"): bundled the Ubuntu sound theme's tiny
+  `Menu popup.wav` (extracted from the vault's own "Linux Ubuntu.zip" pack via rclone) as
+  `src/assets/sounds/ui-click.wav`. `lib/sound.ts` decodes it once (Web Audio) and replays a fresh
+  buffer source per click at 0.35 gain; a capture-phase `document` click listener in `App.tsx`
+  fires on `button,[role=button],a,checkbox,.sidebar__item,.os-picker__tile` (capture so it still
+  plays when a handler stops propagation). `soundStore` (persisted, on by default) + a "Click sound
+  effects" toggle in Settings.
+- **Category previews without uploads** — new `lib/specialsPreview.ts` `resolvePreviews(item)`:
+  uploaded `previews/` images → the file itself when it's already an image (Wallpapers, Profile
+  Pics, Banners now show their own thumbnail) → a bundled brand tile for PSDs (`photoshop.png`,
+  a Ps tile) and Payday mods (`payday2-mods.png` = the PAYDAY 2 logo + BeardLib beard +
+  "SuperBLT" wordmark, composited with PIL). SpecialsCard/Detail/cover-collage all use it. No R2
+  writes — all code + bundled assets. (Payday logos: PD2 from Steam app 218620 logo.png, BeardLib
+  from its repo's Assets/guis/textures/beardlib_logo.png; SuperBLT has no logo so it's a wordmark.)
+
 ### Specials multi-select + download spinner/cancel — 2026-07-12 (seventh pass)
 - **Specials gallery multi-select**: new `specialsSelectionStore` (selected R2 objectKeys, parallel
   to the catalog's `selectionStore`). `SpecialsCard` is now a `<div role="button">` (was `<button>`

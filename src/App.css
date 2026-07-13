@@ -1553,17 +1553,6 @@ h3 {
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-/* Sticky batch-download pill at the top of the gallery (reuses .selection-bar visuals but
-   sits in the normal flow, centered, instead of the title-bar absolute placement). */
-.specials-selection-bar {
-  position: sticky;
-  top: 4px;
-  left: auto;
-  transform: none;
-  align-self: center;
-  z-index: 20;
-}
-
 .specials-card__state {
   position: absolute;
   left: 8px;

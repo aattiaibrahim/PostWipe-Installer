@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Browse } from "./screens/Browse";
 import { AmbientBackground } from "./components/AmbientBackground";
@@ -9,7 +9,10 @@ import { SidebarSettings } from "./components/SidebarSettings";
 import { useResizeGlitchGuard } from "./hooks/useResizeGlitchGuard";
 import { useApplyTheme } from "./hooks/useApplyTheme";
 import { isTauri } from "./lib/tauriCommands";
+import { playClick } from "./lib/sound";
 import "./App.css";
+
+const CLICKABLE = 'button, [role="button"], a, input[type="checkbox"], .sidebar__item, .os-picker__tile';
 
 const REPO_URL = "https://github.com/aattiaibrahim/PostWipe-Installer";
 
@@ -25,6 +28,16 @@ function App() {
   useResizeGlitchGuard();
   useApplyTheme();
   const [splashDone, setSplashDone] = useState(false);
+
+  // Global click chime. Capture phase so it fires even when a handler stops propagation
+  // (e.g. the Specials card checkbox); the store toggle gates whether it plays.
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if ((e.target as HTMLElement)?.closest?.(CLICKABLE)) playClick();
+    }
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
 
   return (
     <main className="app-shell">

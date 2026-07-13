@@ -1,6 +1,7 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "../lib/tauriCommands";
 import { SelectionBar } from "./SelectionBar";
+import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
 
 const appWindow = isTauri ? getCurrentWindow() : null;
 
@@ -12,6 +13,7 @@ export function TitleBar() {
         <span className="title-bar__title">PostWipe Installer</span>
       </div>
       <SelectionBar />
+      <SpecialsSelectionBar />
       <div className="title-bar__actions">
         <div className="title-bar__window-controls">
           <button className="title-bar__win-btn" aria-label="Minimize" onClick={() => appWindow?.minimize()}>

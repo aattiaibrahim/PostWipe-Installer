@@ -7,6 +7,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { isTauri, startDownload } from "../lib/tauriCommands";
 import { useThemeStore, type Theme } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
+import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
 
 const SUN_RAYS =
@@ -72,6 +73,8 @@ export function SettingsPanel() {
   const [version, setVersion] = useState<string | null>(null);
   const autoCheckUpdates = useSettingsStore((s) => s.autoCheckUpdates);
   const setAutoCheckUpdates = useSettingsStore((s) => s.setAutoCheckUpdates);
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const setSoundEnabled = useSoundStore((s) => s.setEnabled);
   const catalog = useCatalogStore((s) => s.catalog);
   const osFilter = useCatalogStore((s) => s.osFilter);
   const [downloadAllStatus, setDownloadAllStatus] = useState<string>("");
@@ -151,6 +154,15 @@ export function SettingsPanel() {
             <span className="toggle-switch__knob" />
           </span>
           <span>Automatically check for updates</span>
+        </label>
+      </div>
+      <div className="settings-panel__row">
+        <label className="settings-panel__toggle">
+          <input type="checkbox" checked={soundEnabled} onChange={(e) => setSoundEnabled(e.target.checked)} />
+          <span className="toggle-switch" aria-hidden="true">
+            <span className="toggle-switch__knob" />
+          </span>
+          <span>Click sound effects</span>
         </label>
       </div>
       <div className="settings-panel__row">

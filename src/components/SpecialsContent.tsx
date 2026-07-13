@@ -9,15 +9,16 @@ import {
 } from "../state/specialsContentStore";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
-import { SpecialsCard, tileGradient, gatedUrl } from "./SpecialsCard";
+import { SpecialsCard, tileGradient } from "./SpecialsCard";
+import { resolvePreviews } from "../lib/specialsPreview";
 import { SpecialsDetail } from "./SpecialsDetail";
-import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
 
 /** Up to four preview images pulled from a set of items, for a cover collage. */
 function collageImages(items: Item[], sessionKey: string | null): string[] {
   const out: string[] = [];
   for (const it of items) {
-    if (it.previewKeys.length > 0) out.push(gatedUrl(it.previewKeys[0], sessionKey));
+    const p = resolvePreviews(it, sessionKey)[0];
+    if (p) out.push(p);
     if (out.length === 4) break;
   }
   return out;
@@ -147,7 +148,6 @@ export function SpecialsContent() {
 
   return (
     <>
-      <SpecialsSelectionBar />
       <AnimatePresence mode="wait">
         {!group ? (
           <motion.div

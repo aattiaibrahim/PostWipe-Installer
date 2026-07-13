@@ -1,8 +1,11 @@
 import type { SpecialsItem as Item } from "../state/specialsContentStore";
-import { SPECIALS_WORKER_URL } from "../lib/specialsConfig";
 import { useSpecialsStore } from "../state/specialsStore";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
+import { resolvePreviews } from "../lib/specialsPreview";
+
+// Re-exported so existing imports (`from "./SpecialsCard"`) keep working.
+export { gatedUrl } from "../lib/specialsPreview";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
@@ -20,10 +23,6 @@ export function tileGradient(name: string): string {
   return `linear-gradient(135deg, hsl(${hue} 48% 38%), hsl(${(hue + 46) % 360} 55% 22%))`;
 }
 
-export function gatedUrl(objectKey: string, sessionKey: string | null): string {
-  return `${SPECIALS_WORKER_URL}/file/${objectKey.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey ?? "")}`;
-}
-
 /** A single vault item as a gallery tile: preview art (or a gradient glyph tile) with the
  *  name/size beneath. Clicking opens the detail sheet — actions live there, not on the card. */
 export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item) => void }) {
@@ -39,9 +38,9 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
   const downloaded = job?.status === "completed";
   const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
 
-  const hasImage = item.previewKeys.length > 0;
+  const previews = resolvePreviews(item, sessionKey);
   const hasSound = item.audioPreviews.length > 0;
-  const firstImage = hasImage ? gatedUrl(item.previewKeys[0], sessionKey) : null;
+  const firstImage = previews[0] ?? null;
 
   return (
     <div
