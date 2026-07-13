@@ -1454,6 +1454,28 @@ h3 {
   gap: 2px;
 }
 
+/* Single-image / glyph cover fills the whole card (no 2×2 collage with blank cells). */
+.specials-cover__fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.specials-cover__glyph-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.specials-cover__music {
+  width: 34%;
+  height: 34%;
+  color: rgba(255, 255, 255, 0.92);
+}
+
 .specials-cover__collage img,
 .specials-cover__collage span {
   width: 100%;

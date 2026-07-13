@@ -3,10 +3,12 @@ import { SPECIALS_WORKER_URL } from "./specialsConfig";
 import paydayTile from "../assets/app-icons/payday2-mods.png";
 import photoshopTile from "../assets/app-icons/photoshop.png";
 import sennheiserTile from "../assets/app-icons/sennheiser-hd650.png";
+import windowsThemesTile from "../assets/app-icons/windows-themes.png";
 
 const IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "avif", "bmp"]);
 const PAYDAY_FOLDER = "Payday 2 Mods - Diesel 2.0";
 const AUDIO_EQ_FOLDER = "Audio & EQ Profiles";
+const WINDOWS_THEMES_FOLDER = "Windows Themes";
 
 export function gatedUrl(objectKey: string, sessionKey: string | null): string {
   return `${SPECIALS_WORKER_URL}/file/${objectKey.split("/").map(encodeURIComponent).join("/")}?key=${encodeURIComponent(sessionKey ?? "")}`;
@@ -43,5 +45,6 @@ export function resolvePreviews(item: SpecialsItem, sessionKey: string | null): 
   const folder = itemFolder(item);
   if (folder === PAYDAY_FOLDER) return [paydayTile];
   if (folder === AUDIO_EQ_FOLDER) return [sennheiserTile];
+  if (folder === WINDOWS_THEMES_FOLDER) return [windowsThemesTile];
   return [];
 }

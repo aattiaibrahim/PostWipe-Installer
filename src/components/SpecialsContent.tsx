@@ -19,6 +19,7 @@ const MAC_FOLDERS = new Set(["PSD's", "Steam Profiles", "Fonts", "Wallpapers & P
 import { SpecialsCard, tileGradient } from "./SpecialsCard";
 import { resolvePreviews, categoryHeroImage } from "../lib/specialsPreview";
 import { SpecialsDetail } from "./SpecialsDetail";
+import { MusicGlyph } from "./MusicGlyph";
 
 /** Up to four preview images pulled from a set of items, for a cover collage. */
 function collageImages(items: Item[], sessionKey: string | null): string[] {
@@ -31,14 +32,17 @@ function collageImages(items: Item[], sessionKey: string | null): string[] {
   return out;
 }
 
-/** A big department cover: a 2×2 collage (real previews where available, gradient tiles to
- *  fill) with the name + count. Clicking opens that category / subfolder as its own grid. */
+/** A big department cover. When every item resolves to the SAME art (PSD's → Ps tile, Payday →
+ *  composite, Audio & EQ → Sennheiser, Windows Themes → tile) it fills the whole card with that
+ *  one image; a sound category with no art fills with a music note; otherwise a 2×2 collage of
+ *  the distinct thumbnails. Clicking opens that category / subfolder as its own grid. */
 function CoverCard({
   title,
   count,
   images,
   seed,
   folder,
+  sound,
   onOpen,
 }: {
   title: string;
@@ -46,20 +50,29 @@ function CoverCard({
   images: string[];
   seed: string;
   folder?: boolean;
+  sound?: boolean;
   onOpen: () => void;
 }) {
-  const cells = Array.from({ length: 4 }, (_, i) => images[i] ?? null);
+  const unique = [...new Set(images)];
   return (
     <button className="specials-cover" onClick={onOpen}>
-      <div className="specials-cover__collage">
-        {cells.map((url, i) =>
-          url ? (
-            <img key={i} src={url} alt="" loading="lazy" />
-          ) : (
-            <span key={i} style={{ background: tileGradient(seed + i) }} />
-          ),
-        )}
-      </div>
+      {unique.length === 1 ? (
+        <img className="specials-cover__fill" src={unique[0]} alt="" loading="lazy" />
+      ) : unique.length === 0 && sound ? (
+        <div className="specials-cover__fill specials-cover__glyph-fill" style={{ background: tileGradient(seed) }}>
+          <MusicGlyph className="specials-cover__music" />
+        </div>
+      ) : (
+        <div className="specials-cover__collage">
+          {Array.from({ length: 4 }, (_, i) => unique[i] ?? null).map((url, i) =>
+            url ? (
+              <img key={i} src={url} alt="" loading="lazy" />
+            ) : (
+              <span key={i} style={{ background: tileGradient(seed + i) }} />
+            ),
+          )}
+        </div>
+      )}
       {folder && (
         <svg className="specials-cover__folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
@@ -131,6 +144,7 @@ function ItemGrid({
               images={collageImages(all, sessionKey)}
               seed={sf.name}
               folder
+              sound={meta.install === "sound"}
               onOpen={() => onOpenSub(sf.name)}
             />
           );
@@ -201,6 +215,7 @@ export function SpecialsContent() {
                     count={all.length}
                     images={collageImages(all, sessionKey)}
                     seed={g.folder}
+                    sound={g.meta.install === "sound"}
                     onOpen={() => {
                       setOpenFolder(g.folder);
                       setSubPath([]);

@@ -160,6 +160,17 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Single-image category covers fill the card — 2026-07-13 (fifth pass)
+- Category cover cards no longer show "one image + 3 blank collage cells" when a category is
+  really one image. `CoverCard` dedupes its collage images: **1 unique → fills the whole card**
+  (PSD's Ps tile, Payday composite, Audio & EQ Sennheiser, Windows Themes tile); **0 images + a
+  sound category → fills with a MusicGlyph** (Windows Sounds); **2+ distinct → the 2×2 collage**
+  (Cursors/Fonts/Wallpapers/Steam). `sound` prop passed from `meta.install === "sound"`.
+- **Windows Themes** now has a bundled preview tile (`windows-themes.png`, a dark
+  gradient + cool Windows 4-pane logo — the pack ships no image, so generated) mapped in
+  `resolvePreviews` (folder "Windows Themes"). Swap it later if a real Paranoid Android
+  screenshot turns up.
+
 ### Gallery/preview/header UI refinement + macOS filter — 2026-07-13 (fourth pass)
 - **Header icons**: the "Downloaded" text button is now a download-arrow icon (count badges float
   on the corner); "Open Downloads Folder" is a folder icon. Both in `SearchFilterBar` /
