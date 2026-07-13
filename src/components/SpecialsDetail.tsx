@@ -13,6 +13,8 @@ import {
   type CursorVariant,
 } from "../lib/tauriCommands";
 import { CursorVariantPicker } from "./CursorVariantPicker";
+import { SoundRow } from "./SoundRow";
+import { MusicGlyph } from "./MusicGlyph";
 import { fmtSize, tileGradient } from "./SpecialsCard";
 import { resolvePreviews, ownImageUrl, gatedUrl } from "../lib/specialsPreview";
 
@@ -45,6 +47,8 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
   // shows the full-res / animated ORIGINAL for image items, thumbnails/carousel otherwise.
   const own = ownImageUrl(item, sessionKey);
   const previewUrls = own ? [own] : resolvePreviews(item, sessionKey);
+  const isPdf = item.ext === "pdf";
+  const pdfUrl = isPdf ? gatedUrl(item.objectKey, sessionKey) : "";
   const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key, sessionKey) })) : [];
   const many = previewUrls.length > 1;
   // Cursor packs: the 2nd image is the full-set collage — open on it so inspecting shows every cursor.
@@ -129,14 +133,16 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
       >
         <div
           className="specials-detail__stage"
-          style={hasImage ? undefined : { background: tileGradient(item.name) }}
+          style={hasImage || isPdf ? undefined : { background: tileGradient(item.name) }}
         >
-          {hasImage ? (
+          {isPdf ? (
+            <iframe className="specials-detail__pdf" src={pdfUrl} title={item.name} />
+          ) : hasImage ? (
             <>
               <AnimatePresence mode="wait">
                 <motion.img
                   key={index}
-                  className="specials-detail__img"
+                  className={`specials-detail__img${many ? "" : " specials-detail__img--fill"}`}
                   src={previewUrls[index]}
                   alt={item.name}
                   initial={{ opacity: 0, scale: 0.98 }}
@@ -160,7 +166,9 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
               )}
             </>
           ) : (
-            <span className="specials-detail__glyph">{sounds.length > 0 ? "♪" : item.name.charAt(0).toUpperCase()}</span>
+            <span className="specials-detail__glyph">
+              {sounds.length > 0 ? <MusicGlyph className="specials-detail__music" /> : item.name.charAt(0).toUpperCase()}
+            </span>
           )}
         </div>
 
@@ -175,10 +183,7 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
           {sounds.length > 0 && (
             <div className="specials-detail__sounds">
               {sounds.map((s) => (
-                <div key={s.url} className="specials-detail__sound">
-                  <span className="specials-detail__sound-name">{s.name}</span>
-                  <audio controls preload="none" src={s.url} />
-                </div>
+                <SoundRow key={s.url} name={s.name} url={s.url} />
               ))}
             </div>
           )}

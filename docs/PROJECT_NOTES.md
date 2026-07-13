@@ -160,6 +160,30 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### Gallery/preview/header UI refinement + macOS filter — 2026-07-13 (fourth pass)
+- **Header icons**: the "Downloaded" text button is now a download-arrow icon (count badges float
+  on the corner); "Open Downloads Folder" is a folder icon. Both in `SearchFilterBar` /
+  `DownloadHistoryPanel`.
+- **Sticky back arrow**: `.specials-page__header` is `position: sticky; top: 0` with a fade bg, so
+  the ← stays reachable while a category scrolls.
+- **Single-item preview fills the panel**: detail `.specials-detail__img--fill` (object-fit cover)
+  when there's one preview — PSD's Ps tile, Payday tile, a lone wallpaper/pfp fill instead of
+  letterboxing.
+- **Category art**: Audio & EQ now shows a real Sennheiser HD650 tile (`sennheiser-hd650.png`,
+  cropped from a Wikimedia product shot) via `resolvePreviews` folder match; Payday category shows
+  its composite as a full-width `.specials-page__hero` banner above the mods/assets cards.
+- **Windows Sounds modernized**: `MusicGlyph` (clean note) replaces the ♪ on sound tiles + detail;
+  `SoundRow` (circular play/pause + animated EQ) replaces the native `<audio controls>`.
+- **PDFs previewable**: detail renders an `<iframe>` for `ext==='pdf'` (Sennheiser manuals); PDFs
+  don't occupy an image preview slot (not an image ext, so resolvePreviews skips them).
+- **macOS Specials filter**: when `osFilter==='macos'`, only PSD's / Steam Profiles / Fonts /
+  Wallpapers & Profile Pics categories show (`MAC_FOLDERS` in SpecialsContent).
+- **DECLINED (piracy)**: app-icon branding + `Premiere.Pro.2024` rename for the `Programs/Adobe` +
+  `General` folders (password-protected Adobe/FL Studio/Sublime zips + a `PASSWORD.txt` — the
+  "Cracked Programs" content renamed), and making the `PASSWORD.txt` previewable (it's the crack
+  extraction password). See [[postwipe-installer-boundaries]]. Offered the catalog + official
+  installers as the legit path.
+
 ### GIF lag — real fix via static thumbnails — 2026-07-13 (third pass)
 - The FrozenGif canvas approach wasn't enough: `new Image()` EAGER-loads (lazy doesn't apply), so
   every full multi-MB GIF in a folder downloaded + decoded at once → app unusable. Real fix:
