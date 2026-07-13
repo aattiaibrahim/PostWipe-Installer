@@ -16,6 +16,13 @@ export function itemFolder(item: SpecialsItem): string {
   return parts[1] ?? "";
 }
 
+/** The item's own full file when it's itself an image — used by the detail sheet to show the
+ *  full-res / animated original, while the grid uses the small uploaded thumbnail (see
+ *  resolvePreviews). Null for non-image items (cursors, sounds, …). */
+export function ownImageUrl(item: SpecialsItem, sessionKey: string | null): string | null {
+  return IMAGE_EXTS.has(item.ext) ? gatedUrl(item.objectKey, sessionKey) : null;
+}
+
 /** Every image to show for an item, in order (a carousel for multi-angle packs):
  *  1. uploaded previews/<stem> images (cursors, steam profiles, …)
  *  2. the file itself when it's already an image (wallpapers, profile pics, banners)
