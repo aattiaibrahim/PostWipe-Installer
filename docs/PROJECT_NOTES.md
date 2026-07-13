@@ -160,6 +160,27 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### CI/CD hardening — 2026-07-13
+- Existing pipeline is `release.yml` (push to master → version-bump job → dual-platform
+  tauri-action build+sign → draft-until-both-succeed → publish; wired to the app updater via
+  `releases/latest/download/latest.json`). Added around it:
+- **`ci.yml`** — pre-merge gates on feature-branch pushes + PRs into master (NOT master pushes,
+  which the release already builds): frontend `npm run build` (tsc+vite) on ubuntu; rust
+  `cargo test --lib` on windows (matches release runner, no apt deps). `cargo fmt --check` and
+  `cargo clippy` are `continue-on-error` INFORMATIONAL — the codebase uses a wide manual style
+  that isn't rustfmt-default-clean, so blocking them would be red on day one / force a reformat.
+- **`retry-release.yml`** — `workflow_run` on Release completion==failure re-runs the failed jobs
+  once (`run_attempt < 2` guard), automating the manual `gh run rerun --failed` fix for the flaky
+  macOS `bundle_dmg.sh`. Only active from the default branch.
+- **Release notes** — `release.yml` version job now builds `steps.bump.outputs.notes` from
+  `git log <lastTag>..HEAD` (no merges, minus `[skip ci]`) and passes it as `releaseBody`.
+- **`dependabot.yml`** — weekly npm (/) + cargo (/src-tauri) + github-actions updates, minor/patch
+  grouped. Their PRs get gated by ci.yml.
+- **DECLINED to auto-apply branch protection (option 4)**: required status checks on master are
+  incompatible with Andrew's direct-push-to-master workflow AND the release bot's version-bump
+  push — it would block both. Left as a decision (adopt PRs, or keep direct-push with ci.yml as
+  the signal). See [[postwipe-installer-user-context]] — he pushes straight to master.
+
 ### Selection bar in header, click sounds, category previews — 2026-07-12 (eighth pass)
 - **Specials selection bar moved to the title bar** (was sticky inside the gallery). It now uses
   the exact `.selection-bar` title-bar placement as the catalog one (`SpecialsSelectionBar`
