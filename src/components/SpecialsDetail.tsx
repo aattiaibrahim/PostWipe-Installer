@@ -14,7 +14,7 @@ import {
 } from "../lib/tauriCommands";
 import { CursorVariantPicker } from "./CursorVariantPicker";
 import { fmtSize, tileGradient } from "./SpecialsCard";
-import { resolvePreviews, gatedUrl } from "../lib/specialsPreview";
+import { resolvePreviews, ownImageUrl, gatedUrl } from "../lib/specialsPreview";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
@@ -41,7 +41,10 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
   const canInstall = meta.install !== "none";
   const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
 
-  const previewUrls = resolvePreviews(item, sessionKey);
+  // Grid tiles use the small uploaded thumbnail (resolvePreviews → previewKeys); the detail
+  // shows the full-res / animated ORIGINAL for image items, thumbnails/carousel otherwise.
+  const own = ownImageUrl(item, sessionKey);
+  const previewUrls = own ? [own] : resolvePreviews(item, sessionKey);
   const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key, sessionKey) })) : [];
   const many = previewUrls.length > 1;
   // Cursor packs: the 2nd image is the full-set collage — open on it so inspecting shows every cursor.

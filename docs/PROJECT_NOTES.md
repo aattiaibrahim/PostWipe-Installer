@@ -160,6 +160,19 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done] Quick padlock-opening **unlock burst** (`SpecialsUnlockBurst.tsx`) plays once after a
   correct Specials password (`justUnlocked` transient flag in `specialsStore`).
 
+### GIF lag — real fix via static thumbnails — 2026-07-13 (third pass)
+- The FrozenGif canvas approach wasn't enough: `new Image()` EAGER-loads (lazy doesn't apply), so
+  every full multi-MB GIF in a folder downloaded + decoded at once → app unusable. Real fix:
+  generated 400px static first-frame **thumbnails for all 64 Wallpapers/Profile-Pics files** and
+  uploaded them to `previews/<stem>.jpg` (from the local copies already downloaded for the rename).
+  The preview system indexes them by stem, so cards now show a tiny lazy `<img>` thumbnail
+  instead of the full GIF.
+- `SpecialsDetail` uses new `ownImageUrl(item)` to show the full-res / animated ORIGINAL for image
+  items (grid = thumbnail, detail = original). Cursors/steam still use their uploaded previews.
+- FrozenGif kept as a defensive fallback only for gifs with no thumbnail (verified: thumb'd gif →
+  lazy img thumbnail; thumbless gif → frozen canvas). Requires a vault reload to pick up the new
+  previews. Thumbnails are live in R2 (no release needed); the detail change ships in the build.
+
 ### Perf + nesting + ScreenToGif — 2026-07-13 (second pass)
 - **Cursor install no longer freezes the UI**: `install_specials_item`, `apply_cursor_variant`,
   `list_cursor_variants` are now `async` wrappers over `_impl` fns run via
