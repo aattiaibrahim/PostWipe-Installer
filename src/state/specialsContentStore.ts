@@ -16,11 +16,12 @@ export interface SpecialsItem {
   audioPreviews: { name: string; key: string }[];
 }
 
-/** A nested folder inside a category (e.g. Audio & EQ ▸ "Sennheiser 650") rendered as one
- *  expandable entry containing all its files. */
+/** A nested folder inside a category, itself possibly containing more folders — e.g.
+ *  Wallpapers & Profile Pics ▸ Profile Pics ▸ Evangelion. Recursive so arbitrary depth works. */
 export interface SpecialsSubfolder {
   name: string;
   items: SpecialsItem[];
+  subfolders: SpecialsSubfolder[];
 }
 
 export interface SpecialsGroup {
@@ -28,6 +29,16 @@ export interface SpecialsGroup {
   meta: SpecialsCategoryMeta;
   items: SpecialsItem[];
   subfolders: SpecialsSubfolder[];
+}
+
+/** Every item at or below a subfolder (used for cover collages + batch select). */
+export function flattenSubfolder(sf: SpecialsSubfolder): SpecialsItem[] {
+  return [...sf.items, ...sf.subfolders.flatMap(flattenSubfolder)];
+}
+
+/** Every item anywhere in a category. */
+export function flattenGroup(g: SpecialsGroup): SpecialsItem[] {
+  return [...g.items, ...g.subfolders.flatMap(flattenSubfolder)];
 }
 
 interface SpecialsContentState {
@@ -81,14 +92,21 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
         }
       }
 
-      const byFolder = new Map<string, { items: SpecialsItem[]; subfolders: Map<string, SpecialsItem[]> }>();
+      // Build a nested tree per category: walk every path segment between Tweaks/<folder>/
+      // and the filename, creating folder nodes as needed. Arbitrary depth (e.g. Profile
+      // Pics ▸ Evangelion) is preserved instead of being flattened.
+      interface MutNode {
+        items: SpecialsItem[];
+        subs: Map<string, MutNode>;
+      }
+      const makeNode = (): MutNode => ({ items: [], subs: new Map() });
+      const byFolder = new Map<string, MutNode>();
       for (const obj of data.objects) {
         if (obj.key.endsWith("/")) continue; // folder marker
         const parts = obj.key.split("/");
         if (parts.length < 3 || parts[0] !== "Tweaks") continue; // content lives under Tweaks/<folder>/
         const folder = parts[1];
-        // Deeper nesting (Tweaks/<folder>/<subfolder>/file) becomes an expandable folder entry.
-        const subfolder = parts.length >= 4 ? parts[2] : null;
+        const segs = parts.slice(2, -1); // nested folder names between the category and the file
         const filename = parts[parts.length - 1];
         if (!filename) continue;
         const ext = filename.includes(".") ? filename.split(".").pop()!.toLowerCase() : "";
@@ -102,25 +120,35 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
           previewKeys: (previewsByStem.get(stem) ?? []).sort((a, b) => a.order - b.order).map((p) => p.key),
           audioPreviews: (audioByStem.get(stem) ?? []).sort((a, b) => a.name.localeCompare(b.name)),
         };
-        const bucket = byFolder.get(folder) ?? { items: [], subfolders: new Map<string, SpecialsItem[]>() };
-        if (subfolder) {
-          const arr = bucket.subfolders.get(subfolder) ?? [];
-          arr.push(item);
-          bucket.subfolders.set(subfolder, arr);
-        } else {
-          bucket.items.push(item);
+        let node: MutNode | undefined = byFolder.get(folder);
+        if (!node) {
+          node = makeNode();
+          byFolder.set(folder, node);
         }
-        byFolder.set(folder, bucket);
+        let cursor: MutNode = node;
+        for (const seg of segs) {
+          let child: MutNode | undefined = cursor.subs.get(seg);
+          if (!child) {
+            child = makeNode();
+            cursor.subs.set(seg, child);
+          }
+          cursor = child;
+        }
+        cursor.items.push(item);
       }
 
+      const byName = (a: SpecialsItem, b: SpecialsItem) => a.name.localeCompare(b.name);
+      const toSubfolders = (subs: Map<string, MutNode>): SpecialsSubfolder[] =>
+        [...subs.entries()]
+          .map(([name, n]) => ({ name, items: n.items.sort(byName), subfolders: toSubfolders(n.subs) }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
       const groups: SpecialsGroup[] = [...byFolder.entries()]
-        .map(([folder, bucket]) => ({
+        .map(([folder, node]) => ({
           folder,
           meta: categoryMeta(folder),
-          items: bucket.items.sort((a, b) => a.name.localeCompare(b.name)),
-          subfolders: [...bucket.subfolders.entries()]
-            .map(([name, items]) => ({ name, items: items.sort((a, b) => a.name.localeCompare(b.name)) }))
-            .sort((a, b) => a.name.localeCompare(b.name)),
+          items: node.items.sort(byName),
+          subfolders: toSubfolders(node.subs),
         }))
         .sort((a, b) => a.meta.order - b.meta.order);
 

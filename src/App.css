@@ -1473,7 +1473,8 @@ h3 {
   overflow: hidden;
 }
 
-.specials-card__media img {
+.specials-card__media img,
+.specials-card__frozen {
   width: 100%;
   height: 100%;
   object-fit: cover;

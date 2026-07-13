@@ -1533,6 +1533,27 @@
               "filename": "FocusriteControl.dmg"
             }
           }
+        },
+        {
+          "id": "screentogif",
+          "name": "ScreenToGif",
+          "icon": "screentogif.png",
+          "bio": "Record your screen, webcam, or sketchboard straight to a GIF.",
+          "description": "ScreenToGif records a screen region, webcam, or sketchboard and lets you edit frame-by-frame before exporting to GIF, APNG, video, or more. Tiny, free, and open-source — the go-to for quick clips and reaction GIFs.",
+          "domain": "screentogif.com",
+          "website": "https://www.screentogif.com",
+          "kind": "download",
+          "notes": "GitHub NickeManarin/ScreenToGif, verified live 2026-07-13: the plain 'Setup.x64.msi' (shortest match, so the glob skips the 'Light' no-runtime variant) + 'Setup.Arm64.msi'. Windows-only.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "NickeManarin/ScreenToGif",
+                "asset_pattern": "ScreenToGif.*.Setup.x64.msi"
+              },
+              "filename": "ScreenToGifSetup.msi"
+            }
+          }
         }
       ]
     },
