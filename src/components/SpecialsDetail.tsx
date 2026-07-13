@@ -13,7 +13,8 @@ import {
   type CursorVariant,
 } from "../lib/tauriCommands";
 import { CursorVariantPicker } from "./CursorVariantPicker";
-import { fmtSize, tileGradient, gatedUrl } from "./SpecialsCard";
+import { fmtSize, tileGradient } from "./SpecialsCard";
+import { resolvePreviews, gatedUrl } from "../lib/specialsPreview";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
@@ -40,7 +41,7 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
   const canInstall = meta.install !== "none";
   const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
 
-  const previewUrls = sessionKey ? item.previewKeys.map((k) => gatedUrl(k, sessionKey)) : [];
+  const previewUrls = resolvePreviews(item, sessionKey);
   const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key, sessionKey) })) : [];
   const many = previewUrls.length > 1;
   // Cursor packs: the 2nd image is the full-set collage — open on it so inspecting shows every cursor.
