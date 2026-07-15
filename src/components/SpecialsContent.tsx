@@ -43,6 +43,7 @@ function CoverCard({
   seed,
   folder,
   sound,
+  imageOnly,
   onOpen,
 }: {
   title: string;
@@ -51,11 +52,12 @@ function CoverCard({
   seed: string;
   folder?: boolean;
   sound?: boolean;
+  imageOnly?: boolean;
   onOpen: () => void;
 }) {
   const unique = [...new Set(images)];
   return (
-    <button className="specials-cover" onClick={onOpen}>
+    <button className={`specials-cover${imageOnly ? " specials-cover--image-only" : ""}`} onClick={onOpen} aria-label={title}>
       {unique.length === 1 ? (
         <img className="specials-cover__fill" src={unique[0]} alt="" loading="lazy" />
       ) : unique.length === 0 && sound ? (
@@ -73,7 +75,7 @@ function CoverCard({
           )}
         </div>
       )}
-      {folder && (
+      {folder && !imageOnly && (
         <svg className="specials-cover__folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
         </svg>
@@ -122,7 +124,9 @@ function ItemGrid({
     >
       <div className="specials-page__header">
         <button className="specials-page__back" onClick={onBack} aria-label="Back">
-          ←
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m14.5 5-7 7 7 7" />
+          </svg>
         </button>
         <h2 className="specials-page__title">
           {title}
@@ -145,6 +149,7 @@ function ItemGrid({
               seed={sf.name}
               folder
               sound={meta.install === "sound"}
+              imageOnly={title === "Programs" && /^(adobe|general)$/i.test(sf.name)}
               onOpen={() => onOpenSub(sf.name)}
             />
           );
