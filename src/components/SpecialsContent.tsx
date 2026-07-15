@@ -149,7 +149,7 @@ function ItemGrid({
               seed={sf.name}
               folder
               sound={meta.install === "sound"}
-              imageOnly={title === "Programs" && /^(adobe|general)$/i.test(sf.name)}
+              imageOnly={title === "Programs" && /^(adobe|general)(?: programs)?$/i.test(sf.name)}
               onOpen={() => onOpenSub(sf.name)}
             />
           );
