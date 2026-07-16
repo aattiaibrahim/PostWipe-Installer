@@ -15,6 +15,7 @@ import {
 import { CursorVariantPicker } from "./CursorVariantPicker";
 import { SoundRow } from "./SoundRow";
 import { MusicGlyph } from "./MusicGlyph";
+import { SpecialsFilePreview, isPreviewableFile } from "./SpecialsFilePreview";
 import { fmtSize, tileGradient } from "./SpecialsCard";
 import { resolvePreviews, ownImageUrl, gatedUrl } from "../lib/specialsPreview";
 
@@ -47,8 +48,9 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
   // shows the full-res / animated ORIGINAL for image items, thumbnails/carousel otherwise.
   const own = ownImageUrl(item, sessionKey);
   const previewUrls = own ? [own] : resolvePreviews(item, sessionKey);
-  const isPdf = item.ext === "pdf";
-  const pdfUrl = isPdf ? gatedUrl(item.objectKey, sessionKey) : "";
+  // PDFs / text files (readmes, EQ presets, .bat scripts) render inline instead of downloading.
+  const previewableFile = isPreviewableFile(item.ext);
+  const fileUrl = previewableFile ? gatedUrl(item.objectKey, sessionKey) : "";
   const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key, sessionKey) })) : [];
   const many = previewUrls.length > 1;
   // Cursor packs: the 2nd image is the full-set collage — open on it so inspecting shows every cursor.
@@ -133,10 +135,10 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
       >
         <div
           className="specials-detail__stage"
-          style={hasImage || isPdf ? undefined : { background: tileGradient(item.name) }}
+          style={hasImage || previewableFile ? undefined : { background: tileGradient(item.name) }}
         >
-          {isPdf ? (
-            <iframe className="specials-detail__pdf" src={pdfUrl} title={item.name} />
+          {previewableFile ? (
+            <SpecialsFilePreview url={fileUrl} ext={item.ext} name={item.name} />
           ) : hasImage ? (
             <>
               <AnimatePresence mode="wait">

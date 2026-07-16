@@ -41,7 +41,26 @@ pub struct AppEntry {
     pub kind: AppKind,
     #[serde(default)]
     pub notes: Option<String>,
+    /// Optional how-to shown in the expanded row (e.g. OBS replay-buffer setup).
+    #[serde(default)]
+    pub guide: Option<Guide>,
     pub platforms: HashMap<Os, PlatformEntry>,
+}
+
+/// A short walkthrough rendered under an app's description, with an optional copyable
+/// snippet (PowerShell/batch) the user can paste into a terminal.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Guide {
+    pub title: String,
+    pub steps: Vec<String>,
+    #[serde(default)]
+    pub snippet: Option<GuideSnippet>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GuideSnippet {
+    pub label: String,
+    pub code: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

@@ -70,6 +70,141 @@ html.is-resizing .ambient-bg__blob {
   --blob-3: #2fb8d6;
 }
 
+/* ---- Named colour themes (picked in Settings, persisted by themeStore) ----
+   Each one redefines the whole token set, so every surface follows automatically. */
+
+:root[data-theme="nord"] {
+  --bg: #2e3440;
+  --surface: rgba(59, 66, 82, 0.85);
+  --surface-solid: #3b4252;
+  --surface-hover: rgba(76, 86, 106, 0.95);
+  --border: rgba(136, 192, 208, 0.18);
+  --text: #eceff4;
+  --text-muted: #b8c1d1;
+  --accent: #88c0d0;
+  --accent-hover: #8fbcbb;
+  --accent-text: #2e3440;
+  --stale: #ebcb8b;
+  --stale-bg: #4a3f2a;
+  --verified: #a3be8c;
+  --verified-bg: #2f3d2c;
+  --danger: #bf616a;
+  --success: #a3be8c;
+  --blob-1: #5e81ac;
+  --blob-2: #88c0d0;
+  --blob-3: #8fbcbb;
+}
+
+:root[data-theme="dracula"] {
+  --bg: #282a36;
+  --surface: rgba(51, 54, 71, 0.85);
+  --surface-solid: #343746;
+  --surface-hover: rgba(68, 71, 90, 0.95);
+  --border: rgba(189, 147, 249, 0.2);
+  --text: #f8f8f2;
+  --text-muted: #b9bcd0;
+  --accent: #bd93f9;
+  --accent-hover: #caa9fa;
+  --accent-text: #282a36;
+  --stale: #ffb86c;
+  --stale-bg: #4a3524;
+  --verified: #50fa7b;
+  --verified-bg: #1e3d28;
+  --danger: #ff5555;
+  --success: #50fa7b;
+  --blob-1: #bd93f9;
+  --blob-2: #ff79c6;
+  --blob-3: #8be9fd;
+}
+
+:root[data-theme="catppuccin"] {
+  --bg: #1e1e2e;
+  --surface: rgba(49, 50, 68, 0.85);
+  --surface-solid: #313244;
+  --surface-hover: rgba(69, 71, 90, 0.95);
+  --border: rgba(203, 166, 247, 0.2);
+  --text: #cdd6f4;
+  --text-muted: #a6adc8;
+  --accent: #cba6f7;
+  --accent-hover: #dcc0fb;
+  --accent-text: #1e1e2e;
+  --stale: #fab387;
+  --stale-bg: #46362b;
+  --verified: #a6e3a1;
+  --verified-bg: #2b3d2a;
+  --danger: #f38ba8;
+  --success: #a6e3a1;
+  --blob-1: #cba6f7;
+  --blob-2: #89b4fa;
+  --blob-3: #94e2d5;
+}
+
+:root[data-theme="gruvbox"] {
+  --bg: #282828;
+  --surface: rgba(60, 56, 54, 0.85);
+  --surface-solid: #3c3836;
+  --surface-hover: rgba(80, 73, 69, 0.95);
+  --border: rgba(250, 189, 47, 0.18);
+  --text: #ebdbb2;
+  --text-muted: #bdae93;
+  --accent: #fabd2f;
+  --accent-hover: #fac03f;
+  --accent-text: #282828;
+  --stale: #fe8019;
+  --stale-bg: #4a2f16;
+  --verified: #b8bb26;
+  --verified-bg: #333a14;
+  --danger: #fb4934;
+  --success: #b8bb26;
+  --blob-1: #d79921;
+  --blob-2: #cc241d;
+  --blob-3: #689d6a;
+}
+
+:root[data-theme="rose-pine"] {
+  --bg: #191724;
+  --surface: rgba(38, 35, 58, 0.85);
+  --surface-solid: #26233a;
+  --surface-hover: rgba(64, 61, 82, 0.95);
+  --border: rgba(235, 188, 186, 0.18);
+  --text: #e0def4;
+  --text-muted: #b6b1d4;
+  --accent: #ebbcba;
+  --accent-hover: #f2cdcb;
+  --accent-text: #191724;
+  --stale: #f6c177;
+  --stale-bg: #45351f;
+  --verified: #9ccfd8;
+  --verified-bg: #22383c;
+  --danger: #eb6f92;
+  --success: #9ccfd8;
+  --blob-1: #c4a7e7;
+  --blob-2: #eb6f92;
+  --blob-3: #9ccfd8;
+}
+
+:root[data-theme="solarized"] {
+  --bg: #fdf6e3;
+  --surface: rgba(255, 252, 242, 0.85);
+  --surface-solid: #fffcf2;
+  --surface-hover: rgba(238, 232, 213, 0.95);
+  --border: rgba(38, 139, 210, 0.18);
+  --text: #073642;
+  --text-muted: #4a6570;
+  --accent: #268bd2;
+  --accent-hover: #1f76b4;
+  --accent-text: #ffffff;
+  --stale: #b58900;
+  --stale-bg: #f5ecd0;
+  --verified: #859900;
+  --verified-bg: #ecf0d4;
+  --danger: #dc322f;
+  --success: #859900;
+  --blob-1: #268bd2;
+  --blob-2: #2aa198;
+  --blob-3: #b58900;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -483,13 +618,63 @@ h3 {
   gap: 0.45rem;
 }
 
-.settings-panel__row--theme .os-picker {
+/* Theme swatch grid — two columns fit the 236px settings dock. */
+.theme-picker {
   align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
 }
 
-.settings-panel__row--theme .os-picker__tile {
-  flex: 1;
-  justify-content: center;
+.theme-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+}
+
+.theme-swatch:hover {
+  color: var(--text);
+}
+
+.theme-swatch--active {
+  color: var(--text);
+}
+
+.theme-swatch__chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 30px;
+  padding: 0 7px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.theme-swatch__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.theme-swatch__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.theme-swatch__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding-left: 1px;
 }
 
 .settings-panel__label {
@@ -1812,6 +1997,32 @@ h3 {
   background: #fff;
 }
 
+/* Inline text preview (readmes, EQ presets, .bat scripts). Gets its own surface/text colors
+   so it stays readable in light mode — the stage behind it is always dark. */
+.specials-detail__text {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0.9rem;
+  overflow: auto;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--text);
+  background-color: var(--surface-solid);
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+}
+
+.specials-detail__file-msg {
+  margin: 0;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 .specials-detail__glyph {
   font-size: 4rem;
   color: rgba(255, 255, 255, 0.9);
@@ -2289,6 +2500,86 @@ h3 {
   }
 }
 
+/* In-row how-to (OBS replay buffer) with a copyable snippet.
+   align-self/min-width keep the long <pre> line from stretching the flex column and
+   clipping the step text — the code scrolls inside its own box instead. */
+.app-guide {
+  align-self: stretch;
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background-color: color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.app-guide__title {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.app-guide__steps {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.app-guide__snippet {
+  margin-top: 0.6rem;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.app-guide__snippet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background-color: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.app-guide__copy {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font-size: 0.68rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.app-guide__copy:hover {
+  background-color: var(--surface-hover);
+}
+
+.app-guide__code {
+  margin: 0;
+  padding: 0.6rem;
+  overflow-x: auto;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--surface-solid);
+  white-space: pre;
+}
+
 /* Sub-heading inside a category (Essential Bookmarks groups its links by topic). */
 .category-panel__group {
   margin: 0.9rem 0 0.1rem;
@@ -2681,6 +2972,8 @@ h3 {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
+  /* Without this, a wide child (the guide's <pre>) blows the column out and clips it. */
+  min-width: 0;
 }
 
 .app-row__details-notes {

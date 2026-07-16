@@ -5,61 +5,40 @@ import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getVersion } from "@tauri-apps/api/app";
 import { isTauri, startDownload } from "../lib/tauriCommands";
-import { useThemeStore, type Theme } from "../state/themeStore";
+import { useThemeStore, THEMES } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
 
-const SUN_RAYS =
-  "M12 4.5V2.5M12 21.5V19.5M6.34 6.34 4.93 4.93M19.07 19.07 17.66 17.66M4.5 12H2.5M21.5 12H19.5M6.34 17.66 4.93 19.07M19.07 4.93 17.66 6.34";
-const SUN_CENTER = "M12 16.5A4.5 4.5 0 1 0 12 7.5A4.5 4.5 0 0 0 12 16.5Z";
-const MOON_PATH = "M20 13.2A8.2 8.2 0 0 1 10.8 4A6.8 6.8 0 1 0 20 13.2Z";
-
-const THEME_OPTIONS: { value: Theme; label: string }[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
-
-function ThemeToggle() {
+/** Swatch grid of every named theme. Each swatch previews the theme's background + accent;
+ *  picking one applies it instantly and themeStore persists it across launches. */
+function ThemePicker() {
   const theme = useThemeStore((s) => s.theme);
   const setTheme = useThemeStore((s) => s.setTheme);
 
   return (
-    <div className="os-picker">
-      {THEME_OPTIONS.map((opt) => {
-        const active = theme === opt.value;
+    <div className="theme-picker">
+      {THEMES.map((t) => {
+        const active = theme === t.id;
         return (
           <button
-            key={opt.value}
-            className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
-            onClick={() => setTheme(opt.value)}
+            key={t.id}
+            className={`theme-swatch${active ? " theme-swatch--active" : ""}`}
+            onClick={() => setTheme(t.id)}
+            title={t.label}
+            aria-pressed={active}
           >
-            {active && (
-              <motion.div
-                className="os-picker__indicator"
-                layoutId="theme-toggle-indicator"
-                transition={{ type: "spring", stiffness: 700, damping: 46, mass: 0.7 }}
-              />
-            )}
-            <svg
-              className="os-picker__icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {opt.value === "light" ? (
-                <>
-                  <path d={SUN_CENTER} fill="currentColor" stroke="none" />
-                  <path d={SUN_RAYS} />
-                </>
-              ) : (
-                <path d={MOON_PATH} fill="currentColor" stroke="none" />
+            <span className="theme-swatch__chip" style={{ backgroundColor: t.swatch[0] }}>
+              <span className="theme-swatch__dot" style={{ backgroundColor: t.swatch[1] }} />
+              {active && (
+                <motion.span
+                  className="theme-swatch__ring"
+                  layoutId="theme-swatch-ring"
+                  transition={{ type: "spring", stiffness: 600, damping: 40 }}
+                />
               )}
-            </svg>
-            <span>{opt.label}</span>
+            </span>
+            <span className="theme-swatch__label">{t.label}</span>
           </button>
         );
       })}
@@ -140,7 +119,7 @@ export function SettingsPanel() {
     <div className="settings-panel">
       <div className="settings-panel__row settings-panel__row--theme">
         <span className="settings-panel__label">Theme</span>
-        <ThemeToggle />
+        <ThemePicker />
       </div>
       <div className="settings-panel__row">
         <label className="settings-panel__toggle">
