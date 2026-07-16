@@ -20,6 +20,18 @@ export function categoryHeroImage(folder: string): string | null {
   return folder === PAYDAY_FOLDER ? paydayTile : null;
 }
 
+/** Art for a FOLDER cover card (category or subfolder), keyed by its name. This is where
+ *  the Sennheiser headphones belong — the folder represents the headphone, while the files
+ *  inside it (PDFs, presets, apps) keep their own per-file icons. */
+const FOLDER_COVERS: Record<string, string> = {
+  [AUDIO_EQ_FOLDER]: sennheiserTile,
+  "Sennheiser 650": sennheiserTile,
+};
+
+export function folderCoverImage(name: string): string | null {
+  return FOLDER_COVERS[name] ?? null;
+}
+
 /** The `Tweaks/<folder>/...` category folder an item lives in. */
 export function itemFolder(item: SpecialsItem): string {
   const parts = item.objectKey.split("/");
@@ -44,7 +56,8 @@ export function resolvePreviews(item: SpecialsItem, sessionKey: string | null): 
   if (item.ext === "psd") return [photoshopTile];
   const folder = itemFolder(item);
   if (folder === PAYDAY_FOLDER) return [paydayTile];
-  if (folder === AUDIO_EQ_FOLDER) return [sennheiserTile];
   if (folder === WINDOWS_THEMES_FOLDER) return [windowsThemesTile];
+  // NOTE: Audio & EQ deliberately has NO item-level art — the headphones belong on the
+  // folder cover (see folderCoverImage), not stamped on every PDF/preset/app inside it.
   return [];
 }
