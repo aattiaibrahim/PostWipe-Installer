@@ -801,6 +801,89 @@
               "filename": "GitSetup.exe"
             }
           }
+        },
+        {
+          "id": "docker-desktop",
+          "name": "Docker Desktop",
+          "icon": "docker.png",
+          "bio": "Run containers locally — the standard dev environment tool.",
+          "description": "Docker Desktop runs containers on your machine with a GUI for images, volumes, and logs. The usual way to spin up databases, services, or a whole stack locally without installing any of it natively.",
+          "domain": "docker.com",
+          "website": "https://www.docker.com/products/docker-desktop/",
+          "kind": "download",
+          "notes": "desktop.docker.com static installer URLs, verified live 2026-07-13 (win amd64 exe + mac arm64 dmg both 206). Needs WSL2 on Windows.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe"
+              },
+              "filename": "DockerDesktopInstaller.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://desktop.docker.com/mac/main/arm64/Docker.dmg"
+              },
+              "filename": "Docker.dmg"
+            }
+          }
+        },
+        {
+          "id": "claude-desktop",
+          "name": "Claude",
+          "icon": "claude.png",
+          "bio": "Anthropic's Claude desktop app.",
+          "description": "The Claude desktop app — chat, projects, and MCP connectors in a native window instead of a browser tab. Signs in with your existing Claude account.",
+          "domain": "claude.ai",
+          "website": "https://claude.ai/download",
+          "kind": "download",
+          "notes": "Official storage.googleapis.com osprey-downloads bucket (what claude.ai/download serves), verified live 2026-07-13: Claude-Setup-x64.exe + Claude.dmg both 206.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe"
+              },
+              "filename": "Claude-Setup-x64.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest/Claude.dmg"
+              },
+              "filename": "Claude.dmg"
+            }
+          }
+        },
+        {
+          "id": "codex",
+          "name": "Codex",
+          "icon": "codex.png",
+          "bio": "OpenAI's coding agent, run from your terminal.",
+          "description": "Codex is OpenAI's coding agent — it reads your repo, edits files, and runs commands from the terminal. This grabs the standalone binary; you can also install it with npm i -g @openai/codex.",
+          "domain": "openai.com",
+          "website": "https://github.com/openai/codex",
+          "kind": "download",
+          "notes": "GitHub openai/codex, verified live 2026-07-13: codex-x86_64-pc-windows-msvc.exe + codex-x86_64-apple-darwin.dmg. It's a standalone binary/CLI, not a GUI installer.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "openai/codex",
+                "asset_pattern": "codex-x86_64-pc-windows-msvc.exe"
+              },
+              "filename": "codex.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "openai/codex",
+                "asset_pattern": "codex-x86_64-apple-darwin.dmg"
+              },
+              "filename": "codex.dmg"
+            }
+          }
         }
       ]
     },
@@ -1293,6 +1376,27 @@
               "filename": "Lidarr-osx.zip"
             }
           }
+        },
+        {
+          "id": "flaresolverr",
+          "name": "FlareSolverr",
+          "icon": "flaresolverr.png",
+          "bio": "Proxy that solves Cloudflare challenges for your indexers.",
+          "description": "FlareSolverr is a proxy server that gets past Cloudflare's anti-bot page so Prowlarr/Jackett can actually reach indexers that sit behind it. Run it alongside the *arr stack and point your indexers at it — the missing piece when searches keep coming back empty.",
+          "domain": "github.com",
+          "website": "https://github.com/FlareSolverr/FlareSolverr",
+          "kind": "download",
+          "notes": "GitHub FlareSolverr/FlareSolverr, verified live 2026-07-13: portable flaresolverr_windows_x64.zip (no installer). Linux tar.gz also published; no macOS build.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "FlareSolverr/FlareSolverr",
+                "asset_pattern": "flaresolverr_windows_x64.zip"
+              },
+              "filename": "flaresolverr_windows_x64.zip"
+            }
+          }
         }
       ]
     },
@@ -1552,6 +1656,35 @@
                 "asset_pattern": "ScreenToGif.*.Setup.x64.msi"
               },
               "filename": "ScreenToGifSetup.msi"
+            }
+          }
+        },
+        {
+          "id": "obs-studio",
+          "name": "OBS Studio",
+          "icon": "obs.png",
+          "bio": "Free screen recording and streaming — with replay-buffer clipping.",
+          "description": "OBS Studio records and streams your screen, and its replay buffer keeps the last N seconds in memory so you can save a clip after something happens — the free Shadowplay. Expand this row for a ready-made setup: a task that auto-starts the buffer at login, plus the tray and encoder settings worth using.",
+          "domain": "obsproject.com",
+          "website": "https://obsproject.com/download",
+          "kind": "download",
+          "notes": "GitHub obsproject/obs-studio, verified live 2026-07-13: OBS-Studio-<ver>-Windows-x64-Installer.exe + macOS-Apple.dmg (Intel dmg also published).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "obsproject/obs-studio",
+                "asset_pattern": "OBS-Studio-*-Windows-x64-Installer.exe"
+              },
+              "filename": "OBS-Studio-Installer.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "obsproject/obs-studio",
+                "asset_pattern": "OBS-Studio-*-macOS-Apple.dmg"
+              },
+              "filename": "OBS-Studio.dmg"
             }
           }
         }

@@ -11,6 +11,11 @@ import deceiveIcon from "../assets/app-icons/deceive.ico";
 import losslesscutIcon from "../assets/app-icons/losslesscut.png";
 import translucenttbIcon from "../assets/app-icons/translucenttb.png";
 import screentogifIcon from "../assets/app-icons/screentogif.png";
+import obsIcon from "../assets/app-icons/obs.png";
+import dockerIcon from "../assets/app-icons/docker.png";
+import claudeIcon from "../assets/app-icons/claude.png";
+import codexIcon from "../assets/app-icons/codex.png";
+import flaresolverrIcon from "../assets/app-icons/flaresolverr.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
@@ -31,6 +36,11 @@ const BUNDLED_ICONS: Record<string, string> = {
   losslesscut: losslesscutIcon,
   translucenttb: translucenttbIcon,
   screentogif: screentogifIcon,
+  "obs-studio": obsIcon,
+  "docker-desktop": dockerIcon,
+  "claude-desktop": claudeIcon,
+  codex: codexIcon,
+  flaresolverr: flaresolverrIcon,
   // Script entries have no domain — they'd fall through to a monogram letter.
   "restart-audio-service": batIcon,
   "kill-valorant-process": batIcon,
