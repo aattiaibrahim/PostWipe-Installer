@@ -17,7 +17,7 @@ import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 // sounds, themes, the programs folders). Everything shows on Windows.
 const MAC_FOLDERS = new Set(["PSD's", "Steam Profiles", "Fonts", "Wallpapers & Profile Pics"]);
 import { SpecialsCard, tileGradient } from "./SpecialsCard";
-import { resolvePreviews, categoryHeroImage } from "../lib/specialsPreview";
+import { resolvePreviews, categoryHeroImage, folderCoverImage } from "../lib/specialsPreview";
 import { SpecialsDetail } from "./SpecialsDetail";
 import { MusicGlyph } from "./MusicGlyph";
 
@@ -44,6 +44,7 @@ function CoverCard({
   folder,
   sound,
   imageOnly,
+  coverImage,
   onOpen,
 }: {
   title: string;
@@ -53,9 +54,12 @@ function CoverCard({
   folder?: boolean;
   sound?: boolean;
   imageOnly?: boolean;
+  coverImage?: string | null;
   onOpen: () => void;
 }) {
-  const unique = [...new Set(images)];
+  // An explicit folder cover (Sennheiser 650 → headphones) always wins over the collage —
+  // the art belongs to the folder, not to each file inside it.
+  const unique = coverImage ? [coverImage] : [...new Set(images)];
   return (
     <button className={`specials-cover${imageOnly ? " specials-cover--image-only" : ""}`} onClick={onOpen} aria-label={title}>
       {unique.length === 1 ? (
@@ -148,6 +152,7 @@ function ItemGrid({
               images={collageImages(all, sessionKey)}
               seed={sf.name}
               folder
+              coverImage={folderCoverImage(sf.name)}
               sound={meta.install === "sound"}
               imageOnly={title === "Programs" && /^(adobe|general)(?: programs)?$/i.test(sf.name)}
               onOpen={() => onOpenSub(sf.name)}
@@ -220,6 +225,7 @@ export function SpecialsContent() {
                     count={all.length}
                     images={collageImages(all, sessionKey)}
                     seed={g.folder}
+                    coverImage={folderCoverImage(g.folder)}
                     sound={g.meta.install === "sound"}
                     onOpen={() => {
                       setOpenFolder(g.folder);
