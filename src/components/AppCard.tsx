@@ -63,17 +63,19 @@ export function AppCard({ app, os }: AppCardProps) {
       .catch(() => {});
   }, [scriptId]);
 
-  if (!platform) return null;
+  const isLink = app.kind === "link";
+  // Bookmarks carry no platforms — they're valid on every OS.
+  if (!isLink && !platform) return null;
 
   const isScript = app.kind === "script";
   const isPlaceholder = app.kind === "placeholder";
   const hasDetails = !!app.domain || !!app.description;
   // Some vendors (Tidal, Qobuz, MSI Afterburner) block direct/automated downloads, so their
   // catalog entry has no resolver — the action opens the official site instead of downloading.
-  const siteOnly = !isScript && !isPlaceholder && !platform.resolver;
+  const siteOnly = !isScript && !isPlaceholder && !isLink && !platform?.resolver;
   const siteUrl = app.website ?? (app.domain ? `https://${app.domain}` : null);
-  // Only real auto-downloadable apps can be batch-selected (not scripts, placeholders, site-only).
-  const selectable = !isScript && !isPlaceholder && !!platform.resolver;
+  // Only real auto-downloadable apps can be batch-selected (not scripts, placeholders, links, site-only).
+  const selectable = !isScript && !isPlaceholder && !isLink && !!platform?.resolver;
 
   const relevantJob = Object.values(jobs)
     .reverse()
@@ -83,8 +85,8 @@ export function AppCard({ app, os }: AppCardProps) {
   const isCompleted = isScript ? !!generatedPath && !error : jobStatus === "completed";
 
   const failureMessage = error ?? (jobStatus === "failed" ? (relevantJob?.error ?? null) : null);
-  const showFallback = !isScript && !isPlaceholder && !!failureMessage;
-  const fallback = fallbackUrl(platform, app.domain);
+  const showFallback = !isScript && !isPlaceholder && !isLink && !!failureMessage;
+  const fallback = platform ? fallbackUrl(platform, app.domain) : null;
 
   async function handleClick() {
     if (isPlaceholder) return;
@@ -182,7 +184,7 @@ export function AppCard({ app, os }: AppCardProps) {
         <div className="app-row__body">
           <div className="app-row__name-line">
             <span className="app-row__name">{app.name}</span>
-            {!isScript && platform.stale && (
+            {!isScript && platform?.stale && (
               <span className="badge badge--stale" title="Needs verification">
                 needs check
               </span>
@@ -226,7 +228,15 @@ export function AppCard({ app, os }: AppCardProps) {
                 {pinned ? "✓ In Start Menu" : "Add to Start Menu"}
               </button>
             )}
-            {isPlaceholder ? (
+            {isLink ? (
+              <button
+                className="app-row__action"
+                onClick={() => siteUrl && openUrl(siteUrl)}
+                title="Open in your browser"
+              >
+                Open ↗
+              </button>
+            ) : isPlaceholder ? (
               <button className="app-row__action" disabled title="Waiting on files">
                 Coming soon
               </button>

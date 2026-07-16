@@ -18,6 +18,8 @@ const PATHS: Record<string, string[]> = {
   music: ["M9 18V5l10-2v13", "M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z", "M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"],
   torrenting: ["M12 3v13", "M7 11l5 5 5-5", "M5 20h14"],
   utilities: ["M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2 2.3-2.3Z"],
+  // Bookmarks: a ribbon/tag glyph.
+  bookmarks: ["M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1Z"],
   "system-tweaks": [
     "M4 6h10M17 6h3",
     "M4 12h3M10 12h10",

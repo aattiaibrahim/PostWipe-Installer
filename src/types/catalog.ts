@@ -1,5 +1,5 @@
 export type Os = "windows" | "macos";
-export type AppKind = "download" | "script" | "placeholder";
+export type AppKind = "download" | "script" | "link" | "placeholder";
 export type Vendor = "intel" | "amd";
 
 export type ResolverSpec =
@@ -47,6 +47,8 @@ export interface AppEntry {
   website?: string;
   /** CPU-vendor compatibility for the Overclocking filter; absent = works everywhere. */
   vendor?: Vendor;
+  /** Optional sub-heading inside a category (Essential Bookmarks groups links by topic). */
+  group?: string;
   kind: AppKind;
   notes?: string;
   platforms: Partial<Record<Os, PlatformEntry>>;

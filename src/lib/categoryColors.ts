@@ -10,6 +10,7 @@ const COLORS: Record<string, string> = {
   torrenting: "#06b6d4",
   utilities: "#8b5cf6",
   "system-tweaks": "#eab308",
+  bookmarks: "#f59e0b",
   specials: "#7c3aed",
 };
 

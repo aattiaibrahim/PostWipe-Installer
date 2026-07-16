@@ -27,14 +27,18 @@ export function Browse() {
     load();
   }, [load]);
 
+  // Keeps the selection valid when the OS filter flips. Bookmarks carry no platforms and are
+  // valid on every OS, so they must count as available or this would bounce you off them.
   useEffect(() => {
     if (!catalog) return;
     if (selectedCategoryId === ALL_CATEGORY_ID) return;
+    const usable = (app: { kind: string; platforms: Record<string, unknown> }) =>
+      app.kind === "link" || !!app.platforms[osFilter];
     const stillAvailable = catalog.categories.some(
-      (c) => c.id === selectedCategoryId && c.apps.some((app) => app.platforms[osFilter]),
+      (c) => c.id === selectedCategoryId && c.apps.some(usable),
     );
     if (stillAvailable) return;
-    const fallback = catalog.categories.find((c) => c.apps.some((app) => app.platforms[osFilter]));
+    const fallback = catalog.categories.find((c) => c.apps.some(usable));
     setSelectedCategory(fallback ? fallback.id : ALL_CATEGORY_ID);
   }, [catalog, osFilter, selectedCategoryId, setSelectedCategory]);
 
