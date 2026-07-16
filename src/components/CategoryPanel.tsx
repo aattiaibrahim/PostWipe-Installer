@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
@@ -45,7 +46,8 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
     .map((category) => ({
       category,
       apps: category.apps.filter((app) => {
-        if (!app.platforms[os]) return false;
+        // Bookmarks have no platforms — they're relevant on every OS.
+        if (app.kind !== "link" && !app.platforms[os]) return false;
         // Vendor-tagged apps hide when the other vendor is selected; untagged apps always show.
         if (vendorFilter !== "all" && app.vendor && app.vendor !== vendorFilter) return false;
         if (!query) return true;
@@ -75,8 +77,15 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
           </div>
           <div className="category-panel__rows">
             <AnimatePresence initial={false}>
-              {apps.map((app) => (
-                <AppCard key={app.id} app={app} os={os} />
+              {apps.map((app, i) => (
+                <Fragment key={app.id}>
+                  {/* Optional sub-heading inside a category (Essential Bookmarks groups its
+                      links by topic without needing real sub-categories). */}
+                  {app.group && app.group !== apps[i - 1]?.group && (
+                    <h3 className="category-panel__group">{app.group}</h3>
+                  )}
+                  <AppCard app={app} os={os} />
+                </Fragment>
               ))}
             </AnimatePresence>
           </div>

@@ -22,7 +22,9 @@ html.is-resizing .ambient-bg__blob {
   --surface-hover: rgba(255, 255, 255, 0.95);
   --border: rgba(26, 47, 251, 0.12);
   --text: #0e0f1a;
-  --text-muted: #565b72;
+  /* Darker than the old #565b72 — sidebar categories and other muted text were hard to
+     read against the light surfaces. */
+  --text-muted: #3f4459;
   --accent: #1a2ffb;
   --accent-hover: #1526d1;
   --accent-text: #ffffff;
@@ -2285,6 +2287,21 @@ h3 {
   50% {
     height: 12px;
   }
+}
+
+/* Sub-heading inside a category (Essential Bookmarks groups its links by topic). */
+.category-panel__group {
+  margin: 0.9rem 0 0.1rem;
+  padding: 0 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.category-panel__group:first-child {
+  margin-top: 0.2rem;
 }
 
 .sidebar__divider {

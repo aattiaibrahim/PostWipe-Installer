@@ -34,6 +34,10 @@ pub struct AppEntry {
     /// CPU-vendor compatibility for the Overclocking filter; absent = works everywhere.
     #[serde(default)]
     pub vendor: Option<Vendor>,
+    /// Optional sub-heading inside a category (used by Essential Bookmarks to group links
+    /// under "OSINT", "AI", … without adding real sub-categories).
+    #[serde(default)]
+    pub group: Option<String>,
     pub kind: AppKind,
     #[serde(default)]
     pub notes: Option<String>,
@@ -59,6 +63,9 @@ pub enum Vendor {
 pub enum AppKind {
     Download,
     Script,
+    /// A bookmark — opens in the user's default browser instead of downloading. Carries no
+    /// platforms (shown on every OS); the URL lives in `website`.
+    Link,
     /// Catalog entry with no working resolver yet — a category preview shown before its
     /// real content (files provided by the user, plus hosting) is in place.
     Placeholder,

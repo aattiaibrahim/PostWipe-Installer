@@ -54,7 +54,8 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
   // Counts mirror exactly what the panel shows: platform + vendor + search filters.
   const countIn = (category: (typeof catalog.categories)[number]) =>
     category.apps.filter((app) => {
-      if (!app.platforms[os]) return false;
+      // Bookmarks have no platforms — they count on every OS.
+      if (app.kind !== "link" && !app.platforms[os]) return false;
       if (vendorFilter !== "all" && app.vendor && app.vendor !== vendorFilter) return false;
       return !query || app.name.toLowerCase().includes(query);
     }).length;
@@ -80,7 +81,8 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
         </button>
         <div className="sidebar__divider" />
         {catalog.categories.map((category) => {
-          if (!category.apps.some((app) => app.platforms[os])) return null;
+          // Bookmarks have no platforms, so a links-only category must not be hidden here.
+          if (!category.apps.some((app) => app.kind === "link" || app.platforms[os])) return null;
           const count = countIn(category);
           const locked = category.id === SPECIALS_CATEGORY_ID && !specialsUnlocked;
 
