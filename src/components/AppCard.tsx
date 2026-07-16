@@ -40,6 +40,7 @@ export function AppCard({ app, os }: AppCardProps) {
   const [pinBusy, setPinBusy] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
   const [pinMsg, setPinMsg] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const jobs = useDownloadQueueStore((s) => s.jobs);
   const selected = useSelectionStore((s) => s.selected.includes(app.id));
@@ -279,6 +280,35 @@ export function AppCard({ app, os }: AppCardProps) {
           >
             <div className="app-row__details">
               {app.description && <p className="app-row__details-notes">{app.description}</p>}
+              {app.guide && (
+                <div className="app-guide">
+                  <span className="app-guide__title">{app.guide.title}</span>
+                  <ol className="app-guide__steps">
+                    {app.guide.steps.map((step, i) => (
+                      <li key={i}>{step}</li>
+                    ))}
+                  </ol>
+                  {app.guide.snippet && (
+                    <div className="app-guide__snippet">
+                      <div className="app-guide__snippet-head">
+                        <span>{app.guide.snippet.label}</span>
+                        <button
+                          className="app-guide__copy"
+                          onClick={() => {
+                            navigator.clipboard.writeText(app.guide!.snippet!.code).then(
+                              () => setCopied(true),
+                              () => setCopied(false),
+                            );
+                          }}
+                        >
+                          {copied ? "Copied ✓" : "Copy"}
+                        </button>
+                      </div>
+                      <pre className="app-guide__code">{app.guide.snippet.code}</pre>
+                    </div>
+                  )}
+                </div>
+              )}
               {(app.website || app.domain) && (
                 <button
                   className="app-row__link-btn"

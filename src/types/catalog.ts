@@ -51,7 +51,16 @@ export interface AppEntry {
   group?: string;
   kind: AppKind;
   notes?: string;
+  /** Optional how-to shown in the expanded row (e.g. OBS replay-buffer setup). */
+  guide?: Guide;
   platforms: Partial<Record<Os, PlatformEntry>>;
+}
+
+/** A short walkthrough with an optional copyable snippet. */
+export interface Guide {
+  title: string;
+  steps: string[];
+  snippet?: { label: string; code: string };
 }
 
 export interface Category {

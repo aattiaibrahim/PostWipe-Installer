@@ -1686,6 +1686,22 @@
               },
               "filename": "OBS-Studio.dmg"
             }
+          },
+          "guide": {
+            "title": "Set up replay-buffer clipping (free Shadowplay)",
+            "steps": [
+              "Install OBS, then open Settings > Output and set Output Mode to Advanced.",
+              "On the Replay Buffer tab, tick Enable Replay Buffer and set Maximum Replay Time to 60-120s (each second costs RAM at your bitrate).",
+              "On the Recording tab pick your encoder: NVENC (NVIDIA), AV1/HEVC if your card supports it, otherwise x264. Set Rate Control to CQP/CRF around 18-23 - CBR wastes space for local clips.",
+              "Set Recording Format to fragmented MP4 (or MKV) so a crash never corrupts the clip, and point Recording Path at a fast drive.",
+              "In Settings > Hotkeys bind 'Save Replay' to something reachable (F9 is common). That's the button you press after something cool happens.",
+              "In Settings > General tick 'Minimize to system tray' and 'Always minimize to tray instead of taskbar' so OBS sits quietly in the tray.",
+              "Run the PowerShell below as Administrator to auto-start OBS at login with the buffer already running - then it's always armed and you never think about it again."
+            ],
+            "snippet": {
+              "label": "PowerShell (run as Administrator)",
+              "code": "$action = New-ScheduledTaskAction -Execute \"C:\\Program Files\\obs-studio\\bin\\64bit\\obs64.exe\" -Argument \"--disable-shutdown-check --startreplaybuffer --minimize-to-tray\" -WorkingDirectory \"C:\\Program Files\\obs-studio\\bin\\64bit\\\"\n$trigger = New-ScheduledTaskTrigger -AtLogon\nRegister-ScheduledTask -TaskName \"OBS Replay Buffer\" -Action $action -Trigger $trigger -RunLevel Highest -Force"
+            }
           }
         }
       ]
@@ -1718,89 +1734,6 @@
             "windows": {
               "script_id": "kill-valorant-process"
             }
-          }
-        }
-      ]
-    },
-    {
-      "id": "specials",
-      "name": "Specials",
-      "apps": [
-        {
-          "id": "cursor-pack-example",
-          "name": "Cursor Packs",
-          "bio": "Custom cursor schemes — installs via install.inf and shows Active in green once applied.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {},
-            "macos": {}
-          }
-        },
-        {
-          "id": "font-pack-example",
-          "name": "Fonts",
-          "bio": "Curated font packs with live previews before installing.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {},
-            "macos": {}
-          }
-        },
-        {
-          "id": "peace-equalizer",
-          "name": "Audio & EQ Profiles",
-          "bio": "Peace parametric EQ plus a Sennheiser HD650 \"Oratory\" profile.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {},
-            "macos": {}
-          }
-        },
-        {
-          "id": "steam-profile-example",
-          "name": "Steam Profiles",
-          "bio": "Custom Steam profile showcases and workshop packs, with previews.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {},
-            "macos": {}
-          }
-        },
-        {
-          "id": "sound-scheme-example",
-          "name": "Windows Sounds",
-          "bio": "Custom Windows system sound schemes.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {},
-            "macos": {}
-          }
-        },
-        {
-          "id": "wallpaper-pack-example",
-          "name": "Wallpapers & Profile Pics",
-          "bio": "Desktop wallpapers, profile pictures, and banners, with previews.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {},
-            "macos": {}
-          }
-        },
-        {
-          "id": "windows-themes-deprecated",
-          "name": "Windows Themes (deprecated)",
-          "bio": "Custom .msstyles themes — deprecated: these only worked on Windows 10.",
-          "description": "The Paranoid Android theme pack (.theme/.msstyles + patched shellstyle.dll) targeted Windows 10's theme engine and doesn't work on Windows 11. Kept listed for the archive, but not installable.",
-          "icon": "placeholder.ico",
-          "kind": "placeholder",
-          "platforms": {
-            "windows": {}
           }
         }
       ]
@@ -2204,6 +2137,89 @@
           "website": "https://grok.com/",
           "kind": "link",
           "platforms": {}
+        }
+      ]
+    },
+    {
+      "id": "specials",
+      "name": "Specials",
+      "apps": [
+        {
+          "id": "cursor-pack-example",
+          "name": "Cursor Packs",
+          "bio": "Custom cursor schemes — installs via install.inf and shows Active in green once applied.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
+        },
+        {
+          "id": "font-pack-example",
+          "name": "Fonts",
+          "bio": "Curated font packs with live previews before installing.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
+        },
+        {
+          "id": "peace-equalizer",
+          "name": "Audio & EQ Profiles",
+          "bio": "Peace parametric EQ plus a Sennheiser HD650 \"Oratory\" profile.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
+        },
+        {
+          "id": "steam-profile-example",
+          "name": "Steam Profiles",
+          "bio": "Custom Steam profile showcases and workshop packs, with previews.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
+        },
+        {
+          "id": "sound-scheme-example",
+          "name": "Windows Sounds",
+          "bio": "Custom Windows system sound schemes.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
+        },
+        {
+          "id": "wallpaper-pack-example",
+          "name": "Wallpapers & Profile Pics",
+          "bio": "Desktop wallpapers, profile pictures, and banners, with previews.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {},
+            "macos": {}
+          }
+        },
+        {
+          "id": "windows-themes-deprecated",
+          "name": "Windows Themes (deprecated)",
+          "bio": "Custom .msstyles themes — deprecated: these only worked on Windows 10.",
+          "description": "The Paranoid Android theme pack (.theme/.msstyles + patched shellstyle.dll) targeted Windows 10's theme engine and doesn't work on Windows 11. Kept listed for the archive, but not installable.",
+          "icon": "placeholder.ico",
+          "kind": "placeholder",
+          "platforms": {
+            "windows": {}
+          }
         }
       ]
     }
