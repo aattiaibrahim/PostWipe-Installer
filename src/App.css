@@ -579,6 +579,59 @@ h3 {
   transform: translateX(14px);
 }
 
+/* A conic accent glow that sweeps around Download / Install buttons on hover. The ::after
+   rides behind the button (z-index -1) so the label stays crisp. */
+@property --btn-glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes btn-glow-spin {
+  to {
+    --btn-glow-angle: 360deg;
+  }
+}
+
+.app-row__action,
+.specials-detail__btn {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-row__action::after,
+.specials-detail__btn::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  background: conic-gradient(
+    from var(--btn-glow-angle),
+    transparent 0deg,
+    var(--accent) 70deg,
+    color-mix(in srgb, var(--accent) 40%, transparent) 150deg,
+    transparent 220deg,
+    transparent 360deg
+  );
+  filter: blur(5px);
+}
+
+.app-row__action:hover:not(:disabled)::after,
+.specials-detail__btn:hover:not(:disabled)::after {
+  opacity: 0.95;
+  animation: btn-glow-spin 1.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-row__action:hover:not(:disabled)::after,
+  .specials-detail__btn:hover:not(:disabled)::after {
+    animation: none;
+  }
+}
+
 /* Centered confirmation dialog (Download All). Portaled to <body>. */
 .confirm-overlay {
   position: fixed;
@@ -2542,6 +2595,9 @@ h3 {
   height: 20px;
   /* Favicons are often 16/32px sources — keep upscaling crisp instead of blurry. */
   image-rendering: -webkit-optimize-contrast;
+  /* Square logos (OBS, Docker, Claude…) get softened corners so they sit better in the UI.
+     Round marks are unaffected — their corners are already transparent. */
+  border-radius: 5px;
 }
 
 .app-icon--monogram {
