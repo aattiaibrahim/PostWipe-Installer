@@ -91,3 +91,19 @@ export function pinScriptToStartMenu(scriptId: string, scriptPath: string): Prom
 export function unpinScriptFromStartMenu(scriptId: string): Promise<void> {
   return invoke("unpin_script_from_start_menu", { scriptId });
 }
+
+/** Disk-backed theme persistence (see settings.rs) — durable across restarts even
+ *  when the WebView drops localStorage. No-ops outside Tauri (browser dev). */
+export async function getSavedTheme(): Promise<string | null> {
+  if (!isTauri) return null;
+  return invoke<string | null>("get_theme");
+}
+
+export async function saveTheme(theme: string): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_theme", { theme });
+  } catch {
+    /* best-effort; localStorage still holds it for the session */
+  }
+}

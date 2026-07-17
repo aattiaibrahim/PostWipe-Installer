@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { getSavedTheme, saveTheme } from "../lib/tauriCommands";
 
 export type Theme = "light" | "dark" | "nord" | "dracula" | "catppuccin" | "gruvbox" | "solarized" | "rose-pine";
 
@@ -16,6 +17,8 @@ export const THEMES: { id: Theme; label: string; swatch: [string, string]; dark:
   { id: "solarized", label: "Solarized", swatch: ["#fdf6e3", "#268bd2"], dark: false },
 ];
 
+const THEME_IDS = new Set<string>(THEMES.map((t) => t.id));
+
 interface ThemeState {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -25,8 +28,25 @@ export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
       theme: "dark",
-      setTheme: (theme) => set({ theme }),
+      // localStorage (via persist) is only a fast pre-paint cache — WebView2/WKWebView
+      // don't reliably keep it across restarts, so disk is the real source of truth.
+      setTheme: (theme) => {
+        set({ theme });
+        void saveTheme(theme);
+      },
     }),
     { name: "postwipe-theme" },
   ),
 );
+
+/** Reconcile the store with the disk-backed value on launch (see settings.rs). Disk wins
+ *  because localStorage may have been dropped; if disk is empty (first run) we seed it from
+ *  whatever the store currently holds so the choice is durable from here on. */
+export async function hydrateThemeFromDisk(): Promise<void> {
+  const saved = await getSavedTheme();
+  if (saved && THEME_IDS.has(saved)) {
+    if (saved !== useThemeStore.getState().theme) useThemeStore.setState({ theme: saved as Theme });
+  } else {
+    void saveTheme(useThemeStore.getState().theme);
+  }
+}
