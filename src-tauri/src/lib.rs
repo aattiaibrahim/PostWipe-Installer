@@ -13,6 +13,7 @@ use commands::scripts::{
     cleanup_legacy_startup_pins, find_generated_script, generate_script, is_script_pinned, pin_script_to_start_menu,
     unpin_script_from_start_menu,
 };
+use commands::settings::{get_theme, set_theme};
 use commands::specials::{apply_cursor_variant, install_specials_item, list_cursor_variants, specials_item_installed};
 use downloader::DownloadManager;
 
@@ -66,7 +67,9 @@ pub fn run() {
             install_specials_item,
             specials_item_installed,
             list_cursor_variants,
-            apply_cursor_variant
+            apply_cursor_variant,
+            get_theme,
+            set_theme
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

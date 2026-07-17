@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useCatalogStore } from "../state/catalogStore";
 import { openDownloadsFolder } from "../lib/tauriCommands";
 import { DownloadHistoryPanel } from "./DownloadHistoryPanel";
@@ -8,8 +7,9 @@ export function SearchFilterBar() {
   const setSearchQuery = useCatalogStore((s) => s.setSearchQuery);
 
   return (
-    // `layout` so the bar smoothly grows/shrinks when the vendor toggle appears/disappears.
-    <motion.div className="search-filter-bar" layout transition={{ type: "spring", stiffness: 480, damping: 40 }}>
+    // No framer `layout` here — as `flex: 1`, this grows/shrinks fluidly on its own while the
+    // vendor toggle animates its width. `layout` would animate via a distorting scale transform.
+    <div className="search-filter-bar">
       <input
         className="search-filter-bar__input"
         type="search"
@@ -28,6 +28,6 @@ export function SearchFilterBar() {
           <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
         </svg>
       </button>
-    </motion.div>
+    </div>
   );
 }

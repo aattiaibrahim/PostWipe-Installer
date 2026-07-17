@@ -15,16 +15,19 @@ export function VendorToggle() {
   const onChange = useCatalogStore((s) => s.setVendorFilter);
   // CPU-vendor tools are Windows-only. Browse mounts/unmounts this via AnimatePresence when
   // the OS flips; the width animation collapses its space so the search bar grows into it.
+  // Animate the real `width` (not framer `layout`, whose scale-transform distorts and snaps):
+  // as this collapses to 0 the flex:1 search bar grows into the freed space every frame. The
+  // negative marginLeft when collapsed cancels the topbar's 0.9rem flex gap so there's no jump
+  // at the end of the exit (a zero-width flex item would otherwise still reserve a gap).
   return (
     <motion.div
       className="os-picker os-picker--vendor"
       title="Filter vendor-specific tools (Intel/AMD)"
-      layout
-      initial={{ width: 0, opacity: 0, marginLeft: 0 }}
-      animate={{ width: "auto", opacity: 1 }}
-      exit={{ width: 0, opacity: 0, marginLeft: 0 }}
-      transition={{ type: "spring", stiffness: 480, damping: 40 }}
-      style={{ overflow: "hidden" }}
+      initial={{ width: 0, opacity: 0, marginLeft: "-0.9rem" }}
+      animate={{ width: "auto", opacity: 1, marginLeft: 0 }}
+      exit={{ width: 0, opacity: 0, marginLeft: "-0.9rem" }}
+      transition={{ type: "spring", stiffness: 420, damping: 42 }}
+      style={{ overflow: "hidden", flex: "0 0 auto" }}
     >
       {VENDOR_OPTIONS.map((opt) => {
         const active = value === opt.value;
