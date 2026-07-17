@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useCatalogStore } from "../state/catalogStore";
 import { useOsDetect } from "../hooks/useOsDetect";
 import { useDownloadEvents } from "../hooks/useDownloadEvents";
@@ -50,7 +51,11 @@ export function Browse() {
     <div className="browse">
       <div className="browse__topbar">
         <OsPicker />
-        <VendorToggle />
+        {/* Intel/AMD only makes sense on Windows; it slides away on macOS and the search bar
+            grows into the freed space (both animate via layout). */}
+        <AnimatePresence initial={false}>
+          {osFilter === "windows" && <VendorToggle key="vendor" />}
+        </AnimatePresence>
         <SearchFilterBar />
       </div>
       <div className="browse__body">
