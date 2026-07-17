@@ -42,6 +42,7 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
 
   const previews = resolvePreviews(item, sessionKey);
   const hasSound = item.audioPreviews.length > 0;
+  const isLink = item.ext === "url";
   const firstImage = previews[0] ?? null;
 
   return (
@@ -69,20 +70,27 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
           ) : (
             <img src={firstImage} alt="" loading="lazy" decoding="async" />
           )
+        ) : isLink ? (
+          <svg className="specials-card__glyph specials-card__link" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
         ) : hasSound ? (
           <MusicGlyph className="specials-card__glyph specials-card__music" />
         ) : (
           <span className="specials-card__glyph specials-card__glyph--initial">{item.name.charAt(0).toUpperCase()}</span>
         )}
-        <button
-          className={`specials-card__check${selected ? " specials-card__check--on" : ""}`}
-          aria-label={selected ? `Deselect ${item.name}` : `Select ${item.name}`}
-          aria-pressed={selected}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleSelected(item.objectKey);
-          }}
-        />
+        {!isLink && (
+          <button
+            className={`specials-card__check${selected ? " specials-card__check--on" : ""}`}
+            aria-label={selected ? `Deselect ${item.name}` : `Select ${item.name}`}
+            aria-pressed={selected}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSelected(item.objectKey);
+            }}
+          />
+        )}
         {item.previewKeys.length > 1 && <span className="specials-card__badge">{item.previewKeys.length}</span>}
         {downloaded && (
           <span className="specials-card__state" title="Downloaded">

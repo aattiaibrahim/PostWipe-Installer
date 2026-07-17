@@ -4,6 +4,8 @@ import paydayTile from "../assets/app-icons/payday2-mods.png";
 import photoshopTile from "../assets/app-icons/photoshop.png";
 import sennheiserTile from "../assets/app-icons/sennheiser-hd650.png";
 import windowsThemesTile from "../assets/app-icons/windows-themes.png";
+import peaceTile from "../assets/app-icons/peace.png";
+import eqApoTile from "../assets/app-icons/equalizerapo.png";
 
 const IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "gif", "webp", "avif", "bmp"]);
 const PAYDAY_FOLDER = "Payday 2 Mods - Diesel 2.0";
@@ -53,6 +55,10 @@ export function ownImageUrl(item: SpecialsItem, sessionKey: string | null): stri
 export function resolvePreviews(item: SpecialsItem, sessionKey: string | null): string[] {
   if (item.previewKeys.length > 0) return item.previewKeys.map((k) => gatedUrl(k, sessionKey));
   if (IMAGE_EXTS.has(item.ext)) return [gatedUrl(item.objectKey, sessionKey)];
+  // Explicit per-app tiles for specific vault installers (matched by filename).
+  const fn = item.filename.toLowerCase();
+  if (fn.includes("equalizerapo")) return [eqApoTile];
+  if (fn.includes("peace")) return [peaceTile];
   if (item.ext === "psd") return [photoshopTile];
   const folder = itemFolder(item);
   if (folder === PAYDAY_FOLDER) return [paydayTile];
