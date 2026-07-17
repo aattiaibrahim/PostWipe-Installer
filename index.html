@@ -7,11 +7,14 @@
     <title>PostWipe Installer</title>
     <script>
       (function () {
+        // Apply the saved theme before first paint (no flash). Accept ANY saved theme id —
+        // the old check only allowed light/dark, so named themes (Nord, Dracula, …) were
+        // rejected and reset to dark on every launch.
         var theme = "dark";
         try {
           var raw = localStorage.getItem("postwipe-theme");
           var parsed = raw && JSON.parse(raw);
-          if (parsed && parsed.state && (parsed.state.theme === "light" || parsed.state.theme === "dark")) {
+          if (parsed && parsed.state && typeof parsed.state.theme === "string") {
             theme = parsed.state.theme;
           }
         } catch (e) {

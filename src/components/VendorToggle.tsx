@@ -13,12 +13,19 @@ const VENDOR_OPTIONS: { value: VendorFilter; label: string }[] = [
 export function VendorToggle() {
   const value = useCatalogStore((s) => s.vendorFilter);
   const onChange = useCatalogStore((s) => s.setVendorFilter);
-  const os = useCatalogStore((s) => s.osFilter);
-  // CPU-vendor tools are Windows-only; on macOS the toggle disappears and the search
-  // bar (flex: 1) stretches into its space.
-  if (os !== "windows") return null;
+  // CPU-vendor tools are Windows-only. Browse mounts/unmounts this via AnimatePresence when
+  // the OS flips; the width animation collapses its space so the search bar grows into it.
   return (
-    <div className="os-picker os-picker--vendor" title="Filter vendor-specific tools (Intel/AMD)">
+    <motion.div
+      className="os-picker os-picker--vendor"
+      title="Filter vendor-specific tools (Intel/AMD)"
+      layout
+      initial={{ width: 0, opacity: 0, marginLeft: 0 }}
+      animate={{ width: "auto", opacity: 1 }}
+      exit={{ width: 0, opacity: 0, marginLeft: 0 }}
+      transition={{ type: "spring", stiffness: 480, damping: 40 }}
+      style={{ overflow: "hidden" }}
+    >
       {VENDOR_OPTIONS.map((opt) => {
         const active = value === opt.value;
         return (
@@ -38,6 +45,6 @@ export function VendorToggle() {
           </button>
         );
       })}
-    </div>
+    </motion.div>
   );
 }
