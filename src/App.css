@@ -2189,6 +2189,24 @@ h3 {
   color: rgba(255, 255, 255, 0.92);
 }
 
+/* Link (.url bookmark) glyphs — a chain-link, reusing the sound-glyph sizing. */
+.specials-card__link {
+  width: 42%;
+  height: 42%;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-detail__link-glyph {
+  width: 76px;
+  height: 76px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-detail__hint--link {
+  word-break: break-all;
+  max-width: 100%;
+}
+
 .specials-detail__error {
   margin: 0;
   font-size: 0.78rem;

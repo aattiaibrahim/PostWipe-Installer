@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import type { SpecialsItem as Item } from "../state/specialsContentStore";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
 import { useSpecialsStore } from "../state/specialsStore";
@@ -33,6 +34,28 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
   const [installMsg, setInstallMsg] = useState<string | null>(null);
   const [variants, setVariants] = useState<CursorVariant[] | null>(null);
   const [index, setIndex] = useState(0);
+  const [linkUrl, setLinkUrl] = useState<string | null>(null);
+
+  // A `.url` shortcut is a bookmark, not a download: fetch it, parse the INI `URL=` line, and
+  // offer an "Open ↗" button that launches it in the default browser (no download/install).
+  const isLink = item.ext === "url";
+  useEffect(() => {
+    if (!isLink || !sessionKey) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const text = await (await fetch(gatedUrl(item.objectKey, sessionKey))).text();
+        const match = text.split(/\r?\n/).find((l) => /^\s*URL\s*=/i.test(l));
+        const url = match?.replace(/^\s*URL\s*=/i, "").trim();
+        if (!cancelled && url) setLinkUrl(url);
+      } catch {
+        /* leave linkUrl null → button stays disabled */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isLink, sessionKey, item.objectKey]);
 
   const job = Object.values(jobs)
     .reverse()
@@ -169,7 +192,16 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
             </>
           ) : (
             <span className="specials-detail__glyph">
-              {sounds.length > 0 ? <MusicGlyph className="specials-detail__music" /> : item.name.charAt(0).toUpperCase()}
+              {isLink ? (
+                <svg className="specials-detail__link-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              ) : sounds.length > 0 ? (
+                <MusicGlyph className="specials-detail__music" />
+              ) : (
+                item.name.charAt(0).toUpperCase()
+              )}
             </span>
           )}
         </div>
@@ -199,16 +231,29 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
           )}
 
           <div className="specials-detail__actions">
-            <button className="specials-detail__btn" disabled={downloading} onClick={download}>
-              {downloading ? "Downloading…" : downloaded ? "Re-download" : "Download"}
-            </button>
-            {canInstall && (
-              <button className="specials-detail__btn specials-detail__btn--primary" disabled={!downloaded || installing} onClick={install}>
-                {installing ? "Installing…" : "Install"}
+            {isLink ? (
+              <button
+                className="specials-detail__btn specials-detail__btn--primary"
+                disabled={!linkUrl}
+                onClick={() => linkUrl && openUrl(linkUrl)}
+              >
+                Open ↗
               </button>
+            ) : (
+              <>
+                <button className="specials-detail__btn" disabled={downloading} onClick={download}>
+                  {downloading ? "Downloading…" : downloaded ? "Re-download" : "Download"}
+                </button>
+                {canInstall && (
+                  <button className="specials-detail__btn specials-detail__btn--primary" disabled={!downloaded || installing} onClick={install}>
+                    {installing ? "Installing…" : "Install"}
+                  </button>
+                )}
+              </>
             )}
           </div>
-          {canInstall && !downloaded && <span className="specials-detail__hint">Download first, then Install.</span>}
+          {isLink && linkUrl && <span className="specials-detail__hint specials-detail__hint--link">{linkUrl}</span>}
+          {!isLink && canInstall && !downloaded && <span className="specials-detail__hint">Download first, then Install.</span>}
         </div>
 
         <button className="specials-detail__close" onClick={onClose} aria-label="Close">
