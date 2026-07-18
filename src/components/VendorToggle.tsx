@@ -9,45 +9,40 @@ const VENDOR_OPTIONS: { value: VendorFilter; label: string }[] = [
 
 /** All/Intel/AMD lightswitch, styled like the OS picker. Lives in the topbar and applies
  *  everywhere — apps tagged with a vendor are hidden when the other vendor is selected;
- *  untagged apps always show. */
-export function VendorToggle() {
+ *  untagged apps always show.
+ *
+ *  CPU-vendor tools are Windows-only, so the whole control collapses on macOS. It stays
+ *  mounted and collapses via the .vendor-collapse CSS max-width transition instead of an
+ *  AnimatePresence width:"auto" exit — the mount/unmount version rendered as a snap in the
+ *  packaged app. As the wrapper narrows, the flex:1 search bar grows into the freed space
+ *  every frame. */
+export function VendorToggle({ open }: { open: boolean }) {
   const value = useCatalogStore((s) => s.vendorFilter);
   const onChange = useCatalogStore((s) => s.setVendorFilter);
-  // CPU-vendor tools are Windows-only. Browse mounts/unmounts this via AnimatePresence when
-  // the OS flips; the width animation collapses its space so the search bar grows into it.
-  // Animate the real `width` (not framer `layout`, whose scale-transform distorts and snaps):
-  // as this collapses to 0 the flex:1 search bar grows into the freed space every frame. The
-  // negative marginLeft when collapsed cancels the topbar's 0.9rem flex gap so there's no jump
-  // at the end of the exit (a zero-width flex item would otherwise still reserve a gap).
   return (
-    <motion.div
-      className="os-picker os-picker--vendor"
-      title="Filter vendor-specific tools (Intel/AMD)"
-      initial={{ width: 0, opacity: 0, marginLeft: "-0.9rem" }}
-      animate={{ width: "auto", opacity: 1, marginLeft: 0 }}
-      exit={{ width: 0, opacity: 0, marginLeft: "-0.9rem" }}
-      transition={{ type: "spring", stiffness: 420, damping: 42 }}
-      style={{ overflow: "hidden", flex: "0 0 auto" }}
-    >
-      {VENDOR_OPTIONS.map((opt) => {
-        const active = value === opt.value;
-        return (
-          <button
-            key={opt.value}
-            className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
-            onClick={() => onChange(opt.value)}
-          >
-            {active && (
-              <motion.div
-                className="os-picker__indicator"
-                layoutId="vendor-toggle-indicator"
-                transition={{ type: "spring", stiffness: 700, damping: 46, mass: 0.7 }}
-              />
-            )}
-            <span>{opt.label}</span>
-          </button>
-        );
-      })}
-    </motion.div>
+    <div className={`vendor-collapse${open ? " vendor-collapse--open" : ""}`} aria-hidden={!open}>
+      <div className="os-picker os-picker--vendor" title="Filter vendor-specific tools (Intel/AMD)">
+        {VENDOR_OPTIONS.map((opt) => {
+          const active = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
+              onClick={() => onChange(opt.value)}
+              tabIndex={open ? 0 : -1}
+            >
+              {active && (
+                <motion.div
+                  className="os-picker__indicator"
+                  layoutId="vendor-toggle-indicator"
+                  transition={{ type: "spring", stiffness: 700, damping: 46, mass: 0.7 }}
+                />
+              )}
+              <span>{opt.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

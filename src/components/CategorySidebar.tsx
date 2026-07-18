@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { memo, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
@@ -45,7 +45,9 @@ function LockGlyph() {
   );
 }
 
-export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect }: CategorySidebarProps) {
+/* memo'd so Browse's urgent render (topbar animation frame) skips this subtree; it only
+   re-renders in the deferred pass when the os/search props actually change. */
+export const CategorySidebar = memo(function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect }: CategorySidebarProps) {
   const specialsUnlocked = useSpecialsStore((s) => s.unlocked);
   const settingsOpen = useCatalogStore((s) => s.settingsOpen);
   const vendorFilter = useCatalogStore((s) => s.vendorFilter);
@@ -107,4 +109,4 @@ export function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect
       </div>
     </nav>
   );
-}
+});
