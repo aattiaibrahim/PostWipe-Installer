@@ -1,9 +1,14 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "../lib/tauriCommands";
+import { isMacOS } from "../lib/platform";
 import { SelectionBar } from "./SelectionBar";
 import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
 
 const appWindow = isTauri ? getCurrentWindow() : null;
+
+// macOS shows the native traffic lights (titleBarStyle Overlay) — native minimize/zoom
+// animations included — so the custom controls only render elsewhere.
+const showCustomControls = !isMacOS;
 
 export function TitleBar() {
   return (
@@ -14,6 +19,7 @@ export function TitleBar() {
       </div>
       <SelectionBar />
       <SpecialsSelectionBar />
+      {showCustomControls && (
       <div className="title-bar__actions">
         <div className="title-bar__window-controls">
           <button className="title-bar__win-btn" aria-label="Minimize" onClick={() => appWindow?.minimize()}>
@@ -33,6 +39,7 @@ export function TitleBar() {
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 }

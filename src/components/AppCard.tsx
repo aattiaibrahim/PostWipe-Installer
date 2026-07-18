@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { AppEntry, Os, PlatformEntry } from "../types/catalog";
 import {
@@ -31,7 +31,10 @@ function fallbackUrl(platform: PlatformEntry, domain?: string): string | null {
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
-export function AppCard({ app, os }: AppCardProps) {
+/* memo'd: `app` objects come from the once-loaded catalog (stable identity) and `os` is a
+   string, so list-level re-renders (search typing, vendor filter) skip unchanged rows and
+   only each row's own store subscriptions re-render it. */
+export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generatedPath, setGeneratedPath] = useState<string | null>(null);
@@ -342,4 +345,4 @@ export function AppCard({ app, os }: AppCardProps) {
       </AnimatePresence>
     </motion.div>
   );
-}
+});

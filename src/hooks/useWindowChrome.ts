@@ -1,15 +1,17 @@
 import { useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "../lib/tauriCommands";
+import { osPlatform } from "../lib/platform";
 
-/** Marks <html> for frameless-window styling: `.tauri` enables the rounded-corner clip
- *  (the window itself is transparent, see tauri.conf.json), and `.window-maximized`
+/** Marks <html> for frameless-window styling: `.tauri` plus a `platform-*` class enable the
+ *  rounded-corner clip on Windows/Linux (where the window is transparent + undecorated, see
+ *  tauri.conf.json — macOS keeps native decorations and corners), and `.window-maximized`
  *  drops the rounding while the window fills the screen. */
 export function useWindowChrome() {
   useEffect(() => {
     if (!isTauri) return;
     const root = document.documentElement;
-    root.classList.add("tauri");
+    root.classList.add("tauri", `platform-${osPlatform}`);
     const win = getCurrentWindow();
     let unlisten: (() => void) | undefined;
     let disposed = false;
@@ -27,7 +29,7 @@ export function useWindowChrome() {
     return () => {
       disposed = true;
       unlisten?.();
-      root.classList.remove("tauri", "window-maximized");
+      root.classList.remove("tauri", `platform-${osPlatform}`, "window-maximized");
     };
   }, []);
 }
