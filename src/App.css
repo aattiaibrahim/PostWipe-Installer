@@ -229,13 +229,24 @@ body {
   background: transparent;
 }
 
-html.tauri {
+html.tauri:not(.platform-macos) {
   clip-path: inset(0 round 14px);
 }
 
 /* Square again while the window fills the screen. */
 html.tauri.window-maximized {
   clip-path: none;
+}
+
+/* macOS keeps native decorations (rounded corners come from the OS), so paint the canvas
+   instead of clipping, and clear the overlay traffic lights at the top-left. */
+html.platform-macos,
+html.platform-macos body {
+  background-color: var(--bg);
+}
+
+html.platform-macos .title-bar {
+  padding-left: 84px;
 }
 
 ::selection {
@@ -510,6 +521,8 @@ h3 {
   width: 236px;
   display: flex;
   flex-direction: column;
+  /* Shadow fades in/out as sidebar rows move behind the dock (class from CategorySidebar). */
+  transition: box-shadow 0.3s ease;
   /* NO gap here: the panel stays mounted at height 0 when closed, and a flex gap would
      still reserve space above the Settings button. The open-state spacing lives inside
      the panel's measured content (padding-bottom below) so it clips away with it. */
@@ -518,6 +531,12 @@ h3 {
   border-radius: 14px;
   background-color: var(--surface-solid);
   box-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.45);
+}
+
+.settings-dock--shadow {
+  box-shadow:
+    0 -10px 26px rgba(0, 0, 0, 0.28),
+    0 -2px 8px rgba(0, 0, 0, 0.16);
 }
 
 .settings-dock__panel {
@@ -781,70 +800,16 @@ h3 {
   transform: translateX(14px);
 }
 
-/* A conic accent glow that sweeps around Download / Install buttons on hover. The ::after
-   rides behind the button (z-index -1) so the label stays crisp. */
-@property --btn-glow-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes btn-glow-spin {
-  to {
-    --btn-glow-angle: 360deg;
-  }
-}
-
-.app-row__action,
-.specials-detail__btn {
-  position: relative;
-  isolation: isolate;
-}
-
-.app-row__action::after,
-.specials-detail__btn::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  z-index: -2;
-  border-radius: 12px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  background: conic-gradient(
-    from var(--btn-glow-angle),
-    transparent 0deg,
-    var(--accent) 70deg,
-    color-mix(in srgb, var(--accent) 40%, transparent) 150deg,
-    transparent 220deg,
-    transparent 360deg
-  );
-  filter: blur(5px);
-}
-
-/* Opaque plate matching the button face, layered over the glow so only its rim
-   shows — WebKit otherwise paints the blurred gradient across the whole button
-   as a squarish wash. */
-.app-row__action::before,
-.specials-detail__btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: inherit;
-}
-
-.app-row__action:hover:not(:disabled)::after,
-.specials-detail__btn:hover:not(:disabled)::after {
-  opacity: 0.95;
-  animation: btn-glow-spin 1.8s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-row__action:hover:not(:disabled)::after,
-  .specials-detail__btn:hover:not(:disabled)::after {
-    animation: none;
-  }
+/* Accent glow hugging Download / Install buttons on hover. Plain box-shadow: it follows the
+   button's border-radius exactly on every engine — the old blurred conic-gradient pseudo
+   stack kept rendering as a hard-edged box in WKWebView (macOS), and per-row blur filters
+   plus an infinite gradient animation were expensive besides. */
+.app-row__action:hover:not(:disabled),
+.specials-detail__btn:hover:not(:disabled) {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 65%, transparent),
+    0 0 14px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 3px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 /* Centered confirmation dialog (Download All). Portaled to <body>. */
@@ -1342,6 +1307,13 @@ h3 {
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   max-height: calc(100vh - 140px);
   overflow-y: auto;
+}
+
+/* When the list is tall enough to run behind the settings dock, reserve scroll room so the
+   last rows (Specials) can scroll fully clear of it instead of being stuck underneath.
+   The exact clearance is measured by CategorySidebar (box overlap + slack). */
+.sidebar--dock-clearance {
+  padding-bottom: var(--dock-clearance, 3rem);
 }
 
 .sidebar__item {
@@ -2277,7 +2249,7 @@ h3 {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  transition: background-color 0.12s ease, box-shadow 0.2s ease;
 }
 
 .specials-detail__btn:hover:not(:disabled) {
@@ -2749,6 +2721,10 @@ h3 {
   border-radius: 10px;
   overflow: hidden;
   transition: background-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  /* Rows offscreen skip layout + paint entirely; `auto` keeps a row's real size once it has
+     rendered (matters for expanded rows) with 58px as the pre-render estimate. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 58px;
 }
 
 .app-row--expandable {
@@ -3106,7 +3082,7 @@ h3 {
   font-weight: 500;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.2s ease;
 }
 
 /* Hover/active shift via color-mix rather than filter: brightness() — a filter

@@ -1,4 +1,4 @@
-import { memo, type CSSProperties } from "react";
+import { memo, useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
@@ -51,7 +51,45 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   const specialsUnlocked = useSpecialsStore((s) => s.unlocked);
   const settingsOpen = useCatalogStore((s) => s.settingsOpen);
   const vendorFilter = useCatalogStore((s) => s.vendorFilter);
+  const setDockShadow = useCatalogStore((s) => s.setDockShadow);
   const query = searchQuery.trim().toLowerCase();
+
+  // The settings dock floats fixed over the sidebar's bottom edge. Two measurements drive
+  // the interplay: `needsClearance` (the list is tall enough that its box runs behind the
+  // dock — add bottom padding so the last rows can scroll clear of it) and `dockShadow`
+  // (rows are behind the dock *right now* — the dock casts a shadow only then). Clearance
+  // is computed from the content's own height, not the padded box, so toggling the padding
+  // can't feed back into the measurement.
+  const navRef = useRef<HTMLElement>(null);
+  const catsRef = useRef<HTMLDivElement>(null);
+  const [needsClearance, setNeedsClearance] = useState(false);
+  useEffect(() => {
+    const nav = navRef.current;
+    const cats = catsRef.current;
+    if (!nav || !cats) return;
+    const dock = document.querySelector(".settings-dock");
+    const measure = () => {
+      const dockTop = dock ? dock.getBoundingClientRect().top : Infinity;
+      // How far the sidebar's box runs behind the dock; the box bottom is capped by
+      // max-height, so adding the padding can't feed the overlap back on itself.
+      const overlap = Math.max(0, nav.getBoundingClientRect().bottom - dockTop);
+      nav.style.setProperty("--dock-clearance", `${overlap ? Math.min(overlap + 12, 220) : 0}px`);
+      setNeedsClearance(overlap > 0);
+      setDockShadow(cats.getBoundingClientRect().bottom > dockTop + 2);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(cats);
+    if (dock) ro.observe(dock); // fires as the dock expands/collapses
+    nav.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      nav.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+      setDockShadow(false);
+    };
+  }, [setDockShadow]);
 
   // Counts mirror exactly what the panel shows: platform + vendor + search filters.
   const countIn = (category: (typeof catalog.categories)[number]) =>
@@ -68,10 +106,13 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   }, 0);
 
   return (
-    <nav className={`sidebar${settingsOpen ? " sidebar--settings-open" : ""}`}>
+    <nav
+      ref={navRef}
+      className={`sidebar${settingsOpen ? " sidebar--settings-open" : ""}${needsClearance ? " sidebar--dock-clearance" : ""}`}
+    >
       {/* While settings is expanded the categories dim + shrink out of the way; closing
           settings restores them untouched. */}
-      <div className="sidebar__categories">
+      <div ref={catsRef} className="sidebar__categories">
         <button
           className={`sidebar__item${selectedId === ALL_CATEGORY_ID ? " sidebar__item--active" : ""}`}
           onClick={() => onSelect(ALL_CATEGORY_ID)}

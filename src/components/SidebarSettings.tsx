@@ -10,6 +10,7 @@ import { SettingsPanel } from "./SettingsPanel";
 export function SidebarSettings() {
   const open = useCatalogStore((s) => s.settingsOpen);
   const setOpen = useCatalogStore((s) => s.setSettingsOpen);
+  const dockShadow = useCatalogStore((s) => s.dockShadow);
   const ref = useRef<HTMLDivElement>(null);
 
   // Animating framer's height to the "auto" KEYWORD with a spring jump-cuts to the final
@@ -47,7 +48,7 @@ export function SidebarSettings() {
   }, [open, setOpen]);
 
   return (
-    <div className="settings-dock" ref={ref}>
+    <div className={`settings-dock${dockShadow ? " settings-dock--shadow" : ""}`} ref={ref}>
       <motion.div
         className="settings-dock__panel"
         initial={false}
