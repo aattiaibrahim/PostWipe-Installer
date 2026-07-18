@@ -19,9 +19,11 @@
         "minHeight": 600,
         "center": true,
         "resizable": true,
-        "decorations": false
+        "decorations": false,
+        "transparent": true
       }
     ],
+    "macOSPrivateApi": true,
     "security": {
       "csp": null
     }
@@ -51,7 +53,7 @@
     },
     "macOS": {
       "dmg": {
-        "background": "icons/dmg-background.png",
+        "background": "icons/dmg-background.tiff",
         "windowSize": {
           "width": 660,
           "height": 400

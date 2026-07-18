@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, memo } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
@@ -16,7 +16,9 @@ interface CategoryPanelProps {
   selectedCategoryId: string | null;
 }
 
-export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: CategoryPanelProps) {
+/* memo'd so Browse's urgent render (topbar animation frame) skips this heavy subtree; it
+   only re-renders in the deferred pass when the os/search props actually change. */
+export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: CategoryPanelProps) {
   const specialsUnlocked = useSpecialsStore((s) => s.unlocked);
   const justUnlocked = useSpecialsStore((s) => s.justUnlocked);
   // Vendor filter lives in the topbar now (VendorToggle) and applies to every category.
@@ -93,4 +95,4 @@ export function CategoryPanel({ catalog, os, searchQuery, selectedCategoryId }: 
       ))}
     </div>
   );
-}
+});

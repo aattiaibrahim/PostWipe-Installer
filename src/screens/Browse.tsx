@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { useDeferredValue, useEffect } from "react";
 import { useCatalogStore } from "../state/catalogStore";
 import { useOsDetect } from "../hooks/useOsDetect";
 import { useDownloadEvents } from "../hooks/useDownloadEvents";
@@ -23,6 +22,14 @@ export function Browse() {
   } = useCatalogStore();
   useOsDetect();
   useDownloadEvents();
+
+  // Switching OS re-renders every catalog row at once — done synchronously that blocks the
+  // main thread for ~200ms and freezes the vendor-toggle/search-bar animation into a snap.
+  // Deferring the values the heavy lists consume lets the topbar animate in an urgent render
+  // while the list catches up in an interruptible one (the lists are memo'd so the urgent
+  // pass skips them entirely).
+  const deferredOs = useDeferredValue(osFilter);
+  const deferredQuery = useDeferredValue(searchQuery);
 
   useEffect(() => {
     load();
@@ -51,25 +58,23 @@ export function Browse() {
     <div className="browse">
       <div className="browse__topbar">
         <OsPicker />
-        {/* Intel/AMD only makes sense on Windows; it slides away on macOS and the search bar
-            grows into the freed space (both animate via layout). */}
-        <AnimatePresence initial={false}>
-          {osFilter === "windows" && <VendorToggle key="vendor" />}
-        </AnimatePresence>
+        {/* Intel/AMD only makes sense on Windows; it collapses away on macOS and the search
+            bar grows into the freed space (CSS grid-track animation inside VendorToggle). */}
+        <VendorToggle open={osFilter === "windows"} />
         <SearchFilterBar />
       </div>
       <div className="browse__body">
         <CategorySidebar
           catalog={catalog}
-          os={osFilter}
-          searchQuery={searchQuery}
+          os={deferredOs}
+          searchQuery={deferredQuery}
           selectedId={selectedCategoryId}
           onSelect={setSelectedCategory}
         />
         <CategoryPanel
           catalog={catalog}
-          os={osFilter}
-          searchQuery={searchQuery}
+          os={deferredOs}
+          searchQuery={deferredQuery}
           selectedCategoryId={selectedCategoryId}
         />
       </div>

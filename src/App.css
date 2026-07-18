@@ -218,10 +218,24 @@ textarea {
   font-family: inherit;
 }
 
+/* Frameless-window rounding: inside Tauri the window itself is transparent (tauri.conf) and
+   the clip-path on <html> rounds off everything — fixed overlays and body portals included,
+   which a border-radius + overflow:hidden on an inner wrapper would miss. html/body stay
+   transparent (a body background would propagate to the canvas and paint square corners);
+   .app-shell paints the app surface instead. */
 html,
 body {
   margin: 0;
-  background-color: var(--bg);
+  background: transparent;
+}
+
+html.tauri {
+  clip-path: inset(0 round 14px);
+}
+
+/* Square again while the window fills the screen. */
+html.tauri.window-maximized {
+  clip-path: none;
 }
 
 ::selection {
@@ -325,6 +339,7 @@ h3 {
 .app-shell {
   position: relative;
   z-index: 1;
+  background-color: var(--bg);
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -791,8 +806,8 @@ h3 {
   content: "";
   position: absolute;
   inset: -2px;
-  z-index: -1;
-  border-radius: inherit;
+  z-index: -2;
+  border-radius: 12px;
   opacity: 0;
   transition: opacity 0.2s ease;
   background: conic-gradient(
@@ -804,6 +819,19 @@ h3 {
     transparent 360deg
   );
   filter: blur(5px);
+}
+
+/* Opaque plate matching the button face, layered over the glow so only its rim
+   shows — WebKit otherwise paints the blurred gradient across the whole button
+   as a squarish wash. */
+.app-row__action::before,
+.specials-detail__btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: inherit;
 }
 
 .app-row__action:hover:not(:disabled)::after,
@@ -2249,7 +2277,7 @@ h3 {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.12s ease, filter 0.12s ease;
+  transition: background-color 0.12s ease;
 }
 
 .specials-detail__btn:hover:not(:disabled) {
@@ -2268,8 +2296,7 @@ h3 {
 }
 
 .specials-detail__btn--primary:hover:not(:disabled) {
-  background-color: var(--accent);
-  filter: brightness(1.12);
+  background-color: color-mix(in srgb, var(--accent) 88%, white);
 }
 
 .specials-detail__hint {
@@ -2666,6 +2693,46 @@ h3 {
   font-size: 0.8rem;
 }
 
+/* Collapsible shell around the vendor toggle. max-width (not width) animates the collapse so
+   the toggle keeps its intrinsic size while open; the wrapper clips it as it shrinks and the
+   flex:1 search bar next to it absorbs the space every frame. (A grid 0fr↔1fr track doesn't
+   work here: as an auto-sized flex item the wrapper's width is indefinite, so a 0fr track
+   resolves to max-content and never collapses.) The negative margin cancels the topbar's
+   0.9rem flex gap while collapsed so the hidden toggle doesn't reserve a gap; visibility
+   flips after the transition so the collapsed control can't be focused or hovered. */
+.vendor-collapse {
+  display: flex;
+  flex: none;
+  overflow: hidden;
+  max-width: 0;
+  margin-left: -0.9rem;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    max-width 0.3s ease,
+    margin-left 0.3s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0.3s;
+}
+
+.vendor-collapse--open {
+  /* Slightly above the toggle's natural ~152px width; the clamp keeps the dead zone at the
+     ends of the transition small. */
+  max-width: 176px;
+  margin-left: 0;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    max-width 0.3s ease,
+    margin-left 0.3s ease,
+    opacity 0.25s ease 0.05s,
+    visibility 0s;
+}
+
+.vendor-collapse > .os-picker--vendor {
+  flex: none;
+}
+
 .category-panel__rows {
   display: flex;
   flex-direction: column;
@@ -3039,15 +3106,18 @@ h3 {
   font-weight: 500;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: filter 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
+/* Hover/active shift via color-mix rather than filter: brightness() — a filter
+   here wraps the glow pseudo-elements in a WebKit rasterization group that
+   renders as a hard-edged box on macOS. */
 .app-row__action:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background-color: color-mix(in srgb, var(--accent) 90%, white);
 }
 
 .app-row__action:active:not(:disabled) {
-  filter: brightness(0.95);
+  background-color: color-mix(in srgb, var(--accent) 92%, black);
 }
 
 .app-row__action:disabled {
@@ -3120,7 +3190,6 @@ h3 {
 .app-row__action--cancel:hover {
   background-color: var(--surface-hover);
   color: var(--text);
-  filter: none;
 }
 
 .app-row__pin-msg {

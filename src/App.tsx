@@ -8,6 +8,7 @@ import { UpdatePrompt } from "./components/UpdatePrompt";
 import { SidebarSettings } from "./components/SidebarSettings";
 import { useResizeGlitchGuard } from "./hooks/useResizeGlitchGuard";
 import { useApplyTheme } from "./hooks/useApplyTheme";
+import { useWindowChrome } from "./hooks/useWindowChrome";
 import { isTauri } from "./lib/tauriCommands";
 import { playClick } from "./lib/sound";
 import "./App.css";
@@ -27,6 +28,7 @@ function openRepo() {
 function App() {
   useResizeGlitchGuard();
   useApplyTheme();
+  useWindowChrome();
   const [splashDone, setSplashDone] = useState(false);
 
   // Global click chime. Capture phase so it fires even when a handler stops propagation
