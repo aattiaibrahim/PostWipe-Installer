@@ -1584,43 +1584,6 @@ h3 {
   transform: translateX(-2px);
 }
 
-/* "Select" toggle pinned to the right of the specials header. */
-.specials-page__select-toggle {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background-color: var(--surface-solid);
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.12s ease, color 0.12s ease;
-}
-
-.specials-page__select-toggle svg {
-  width: 15px;
-  height: 15px;
-}
-
-.specials-page__select-toggle:hover {
-  color: var(--text);
-}
-
-.specials-page__select-toggle--on {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-text);
-}
-
-.specials-page__select-toggle--on:hover {
-  color: var(--accent-text);
-  background-color: var(--accent-hover);
-}
-
 /* Square icon buttons for the header (download / open-folder). */
 .download-history__toggle--icon,
 .search-filter-bar__folder-btn--icon {
@@ -2866,11 +2829,17 @@ h3 {
 /* Batch-download pill — slides down from the very top, dead-center in the title bar,
    with the same ambient-glow treatment as the app rows. Horizontal centering is
    left:50% + framer x:"-50%" (set in the component, since framer owns transform). */
-.selection-bar {
+/* Positioning wrapper for the pill + its hover popover: the pill keeps overflow:hidden
+   (glow + pulse clipping) while the popover can hang below it unclipped. */
+.selection-wrap {
   position: absolute;
   left: 50%;
   top: 5px;
-  z-index: 1;
+  z-index: 40;
+}
+
+.selection-bar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -2879,6 +2848,123 @@ h3 {
   border-radius: 999px;
   background-color: var(--surface-solid);
   overflow: hidden;
+}
+
+/* Hover list of everything selected. The padding-top bridge keeps hover unbroken while the
+   pointer travels from the pill down into the panel. */
+.selection-popover {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-top: 8px;
+  display: none;
+}
+
+.selection-wrap:hover .selection-popover,
+.selection-popover:hover {
+  display: block;
+}
+
+.selection-popover__panel {
+  min-width: 240px;
+  max-width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.selection-popover__row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 8px;
+}
+
+.selection-popover__row:hover {
+  background-color: var(--surface-hover);
+}
+
+.selection-popover__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.selection-popover__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.selection-popover__remove {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.selection-popover__remove:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}
+
+/* The Select-Multiple tool that shares this slot while nothing is selected. */
+.select-mode-toggle {
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface-solid);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.12s ease, background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.select-mode-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.select-mode-toggle:hover {
+  color: var(--text);
+  background-color: var(--surface-hover);
+}
+
+.select-mode-toggle--on {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.select-mode-toggle--on:hover {
+  color: var(--accent-text);
+  background-color: var(--accent-hover);
 }
 
 /* Accent ring flashed (re-keyed) on every select/deselect — the pill's "pulse". */
@@ -3417,13 +3503,6 @@ h3 {
 }
 
 /* ---- "Select Multiple Apps" mode ---- */
-
-/* Active state for the topbar toggle. */
-.search-filter-bar__select-btn--on {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: var(--accent-text) !important;
-}
 
 /* Whole row/card is the checkbox while the mode is on. */
 .app-row--select-mode {
