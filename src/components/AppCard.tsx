@@ -13,6 +13,7 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { useSelectionStore } from "../state/selectionStore";
+import { useCatalogStore } from "../state/catalogStore";
 import { AppIcon } from "./AppIcon";
 
 interface AppCardProps {
@@ -48,6 +49,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
   const jobs = useDownloadQueueStore((s) => s.jobs);
   const selected = useSelectionStore((s) => s.selected.includes(app.id));
   const toggleSelected = useSelectionStore((s) => s.toggle);
+  const selectMode = useCatalogStore((s) => s.selectMode);
 
   const platform = app.platforms[os];
   const scriptId = platform?.script_id;
@@ -165,12 +167,17 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
       <div
-        className={`app-row${statusClass}${selected ? " app-row--selected" : ""}${hasDetails ? " app-row--expandable" : ""}`}
+        className={`app-row${statusClass}${selected ? " app-row--selected" : ""}${hasDetails ? " app-row--expandable" : ""}${selectMode && selectable ? " app-row--select-mode" : ""}`}
         onClick={(e) => {
           // The whole row toggles the info panel — but not when the click was really
           // aimed at a control inside it (checkbox, download/pin buttons, links).
-          if (!hasDetails) return;
           if ((e.target as HTMLElement).closest("button, input, a, label")) return;
+          // "Select Multiple Apps" mode: the whole row becomes the checkbox.
+          if (selectMode && selectable) {
+            toggleSelected(app.id);
+            return;
+          }
+          if (!hasDetails) return;
           setExpanded((x) => !x);
         }}
       >

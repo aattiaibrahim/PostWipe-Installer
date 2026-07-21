@@ -18,6 +18,10 @@ interface CatalogState {
   /** True while sidebar categories extend behind the fixed settings dock — the dock casts a
    *  drop shadow only then (measured by CategorySidebar, rendered by SidebarSettings). */
   dockShadow: boolean;
+  /** "Select Multiple Apps" mode: while on, clicking anywhere on a row/card toggles its
+   *  selection (instead of needing the little checkbox / opening the Specials detail). */
+  selectMode: boolean;
+  setSelectMode: (on: boolean) => void;
   setOsFilter: (os: Os) => void;
   setVendorFilter: (vendor: VendorFilter) => void;
   setSearchQuery: (query: string) => void;
@@ -37,6 +41,8 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   selectedCategoryId: ALL_CATEGORY_ID,
   settingsOpen: false,
   dockShadow: false,
+  selectMode: false,
+  setSelectMode: (on) => set({ selectMode: on }),
   setSettingsOpen: (open) => set({ settingsOpen: open }),
   setDockShadow: (on) => set({ dockShadow: on }),
   // Intel/AMD only means anything on Windows — leaving macOS clears any vendor filter so
