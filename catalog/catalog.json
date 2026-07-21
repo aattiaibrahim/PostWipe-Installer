@@ -209,6 +209,27 @@
               "filename": "Deceive.exe"
             }
           }
+        },
+        {
+          "id": "steam-deck-tools",
+          "name": "Steam Deck Tools",
+          "bio": "Fan, power, and controller tools for a Steam Deck on Windows.",
+          "description": "Steam Deck Tools is a suite for running Windows on a Steam Deck: fan control, TDP and power limits, an FPS/hardware performance overlay, and a Steam Controller driver that restores proper gamepad behaviour. Bring it along whenever you reinstall Windows on the Deck.",
+          "icon": "steam-deck-tools.png",
+          "domain": "github.com",
+          "website": "https://github.com/ayufan/steam-deck-tools",
+          "kind": "download",
+          "notes": "GitHub ayufan/steam-deck-tools, verified live 2026-07-17: latest 0.7.4 ships SteamDeckTools-<ver>-setup.exe plus -portable/-debug zips; pattern targets the setup exe. Windows-only (runs on a Deck booted into Windows).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "ayufan/steam-deck-tools",
+                "asset_pattern": "SteamDeckTools-*-setup.exe"
+              },
+              "filename": "SteamDeckTools-setup.exe"
+            }
+          }
         }
       ]
     },
@@ -1089,6 +1110,35 @@
               "filename": "TeamSpeak3-Client-macosx.dmg"
             }
           }
+        },
+        {
+          "id": "vencord",
+          "name": "Vencord Installer",
+          "bio": "Installs the Vencord client mod for Discord.",
+          "description": "Vencord is an open-source Discord client modification that adds hundreds of optional plugins — custom themes, a better GIF picker, message tweaks, and privacy options — by patching the desktop Discord app. The installer patches or unpatches Discord in one click, so run it after Discord itself.",
+          "icon": "vencord.png",
+          "domain": "vencord.dev",
+          "website": "https://vencord.dev",
+          "kind": "download",
+          "notes": "GitHub Vencord/Installer, verified live 2026-07-17: v1.4.0 ships VencordInstaller.exe (GUI) and VencordInstallerCli.exe on Windows, VencordInstaller.MacOS.zip on macOS. Exact-name patterns so the GUI build wins over the Cli one. Client mods are technically against Discord's ToS.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Vencord/Installer",
+                "asset_pattern": "VencordInstaller.exe"
+              },
+              "filename": "VencordInstaller.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "Vencord/Installer",
+                "asset_pattern": "VencordInstaller.MacOS.zip"
+              },
+              "filename": "VencordInstaller.MacOS.zip"
+            }
+          }
         }
       ]
     },
@@ -1701,6 +1751,62 @@
             "snippet": {
               "label": "PowerShell (run as Administrator)",
               "code": "$action = New-ScheduledTaskAction -Execute \"C:\\Program Files\\obs-studio\\bin\\64bit\\obs64.exe\" -Argument \"--disable-shutdown-check --startreplaybuffer --minimize-to-tray\" -WorkingDirectory \"C:\\Program Files\\obs-studio\\bin\\64bit\\\"\n$trigger = New-ScheduledTaskTrigger -AtLogon\nRegister-ScheduledTask -TaskName \"OBS Replay Buffer\" -Action $action -Trigger $trigger -RunLevel Highest -Force"
+            }
+          }
+        },
+        {
+          "id": "houdoku",
+          "name": "Houdoku",
+          "bio": "Free, open-source manga reader and library manager.",
+          "description": "Houdoku is a desktop manga reader and library manager. It tracks series across multiple online sources, opens local archives (.zip/.cbz/.rar), syncs progress with AniList and MyAnimeList, and has a customizable reader with both paged and long-strip modes.",
+          "icon": "houdoku.png",
+          "domain": "github.com",
+          "website": "https://github.com/xgi/houdoku",
+          "kind": "download",
+          "notes": "GitHub xgi/houdoku, verified live 2026-07-17: latest v2.16.0 ships Houdoku-Setup-<ver>.exe (installer) and Houdoku-<ver>.exe (portable); macOS is arm64 dmg ONLY (no x64 build).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "xgi/houdoku",
+                "asset_pattern": "Houdoku-Setup-*.exe"
+              },
+              "filename": "Houdoku-Setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "xgi/houdoku",
+                "asset_pattern": "Houdoku-*-arm64.dmg"
+              },
+              "filename": "Houdoku.dmg"
+            }
+          }
+        },
+        {
+          "id": "insta360-link-controller",
+          "name": "Insta360 Link Controller",
+          "bio": "Control software for Insta360 Link AI webcams.",
+          "description": "Insta360 Link Controller configures Insta360 Link, Link 2, and Link 2C webcams — AI subject tracking and gesture control, manual pan/tilt/zoom, exposure and white balance, HDR, and the whiteboard/desk view modes. Needed to change anything beyond the camera's defaults.",
+          "icon": "insta360.png",
+          "domain": "insta360.com",
+          "website": "https://www.insta360.com/download/insta360-link2pro",
+          "kind": "download",
+          "notes": "Pinned to 2.2.4(build14) as requested; both URLs verified live 2026-07-17 (exe 619 MB, pkg 772 MB, HTTP 200). These are hashed wassets.insta360.com paths with NO stable 'latest' alias, so they must be re-pinned by re-scraping the insta360-link2pro download page when a newer build ships.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://wassets.insta360.com/common/ba64efbd74f6411aa9c356b95aa5126e/Insta360LinkController_2.2.4(build14).exe"
+              },
+              "filename": "Insta360LinkController_2.2.4(build14).exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://wassets.insta360.com/common/f5d12724880a43bbb77753d6daa1e9cd/Insta360LinkController_2.2.4(build14).pkg"
+              },
+              "filename": "Insta360LinkController_2.2.4(build14).pkg"
             }
           }
         }
