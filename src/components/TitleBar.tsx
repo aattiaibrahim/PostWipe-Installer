@@ -3,6 +3,7 @@ import { isTauri } from "../lib/tauriCommands";
 import { isMacOS } from "../lib/platform";
 import { SelectionBar } from "./SelectionBar";
 import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
+import { SelectModeToggle } from "./SelectModeToggle";
 
 const appWindow = isTauri ? getCurrentWindow() : null;
 
@@ -17,6 +18,9 @@ export function TitleBar() {
         <span className="title-bar__dot" />
         <span className="title-bar__title">PostWipe Installer</span>
       </div>
+      {/* One shared title-bar slot: the Select-Multiple tool shows while nothing is
+          selected, and swaps out for whichever "N selected" bar applies. */}
+      <SelectModeToggle />
       <SelectionBar />
       <SpecialsSelectionBar />
       {showCustomControls && (
