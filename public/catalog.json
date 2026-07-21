@@ -209,27 +209,6 @@
               "filename": "Deceive.exe"
             }
           }
-        },
-        {
-          "id": "steam-deck-tools",
-          "name": "Steam Deck Tools",
-          "bio": "Fan, power, and controller tools for a Steam Deck on Windows.",
-          "description": "Steam Deck Tools is a suite for running Windows on a Steam Deck: fan control, TDP and power limits, an FPS/hardware performance overlay, and a Steam Controller driver that restores proper gamepad behaviour. Bring it along whenever you reinstall Windows on the Deck.",
-          "icon": "steam-deck-tools.png",
-          "domain": "github.com",
-          "website": "https://github.com/ayufan/steam-deck-tools",
-          "kind": "download",
-          "notes": "GitHub ayufan/steam-deck-tools, verified live 2026-07-17: latest 0.7.4 ships SteamDeckTools-<ver>-setup.exe plus -portable/-debug zips; pattern targets the setup exe. Windows-only (runs on a Deck booted into Windows).",
-          "platforms": {
-            "windows": {
-              "resolver": {
-                "type": "github_release",
-                "repo": "ayufan/steam-deck-tools",
-                "asset_pattern": "SteamDeckTools-*-setup.exe"
-              },
-              "filename": "SteamDeckTools-setup.exe"
-            }
-          }
         }
       ]
     },
@@ -1807,6 +1786,35 @@
                 "url": "https://wassets.insta360.com/common/f5d12724880a43bbb77753d6daa1e9cd/Insta360LinkController_2.2.4(build14).pkg"
               },
               "filename": "Insta360LinkController_2.2.4(build14).pkg"
+            }
+          }
+        },
+        {
+          "id": "elgato-stream-deck",
+          "name": "Elgato Stream Deck",
+          "bio": "Control software for Elgato Stream Deck macro keypads.",
+          "description": "The Stream Deck app drives Elgato's Stream Deck keypads — bind scenes, hotkeys, macros, media controls, and plugin actions to each LCD key, with multi-action sequences, folders, and per-app profiles. Required for the hardware to do anything beyond its defaults.",
+          "icon": "stream-deck.png",
+          "domain": "elgato.com",
+          "website": "https://www.elgato.com/us/en/s/downloads",
+          "kind": "download",
+          "notes": "Elgato downloads page, verified live 2026-07-17: current 6.2.1.18825, both URLs return 206. The msi/pkg links sit in the STATIC page HTML, so html_regex follows version bumps automatically (unlike Insta360's hashed CDN paths, which must be re-pinned). Each regex matched exactly one URL on the page.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://www.elgato.com/us/en/s/downloads",
+                "url_regex": "https://edge\\.elgato\\.com/egc/windows/sd/Stream_Deck_[0-9.]+\\.msi"
+              },
+              "filename": "StreamDeckSetup.msi"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://www.elgato.com/us/en/s/downloads",
+                "url_regex": "https://edge\\.elgato\\.com/egc/macos/sd/Stream_Deck_[0-9.]+\\.pkg"
+              },
+              "filename": "StreamDeck.pkg"
             }
           }
         }

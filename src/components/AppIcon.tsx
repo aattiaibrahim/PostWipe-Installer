@@ -18,7 +18,7 @@ import codexIcon from "../assets/app-icons/codex.png";
 import flaresolverrIcon from "../assets/app-icons/flaresolverr.png";
 import houdokuIcon from "../assets/app-icons/houdoku.png";
 import vencordIcon from "../assets/app-icons/vencord.png";
-import steamDeckToolsIcon from "../assets/app-icons/steam-deck-tools.png";
+import streamDeckIcon from "../assets/app-icons/stream-deck.png";
 import insta360Icon from "../assets/app-icons/insta360.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
@@ -47,7 +47,7 @@ const BUNDLED_ICONS: Record<string, string> = {
   flaresolverr: flaresolverrIcon,
   houdoku: houdokuIcon,
   vencord: vencordIcon,
-  "steam-deck-tools": steamDeckToolsIcon,
+  "elgato-stream-deck": streamDeckIcon,
   // insta360.com's favicon IS their real mark — bundled so it renders without a network hop.
   "insta360-link-controller": insta360Icon,
   // Script entries have no domain — they'd fall through to a monogram letter.
@@ -59,10 +59,10 @@ const BUNDLED_ICONS: Record<string, string> = {
  *  the luminance-picked chip the single-color brand icons use. */
 const BUNDLED_CHIP_BG: Record<string, string> = {
   "music-presence": "#1c1d21",
-  // Near-black marks on a transparent field (Vencord's "V", the Steam Deck Tools controller
+  // Near-black marks on a transparent field (Vencord's "V", Elgato's Stream Deck line-art
   // glyph, Insta360's black tile) would disappear against the dark themes' surface.
   vencord: "#f2f2f3",
-  "steam-deck-tools": "#f2f2f3",
+  "elgato-stream-deck": "#f2f2f3",
   "insta360-link-controller": "#f2f2f3",
 };
 
