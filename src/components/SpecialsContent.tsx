@@ -116,7 +116,10 @@ function ItemGrid({
   onOpenItem: (item: Item) => void;
 }) {
   const sessionKey = useSpecialsStore((s) => s.sessionKey);
-  const selecting = useSpecialsSelectionStore((s) => s.selected.length > 0);
+  const hasSelection = useSpecialsSelectionStore((s) => s.selected.length > 0);
+  const selectMode = useCatalogStore((s) => s.selectMode);
+  const setSelectMode = useCatalogStore((s) => s.setSelectMode);
+  const selecting = hasSelection || selectMode;
   const atRoot = crumbs.length === 0;
   return (
     <motion.div
@@ -126,18 +129,49 @@ function ItemGrid({
       exit={{ opacity: 0, x: -18 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <div className="specials-page__header">
-        <button className="specials-page__back" onClick={onBack} aria-label="Back">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
+      {/* The WHOLE frosted bar is the back control, not just the little arrow (the select
+          toggle on the right opts out via stopPropagation). */}
+      <div
+        className="specials-page__header specials-page__header--clickable"
+        onClick={onBack}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onBack();
+          }
+        }}
+        aria-label="Back"
+      >
+        <span className="specials-page__back" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
             <path d="m14.5 5-7 7 7 7" />
           </svg>
-        </button>
+        </span>
         <h2 className="specials-page__title">
           {title}
           {crumbs.map((c) => (
             <span key={c} className="specials-page__crumb"> ▸ {c}</span>
           ))}
         </h2>
+        <button
+          className={`specials-page__select-toggle${selectMode ? " specials-page__select-toggle--on" : ""}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectMode(!selectMode);
+          }}
+          aria-pressed={selectMode}
+          title={selectMode ? "Exit multi-select mode" : "Select multiple items"}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="5" width="6" height="6" rx="1.5" />
+            <path d="m4.6 8 1.4 1.4L8.6 6.8" />
+            <rect x="3" y="14" width="6" height="6" rx="1.5" />
+            <path d="M13 7h8M13 11h5M13 16h8M13 20h5" />
+          </svg>
+          <span>{selectMode ? "Done" : "Select"}</span>
+        </button>
       </div>
       {hero && atRoot && <img className="specials-page__hero" src={hero} alt={title} />}
       {meta.blurb && atRoot && <p className="specials-page__blurb">{meta.blurb}</p>}

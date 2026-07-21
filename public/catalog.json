@@ -474,10 +474,17 @@
           "domain": "msi.com",
           "website": "https://www.msi.com/Landing/afterburner/graphics-cards",
           "kind": "download",
-          "notes": "Re-probed 2026-07-12, still genuinely blocked: the once-stable download.msi.com/uti_exe/vga/MSIAfterburnerSetup.zip now 302s to the landing page (which 403s non-browser clients; Referer + ?ver params don't help — Akamai bot-gating), msi.com refuses automated browsers outright, and the Guru3D mirrors (ftp.nluug.nl etc.) were shut down in favor of their JS download gate. Unlike TIDAL/Qobuz this one is blocked at the mechanism level, not a stale URL. Site-only until the webview resolver lands.",
+          "notes": "Webview resolver landed 2026-07-21: the landing page's JS mints tokenized edge URLs (__token__=exp~hmac, Akamai) per pageview; the hidden webview grabs the '4.6.6 (Final)' anchor. Selector keys on the STABLE filename uti_exe/vga/MSIAfterburnerSetup.zip — the beta uses a versioned name (MSIAfterburnerSetup467Beta2.zip) so it can never match; 'Final' always keeps the plain name. Verified 2026-07-21: token URL downloads for a plain client (206, application/zip). History: direct CDN 302s to the landing page and the page 403s non-browser clients, hence webview and not html_regex.",
           "platforms": {
             "windows": {
-              "filename": "MSIAfterburnerSetup.exe"
+              "resolver": {
+                "type": "webview",
+                "page_url": "https://www.msi.com/Landing/afterburner/graphics-cards",
+                "selector": "a[href*='uti_exe/vga/MSIAfterburnerSetup.zip']",
+                "attr": "href",
+                "wait_ms": 6000
+              },
+              "filename": "MSIAfterburnerSetup.zip"
             }
           }
         }

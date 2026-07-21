@@ -33,8 +33,27 @@ export function SelectionBar() {
           exit={{ opacity: 0, y: -34, x: "-50%" }}
           transition={{ type: "spring", stiffness: 420, damping: 32 }}
         >
+          {/* Re-keyed on every count change: an expanding ring + a count pop, so the pill
+              visibly pulses each time something is selected or deselected. */}
+          <motion.span
+            key={`ring-${selected.length}`}
+            className="selection-bar__pulse"
+            initial={{ opacity: 0.55, scale: 1 }}
+            animate={{ opacity: 0, scale: 1.18 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            aria-hidden="true"
+          />
           <span className="selection-bar__count">
-            {selected.length} selected
+            <motion.span
+              key={selected.length}
+              style={{ display: "inline-block" }}
+              initial={{ scale: 1.45 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 22 }}
+            >
+              {selected.length}
+            </motion.span>{" "}
+            selected
           </span>
           <div className="selection-bar__actions">
             <button className="selection-bar__clear" onClick={clear}>

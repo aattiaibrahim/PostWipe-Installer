@@ -1,6 +1,7 @@
 import type { SpecialsItem as Item } from "../state/specialsContentStore";
 import { useSpecialsStore } from "../state/specialsStore";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
+import { useCatalogStore } from "../state/catalogStore";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { resolvePreviews } from "../lib/specialsPreview";
 import { FrozenGif } from "./FrozenGif";
@@ -32,6 +33,7 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
   const jobs = useDownloadQueueStore((s) => s.jobs);
   const selected = useSpecialsSelectionStore((s) => s.selected.includes(item.objectKey));
   const toggleSelected = useSpecialsSelectionStore((s) => s.toggle);
+  const selectMode = useCatalogStore((s) => s.selectMode);
 
   const job = Object.values(jobs)
     .reverse()
@@ -50,11 +52,14 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
       className={`specials-card${selected ? " specials-card--selected" : ""}`}
       role="button"
       tabIndex={0}
-      onClick={() => onOpen(item)}
+      // In "Select Multiple Apps" mode the whole card is the checkbox (links stay links —
+      // they can't be batch-downloaded, so they always open their detail).
+      onClick={() => (selectMode && !isLink ? toggleSelected(item.objectKey) : onOpen(item))}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onOpen(item);
+          if (selectMode && !isLink) toggleSelected(item.objectKey);
+          else onOpen(item);
         }
       }}
     >

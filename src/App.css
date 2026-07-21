@@ -20,11 +20,11 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(255, 255, 255, 0.85);
   --surface-solid: #ffffff;
   --surface-hover: rgba(255, 255, 255, 0.95);
-  --border: rgba(26, 47, 251, 0.12);
-  --text: #0e0f1a;
-  /* Darker than the old #565b72 — sidebar categories and other muted text were hard to
-     read against the light surfaces. */
-  --text-muted: #3f4459;
+  --border: rgba(26, 47, 251, 0.2);
+  --text: #0b0c14;
+  /* Legibility pass 2026-07-21: darker again (was #3f4459, before that #565b72) — muted
+     text sits on translucent glass over colorful blobs, which eats apparent contrast. */
+  --text-muted: #2e3348;
   --accent: #1a2ffb;
   --accent-hover: #1526d1;
   --accent-text: #ffffff;
@@ -55,9 +55,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(19, 20, 32, 0.85);
   --surface-solid: #181926;
   --surface-hover: rgba(30, 32, 48, 0.95);
-  --border: rgba(126, 138, 255, 0.16);
-  --text: #f5f6fb;
-  --text-muted: #a3a7c2;
+  --border: rgba(126, 138, 255, 0.24);
+  --text: #f7f8fd;
+  --text-muted: #bcc0d8;
   --accent: #4a5bfc;
   --accent-hover: #6673ff;
   --accent-text: #ffffff;
@@ -78,9 +78,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(59, 66, 82, 0.85);
   --surface-solid: #3b4252;
   --surface-hover: rgba(76, 86, 106, 0.95);
-  --border: rgba(136, 192, 208, 0.18);
+  --border: rgba(136, 192, 208, 0.26);
   --text: #eceff4;
-  --text-muted: #b8c1d1;
+  --text-muted: #ccd4e2;
   --accent: #88c0d0;
   --accent-hover: #8fbcbb;
   --accent-text: #2e3440;
@@ -100,9 +100,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(51, 54, 71, 0.85);
   --surface-solid: #343746;
   --surface-hover: rgba(68, 71, 90, 0.95);
-  --border: rgba(189, 147, 249, 0.2);
+  --border: rgba(189, 147, 249, 0.28);
   --text: #f8f8f2;
-  --text-muted: #b9bcd0;
+  --text-muted: #cccee0;
   --accent: #bd93f9;
   --accent-hover: #caa9fa;
   --accent-text: #282a36;
@@ -122,9 +122,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(49, 50, 68, 0.85);
   --surface-solid: #313244;
   --surface-hover: rgba(69, 71, 90, 0.95);
-  --border: rgba(203, 166, 247, 0.2);
-  --text: #cdd6f4;
-  --text-muted: #a6adc8;
+  --border: rgba(203, 166, 247, 0.28);
+  --text: #dee5fa;
+  --text-muted: #bac1da;
   --accent: #cba6f7;
   --accent-hover: #dcc0fb;
   --accent-text: #1e1e2e;
@@ -144,9 +144,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(60, 56, 54, 0.85);
   --surface-solid: #3c3836;
   --surface-hover: rgba(80, 73, 69, 0.95);
-  --border: rgba(250, 189, 47, 0.18);
+  --border: rgba(250, 189, 47, 0.26);
   --text: #ebdbb2;
-  --text-muted: #bdae93;
+  --text-muted: #d5c4a1;
   --accent: #fabd2f;
   --accent-hover: #fac03f;
   --accent-text: #282828;
@@ -166,9 +166,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(38, 35, 58, 0.85);
   --surface-solid: #26233a;
   --surface-hover: rgba(64, 61, 82, 0.95);
-  --border: rgba(235, 188, 186, 0.18);
+  --border: rgba(235, 188, 186, 0.26);
   --text: #e0def4;
-  --text-muted: #b6b1d4;
+  --text-muted: #cac5e4;
   --accent: #ebbcba;
   --accent-hover: #f2cdcb;
   --accent-text: #191724;
@@ -188,9 +188,9 @@ html.is-resizing .ambient-bg__blob {
   --surface: rgba(255, 252, 242, 0.85);
   --surface-solid: #fffcf2;
   --surface-hover: rgba(238, 232, 213, 0.95);
-  --border: rgba(38, 139, 210, 0.18);
+  --border: rgba(38, 139, 210, 0.28);
   --text: #073642;
-  --text-muted: #4a6570;
+  --text-muted: #35525e;
   --accent: #268bd2;
   --accent-hover: #1f76b4;
   --accent-text: #ffffff;
@@ -218,24 +218,21 @@ textarea {
   font-family: inherit;
 }
 
-/* Frameless-window rounding: inside Tauri the window itself is transparent (tauri.conf) and
-   the clip-path on <html> rounds off everything — fixed overlays and body portals included,
-   which a border-radius + overflow:hidden on an inner wrapper would miss. html/body stay
-   transparent (a body background would propagate to the canvas and paint square corners);
-   .app-shell paints the app surface instead. */
 html,
 body {
   margin: 0;
   background: transparent;
 }
 
-html.tauri:not(.platform-macos) {
-  clip-path: inset(0 round 14px);
-}
-
-/* Square again while the window fills the screen. */
-html.tauri.window-maximized {
-  clip-path: none;
+/* Frameless-window rounding on Windows now comes from the OS itself: lib.rs asks DWM for
+   DWMWCP_ROUND (native Win11 corners + shadow, auto-squared while maximized). The old CSS
+   clip-path only drew rounded content while the opaque window stayed a rectangle, so the
+   corners showed as square wedges — that's why "the rounded corners weren't working". The
+   canvas is painted here (like macOS below) so nothing white peeks through. On Windows 10
+   the DWM call no-ops and the window is simply square, like every other Win10 app. */
+html.tauri:not(.platform-macos),
+html.tauri:not(.platform-macos) body {
+  background-color: var(--bg);
 }
 
 /* macOS keeps native decorations (rounded corners come from the OS), so paint the canvas
@@ -593,6 +590,13 @@ h3 {
   filter: saturate(0.5);
   transform: scale(0.965);
   pointer-events: none;
+}
+
+/* While settings is expanded the dimmed categories aren't interactive, so their scrollbar
+   is dead weight — hide it; it comes back the moment settings contracts. (Doubled class
+   because the main `.sidebar { overflow-y: auto }` block sits later in the file.) */
+.sidebar.sidebar--settings-open {
+  overflow-y: hidden;
 }
 
 .title-bar__window-controls {
@@ -1552,16 +1556,69 @@ h3 {
   align-items: center;
   gap: 0.6rem;
   padding: 0.5rem 0.4rem;
-  /* Stays pinned at the top while the grid scrolls, so the back arrow is always reachable.
-     A frosted bar — the old gradient band read as a hard "cut out" edge. */
+  /* Stays pinned while the grid scrolls. top matches the sticky topbar's height (same 76px
+     the sidebar uses) — at top:0 this bar slid UNDERNEATH the frosted topbar (z 30 vs 15)
+     and looked like it had scrolled away. */
   position: sticky;
-  top: 0;
+  top: 76px;
   z-index: 15;
   margin: 0 -0.2rem;
   border-radius: 10px;
-  background-color: color-mix(in srgb, var(--bg) 72%, transparent);
+  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* The whole frosted bar is the back control now, not just the arrow. */
+.specials-page__header--clickable {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.specials-page__header--clickable:hover {
+  background-color: color-mix(in srgb, var(--surface-hover) 85%, transparent);
+}
+
+.specials-page__header--clickable:hover .specials-page__back {
+  background-color: var(--surface-hover);
+  transform: translateX(-2px);
+}
+
+/* "Select" toggle pinned to the right of the specials header. */
+.specials-page__select-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface-solid);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.specials-page__select-toggle svg {
+  width: 15px;
+  height: 15px;
+}
+
+.specials-page__select-toggle:hover {
+  color: var(--text);
+}
+
+.specials-page__select-toggle--on {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.specials-page__select-toggle--on:hover {
+  color: var(--accent-text);
+  background-color: var(--accent-hover);
 }
 
 /* Square icon buttons for the header (download / open-folder). */
@@ -2824,6 +2881,16 @@ h3 {
   overflow: hidden;
 }
 
+/* Accent ring flashed (re-keyed) on every select/deselect — the pill's "pulse". */
+.selection-bar__pulse {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
 .selection-bar::before {
   content: "";
   position: absolute;
@@ -3318,4 +3385,51 @@ h3 {
 
 .download-history__count--active {
   background-color: var(--verified);
+}
+
+/* ---- Legibility pass (2026-07-21): heavier weights + full-strength icons so muted text
+   and glyphs read clearly on the glass surfaces, in every theme. Geist is a variable font,
+   so the in-between weights render true instead of faux-bolding. ---- */
+
+.sidebar__label,
+.app-row__bio,
+.specials-card__meta,
+.specials-detail__meta,
+.app-row__domain {
+  font-weight: 500;
+}
+
+.sidebar__count {
+  font-weight: 600;
+}
+
+.app-row__name {
+  font-weight: 620;
+}
+
+/* Category glyphs and the app-icon chips get a touch more presence. */
+.sidebar__icon {
+  stroke-width: 2;
+}
+
+.app-icon--favicon {
+  border-color: color-mix(in srgb, var(--text-muted) 32%, transparent);
+}
+
+/* ---- "Select Multiple Apps" mode ---- */
+
+/* Active state for the topbar toggle. */
+.search-filter-bar__select-btn--on {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-text) !important;
+}
+
+/* Whole row/card is the checkbox while the mode is on. */
+.app-row--select-mode {
+  cursor: pointer;
+}
+
+.app-row--select-mode:hover {
+  background-color: var(--surface-hover);
 }
