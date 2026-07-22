@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState, type CSSProperties } from "react";
+import { memo, useEffect, useRef, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
@@ -54,36 +54,28 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   const setDockShadow = useCatalogStore((s) => s.setDockShadow);
   const query = searchQuery.trim().toLowerCase();
 
-  // The settings dock floats fixed over the sidebar's bottom edge. Two measurements drive
-  // the interplay: `needsClearance` (the list is tall enough that its box runs behind the
-  // dock — add bottom padding so the last rows can scroll clear of it) and `dockShadow`
-  // (rows are behind the dock *right now* — the dock casts a shadow only then). Clearance
-  // is computed from the content's own height, not the padded box, so toggling the padding
-  // can't feed back into the measurement.
+  // The settings dock is fixed to the bottom-left, below this sidebar. Two things are
+  // measured: the sidebar's max-height (so the list ends just above the dock rather than
+  // running behind it) and `dockShadow` (rows are behind the dock right now — it casts a
+  // shadow only then, which happens while the settings panel is expanded over them).
   const navRef = useRef<HTMLElement>(null);
   const catsRef = useRef<HTMLDivElement>(null);
-  const [needsClearance, setNeedsClearance] = useState(false);
   useEffect(() => {
     const nav = navRef.current;
     const cats = catsRef.current;
     if (!nav || !cats) return;
     const dock = document.querySelector(".settings-dock");
     const measure = () => {
-      // While settings is EXPANDED the categories are dimmed and non-interactive, so there's
-      // nothing to scroll clear of — and the expanded dock's much higher top would balloon
-      // the clearance (up to 220px), leaving a big empty gap under the last row (Specials).
-      if (settingsOpen) {
-        nav.style.setProperty("--dock-clearance", "0px");
-        setNeedsClearance(false);
-        setDockShadow(false);
-        return;
-      }
+      // Cap the list so it simply STOPS just above the Settings dock, instead of running
+      // behind it and reserving padding underneath to compensate — that padding was the
+      // dead space under the last row (Specials). Measured off the Settings BUTTON: the dock
+      // is bottom-anchored, so the button's top edge stays put whether the settings panel is
+      // expanded or not, which keeps this stable across the expand animation.
+      const btn = dock?.querySelector(".sidebar-settings__btn") as HTMLElement | null;
+      const limit = btn ? btn.getBoundingClientRect().top - 12 : window.innerHeight - 52;
+      const navTop = nav.getBoundingClientRect().top;
+      nav.style.maxHeight = `${Math.max(160, Math.floor(limit - navTop))}px`;
       const dockTop = dock ? dock.getBoundingClientRect().top : Infinity;
-      // How far the sidebar's box runs behind the dock; the box bottom is capped by
-      // max-height, so adding the padding can't feed the overlap back on itself.
-      const overlap = Math.max(0, nav.getBoundingClientRect().bottom - dockTop);
-      nav.style.setProperty("--dock-clearance", `${overlap ? Math.min(overlap + 12, 220) : 0}px`);
-      setNeedsClearance(overlap > 0);
       setDockShadow(cats.getBoundingClientRect().bottom > dockTop + 2);
     };
     measure();
@@ -117,7 +109,7 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   return (
     <nav
       ref={navRef}
-      className={`sidebar${settingsOpen ? " sidebar--settings-open" : ""}${needsClearance ? " sidebar--dock-clearance" : ""}`}
+      className={`sidebar${settingsOpen ? " sidebar--settings-open" : ""}`}
     >
       {/* While settings is expanded the categories dim + shrink out of the way; closing
           settings restores them untouched. */}

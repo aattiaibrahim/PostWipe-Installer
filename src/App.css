@@ -1363,15 +1363,9 @@ h3 {
   overflow-y: auto;
 }
 
-/* When the list is tall enough to run behind the settings dock, reserve scroll room so the
-   last rows (Specials) can scroll fully clear of it instead of being stuck underneath.
-   The exact clearance is measured by CategorySidebar (box overlap + slack). The transition
-   matters: the ResizeObserver re-measures in steps WHILE the dock expands/collapses, and
-   untransitioned padding jumps made the rows above the dock visibly jitter. */
-.sidebar--dock-clearance {
-  padding-bottom: var(--dock-clearance, 3rem);
-  transition: padding-bottom 0.24s ease;
-}
+/* No bottom "clearance" padding any more — the sidebar's max-height is measured in
+   CategorySidebar so the list simply ends above the dock. The old padding reserved dead
+   space under the last row (Specials). */
 
 .sidebar__item {
   position: relative;
@@ -2790,8 +2784,10 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.55rem 0.5rem;
-  border-radius: 10px;
+  padding: 0.55rem 0.6rem;
+  /* Softer pill to match the rest of the rounded chrome now that the straight dividers
+     between rows are gone. */
+  border-radius: 12px;
   overflow: hidden;
   transition: background-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
   /* Rows offscreen skip layout + paint entirely; `auto` keeps a row's real size once it has
@@ -3153,8 +3149,13 @@ h3 {
   }
 }
 
+/* No divider lines between rows. Each row's hover/selected state is a rounded pill, and a
+   full-bleed straight line running into that curve is what made the rows read as "supposed
+   to be straight but curved". Separation now comes from the pill + a small gap, so the whole
+   list is consistently rounded. (To bring lines back, prefer an INSET one — e.g.
+   `margin: 0 0.5rem` — so it stops short of the pill's corners.) */
 .app-row-wrapper + .app-row-wrapper {
-  border-top: 1px solid var(--border);
+  margin-top: 3px;
 }
 
 .app-row__fallback {
