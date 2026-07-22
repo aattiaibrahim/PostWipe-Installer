@@ -266,6 +266,17 @@ html.tauri:not(.platform-macos) .app-footer {
   border-bottom-right-radius: var(--win-radius);
 }
 
+/* Same treatment for every full-bleed fixed overlay: these cover the whole window (so they
+   own all four corners) and the dimmed/blurred ones are composited for the same reason. */
+html.tauri:not(.platform-macos) .launch-splash,
+html.tauri:not(.platform-macos) .confirm-overlay,
+html.tauri:not(.platform-macos) .specials-detail,
+html.tauri:not(.platform-macos) .preview-lightbox,
+html.tauri:not(.platform-macos) .specials-unlock-burst {
+  border-radius: var(--win-radius);
+  overflow: hidden;
+}
+
 /* macOS keeps native decorations (rounded corners come from the OS), so paint the canvas
    instead of clipping, and clear the overlay traffic lights at the top-left. */
 html.platform-macos,
@@ -573,12 +584,8 @@ h3 {
 
 .settings-dock__panel-inner {
   padding-bottom: 0.35rem;
-  /* On a short window the full settings content is taller than the space above the gear —
-     cap it and scroll inside, so the panel can never climb past the title bar. The measured
-     height (SidebarSettings' ResizeObserver) shrinks with the cap automatically.
-     Budget, from the viewport bottom up: 40 dock offset + 40 title bar + 12 gap + ~38 the
-     Settings button + ~14 dock padding + ~6 panel padding ≈ 150. The old 130 was ~22px too
-     generous, which is exactly how far it still climbed past the title bar. */
+  /* The real cap is measured in SidebarSettings and applied inline (magic numbers were wrong
+     twice); this is only the pre-measurement fallback for the first paint. */
   max-height: calc(100vh - 152px);
   overflow-y: auto;
 }

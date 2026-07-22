@@ -27,6 +27,34 @@ export function SidebarSettings() {
     return () => ro.disconnect();
   }, []);
 
+  // How tall the panel is allowed to get, MEASURED rather than guessed from magic numbers:
+  // the gap between the title bar and this dock's own (fixed) bottom edge, minus the always
+  // visible Settings button and the dock's padding. Guessed constants were wrong twice — the
+  // panel either climbed past the title bar or ran past the bottom and clipped its content.
+  const [maxPanelH, setMaxPanelH] = useState<number | null>(null);
+  useEffect(() => {
+    const dock = ref.current;
+    if (!dock) return;
+    const measure = () => {
+      const titleBar = document.querySelector(".title-bar");
+      const topLimit = (titleBar ? titleBar.getBoundingClientRect().bottom : 0) + 12;
+      const btn = dock.querySelector<HTMLElement>(".sidebar-settings__btn");
+      const avail = dock.getBoundingClientRect().bottom - topLimit - (btn?.offsetHeight ?? 38) - 18;
+      setMaxPanelH(Math.max(140, Math.floor(avail)));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.documentElement);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  // Cap independently of the CSS too, so the very first frame can never overshoot.
+  const panelHeight = maxPanelH === null ? contentHeight : Math.min(contentHeight, maxPanelH);
+
   useEffect(() => {
     if (!open) return;
     // While the Download-All confirm dialog (portaled to <body>) is up, its clicks and
@@ -54,12 +82,16 @@ export function SidebarSettings() {
         initial={false}
         // Deterministic tween, not a spring: any overshoot on an animated `height` reveals
         // an empty strip under the content for a frame ("the bottom portion glitches").
-        animate={{ height: open ? contentHeight : 0, opacity: open ? 1 : 0 }}
+        animate={{ height: open ? panelHeight : 0, opacity: open ? 1 : 0 }}
         transition={{ duration: 0.26, ease: [0.33, 0.8, 0.3, 1] }}
         style={{ overflow: "hidden", pointerEvents: open ? "auto" : "none" }}
         aria-hidden={!open}
       >
-        <div ref={innerRef} className="settings-dock__panel-inner">
+        <div
+          ref={innerRef}
+          className="settings-dock__panel-inner"
+          style={maxPanelH === null ? undefined : { maxHeight: maxPanelH }}
+        >
           <SettingsPanel />
         </div>
       </motion.div>
