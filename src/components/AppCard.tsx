@@ -182,7 +182,9 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
         }}
       >
         <span className="app-row__status-glow" aria-hidden="true" />
-        {selectable && (
+        {/* The circle only exists while "Select Multiple Apps" mode is on (or this row is
+            already part of a selection) — idle rows stay clean. */}
+        {selectable && (selectMode || selected) && (
           <input
             type="checkbox"
             className="app-row__select"

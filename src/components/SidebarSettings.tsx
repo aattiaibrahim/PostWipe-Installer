@@ -52,11 +52,10 @@ export function SidebarSettings() {
       <motion.div
         className="settings-dock__panel"
         initial={false}
-        // Near-critical damping: the old springier value overshot the measured height,
-        // flashing an empty strip under the content at the end of the expand ("the bottom
-        // portion glitches").
+        // Deterministic tween, not a spring: any overshoot on an animated `height` reveals
+        // an empty strip under the content for a frame ("the bottom portion glitches").
         animate={{ height: open ? contentHeight : 0, opacity: open ? 1 : 0 }}
-        transition={{ type: "spring", stiffness: 420, damping: 46 }}
+        transition={{ duration: 0.26, ease: [0.33, 0.8, 0.3, 1] }}
         style={{ overflow: "hidden", pointerEvents: open ? "auto" : "none" }}
         aria-hidden={!open}
       >
