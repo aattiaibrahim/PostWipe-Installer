@@ -69,6 +69,15 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
     if (!nav || !cats) return;
     const dock = document.querySelector(".settings-dock");
     const measure = () => {
+      // While settings is EXPANDED the categories are dimmed and non-interactive, so there's
+      // nothing to scroll clear of — and the expanded dock's much higher top would balloon
+      // the clearance (up to 220px), leaving a big empty gap under the last row (Specials).
+      if (settingsOpen) {
+        nav.style.setProperty("--dock-clearance", "0px");
+        setNeedsClearance(false);
+        setDockShadow(false);
+        return;
+      }
       const dockTop = dock ? dock.getBoundingClientRect().top : Infinity;
       // How far the sidebar's box runs behind the dock; the box bottom is capped by
       // max-height, so adding the padding can't feed the overlap back on itself.
@@ -89,7 +98,7 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
       window.removeEventListener("resize", measure);
       setDockShadow(false);
     };
-  }, [setDockShadow]);
+  }, [setDockShadow, settingsOpen]);
 
   // Counts mirror exactly what the panel shows: platform + vendor + search filters.
   const countIn = (category: (typeof catalog.categories)[number]) =>
