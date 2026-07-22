@@ -20,6 +20,7 @@ jobs:
       version: ${{ steps.bump.outputs.version }}
       sha: ${{ steps.bump.outputs.sha }}
       notes: ${{ steps.bump.outputs.notes }}
+      release_id: ${{ steps.bump.outputs.release_id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +35,8 @@ jobs:
       - name: Bump version
         id: bump
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           current=$(node -p "require('./package.json').version")
           IFS='.' read -r major minor patch <<< "$current"
@@ -66,6 +69,21 @@ jobs:
           git commit -m "chore: release v$new_version [skip ci]"
           git push
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          # Create THE draft release here, exactly once, and hand its id to the platform
+          # builds. When each build's tauri-action did its own find-or-create on the tag,
+          # the two jobs could race the lookup and each create a draft — one got published
+          # (with only that platform's assets) and the other stranded the rest (v0.1.71
+          # shipped mac-only that way, with the Windows .exe stuck in an orphan draft).
+          printf '### Changes\n%s\n' "$notes" > /tmp/release-notes.md
+          release_id=$(gh api -X POST "repos/$GITHUB_REPOSITORY/releases" \
+            -f tag_name="v$new_version" \
+            -f name="v$new_version" \
+            -F draft=true \
+            -f target_commitish="$(git rev-parse HEAD)" \
+            -f body="$(cat /tmp/release-notes.md)" \
+            --jq '.id')
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
 
   build:
     needs: version
@@ -118,6 +136,8 @@ jobs:
       # release at that moment serves a latest.json with only darwin platforms — Windows
       # update checks in that window fail with "none of the fallback platforms were found".
       # The publish job below flips the draft live only once all builds succeed.
+      # `releaseId` (created once by the version job) instead of tagName: both builds upload
+      # to the SAME draft, so they can't race a find-or-create and split the release.
       - name: Build, sign, and upload to draft release
         uses: tauri-apps/tauri-action@v0
         env:
@@ -125,11 +145,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: v${{ needs.version.outputs.version }}
-          releaseName: v${{ needs.version.outputs.version }}
-          releaseBody: ${{ needs.version.outputs.notes }}
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ needs.version.outputs.release_id }}
           args: ${{ matrix.args }}
 
   # Publishes the draft only when both platform builds succeeded, so releases/latest (and the
@@ -142,4 +158,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit "v${{ needs.version.outputs.version }}" --repo "${{ github.repository }}" --draft=false --latest
+        # By id, not tag — a tag lookup is ambiguous the moment a duplicate draft exists.
+        run: |
+          gh api -X PATCH "repos/${{ github.repository }}/releases/${{ needs.version.outputs.release_id }}" \
+            -F draft=false -f make_latest=true
