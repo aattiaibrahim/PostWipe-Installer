@@ -52,24 +52,22 @@ export function SpecialsSelectionBar() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               aria-hidden="true"
             />
-            <span className="selection-bar__count">
-              <motion.span
-                key={selected.length}
-                style={{ display: "inline-block" }}
-                initial={{ scale: 1.45 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 22 }}
-              >
-                {selected.length}
-              </motion.span>{" "}
-              selected
-            </span>
             <div className="selection-bar__actions">
               <button className="selection-bar__clear" onClick={clear}>
                 Clear
               </button>
+              {/* Count lives ONLY in this button (no "N selected" label repeating it). */}
               <button className="selection-bar__download" onClick={downloadSelected}>
-                Download {selected.length}
+                Download{" "}
+                <motion.span
+                  key={selected.length}
+                  style={{ display: "inline-block" }}
+                  initial={{ scale: 1.45 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                >
+                  {selected.length}
+                </motion.span>
               </button>
             </div>
           </div>
