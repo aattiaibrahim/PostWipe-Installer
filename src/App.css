@@ -224,15 +224,19 @@ body {
   background: transparent;
 }
 
-/* Frameless-window rounding on Windows now comes from the OS itself: lib.rs asks DWM for
-   DWMWCP_ROUND (native Win11 corners + shadow, auto-squared while maximized). The old CSS
-   clip-path only drew rounded content while the opaque window stayed a rectangle, so the
-   corners showed as square wedges — that's why "the rounded corners weren't working". The
-   canvas is painted here (like macOS below) so nothing white peeks through. On Windows 10
-   the DWM call no-ops and the window is simply square, like every other Win10 app. */
-html.tauri:not(.platform-macos),
-html.tauri:not(.platform-macos) body {
-  background-color: var(--bg);
+/* Frameless-window rounding on Windows: the window itself is TRANSPARENT (set in
+   tauri.windows.conf.json — Windows-only, macOS keeps native corners) and this clip rounds
+   everything drawn in it, fixed overlays and body portals included. The radius can be
+   anything we like this way — DWM's native rounding is locked to 8px, which read as barely
+   rounded. html/body must stay transparent (the base rule above) or the painted background
+   would fill the square window rect and bring the corner wedges back. */
+html.tauri:not(.platform-macos) {
+  clip-path: inset(0 round 16px);
+}
+
+/* Square again while the window fills the screen. */
+html.tauri.window-maximized {
+  clip-path: none;
 }
 
 /* macOS keeps native decorations (rounded corners come from the OS), so paint the canvas
@@ -542,6 +546,11 @@ h3 {
 
 .settings-dock__panel-inner {
   padding-bottom: 0.35rem;
+  /* On a short window the full settings content is taller than the space above the gear —
+     cap it and scroll inside, so the panel can never climb past the title bar. The measured
+     height (SidebarSettings' ResizeObserver) shrinks with the cap automatically. */
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
 }
 
 
@@ -1311,6 +1320,10 @@ h3 {
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   max-height: calc(100vh - 140px);
   overflow-y: auto;
+  /* Keep the scrollbar's column reserved even while it's hidden (settings open) — without
+     this the scrollbar popping back on contract reflowed the rows narrower→wider, which
+     read as the categories "shrinking for a moment". */
+  scrollbar-gutter: stable;
 }
 
 /* When the list is tall enough to run behind the settings dock, reserve scroll room so the
@@ -2843,7 +2856,8 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  padding: 2px 4px 2px 0.8rem;
+  /* No left text anymore (the count lives in the Download button) — even padding. */
+  padding: 2px 4px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background-color: var(--surface-solid);
@@ -2990,13 +3004,6 @@ h3 {
 .selection-bar > * {
   position: relative;
   z-index: 1;
-}
-
-.selection-bar__count {
-  font-size: 0.76rem;
-  font-weight: 500;
-  color: var(--text);
-  white-space: nowrap;
 }
 
 .selection-bar__actions {

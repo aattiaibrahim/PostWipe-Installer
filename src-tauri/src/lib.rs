@@ -37,31 +37,6 @@ fn install_panic_hook() {
     }));
 }
 
-/// Windows 11 native rounded corners for the frameless window. The old approach — a CSS
-/// `clip-path` rounding the page — only *drew* rounded content while the window itself
-/// stayed an opaque rectangle, so the corners showed as square wedges. Asking DWM for
-/// `DWMWCP_ROUND` clips the real window (content, shadows, maximize squaring all handled
-/// by the OS). On Windows 10 the call fails harmlessly and corners stay square, which is
-/// what every Win10 app looks like anyway.
-#[cfg(windows)]
-fn apply_native_rounded_corners(app: &tauri::App) {
-    use tauri::Manager;
-    use windows_sys::Win32::Graphics::Dwm::{DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND};
-    for (_label, window) in app.webview_windows() {
-        if let Ok(hwnd) = window.hwnd() {
-            let preference: i32 = DWMWCP_ROUND;
-            unsafe {
-                let _ = DwmSetWindowAttribute(
-                    hwnd.0 as _,
-                    DWMWA_WINDOW_CORNER_PREFERENCE as u32,
-                    &preference as *const i32 as *const core::ffi::c_void,
-                    std::mem::size_of::<i32>() as u32,
-                );
-            }
-        }
-    }
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     install_panic_hook();
@@ -70,11 +45,6 @@ pub fn run() {
     cleanup_legacy_startup_pins();
 
     tauri::Builder::default()
-        .setup(|_app| {
-            #[cfg(windows)]
-            apply_native_rounded_corners(_app);
-            Ok(())
-        })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
