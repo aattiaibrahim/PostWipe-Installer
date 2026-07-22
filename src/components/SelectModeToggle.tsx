@@ -28,13 +28,17 @@ export function SelectModeToggle() {
           aria-pressed={selectMode}
           title={selectMode ? "Exit multi-select mode" : "Click apps to select several at once"}
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="5" width="6" height="6" rx="1.5" />
-            <path d="m4.6 8 1.4 1.4L8.6 6.8" />
-            <rect x="3" y="14" width="6" height="6" rx="1.5" />
-            <path d="M13 7h8M13 11h5M13 16h8M13 20h5" />
-          </svg>
-          <span>{selectMode ? "Click apps to select…" : "Select Multiple Apps"}</span>
+          {/* Styled as the same pill the "Clear | Download N" bar uses, with the label as
+              an accent chip matching the Download button — the swap reads as one control. */}
+          <span className="select-mode-toggle__label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="5" width="6" height="6" rx="1.5" />
+              <path d="m4.6 8 1.4 1.4L8.6 6.8" />
+              <rect x="3" y="14" width="6" height="6" rx="1.5" />
+              <path d="M13 7h8M13 11h5M13 16h8M13 20h5" />
+            </svg>
+            {selectMode ? "Click apps to select…" : "Select Multiple Apps"}
+          </span>
         </motion.button>
       )}
     </AnimatePresence>

@@ -1328,9 +1328,12 @@ h3 {
 
 /* When the list is tall enough to run behind the settings dock, reserve scroll room so the
    last rows (Specials) can scroll fully clear of it instead of being stuck underneath.
-   The exact clearance is measured by CategorySidebar (box overlap + slack). */
+   The exact clearance is measured by CategorySidebar (box overlap + slack). The transition
+   matters: the ResizeObserver re-measures in steps WHILE the dock expands/collapses, and
+   untransitioned padding jumps made the rows above the dock visibly jitter. */
 .sidebar--dock-clearance {
   padding-bottom: var(--dock-clearance, 3rem);
+  transition: padding-bottom 0.24s ease;
 }
 
 .sidebar__item {
@@ -2940,7 +2943,9 @@ h3 {
   color: var(--danger);
 }
 
-/* The Select-Multiple tool that shares this slot while nothing is selected. */
+/* The Select-Multiple tool that shares this slot while nothing is selected. The outer pill
+   mirrors .selection-bar and the label chip mirrors .selection-bar__download exactly, so
+   swapping between this and "Clear | Download N" reads as one control changing state. */
 .select-mode-toggle {
   position: absolute;
   left: 50%;
@@ -2948,37 +2953,34 @@ h3 {
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.32rem 0.85rem;
+  padding: 2px 4px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background-color: var(--surface-solid);
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
   cursor: pointer;
-  transition: color 0.12s ease, background-color 0.12s ease, border-color 0.12s ease;
 }
 
-.select-mode-toggle svg {
-  width: 14px;
-  height: 14px;
-}
-
-.select-mode-toggle:hover {
-  color: var(--text);
-  background-color: var(--surface-hover);
-}
-
-.select-mode-toggle--on {
+.select-mode-toggle__label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.8rem;
+  border-radius: 999px;
   background-color: var(--accent);
-  border-color: var(--accent);
   color: var(--accent-text);
+  font-size: 0.74rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: filter 0.15s ease;
 }
 
-.select-mode-toggle--on:hover {
-  color: var(--accent-text);
-  background-color: var(--accent-hover);
+.select-mode-toggle__label svg {
+  width: 13px;
+  height: 13px;
+}
+
+.select-mode-toggle:hover .select-mode-toggle__label {
+  filter: brightness(1.08);
 }
 
 /* Accent ring flashed (re-keyed) on every select/deselect — the pill's "pulse". */

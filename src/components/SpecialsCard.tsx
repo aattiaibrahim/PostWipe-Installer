@@ -85,7 +85,9 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
         ) : (
           <span className="specials-card__glyph specials-card__glyph--initial">{item.name.charAt(0).toUpperCase()}</span>
         )}
-        {!isLink && (
+        {/* Check circle only exists while select mode is on (or this card is already
+            selected) — idle cards stay clean. */}
+        {!isLink && (selectMode || selected) && (
           <button
             className={`specials-card__check${selected ? " specials-card__check--on" : ""}`}
             aria-label={selected ? `Deselect ${item.name}` : `Select ${item.name}`}
