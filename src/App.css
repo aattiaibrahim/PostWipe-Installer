@@ -641,8 +641,12 @@ h3 {
 /* While settings is expanded the dimmed categories aren't interactive, so their scrollbar
    is dead weight — hide it; it comes back the moment settings contracts. (Doubled class
    because the main `.sidebar { overflow-y: auto }` block sits later in the file.) */
-.sidebar.sidebar--settings-open {
-  overflow-y: hidden;
+/* Hide the scrollbar by making the THUMB transparent, not by switching overflow. Switching
+   overflow (and the scrollbar-gutter reservation it then needed) changed the sidebar's
+   content width — that's what put an extra empty strip down the right-hand side. Leaving
+   overflow untouched means zero reflow: the track just goes invisible. */
+.sidebar.sidebar--settings-open::-webkit-scrollbar-thumb {
+  background-color: transparent;
 }
 
 .title-bar__window-controls {
@@ -1357,10 +1361,6 @@ h3 {
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
   max-height: calc(100vh - 140px);
   overflow-y: auto;
-  /* Keep the scrollbar's column reserved even while it's hidden (settings open) — without
-     this the scrollbar popping back on contract reflowed the rows narrower→wider, which
-     read as the categories "shrinking for a moment". */
-  scrollbar-gutter: stable;
 }
 
 /* When the list is tall enough to run behind the settings dock, reserve scroll room so the
