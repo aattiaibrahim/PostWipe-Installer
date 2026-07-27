@@ -16,9 +16,9 @@
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.10.1",
     "framer-motion": "^12.42.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "simple-icons": "^16.26.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "simple-icons": "^16.27.1",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
