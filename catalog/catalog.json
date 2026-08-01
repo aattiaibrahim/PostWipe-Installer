@@ -1824,6 +1824,35 @@
               "filename": "StreamDeck.pkg"
             }
           }
+        },
+        {
+          "id": "bambu-studio",
+          "name": "Bambu Studio",
+          "bio": "Slicer for Bambu Lab (and other) 3D printers.",
+          "description": "Bambu Studio is Bambu Lab's slicer — it turns 3D models into printer instructions with per-object settings, tree/organic supports, multi-plate layout, and multi-color/AMS printing. Forked from PrusaSlicer, so it also drives many non-Bambu printers. Pairs with Bambu Handy for cloud/LAN sending.",
+          "icon": "bambu-studio.png",
+          "domain": "bambulab.com",
+          "website": "https://github.com/bambulab/BambuStudio",
+          "kind": "download",
+          "notes": "GitHub bambulab/BambuStudio, verified live 2026-07-22: latest v02.07.01.62. Assets carry an embedded version+timestamp (Bambu_Studio_win-<ver>-<ts>.exe / Bambu_Studio_mac-<ver>-<ts>.dmg), so patterns wildcard the middle; each matched exactly one asset and both downloaded (206). Windows also ships a portable .zip (pattern targets .exe only); the mac .dmg is a single universal build (no separate arm64/x64).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "bambulab/BambuStudio",
+                "asset_pattern": "Bambu_Studio_win-*.exe"
+              },
+              "filename": "BambuStudioSetup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "bambulab/BambuStudio",
+                "asset_pattern": "Bambu_Studio_mac-*.dmg"
+              },
+              "filename": "BambuStudio.dmg"
+            }
+          }
         }
       ]
     },

@@ -20,6 +20,7 @@ import houdokuIcon from "../assets/app-icons/houdoku.png";
 import vencordIcon from "../assets/app-icons/vencord.png";
 import streamDeckIcon from "../assets/app-icons/stream-deck.png";
 import insta360Icon from "../assets/app-icons/insta360.png";
+import bambuStudioIcon from "../assets/app-icons/bambu-studio.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
@@ -50,6 +51,7 @@ const BUNDLED_ICONS: Record<string, string> = {
   "elgato-stream-deck": streamDeckIcon,
   // insta360.com's favicon IS their real mark — bundled so it renders without a network hop.
   "insta360-link-controller": insta360Icon,
+  "bambu-studio": bambuStudioIcon,
   // Script entries have no domain — they'd fall through to a monogram letter.
   "restart-audio-service": batIcon,
   "kill-valorant-process": batIcon,
