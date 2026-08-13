@@ -1863,18 +1863,19 @@
           "domain": "nvidia.com",
           "website": "https://www.nvidia.com/en-us/geforce/broadcasting/broadcast-app/",
           "kind": "download",
-          "notes": "NVIDIA Broadcast page, verified live 2026-07-22 with the resolver's UA: page 200, the international.download.nvidia.com installer URL is in the STATIC HTML so html_regex follows version bumps (currently v2.2.1); regex matched exactly one URL and it downloaded (206). RTX-only app. Startup guide uses the exe's own '-minimized' argument (confirmed via NVIDIA forums 2026-07-22) to land in the system tray - Broadcast has NO in-app minimize-to-tray/auto-start toggle, so don't reference one. Scheduled task is non-elevated.",
+          "notes": "NVIDIA Broadcast page, verified live 2026-07-22 with the resolver's UA: page 200, installer URL in static HTML so html_regex follows version bumps (currently v2.2.1); one regex match, downloaded 206. RTX-only. Startup guide uses the exe's own '-minimized' arg (confirmed via NVIDIA forums) via an HKCU Run key - genuinely no-admin, unlike Register-ScheduledTask which needs elevation to WRITE the task store (a scheduled task RUNS non-elevated but can't be REGISTERED without UAC - don't label a scheduled-task recipe 'no admin'). Broadcast has NO in-app minimize-to-tray or auto-start toggle, and is single-instance (mutex), so duplicate starters are redundant, not dangerous.",
           "guide": {
             "title": "Run NVIDIA Broadcast at startup (minimized to tray)",
             "steps": [
               "Install NVIDIA Broadcast (needs a GeForce/Quadro RTX GPU and a current driver - it won't run on GTX/AMD/Intel).",
-              "Run the PowerShell command below. It registers a login task that launches Broadcast straight to the system tray via its own -minimized flag. Non-elevated, so there's no UAC prompt - copy it, paste into PowerShell, press Enter.",
-              "If your install path is different, fix the $exe line first (the default is shown). To remove it later: Unregister-ScheduledTask -TaskName 'NVIDIA Broadcast (startup)' -Confirm:$false.",
-              "Test it right now without rebooting - run:  & $exe -minimized  - Broadcast should appear only as a tray icon down by the clock, with no window popping up."
+              "Check what already starts Broadcast first, so you don't stack a duplicate: open Task Manager > Startup apps and look for NVIDIA Broadcast. If it's already there and enabled, you're done - skip the rest. (Broadcast is single-instance anyway, so a duplicate won't run two copies or break anything - it's just redundant.)",
+              "Otherwise run the PowerShell below. It adds a per-user startup entry that launches Broadcast straight to the tray via its -minimized flag - no admin, no UAC prompt. Copy it, paste into PowerShell, press Enter.",
+              "It then shows up in Task Manager > Startup as 'NVIDIA Broadcast' where you can toggle it off, or remove it by command: Remove-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'NVIDIA Broadcast'.",
+              "Test it now without rebooting - run:  & $exe -minimized  - Broadcast should appear only as a tray icon by the clock, with no window."
             ],
             "snippet": {
               "label": "PowerShell (no admin needed)",
-              "code": "# Auto-start NVIDIA Broadcast minimized to the system tray at login (no admin needed).\n$exe = \"C:\\Program Files\\NVIDIA Corporation\\NVIDIA Broadcast\\NVIDIA Broadcast.exe\"\n$action  = New-ScheduledTaskAction -Execute $exe -Argument \"-minimized\"\n$trigger = New-ScheduledTaskTrigger -AtLogOn\nRegister-ScheduledTask -TaskName \"NVIDIA Broadcast (startup)\" -Action $action -Trigger $trigger -Force"
+              "code": "# Start NVIDIA Broadcast minimized to the tray at login. Per-user, NO admin/UAC.\n$exe = \"C:\\Program Files\\NVIDIA Corporation\\NVIDIA Broadcast\\NVIDIA Broadcast.exe\"\n$run = \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\"\nSet-ItemProperty -Path $run -Name \"NVIDIA Broadcast\" -Value \"`\"$exe`\" -minimized\""
             }
           },
           "platforms": {
