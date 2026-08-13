@@ -1863,19 +1863,18 @@
           "domain": "nvidia.com",
           "website": "https://www.nvidia.com/en-us/geforce/broadcasting/broadcast-app/",
           "kind": "download",
-          "notes": "NVIDIA Broadcast page, verified live 2026-07-22 with the resolver's UA: page 200, the international.download.nvidia.com installer URL is in the STATIC HTML so html_regex follows version bumps (currently v2.2.1); regex matched exactly one URL and it downloaded (206). RTX-only app. The guide's scheduled-task command is non-elevated (no RunLevel Highest) since a tray app needs no admin.",
+          "notes": "NVIDIA Broadcast page, verified live 2026-07-22 with the resolver's UA: page 200, the international.download.nvidia.com installer URL is in the STATIC HTML so html_regex follows version bumps (currently v2.2.1); regex matched exactly one URL and it downloaded (206). RTX-only app. Startup guide uses the exe's own '-minimized' argument (confirmed via NVIDIA forums 2026-07-22) to land in the system tray - Broadcast has NO in-app minimize-to-tray/auto-start toggle, so don't reference one. Scheduled task is non-elevated.",
           "guide": {
             "title": "Run NVIDIA Broadcast at startup (minimized to tray)",
             "steps": [
               "Install NVIDIA Broadcast (needs a GeForce/Quadro RTX GPU and a current driver - it won't run on GTX/AMD/Intel).",
-              "Open Broadcast, click the gear (Settings), and turn ON 'Minimize: Minimize to the system tray' so it lives in the tray instead of the taskbar.",
-              "Run the PowerShell command below to register a login task that launches Broadcast automatically. It's non-elevated, so there's no UAC prompt - copy it, paste into PowerShell, press Enter.",
-              "If the install path differs on your machine, fix the $exe line first (the default is the one shown). To undo later: Unregister-ScheduledTask -TaskName 'NVIDIA Broadcast (startup)' -Confirm:$false.",
-              "Prefer no command? Broadcast's own gear menu has an 'Auto Start' toggle that does the same thing - use that OR this task, not both, or it'll launch twice."
+              "Run the PowerShell command below. It registers a login task that launches Broadcast straight to the system tray via its own -minimized flag. Non-elevated, so there's no UAC prompt - copy it, paste into PowerShell, press Enter.",
+              "If your install path is different, fix the $exe line first (the default is shown). To remove it later: Unregister-ScheduledTask -TaskName 'NVIDIA Broadcast (startup)' -Confirm:$false.",
+              "Test it right now without rebooting - run:  & $exe -minimized  - Broadcast should appear only as a tray icon down by the clock, with no window popping up."
             ],
             "snippet": {
               "label": "PowerShell (no admin needed)",
-              "code": "# Auto-start NVIDIA Broadcast at login (no admin needed). It sits in the system tray.\n$exe = \"C:\\Program Files\\NVIDIA Corporation\\NVIDIA Broadcast\\NVIDIA Broadcast.exe\"\n$action  = New-ScheduledTaskAction -Execute $exe\n$trigger = New-ScheduledTaskTrigger -AtLogOn\nRegister-ScheduledTask -TaskName \"NVIDIA Broadcast (startup)\" -Action $action -Trigger $trigger -Force"
+              "code": "# Auto-start NVIDIA Broadcast minimized to the system tray at login (no admin needed).\n$exe = \"C:\\Program Files\\NVIDIA Corporation\\NVIDIA Broadcast\\NVIDIA Broadcast.exe\"\n$action  = New-ScheduledTaskAction -Execute $exe -Argument \"-minimized\"\n$trigger = New-ScheduledTaskTrigger -AtLogOn\nRegister-ScheduledTask -TaskName \"NVIDIA Broadcast (startup)\" -Action $action -Trigger $trigger -Force"
             }
           },
           "platforms": {
