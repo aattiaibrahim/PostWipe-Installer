@@ -1853,6 +1853,41 @@
               "filename": "BambuStudio.dmg"
             }
           }
+        },
+        {
+          "id": "nvidia-broadcast",
+          "name": "NVIDIA Broadcast",
+          "bio": "AI mic noise removal, virtual background & auto-frame (RTX only).",
+          "description": "NVIDIA Broadcast turns any room into a home studio: AI noise and echo removal on your mic and speakers, virtual background / blur / auto-frame on your webcam, all running on RTX Tensor cores. Great for streams, meetings, and recordings. Requires a GeForce/Quadro RTX GPU and an up-to-date driver.",
+          "icon": "nvidia-broadcast.png",
+          "domain": "nvidia.com",
+          "website": "https://www.nvidia.com/en-us/geforce/broadcasting/broadcast-app/",
+          "kind": "download",
+          "notes": "NVIDIA Broadcast page, verified live 2026-07-22 with the resolver's UA: page 200, the international.download.nvidia.com installer URL is in the STATIC HTML so html_regex follows version bumps (currently v2.2.1); regex matched exactly one URL and it downloaded (206). RTX-only app. The guide's scheduled-task command is non-elevated (no RunLevel Highest) since a tray app needs no admin.",
+          "guide": {
+            "title": "Run NVIDIA Broadcast at startup (minimized to tray)",
+            "steps": [
+              "Install NVIDIA Broadcast (needs a GeForce/Quadro RTX GPU and a current driver - it won't run on GTX/AMD/Intel).",
+              "Open Broadcast, click the gear (Settings), and turn ON 'Minimize: Minimize to the system tray' so it lives in the tray instead of the taskbar.",
+              "Run the PowerShell command below to register a login task that launches Broadcast automatically. It's non-elevated, so there's no UAC prompt - copy it, paste into PowerShell, press Enter.",
+              "If the install path differs on your machine, fix the $exe line first (the default is the one shown). To undo later: Unregister-ScheduledTask -TaskName 'NVIDIA Broadcast (startup)' -Confirm:$false.",
+              "Prefer no command? Broadcast's own gear menu has an 'Auto Start' toggle that does the same thing - use that OR this task, not both, or it'll launch twice."
+            ],
+            "snippet": {
+              "label": "PowerShell (no admin needed)",
+              "code": "# Auto-start NVIDIA Broadcast at login (no admin needed). It sits in the system tray.\n$exe = \"C:\\Program Files\\NVIDIA Corporation\\NVIDIA Broadcast\\NVIDIA Broadcast.exe\"\n$action  = New-ScheduledTaskAction -Execute $exe\n$trigger = New-ScheduledTaskTrigger -AtLogOn\nRegister-ScheduledTask -TaskName \"NVIDIA Broadcast (startup)\" -Action $action -Trigger $trigger -Force"
+            }
+          },
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://www.nvidia.com/en-us/geforce/broadcasting/broadcast-app/",
+                "url_regex": "https://international\\.download\\.nvidia\\.com/Windows/broadcast/[0-9.]+/NVIDIA_Broadcast_v[0-9.]+\\.exe"
+              },
+              "filename": "NVIDIA_Broadcast_Setup.exe"
+            }
+          }
         }
       ]
     },

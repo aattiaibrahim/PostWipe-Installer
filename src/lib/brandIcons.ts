@@ -50,6 +50,7 @@ export const BRAND_ICONS: Record<string, BrandIcon> = {
   telegram: siTelegram,
   teamspeak: siTeamspeak,
   "nvidia-profile-inspector": siNvidia,
+  "nvidia-broadcast": siNvidia,
   "riot-client": siRiotgames,
   spotify: siSpotify,
   tidal: siTidal,
