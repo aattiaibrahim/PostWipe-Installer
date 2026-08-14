@@ -787,6 +787,34 @@ h3 {
   cursor: pointer;
 }
 
+/* Padlock that re-locks the Specials vault. Secondary (outline) next to the accent-filled
+   Check for Updates, since it's a "take it back" action rather than a primary one. */
+.settings-panel__lock-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background-color: var(--surface-solid);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.settings-panel__lock-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.settings-panel__lock-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background-color: var(--surface-hover);
+}
+
 .settings-panel__check-btn:disabled {
   border-color: var(--border);
   background-color: var(--bg);

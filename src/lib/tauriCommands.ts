@@ -107,3 +107,32 @@ export async function saveTheme(theme: string): Promise<void> {
     /* best-effort; localStorage still holds it for the session */
   }
 }
+
+/** Remembered Specials key (see settings.rs). Returns null when the vault should be
+ *  locked: never unlocked, explicitly locked, or the app was updated since. */
+export async function getVaultKey(): Promise<string | null> {
+  if (!isTauri) return null;
+  try {
+    return await invoke<string | null>("get_vault_key");
+  } catch {
+    return null;
+  }
+}
+
+export async function saveVaultKey(key: string): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_vault_key", { key });
+  } catch {
+    /* best-effort — the vault just relocks next launch */
+  }
+}
+
+export async function clearVaultKey(): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("clear_vault_key");
+  } catch {
+    /* best-effort */
+  }
+}
