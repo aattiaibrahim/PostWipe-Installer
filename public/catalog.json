@@ -1822,7 +1822,7 @@
           "id": "elgato-stream-deck",
           "name": "Elgato Stream Deck",
           "bio": "Control software for Elgato Stream Deck macro keypads.",
-          "description": "The Stream Deck app drives Elgato's Stream Deck keypads — bind scenes, hotkeys, macros, media controls, and plugin actions to each LCD key, with multi-action sequences, folders, and per-app profiles. Required for the hardware to do anything beyond its defaults.",
+          "description": "The Stream Deck app drives Elgato's Stream Deck keypads — bind scenes, hotkeys, macros, media controls, and plugin actions to each LCD key, with multi-action sequences, folders, and per-app profiles. Required for the hardware to do anything beyond its defaults. A ready-made example setup is in the Specials vault (Stream Deck Profiles) — import it to get a working layout with Discord, OBS, media, audio-switching and soundboard pages instead of starting from a blank deck.",
           "icon": "stream-deck.png",
           "domain": "elgato.com",
           "website": "https://www.elgato.com/us/en/s/downloads",
@@ -1845,6 +1845,16 @@
               },
               "filename": "StreamDeck.pkg"
             }
+          },
+          "guide": {
+            "title": "Import the example profile setup",
+            "steps": [
+              "Install the Stream Deck app first and plug in the deck, so it has somewhere to put the profiles.",
+              "Open Specials ▸ Stream Deck Profiles and download 'Example Stream Deck Setup'.",
+              "In the Stream Deck app, open the ☰ menu (top-right) ▸ Profiles ▸ Import, then pick the downloaded .streamDeckProfilesBackup file.",
+              "It imports as its own profile - your existing layout isn't overwritten. Switch between them from the profile dropdown at the top of the app.",
+              "Some keys need their plugin installed to work (Discord, OBS Studio, SoundPad, Govee) - grab those from the Stream Deck Store, and re-pick your own devices/lights since the buttons reference the original setup's hardware."
+            ]
           }
         },
         {
