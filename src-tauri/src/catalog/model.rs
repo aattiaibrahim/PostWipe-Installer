@@ -122,10 +122,16 @@ pub enum ResolverSpec {
         url_regex: Option<String>,
     },
     /// Like `Html`, but regexes the raw page body instead of matching a CSS selector —
-    /// for URLs that live outside element attributes (e.g. inside an HTML comment).
+    /// for URLs that live outside element attributes (e.g. inside an HTML comment), or
+    /// non-HTML manifests. With `base_url` the regex may match a RELATIVE path/filename
+    /// (e.g. an electron-updater `latest.yml` lists `RSI Launcher-Setup-2.15.4.exe`) and
+    /// it's joined onto the base to form the full URL; without it the match must be a
+    /// complete URL, as before.
     HtmlRegex {
         page_url: String,
         url_regex: String,
+        #[serde(default)]
+        base_url: Option<String>,
     },
     /// Like `Html`, but for pages whose download link only exists after client-side JS
     /// runs (e.g. Windscribe, TeamSpeak, PyCharm). Resolved via a hidden Tauri webview

@@ -5,11 +5,17 @@ use crate::catalog::model::ResolverSpec;
 /// Like `html`, but runs a regex over the raw page body instead of matching a CSS
 /// selector. Exists for download URLs that live outside element attributes — e.g.
 /// majorgeeks.com embeds its per-session tokenized file URL only inside an HTML
-/// comment, which no selector can reach. The first regex match is returned verbatim,
-/// so the pattern should match the complete URL.
+/// comment, which no selector can reach. Without `base_url` the first regex match is
+/// returned verbatim, so the pattern must match the complete URL; with `base_url` the
+/// match may be a relative path/filename that gets joined onto the base (e.g. the RSI
+/// Launcher's `latest.yml` names only `RSI Launcher-Setup-<ver>.exe`).
 pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
-    let (page_url, url_regex) = match spec {
-        ResolverSpec::HtmlRegex { page_url, url_regex } => (page_url, url_regex),
+    let (page_url, url_regex, base_url) = match spec {
+        ResolverSpec::HtmlRegex {
+            page_url,
+            url_regex,
+            base_url,
+        } => (page_url, url_regex, base_url),
         _ => return Err(ResolveError::Unsupported("html_regex")),
     };
 
@@ -30,8 +36,7 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
         .await
         .map_err(|e| ResolveError::Network(e.to_string()))?;
 
-    let re = regex::Regex::new(url_regex).map_err(|e| ResolveError::Parse(e.to_string()))?;
-    re.find(&body)
-        .map(|m| m.as_str().to_string())
-        .ok_or_else(|| ResolveError::NotFound(format!("url_regex '{url_regex}' matched nothing on {page_url}")))
+    // Regex-narrow the body to the match, then join onto base_url when present. The shared
+    // helper handles the URL join (and percent-encodes spaces, e.g. the RSI filename).
+    super::apply_base_and_regex(body, base_url, &Some(url_regex.clone()))
 }

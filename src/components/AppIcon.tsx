@@ -21,6 +21,7 @@ import vencordIcon from "../assets/app-icons/vencord.png";
 import streamDeckIcon from "../assets/app-icons/stream-deck.png";
 import insta360Icon from "../assets/app-icons/insta360.png";
 import bambuStudioIcon from "../assets/app-icons/bambu-studio.png";
+import rsiLauncherIcon from "../assets/app-icons/rsi-launcher.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
@@ -52,6 +53,7 @@ const BUNDLED_ICONS: Record<string, string> = {
   // insta360.com's favicon IS their real mark — bundled so it renders without a network hop.
   "insta360-link-controller": insta360Icon,
   "bambu-studio": bambuStudioIcon,
+  "rsi-launcher": rsiLauncherIcon,
   // Script entries have no domain — they'd fall through to a monogram letter.
   "restart-audio-service": batIcon,
   "kill-valorant-process": batIcon,
@@ -66,6 +68,9 @@ const BUNDLED_CHIP_BG: Record<string, string> = {
   vencord: "#f2f2f3",
   "elgato-stream-deck": "#f2f2f3",
   "insta360-link-controller": "#f2f2f3",
+  // RSI's wordmark is light grey on transparent — it needs a DARK chip (the opposite of the
+  // near-black marks above) so it doesn't vanish on the light themes' white surface.
+  "rsi-launcher": "#1c1d21",
 };
 
 interface AppIconProps {
