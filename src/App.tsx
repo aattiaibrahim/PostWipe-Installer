@@ -9,6 +9,7 @@ import { SidebarSettings } from "./components/SidebarSettings";
 import { useResizeGlitchGuard } from "./hooks/useResizeGlitchGuard";
 import { useApplyTheme } from "./hooks/useApplyTheme";
 import { useWindowChrome } from "./hooks/useWindowChrome";
+import { hydrateVaultUnlock } from "./state/specialsStore";
 import { isTauri } from "./lib/tauriCommands";
 import { playClick } from "./lib/sound";
 import "./App.css";
@@ -30,6 +31,12 @@ function App() {
   useApplyTheme();
   useWindowChrome();
   const [splashDone, setSplashDone] = useState(false);
+
+  // Restore a remembered Specials unlock (the vault is locked by default; the padlock in
+  // Settings forgets the key, and an app update invalidates it — see specialsStore).
+  useEffect(() => {
+    void hydrateVaultUnlock();
+  }, []);
 
   // Global click chime. Capture phase so it fires even when a handler stops propagation
   // (e.g. the Specials card checkbox); the store toggle gates whether it plays.

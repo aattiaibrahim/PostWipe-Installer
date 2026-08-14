@@ -9,6 +9,7 @@ import { useThemeStore, THEMES } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
+import { useSpecialsStore } from "../state/specialsStore";
 
 /** Swatch grid of every named theme. Each swatch previews the theme's background + accent;
  *  picking one applies it instantly and themeStore persists it across launches. */
@@ -56,6 +57,8 @@ export function SettingsPanel() {
   const setSoundEnabled = useSoundStore((s) => s.setEnabled);
   const catalog = useCatalogStore((s) => s.catalog);
   const osFilter = useCatalogStore((s) => s.osFilter);
+  const vaultUnlocked = useSpecialsStore((s) => s.unlocked);
+  const lockVault = useSpecialsStore((s) => s.lock);
   const [downloadAllStatus, setDownloadAllStatus] = useState<string>("");
   const [confirmAllOpen, setConfirmAllOpen] = useState(false);
 
@@ -144,6 +147,19 @@ export function SettingsPanel() {
           <span>Click sound effects</span>
         </label>
       </div>
+      {/* Only meaningful once the vault is open — the unlock is remembered across launches,
+          so this padlock is how you take it back. */}
+      {vaultUnlocked && (
+        <div className="settings-panel__row">
+          <button className="settings-panel__lock-btn" onClick={lockVault} title="Lock the Specials vault">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="5" y="11" width="14" height="9" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <span>Lock Specials</span>
+          </button>
+        </div>
+      )}
       <div className="settings-panel__row">
         <button className="settings-panel__check-btn" onClick={handleCheckForUpdates} disabled={busy}>
           {busy ? "Working…" : "Check for Updates"}
