@@ -27,6 +27,12 @@ export const SPECIALS_CATEGORIES: Record<string, SpecialsCategoryMeta> = {
     blurb: "Mods for PAYDAY 2's Diesel 2.0 engine — extract into your PAYDAY 2 install folder (steamapps\\common\\PAYDAY 2).",
   },
   "PSD's": { label: "PSDs", order: 7, install: "none", blurb: "Photoshop layer-style packs — download only." },
+  "Stream Deck Profiles": {
+    label: "Stream Deck Profiles",
+    order: 7.5,
+    install: "none",
+    blurb: "Elgato Stream Deck profile backups — download, then in the Stream Deck app use the ☰ menu ▸ Profiles ▸ Import.",
+  },
   "Windows Themes": { label: "Windows Themes (deprecated)", order: 8, install: "none", blurb: "Only worked on Windows 10; kept for the archive." },
 };
 
@@ -71,6 +77,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   "komika_axis.zip": "Komika Axis",
   "mods.zip": "Mods Pack (goes in PAYDAY 2\\mods)",
   "assets.zip": "Assets Pack (goes in PAYDAY 2\\assets)",
+  "Example Stream Deck Setup.streamDeckProfilesBackup": "Example Stream Deck Setup",
   "Anime Sounds.zip": "Anime Sounds",
   "Linux Ubuntu.zip": "Linux Ubuntu Sounds",
   "Paranoid Android.zip": "Paranoid Android (Windows 10 only)",
