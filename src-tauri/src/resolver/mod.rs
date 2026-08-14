@@ -81,6 +81,23 @@ mod tests {
     }
 
     #[test]
+    fn apply_base_and_regex_encodes_spaces_when_joining_rsi_filename() {
+        // The RSI Launcher's latest.yml names a file WITH A SPACE; joining it onto the base
+        // must percent-encode the space or the download 404s.
+        let body = "version: 2.15.4\nfiles:\n  - url: RSI Launcher-Setup-2.15.4.exe\n";
+        let result = apply_base_and_regex(
+            body.to_string(),
+            &Some("https://install.robertsspaceindustries.com/rel/2/".to_string()),
+            &Some(r"RSI Launcher-Setup-[0-9.]+\.exe".to_string()),
+        )
+        .unwrap();
+        assert_eq!(
+            result,
+            "https://install.robertsspaceindustries.com/rel/2/RSI%20Launcher-Setup-2.15.4.exe"
+        );
+    }
+
+    #[test]
     fn apply_base_and_regex_errors_when_regex_does_not_match() {
         let result = apply_base_and_regex("nothing useful here".to_string(), &None, &Some(r"app-[\d.]+\.exe".to_string()));
         assert!(result.is_err());
@@ -229,6 +246,7 @@ mod live_tests {
         let spec = ResolverSpec::HtmlRegex {
             page_url: "https://www.majorgeeks.com/mg/getmirror/display_driver_uninstaller,1.html".to_string(),
             url_regex: r"https://files[0-9]+\.majorgeeks\.com/[a-f0-9]+/drivers/DDU[^<>\x22]*?_setup\.exe".to_string(),
+            base_url: None,
         };
         let url = html_regex_resolver::resolve(&spec).await.expect("should resolve the current DDU installer");
         assert!(url.ends_with("_setup.exe"), "unexpected url: {url}");

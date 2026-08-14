@@ -190,6 +190,28 @@
           }
         },
         {
+          "id": "rsi-launcher",
+          "name": "RSI Launcher",
+          "bio": "Roberts Space Industries launcher for Star Citizen & Squadron 42.",
+          "description": "The RSI Launcher is Roberts Space Industries' official client for Star Citizen and Squadron 42 - it installs and patches the game, manages the LIVE/PTU/EPTU builds, and launches into the 'verse. You'll still sign in with your RSI account inside the launcher.",
+          "icon": "rsi-launcher.png",
+          "domain": "robertsspaceindustries.com",
+          "website": "https://robertsspaceindustries.com/en/download",
+          "kind": "download",
+          "notes": "RSI Launcher is an electron-updater app; its manifest install.robertsspaceindustries.com/rel/2/latest.yml names the current installer (relative filename, has a SPACE). html_regex + base_url extracts 'RSI Launcher-Setup-<ver>.exe' and joins it onto rel/2/ (space -> %20), so it AUTO-TRACKS versions rather than pinning - important because stale RSI direct links are the #1 cause of launcher breakage. Verified live 2026-07-22: latest.yml served, one regex match (v2.15.4, 342 MB), the %20 URL downloads (206). The official /download page is JS/login-gated, hence resolving off the manifest.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://install.robertsspaceindustries.com/rel/2/latest.yml",
+                "url_regex": "RSI Launcher-Setup-[0-9.]+\\.exe",
+                "base_url": "https://install.robertsspaceindustries.com/rel/2/"
+              },
+              "filename": "RSI-Launcher-Setup.exe"
+            }
+          }
+        },
+        {
           "id": "deceive",
           "name": "Deceive",
           "icon": "deceive.png",
