@@ -1930,7 +1930,7 @@
           "domain": "endgamegear.com",
           "website": "https://endgamegear.com/pages/op1-8k-v2-downloads",
           "kind": "download",
-          "notes": "Resolves off Endgame Gear's OWN downloads page (html_regex, currently v1.04) so it tracks their version bumps. Verified 2026-08-25: page 200, regex matched exactly one URL, file downloads (206). SECURITY CONTEXT: endgamegear.com served a trojanized OP1w 4k v2 config tool (XRed backdoor) between 2025-06-26 and 2025-07-09. This build was checked against the published IoCs and is CLEAN — FileDescription 'OP1 8k v2 Configuration Tool' / CompanyName 'Endgame Gear' (the malware showed 'Synaptics Pointing Device Driver'), not size-inflated, sha256 38330b5c19dd424be68d7b15a68401bfd87db6d152c71c97698d67c7641a4e24. NOTE the binary is UNSIGNED, so there's no cryptographic authenticity check - re-verify properties/hash when bumping. A github.com/EndgameGear user account mirrors older builds (Config v1.00) but the vendor site does not link to it, so it is NOT used as the source.",
+          "notes": "Resolves off Endgame Gear's OWN downloads page (html_regex, currently v1.04) so it tracks their version bumps. Verified 2026-08-25: page 200, regex matched exactly one URL, file downloads (206). SECURITY CONTEXT: endgamegear.com served a trojanized OP1w 4k v2 config tool (XRed backdoor) between 2025-06-26 and 2025-07-09. This build was checked against the published IoCs and is CLEAN — FileDescription 'OP1 8k v2 Configuration Tool' / CompanyName 'Endgame Gear' (the malware showed 'Synaptics Pointing Device Driver'), not size-inflated, sha256 38330b5c19dd424be68d7b15a68401bfd87db6d152c71c97698d67c7641a4e24. NOTE the binary is UNSIGNED, so there's no cryptographic authenticity check - re-verify properties/hash when bumping. A github.com/EndgameGear user account mirrors older builds (Config v1.00) but the vendor site does not link to it, so it is NOT used as the source. Mirrored 2026-08-25 to Specials > Mouse Software (config tool v1.04 + firmware updater 1.07, sha256 9bdd42eb8aefbb4d3967c34fcfc9d0dfa9a78db192414485bba9da2e4aa82fff for the firmware zip) with a _MirrorInfo.txt recording provenance and hashes. The catalog still resolves LIVE from the vendor so it keeps tracking their updates; the mirror is break-glass.",
           "platforms": {
             "windows": {
               "resolver": {
@@ -1940,6 +1940,15 @@
               },
               "filename": "Endgame_Gear_OP1_8k_v2_Configuration_Tool.exe"
             }
+          },
+          "guide": {
+            "title": "Firmware, and the vault mirror",
+            "steps": [
+              "Download above for the config tool — DPI stages, 8000 Hz polling, lift-off distance, debounce and button mapping, all saved onto the mouse itself.",
+              "Firmware is a separate download on the same page (currently 1.07), or take it from Specials ▸ Mouse Software if their site is down.",
+              "Endgame Gear don't code-sign these binaries, so Windows SmartScreen will warn on both. Verify what you run: Get-FileHash <file> -Algorithm SHA256, and compare against 'Mirror Info & Hashes' in that vault folder.",
+              "Worth knowing: their website served a malware-infected OP1w 4k v2 config tool for two weeks in mid-2025. The mirrored copies here were checked against the published indicators and are clean — but always check the hash on anything you pull from them directly."
+            ]
           }
         },
         {
@@ -1951,11 +1960,11 @@
           "domain": "g-wolves.com",
           "website": "https://mouse.xyz",
           "kind": "link",
-          "notes": "G-Wolves ships NO downloadable config app for the Fenrir Max 8K - the ReadMe in their own firmware bundle directs users to mouse.xyz / mouse.wiki (a WebHID configurator branded 'DriverCore'), hence a link entry. All three hosts verified 200 on 2026-08-25. Their /pages/download exposes no direct zip/exe links (JS-driven), so the firmware bundle Andrew supplied is mirrored in the vault instead (Specials > Mouse Firmware). WebHID means Chrome/Edge/Brave only - Firefox and Safari don't implement it.",
+          "notes": "G-Wolves ships NO downloadable config app for the Fenrir Max 8K - the ReadMe in their own firmware bundle directs users to mouse.xyz / mouse.wiki (a WebHID configurator branded 'DriverCore'), hence a link entry. All three hosts verified 200 on 2026-08-25. Their /pages/download exposes no direct zip/exe links (JS-driven), so the firmware bundle Andrew supplied is mirrored in the vault instead (Specials > Mouse Software). WebHID means Chrome/Edge/Brave only - Firefox and Safari don't implement it.",
           "guide": {
             "title": "Update Fenrir Max 8K firmware (mouse + receiver)",
             "steps": [
-              "Grab 'G-Wolves Fenrir Max 8K Firmware' from Specials ▸ Mouse Firmware and unzip it. Use the 1.0.0.39 folder — those updaters are code-signed, the older 1.0.0.37 ones are not.",
+              "Grab 'G-Wolves Fenrir Max 8K Firmware' from Specials ▸ Mouse Software and unzip it. Use the 1.0.0.39 folder — those updaters are code-signed, the older 1.0.0.37 ones are not.",
               "Plug the mouse in with the cable and run the 'Fenrir Max 8K Mouse' updater. Wait for 'Pass', then close it.",
               "Plug the receiver into a USB port, run the 'G-Wolves 8K Receiver' updater, wait for 'Pass', close it, then switch the mouse on at the bottom.",
               "Once the mouse works again, open mouse.xyz in Chrome/Edge/Brave (Firefox and Safari can't do WebHID) to set DPI, polling rate and buttons.",

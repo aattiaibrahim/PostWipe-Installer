@@ -27,11 +27,12 @@ export const SPECIALS_CATEGORIES: Record<string, SpecialsCategoryMeta> = {
     blurb: "Mods for PAYDAY 2's Diesel 2.0 engine — extract into your PAYDAY 2 install folder (steamapps\\common\\PAYDAY 2).",
   },
   "PSD's": { label: "PSDs", order: 7, install: "none", blurb: "Photoshop layer-style packs — download only." },
-  "Mouse Firmware": {
-    label: "Mouse Firmware",
+  "Mouse Software": {
+    label: "Mouse Software",
     order: 7.4,
     install: "none",
-    blurb: "Mirrored mouse firmware updaters — vendors rarely keep old versions online. Read the included ReadMe before flashing.",
+    blurb:
+      "Mirrored mouse config tools and firmware, kept in case a vendor's site goes down or drops old versions. Open “Mirror Info & Hashes” to verify a file before running it.",
   },
   "Stream Deck Profiles": {
     label: "Stream Deck Profiles",
@@ -85,6 +86,9 @@ export const DISPLAY_NAMES: Record<string, string> = {
   "assets.zip": "Assets Pack (goes in PAYDAY 2\\assets)",
   "Example Stream Deck Setup.streamDeckProfilesBackup": "Example Stream Deck Setup",
   "G-Wolves Fenrir Max 8K Firmware.zip": "G-Wolves Fenrir Max 8K Firmware",
+  "Endgame Gear OP1 8k v2 Config Tool v1.04.exe": "OP1 8k v2 Config Tool (v1.04)",
+  "Endgame Gear OP1 8k v2 Firmware Updater 1.07.zip": "OP1 8k v2 Firmware Updater (1.07)",
+  "_MirrorInfo.txt": "Mirror Info & Hashes",
   "Anime Sounds.zip": "Anime Sounds",
   "Linux Ubuntu.zip": "Linux Ubuntu Sounds",
   "Paranoid Android.zip": "Paranoid Android (Windows 10 only)",
