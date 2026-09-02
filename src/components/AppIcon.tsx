@@ -25,6 +25,7 @@ import rsiLauncherIcon from "../assets/app-icons/rsi-launcher.png";
 import endgameOp1Icon from "../assets/app-icons/endgame-op1-8k-v2.png";
 import gwolvesIcon from "../assets/app-icons/gwolves.png";
 import teamviewerIcon from "../assets/app-icons/teamviewer.png";
+import rustdeskIcon from "../assets/app-icons/rustdesk.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
@@ -60,6 +61,7 @@ const BUNDLED_ICONS: Record<string, string> = {
   "endgame-op1-8k-v2": endgameOp1Icon,
   "gwolves-fenrir-max-8k": gwolvesIcon,
   teamviewer: teamviewerIcon,
+  rustdesk: rustdeskIcon,
   // Script entries have no domain — they'd fall through to a monogram letter.
   "restart-audio-service": batIcon,
   "kill-valorant-process": batIcon,

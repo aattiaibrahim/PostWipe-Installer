@@ -2008,6 +2008,45 @@
               "filename": "TeamViewer.dmg"
             }
           }
+        },
+        {
+          "id": "rustdesk",
+          "name": "RustDesk",
+          "bio": "Open-source remote desktop — the TeamViewer alternative.",
+          "description": "RustDesk does what TeamViewer does — remote control, file transfer, unattended access — but it's open source and free with no commercial-use nagging. It works out of the box through public relay servers, and if you'd rather not route through anyone else's infrastructure you can point it at your own self-hosted relay and ID server.",
+          "icon": "rustdesk.png",
+          "domain": "rustdesk.com",
+          "website": "https://github.com/rustdesk/rustdesk",
+          "kind": "download",
+          "notes": "GitHub rustdesk/rustdesk, verified live 2026-08-25: latest 1.4.9. Patterns are anchored so they can't grab the wrong build — the release also ships aarch64.exe, x86-sciter.exe and an x86_64.dmg; 'rustdesk-*-x86_64.exe' and 'rustdesk-*-aarch64.dmg' each matched exactly ONE asset and both downloaded (206). macOS is pinned to Apple Silicon (aarch64) per the catalog's existing convention (LosslessCut/Houdoku); INTEL Macs need rustdesk-<ver>-x86_64.dmg from the releases page instead — called out in the guide.",
+          "guide": {
+            "title": "Unattended access, and self-hosting",
+            "steps": [
+              "For remote support you just read the ID and one-time password off the other machine. For unattended access (your own PC, no one sitting at it), open Settings ▸ Security and set a permanent password.",
+              "By default connections route through RustDesk's free public relay servers. That works with zero setup, but the traffic (end-to-end encrypted) does traverse someone else's infrastructure.",
+              "To keep it entirely yours, self-host: run their hbbs/hbbr server (Docker image available), then put its address and public key under Settings ▸ Network ▸ ID/Relay Server on each client.",
+              "On a Mac it needs Accessibility and Screen Recording permissions in System Settings ▸ Privacy & Security, or you'll connect and see a black screen with no control.",
+              "Heads up: the macOS download here is the Apple Silicon (aarch64) build. On an Intel Mac, grab rustdesk-<version>-x86_64.dmg from the GitHub releases page instead."
+            ]
+          },
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "rustdesk/rustdesk",
+                "asset_pattern": "rustdesk-*-x86_64.exe"
+              },
+              "filename": "rustdesk-x86_64.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "rustdesk/rustdesk",
+                "asset_pattern": "rustdesk-*-aarch64.dmg"
+              },
+              "filename": "rustdesk-aarch64.dmg"
+            }
+          }
         }
       ]
     },
