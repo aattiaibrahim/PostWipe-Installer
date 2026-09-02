@@ -1972,6 +1972,42 @@
             ]
           },
           "platforms": {}
+        },
+        {
+          "id": "teamviewer",
+          "name": "TeamViewer",
+          "bio": "Remote desktop access and remote support.",
+          "description": "TeamViewer connects to another machine over the internet for remote control, file transfer and unattended access — the usual pick for helping family fix their PC. Free for personal use; it works through NAT and firewalls without port forwarding, so both ends just need the app and an ID/password.",
+          "icon": "teamviewer.png",
+          "domain": "teamviewer.com",
+          "website": "https://www.teamviewer.com/en-us/download/",
+          "kind": "download",
+          "notes": "Uses TeamViewer's stable 'latest' aliases on download.teamviewer.com, which 302 through to the current build (dl.teamviewer.com/download/version_15x/...), so a static resolver keeps serving the newest release with no re-pinning. Verified live 2026-08-25 with the resolver's UA: Windows x64 exe 206 (84 MB) and the macOS dmg 206. A TeamViewer_Setup.exe (32-bit) alias also resolves; x64 is used. Free tier only for PERSONAL use — their commercial-use heuristics are known for false positives that cut sessions to ~5 minutes; noted in the guide.",
+          "guide": {
+            "title": "If it says “commercial use suspected”",
+            "steps": [
+              "The free tier is personal use only, and TeamViewer's detection is famously trigger-happy — sessions suddenly capped near 5 minutes, or a 'commercial use suspected' banner, usually means it flagged you rather than that you did anything wrong.",
+              "You can submit a free-use reset request on their site (Support ▸ 'Commercial use suspected'); it's a form asking you to confirm personal use, and it often clears the flag.",
+              "It trips more easily with lots of different remote IDs, connections to work machines, or use on a domain-joined PC — so keep the free install for personal helping-out only.",
+              "If it keeps flagging you, RustDesk (open-source, self-hostable) and AnyDesk's free tier are the usual alternatives — say the word and I'll add one."
+            ]
+          },
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe"
+              },
+              "filename": "TeamViewer_Setup_x64.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://download.teamviewer.com/download/TeamViewer.dmg"
+              },
+              "filename": "TeamViewer.dmg"
+            }
+          }
         }
       ]
     },
