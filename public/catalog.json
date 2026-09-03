@@ -2079,6 +2079,30 @@
               "script_id": "kill-valorant-process"
             }
           }
+        },
+        {
+          "id": "disable-razer-startup",
+          "name": "Disable Razer Startup",
+          "bio": "Stops Razer Synapse/Cortex loading at boot — without uninstalling it.",
+          "description": "Generates a PowerShell-driven script that stops Razer software auto-starting with Windows: Razer services drop to Manual, Razer entries are pulled out of the Run keys, Razer scheduled tasks are disabled, and Startup-folder shortcuts are moved aside. Nothing is uninstalled and your devices keep working — Synapse still opens normally when you want it. Self-elevates via UAC, backs everything up to your Desktop first, and prints how to undo each step.",
+          "icon": "bat.ico",
+          "kind": "script",
+          "guide": {
+            "title": "What it changes, and how to undo it",
+            "steps": [
+              "Run it, read the summary it prints, then press a key to confirm — it doesn't touch anything until you do.",
+              "Services → Manual (not Disabled), so opening Synapse still starts them on demand; they just don't run at boot.",
+              "Run keys → Razer entries removed, after exporting both HKCU and HKLM Run keys to .reg files in Desktop\\Razer-Startup-Backup.",
+              "Scheduled tasks → disabled (not deleted), and Startup-folder shortcuts are moved into that same backup folder.",
+              "Skip this if you rely on Chroma effects or software macros applying automatically at boot without opening Synapse — profiles saved to the device's onboard memory still work, but software-driven ones need Synapse running.",
+              "To undo: double-click the .reg backups, Set-Service -Name <name> -StartupType Automatic, Enable-ScheduledTask -TaskName <name>, and move the .lnk files back into shell:startup."
+            ]
+          },
+          "platforms": {
+            "windows": {
+              "script_id": "disable-razer-startup"
+            }
+          }
         }
       ]
     },
