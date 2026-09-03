@@ -22,6 +22,12 @@ const SCRIPTS: &[ScriptSpec] = &[
         menu_label: "Kill Valorant Process",
         content: include_str!("templates/kill_valorant.bat"),
     },
+    ScriptSpec {
+        id: "disable-razer-startup",
+        filename: "DisableRazerStartup.bat",
+        menu_label: "Disable Razer Startup",
+        content: include_str!("templates/disable_razer_startup.bat"),
+    },
 ];
 
 pub fn find(script_id: &str) -> Option<&'static ScriptSpec> {
