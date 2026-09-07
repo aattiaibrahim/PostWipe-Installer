@@ -1925,28 +1925,28 @@
           "id": "endgame-op1-8k-v2",
           "name": "Endgame Gear OP1 8k v2 Config Tool",
           "bio": "Configure the OP1 8k v2 wired mouse — DPI, polling, debounce.",
-          "description": "The OP1 8k v2 Configuration Tool sets up Endgame Gear's wired 8K mouse: DPI stages, 8000 Hz polling rate, lift-off distance, debounce time, and button remapping — all saved to the mouse's onboard memory, so the tool doesn't need to keep running. The separate firmware updater is on the same downloads page.",
+          "description": "The OP1 8k v2 Configuration Tool sets up Endgame Gear's wired 8K mouse: CPI stages, polling rate (125 Hz up to 8000 Hz in software), lift-off distance, debounce time, CPI downshift tuning and button remapping — all saved to the mouse's onboard memory, so the tool doesn't need to keep running. Ships as a zip containing the tool plus its changelog; the firmware updater is a separate download on the same page.",
           "icon": "endgame-op1-8k-v2.png",
           "domain": "endgamegear.com",
           "website": "https://endgamegear.com/pages/op1-8k-v2-downloads",
           "kind": "download",
-          "notes": "Resolves off Endgame Gear's OWN downloads page (html_regex, currently v1.04) so it tracks their version bumps. Verified 2026-08-25: page 200, regex matched exactly one URL, file downloads (206). SECURITY CONTEXT: endgamegear.com served a trojanized OP1w 4k v2 config tool (XRed backdoor) between 2025-06-26 and 2025-07-09. This build was checked against the published IoCs and is CLEAN — FileDescription 'OP1 8k v2 Configuration Tool' / CompanyName 'Endgame Gear' (the malware showed 'Synaptics Pointing Device Driver'), not size-inflated, sha256 38330b5c19dd424be68d7b15a68401bfd87db6d152c71c97698d67c7641a4e24. NOTE the binary is UNSIGNED, so there's no cryptographic authenticity check - re-verify properties/hash when bumping. A github.com/EndgameGear user account mirrors older builds (Config v1.00) but the vendor site does not link to it, so it is NOT used as the source. Mirrored 2026-08-25 to Specials > Mouse Software (config tool v1.04 + firmware updater 1.07, sha256 9bdd42eb8aefbb4d3967c34fcfc9d0dfa9a78db192414485bba9da2e4aa82fff for the firmware zip) with a _MirrorInfo.txt recording provenance and hashes. The catalog still resolves LIVE from the vendor so it keeps tracking their updates; the mirror is break-glass.",
+          "notes": "Resolves off Endgame Gear's OWN downloads page (html_regex). BROKE ONCE 2026-09-07: they changed BOTH the version separator (v1_04 -> v1.07) and the format (.exe -> .zip), so the old '_v[0-9_]+\\.exe' pattern matched nothing. Regex is now 'v[0-9][0-9._]*\\.zip' which tolerates either separator; extension stays pinned to .zip (current truth for BOTH their downloads) so a future format flip fails loudly instead of silently saving a mis-named file — the catalog filename is chosen before the URL resolves, so it can't follow the extension automatically. Verified 2026-09-07 with the resolver's UA: page 200, regex matched exactly one URL, downloads 206 (application/zip). Config tool v1.07 sha256 05612cdc3c970f5f9ffd3e15587ffe932fdf3aefe5b52a5bcb61bfabee723742; firmware updater 1.10 sha256 d81247e8f720b9d8a38318ca2d78f5b947f0020bacd3d68fb03a3a7de42b96de. Inner exes UNSIGNED but check out against the 2025 XRed IoCs (desc 'OP1 8k v2 Configuration Tool' / 'OP1 8k v2 Firmware Updater', company 'Endgame Gear'). Do NOT source from github.com/EndgameGear (unverified user, stale builds, not linked by the vendor).",
           "platforms": {
             "windows": {
               "resolver": {
                 "type": "html_regex",
                 "page_url": "https://endgamegear.com/pages/op1-8k-v2-downloads",
-                "url_regex": "https://img\\.endgamegear\\.com/downloads/Endgame_Gear_OP1_8k_v2_Configuration_Tool_v[0-9_]+\\.exe"
+                "url_regex": "https://img\\.endgamegear\\.com/downloads/Endgame_Gear_OP1_8k_v2_Configuration_Tool_v[0-9][0-9._]*\\.zip"
               },
-              "filename": "Endgame_Gear_OP1_8k_v2_Configuration_Tool.exe"
+              "filename": "Endgame_Gear_OP1_8k_v2_Configuration_Tool.zip"
             }
           },
           "guide": {
             "title": "Firmware, and the vault mirror",
             "steps": [
-              "Download above for the config tool — DPI stages, 8000 Hz polling, lift-off distance, debounce and button mapping, all saved onto the mouse itself.",
-              "Firmware is a separate download on the same page (currently 1.07), or take it from Specials ▸ Mouse Software if their site is down.",
-              "Endgame Gear don't code-sign these binaries, so Windows SmartScreen will warn on both. Verify what you run: Get-FileHash <file> -Algorithm SHA256, and compare against 'Mirror Info & Hashes' in that vault folder.",
+              "Download above — it's a zip now, not an installer. Unzip it and run the Configuration Tool exe inside; it's portable, nothing gets installed.",
+              "Firmware is a separate download on the same page (currently 1.10), or take it from Specials ▸ Mouse Software if their site is down.",
+              "Endgame Gear don't code-sign these, so Windows SmartScreen will warn. Verify what you run: Get-FileHash <file> -Algorithm SHA256, and compare against 'Mirror Info & Hashes' in that vault folder.",
               "Worth knowing: their website served a malware-infected OP1w 4k v2 config tool for two weeks in mid-2025. The mirrored copies here were checked against the published indicators and are clean — but always check the hash on anything you pull from them directly."
             ]
           }
