@@ -21,6 +21,17 @@ pub enum ResolveError {
 
 /// Shared by resolvers that pull a raw attribute value out of a page (`html`, `webview`):
 /// optionally narrows it down with a regex, then optionally joins it against a base URL.
+/// First line-ish of a fetched body, for error messages. Keeps failures readable in logs,
+/// issues and the UI instead of pasting an entire page.
+fn truncate_for_error(value: &str) -> String {
+    let flat: String = value.chars().map(|c| if c.is_whitespace() { ' ' } else { c }).collect();
+    let trimmed = flat.trim();
+    match trimmed.char_indices().nth(120) {
+        Some((idx, _)) => format!("{}…", &trimmed[..idx]),
+        None => trimmed.to_string(),
+    }
+}
+
 pub(crate) fn apply_base_and_regex(
     mut value: String,
     base_url: &Option<String>,
@@ -28,10 +39,15 @@ pub(crate) fn apply_base_and_regex(
 ) -> Result<String, ResolveError> {
     if let Some(pattern) = url_regex {
         let re = regex::Regex::new(pattern).map_err(|e| ResolveError::Parse(e.to_string()))?;
-        value = re
-            .find(&value)
-            .map(|m| m.as_str().to_string())
-            .ok_or_else(|| ResolveError::NotFound(format!("url_regex '{pattern}' did not match '{value}'")))?;
+        value = re.find(&value).map(|m| m.as_str().to_string()).ok_or_else(|| {
+            // `value` here is often a WHOLE page body — quoting it in full produced
+            // multi-megabyte error messages (a failing sweep dumped 1.8 MB of HTML).
+            ResolveError::NotFound(format!(
+                "url_regex '{pattern}' did not match the {} chars fetched, starting: {}",
+                value.len(),
+                truncate_for_error(&value)
+            ))
+        })?;
     }
 
     match base_url {
@@ -297,7 +313,36 @@ mod live_tests {
             .build()
             .unwrap();
 
+        // Resolve one entry and confirm the result actually serves a file.
+        async fn check(spec: &ResolverSpec, client: &reqwest::Client) -> Result<(), String> {
+            let url = match spec {
+                ResolverSpec::Static { .. } => static_resolver::resolve(spec),
+                ResolverSpec::GithubRelease { .. } => github_release_resolver::resolve(spec).await,
+                ResolverSpec::Html { .. } => html_resolver::resolve(spec).await,
+                ResolverSpec::HtmlRegex { .. } => html_regex_resolver::resolve(spec).await,
+                ResolverSpec::Webview { .. } => unreachable!("webview specs are filtered out before check()"),
+            }
+            .map_err(|err| format!("resolve failed: {err}"))?;
+
+            // GET (not HEAD — some hosts reject HEAD) but drop the body unread.
+            match client.get(&url).send().await {
+                Ok(response) if response.status().is_success() => {
+                    let content_type = response.headers().get("content-type").and_then(|v| v.to_str().ok()).unwrap_or("");
+                    if content_type.contains("text/html") {
+                        Err(format!("{url} served text/html, not a download"))
+                    } else {
+                        Ok(())
+                    }
+                }
+                Ok(response) => Err(format!("{url} returned {}", response.status())),
+                Err(err) => Err(format!("{url} request failed: {err}")),
+            }
+        }
+
         let mut failures: Vec<String> = Vec::new();
+        let mut skipped: Vec<String> = Vec::new();
+        let mut suspects: Vec<(String, &ResolverSpec)> = Vec::new();
+        let mut checked = 0usize;
 
         for category in &catalog.categories {
             for app in &category.apps {
@@ -305,41 +350,42 @@ mod live_tests {
                     let Some(spec) = &platform.resolver else { continue };
                     let label = format!("{}/{:?}", app.id, os);
 
-                    let resolved = match spec {
-                        ResolverSpec::Static { .. } => static_resolver::resolve(spec),
-                        ResolverSpec::GithubRelease { .. } => github_release_resolver::resolve(spec).await,
-                        ResolverSpec::Html { .. } => html_resolver::resolve(spec).await,
-                        ResolverSpec::HtmlRegex { .. } => html_regex_resolver::resolve(spec).await,
-                        ResolverSpec::Webview { .. } => {
-                            failures.push(format!("{label}: webview specs can't be swept headlessly"));
-                            continue;
-                        }
-                    };
-                    let url = match resolved {
-                        Ok(url) => url,
-                        Err(err) => {
-                            failures.push(format!("{label}: resolve failed: {err}"));
-                            continue;
-                        }
-                    };
+                    // A webview spec needs a real window, so it can't run on a headless
+                    // runner. Report it as UNCOVERED rather than a failure — otherwise the
+                    // scheduled health check is permanently red and stops meaning anything.
+                    if matches!(spec, ResolverSpec::Webview { .. }) {
+                        skipped.push(format!("{label}: webview spec — needs a desktop session, check by hand"));
+                        continue;
+                    }
 
-                    // GET (not HEAD — some hosts reject HEAD) but drop the body unread.
-                    match client.get(&url).send().await {
-                        Ok(response) if response.status().is_success() => {
-                            let content_type = response
-                                .headers()
-                                .get("content-type")
-                                .and_then(|v| v.to_str().ok())
-                                .unwrap_or("");
-                            if content_type.contains("text/html") {
-                                failures.push(format!("{label}: {url} served text/html, not a download"));
-                            }
-                        }
-                        Ok(response) => failures.push(format!("{label}: {url} returned {}", response.status())),
-                        Err(err) => failures.push(format!("{label}: {url} request failed: {err}")),
+                    checked += 1;
+                    if check(spec, &client).await.is_err() {
+                        suspects.push((label, spec));
                     }
                 }
             }
+        }
+
+        // Second pass over just the failures. Vendors rate-limit (TeamSpeak answered 429 on
+        // one run and fine on the next) and connections time out, and a weekly job that
+        // opens an issue must not cry wolf over a blip — only a SECOND failure counts.
+        if !suspects.is_empty() {
+            println!("re-checking {} suspect(s) after a pause...", suspects.len());
+            tokio::time::sleep(std::time::Duration::from_secs(20)).await;
+            for (label, spec) in suspects {
+                if let Err(err) = check(spec, &client).await {
+                    failures.push(format!("{label}: {err}"));
+                }
+            }
+        }
+
+        // Printed (use --nocapture) so the scheduled health check can paste it into an issue.
+        println!("--- catalog sweep: {checked} entr(ies) checked, {} broken, {} uncovered ---", failures.len(), skipped.len());
+        for s in &skipped {
+            println!("UNCOVERED  {s}");
+        }
+        for f in &failures {
+            println!("BROKEN     {f}");
         }
 
         assert!(failures.is_empty(), "catalog sweep failures:\n{}", failures.join("\n"));
