@@ -57,9 +57,18 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
         .timeout(REQUEST_TIMEOUT)
         .build()
         .map_err(|e| ResolveError::Network(e.to_string()))?;
-    let response = client
-        .get(&api_url)
-        .header("User-Agent", "postwipe-installer")
+    let mut request = client.get(&api_url).header("User-Agent", "postwipe-installer");
+    // Anonymous GitHub API calls are capped at 60/hour per IP. The shipped app makes one
+    // call per download so it never notices, but the catalog sweep resolves ~30 repos in a
+    // burst and blows straight through it — every entry then "fails" with a 403 that has
+    // nothing to do with the download being broken. CI sets GITHUB_TOKEN, which lifts the
+    // cap to 5000/hour. Never required, and nothing is committed: absent = anonymous.
+    if let Ok(token) = std::env::var("GITHUB_TOKEN") {
+        if !token.trim().is_empty() {
+            request = request.header("Authorization", format!("Bearer {}", token.trim()));
+        }
+    }
+    let response = request
         .send()
         .await
         .map_err(|e| ResolveError::Network(e.to_string()))?

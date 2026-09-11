@@ -2047,6 +2047,35 @@
               "filename": "rustdesk-aarch64.dmg"
             }
           }
+        },
+        {
+          "id": "obsidian",
+          "name": "Obsidian",
+          "bio": "Markdown knowledge base over a folder of local files.",
+          "description": "Obsidian is a note-taking and knowledge-base app that works on a plain folder of Markdown files on your disk — no proprietary format and no account required. Backlinks and the graph view connect notes together, and a large community-plugin ecosystem extends it. Free for personal use; sync and publish are paid add-ons you don't need to use.",
+          "icon": "obsidian.png",
+          "domain": "obsidian.md",
+          "website": "https://obsidian.md/download",
+          "kind": "download",
+          "notes": "Resolved from obsidian.md/download (html_regex), NOT github_release — their GitHub 'latest' release is frequently MOBILE-ONLY (v1.13.8 shipped just an .apk), so a github_release resolver finds no desktop asset and fails. The download page always links the current DESKTOP build (v1.13.7 at time of writing) and the URLs it lists are themselves github release assets. Verified 2026-09-10 with the resolver's UA: page 200, each regex matched exactly one URL, both downloaded 206. The single .dmg is universal (Intel + Apple Silicon), so no arch split needed.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://obsidian.md/download",
+                "url_regex": "https://github\\.com/obsidianmd/obsidian-releases/releases/download/v[0-9.]+/Obsidian-[0-9.]+\\.exe"
+              },
+              "filename": "Obsidian-Setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://obsidian.md/download",
+                "url_regex": "https://github\\.com/obsidianmd/obsidian-releases/releases/download/v[0-9.]+/Obsidian-[0-9.]+\\.dmg"
+              },
+              "filename": "Obsidian.dmg"
+            }
+          }
         }
       ]
     },

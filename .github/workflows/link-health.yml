@@ -1,0 +1,131 @@
+name: Catalog health
+
+# Weekly check that every catalog download still resolves AND still serves a file.
+# Vendors rename, re-version and change format without warning (Endgame Gear swapped
+# .exe -> .zip mid-version and silently broke that entry), so this catches rot before
+# someone hits it on a fresh wipe.
+#
+# It runs the full_catalog_sweep test, which walks every entry x platform through the
+# REAL resolver code and fetches each resolved URL with the downloader's own client
+# config — so a pass means the app can actually download it, not just that a URL 200s.
+on:
+  schedule:
+    # Mondays, 09:00 UTC.
+    - cron: "0 9 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: catalog-health
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    # Windows matches the Release runner, and mirrors ci.yml's rust job setup.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      # tauri-build wants the frontend dist present before the crate will build.
+      - run: npm ci
+      - run: npm run build
+
+      # Never fail the step itself — a red X here would just be noise. The parse step
+      # below decides whether anything is actually wrong.
+      - name: Sweep every catalog download
+        id: sweep
+        shell: bash
+        working-directory: src-tauri
+        continue-on-error: true
+        env:
+          # Without this the ~30 github_release entries exhaust the anonymous 60/hour API
+          # cap mid-sweep and every one of them reports a bogus 403. Lifts it to 5000/hour.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          cargo test --lib -- --ignored --nocapture full_catalog_sweep > sweep.log 2>&1
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Summarise
+        id: report
+        shell: bash
+        run: |
+          LOG=src-tauri/sweep.log
+          # Individual failure lines can still be long (a vendor page snippet), so cap them.
+          grep -a '^BROKEN' "$LOG" | cut -c1-300 > broken.txt || true
+          grep -a '^UNCOVERED' "$LOG" | cut -c1-300 > uncovered.txt || true
+          SUMMARY=$(grep -a 'catalog sweep:' "$LOG" | head -1)
+          COUNT=$(wc -l < broken.txt | tr -d ' ')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "summary=${SUMMARY:-sweep produced no summary line}" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Catalog health"
+            echo ""
+            echo "\`${SUMMARY:-no summary}\`"
+            echo ""
+            if [ "$COUNT" -gt 0 ]; then
+              echo "### Broken ($COUNT)"
+              echo '```'
+              cat broken.txt
+              echo '```'
+            else
+              echo "All catalog downloads resolved and served a file. :white_check_mark:"
+            fi
+            if [ -s uncovered.txt ]; then
+              echo ""
+              echo "### Not covered by this check"
+              echo '```'
+              cat uncovered.txt
+              echo '```'
+              echo "> Webview resolvers need a real desktop session, so they can't be swept headlessly — verify those by hand."
+            fi
+            echo ""
+            echo "<sub>[run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) · sweeps every entry through the real resolver + downloader client</sub>"
+          } > body.md
+
+          cat body.md >> "$GITHUB_STEP_SUMMARY"
+
+      # One long-lived issue that gets reopened/updated rather than a new one each week,
+      # so this can't spam the tracker. Closed automatically once everything passes again.
+      - name: Open / update / close the tracking issue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COUNT: ${{ steps.report.outputs.count }}
+        run: |
+          TITLE="Catalog health: broken downloads"
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "$TITLE in:title" --json number,title \
+                 --jq ".[] | select(.title==\"$TITLE\") | .number" | head -1)
+
+          if [ "$COUNT" -gt 0 ]; then
+            if [ -n "$NUM" ]; then
+              gh issue reopen --repo "$GITHUB_REPOSITORY" "$NUM" 2>/dev/null || true
+              gh issue comment --repo "$GITHUB_REPOSITORY" "$NUM" --body-file body.md
+              echo "updated issue #$NUM"
+            else
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file body.md
+              echo "opened a new issue"
+            fi
+            exit 1   # surface the run as failed so the scheduled-workflow email fires
+          else
+            if [ -n "$NUM" ]; then
+              STATE=$(gh issue view --repo "$GITHUB_REPOSITORY" "$NUM" --json state --jq .state)
+              if [ "$STATE" = "OPEN" ]; then
+                gh issue comment --repo "$GITHUB_REPOSITORY" "$NUM" --body-file body.md
+                gh issue close --repo "$GITHUB_REPOSITORY" "$NUM"
+                echo "everything passes again — closed issue #$NUM"
+              fi
+            fi
+            echo "all good"
+          fi
