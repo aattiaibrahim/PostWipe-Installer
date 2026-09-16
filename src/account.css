@@ -1,55 +1,6 @@
 /* ─── Account: settings row, dialog, favorites star, sidebar sets ──────────────────────
    Built on the Liquid Glass tokens (liquid-glass.css), so it tints with every theme. */
 
-/* Settings row */
-.account-section__signin {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  width: 100%;
-  padding: 0.4rem 0.5rem 0.4rem 0.4rem;
-  border: 1px solid var(--glass-stroke);
-  border-radius: 999px;
-  background-color: var(--glass-fill);
-  box-shadow: inset 0 1px 0 var(--glass-hi);
-  color: var(--text);
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.account-section__signin:hover {
-  background-color: var(--glass-lens);
-}
-
-.account-section__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.25;
-}
-
-.account-section__text strong {
-  font-size: 0.84rem;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account-section__text span {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account-section__text .account-section__status--error {
-  color: var(--danger);
-  white-space: normal;
-}
-
 .account-avatar {
   flex-shrink: 0;
   width: 30px;
@@ -451,4 +402,114 @@
 .sidebar__set-delete:hover {
   background-color: color-mix(in srgb, var(--danger) 16%, transparent);
   color: var(--danger);
+}
+
+/* Account panel (opened from the dock's account bubble) */
+.account-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.85rem 0.85rem 0.75rem;
+}
+
+.account-panel__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.account-panel__perks {
+  margin: 0;
+  padding-left: 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.account-panel__perks li::marker {
+  color: var(--accent);
+}
+
+.account-panel__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.account-panel__stats > div {
+  padding: 0.5rem 0.65rem;
+  border-radius: 14px;
+  border: 1px solid var(--glass-stroke);
+}
+
+.account-panel__stats dt {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.account-panel__stats dd {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-panel__sync {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.account-panel__sync--error {
+  color: var(--danger);
+}
+
+.account-panel__nudge {
+  padding: 0.5rem 0.65rem;
+  border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.account-panel .account-identity .account-avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 0.9rem;
+}
+
+.account-panel .account-identity > div {
+  overflow: hidden;
+}
+
+.account-panel .account-identity span,
+.account-panel .account-identity strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Beta caveat: amber, like the "unverified" health badge — a heads-up, not an error. */
+.account-beta {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--stale) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--stale) 30%, transparent);
+  color: var(--text);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.account-beta strong {
+  color: var(--stale);
 }

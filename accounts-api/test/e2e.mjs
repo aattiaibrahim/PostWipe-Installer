@@ -146,5 +146,26 @@ r = await app.call("POST", "/api/auth/sign-in/email", { email, password });
 check("a deleted account can't sign in", r.status === 401, `${r.status}`);
 await other.call("POST", "/api/auth/delete-user", { password });
 
+// ── anonymous community stats ─────────────────────────────────────────────────────────
+const anon = client();
+const hot = `e2e-hot-${stamp}`;
+const warm = `e2e-warm-${stamp}`;
+for (const appId of [hot, hot, hot, warm]) {
+  r = await anon.call("POST", "/api/stats/download", { appId, os: "windows" });
+}
+check("recording a download needs no account", r.status === 204, `${r.status} ${r.text}`);
+await anon.call("POST", "/api/stats/download", { appId: warm, os: "macos" });
+
+r = await anon.call("POST", "/api/stats/download", { appId: "Not An Id!", os: "windows" });
+check("a malformed app id isn't counted", r.status === 400, `${r.status}`);
+
+// A days value unique to this run, so the Worker's 10-minute edge cache can't serve a
+// previous run's list.
+const days = 31 + (stamp % 59);
+r = await anon.call("GET", `/api/stats/popular?os=windows&days=${days}&limit=50`);
+const row = (id) => r.json?.apps?.find((a) => a.appId === id);
+check("repeat downloads from one connection count once per day", row(hot)?.count === 1, JSON.stringify(row(hot)));
+check("popular is split by OS", row(warm)?.count === 1, JSON.stringify(row(warm)));
+
 console.log(`\n${failures === 0 ? "all checks passed" : `${failures} check(s) failed`}`);
 process.exit(failures === 0 ? 0 : 1);

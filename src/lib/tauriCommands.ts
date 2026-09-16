@@ -212,3 +212,33 @@ export async function clearVaultKey(): Promise<void> {
     /* best-effort */
   }
 }
+
+/** Anonymous community download counts (see src-tauri/src/commands/stats.rs). */
+export async function getShareStats(): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    return await invoke<boolean>("get_share_stats");
+  } catch {
+    return true;
+  }
+}
+
+export async function setShareStats(enabled: boolean): Promise<void> {
+  if (!isTauri) return;
+  await invoke("set_share_stats", { enabled });
+}
+
+export interface PopularApp {
+  appId: string;
+  count: number;
+}
+
+/** Most-downloaded apps for `os` over 30 days; empty when offline or not enough data. */
+export async function statsPopular(os: Os): Promise<PopularApp[]> {
+  if (!isTauri) return [];
+  try {
+    return await invoke<PopularApp[]>("stats_popular", { os });
+  } catch {
+    return [];
+  }
+}

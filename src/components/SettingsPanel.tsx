@@ -4,14 +4,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getVersion } from "@tauri-apps/api/app";
-import { isTauri, startDownload } from "../lib/tauriCommands";
+import { getShareStats, isTauri, setShareStats, startDownload } from "../lib/tauriCommands";
 import { useThemeStore, THEMES } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useSpecialsStore } from "../state/specialsStore";
 import { HealthCheckPanel } from "./HealthCheckPanel";
-import { AccountSection } from "./AccountSection";
 import { nativeBackdropSupported, useBackdropStore } from "../state/backdropStore";
 import type { Backdrop } from "../lib/tauriCommands";
 import { isMacOS } from "../lib/platform";
@@ -105,6 +104,41 @@ function BackdropPicker() {
   );
 }
 
+/** Opt-out for the anonymous counts behind Home's "Popular" shelf. The copy says exactly what
+ *  is and isn't sent, because "anonymous" alone is a word people have learned to distrust. */
+function ShareStatsToggle() {
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!isTauri) return;
+    void getShareStats().then(setEnabled);
+  }, []);
+  if (!isTauri || enabled === null) return null;
+
+  return (
+    <div className="settings-panel__row settings-panel__row--theme">
+      <label className="settings-panel__toggle">
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => {
+            const next = e.target.checked;
+            setEnabled(next);
+            void setShareStats(next).catch(() => setEnabled(!next));
+          }}
+        />
+        <span className="toggle-switch" aria-hidden="true">
+          <span className="toggle-switch__knob" />
+        </span>
+        <span>Share anonymous download counts</span>
+      </label>
+      <p className="settings-panel__hint">
+        Helps rank Popular on Home. Only the app's name and your OS are sent — no account, device ID or IP address is
+        stored.
+      </p>
+    </div>
+  );
+}
+
 export function SettingsPanel() {
   const [status, setStatus] = useState<string>("");
   const [busy, setBusy] = useState(false);
@@ -178,7 +212,6 @@ export function SettingsPanel() {
 
   return (
     <div className="settings-panel">
-      <AccountSection />
       <div className="settings-panel__row settings-panel__row--theme">
         <span className="settings-panel__label">Theme</span>
         <ThemePicker />
@@ -207,6 +240,7 @@ export function SettingsPanel() {
           <span>Click sound effects</span>
         </label>
       </div>
+      <ShareStatsToggle />
       {/* Only meaningful once the vault is open — the unlock is remembered across launches,
           so this padlock is how you take it back. */}
       {vaultUnlocked && (

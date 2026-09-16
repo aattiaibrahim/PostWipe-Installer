@@ -1,12 +1,17 @@
 import { Hono } from "hono";
 import { createAuth, type Env } from "./auth.ts";
 import { EMPTY_PROFILE, MAX_BODY_BYTES, parseProfileInput, type Profile } from "./profile.ts";
+import { popular, recordDownload } from "./stats.ts";
 
 type Vars = { userId: string };
 
 const app = new Hono<{ Bindings: Env; Variables: Vars }>();
 
 app.get("/", (c) => c.json({ service: "postwipe-accounts", ok: true }));
+
+// Anonymous community stats — no account needed, nothing identifying stored (see stats.ts).
+app.post("/api/stats/download", recordDownload);
+app.get("/api/stats/popular", popular);
 
 // Better Auth owns everything under /api/auth: sign-up, sign-in, sessions, 2FA, deletion.
 app.on(["GET", "POST"], "/api/auth/*", (c) => createAuth(c.env).handler(c.req.raw));

@@ -22,6 +22,7 @@ import "./App.css";
 // look by overriding them, rather than forking every rule.
 import "./liquid-glass.css";
 import "./account.css";
+import "./home.css";
 
 const CLICKABLE = 'button, [role="button"], a, input[type="checkbox"], .sidebar__item, .os-picker__tile';
 

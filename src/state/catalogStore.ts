@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import type { Catalog, Os, Vendor } from "../types/catalog";
 import { listCategories } from "../lib/tauriCommands";
-import { ALL_CATEGORY_ID } from "../lib/constants";
+import { HOME_CATEGORY_ID } from "../lib/constants";
 
 export type VendorFilter = "all" | Vendor;
+export type DockView = "settings" | "account";
 
 interface CatalogState {
   catalog: Catalog | null;
@@ -13,7 +14,10 @@ interface CatalogState {
   vendorFilter: VendorFilter;
   searchQuery: string;
   selectedCategoryId: string | null;
-  /** Whether the bottom-left settings dock is expanded — the category sidebar dims while it is. */
+  /** Which bottom-left dock panel is open, if any. Settings and Account share one panel slot,
+   *  so only one can be open at a time. */
+  dockView: DockView | null;
+  /** Whether either dock panel is expanded — the category sidebar dims while it is. */
   settingsOpen: boolean;
   /** True while sidebar categories extend behind the fixed settings dock — the dock casts a
    *  drop shadow only then (measured by CategorySidebar, rendered by SidebarSettings). */
@@ -27,6 +31,7 @@ interface CatalogState {
   setSearchQuery: (query: string) => void;
   setSelectedCategory: (id: string) => void;
   setSettingsOpen: (open: boolean) => void;
+  setDockView: (view: DockView | null) => void;
   setDockShadow: (on: boolean) => void;
   load: () => Promise<void>;
 }
@@ -38,12 +43,14 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   osFilter: "windows",
   vendorFilter: "all",
   searchQuery: "",
-  selectedCategoryId: ALL_CATEGORY_ID,
+  selectedCategoryId: HOME_CATEGORY_ID,
+  dockView: null,
   settingsOpen: false,
   dockShadow: false,
   selectMode: false,
   setSelectMode: (on) => set({ selectMode: on }),
-  setSettingsOpen: (open) => set({ settingsOpen: open }),
+  setSettingsOpen: (open) => set({ settingsOpen: open, dockView: open ? "settings" : null }),
+  setDockView: (view) => set({ dockView: view, settingsOpen: view !== null }),
   setDockShadow: (on) => set({ dockShadow: on }),
   // Intel/AMD only means anything on Windows — leaving macOS clears any vendor filter so
   // a hidden filter can't silently trim the list while its toggle isn't rendered.

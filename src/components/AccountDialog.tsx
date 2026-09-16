@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import { create } from "zustand";
 import * as api from "../lib/accountCommands";
 import { useAccountStore } from "../state/accountStore";
+import { BetaPasswordWarning } from "./BetaPasswordWarning";
 
 export type AccountView =
   | "signIn"
@@ -157,11 +158,13 @@ export function AccountDialog() {
     });
   };
 
-  const submitCode = (e?: FormEvent) => {
+  // `value` is passed explicitly by the auto-submit: at that moment React state still holds
+  // the PREVIOUS keystroke, so reading `code` would send only five digits.
+  const submitCode = (e?: FormEvent, value = code) => {
     e?.preventDefault();
-    if (!code.trim()) return;
+    if (!value.trim()) return;
     void run(async () => {
-      const signedIn = await api.verifyCode(code, useBackup);
+      const signedIn = await api.verifyCode(value, useBackup);
       await onSignedIn(signedIn);
       close();
     });
@@ -177,11 +180,11 @@ export function AccountDialog() {
     });
   };
 
-  const confirmSetup = (e?: FormEvent) => {
+  const confirmSetup = (e?: FormEvent, value = code) => {
     e?.preventDefault();
-    if (!code.trim()) return;
+    if (!value.trim()) return;
     void run(async () => {
-      const updated = await api.verifyCode(code, false);
+      const updated = await api.verifyCode(value, false);
       setUser(updated);
       open("setupCodes");
     });
@@ -206,10 +209,10 @@ export function AccountDialog() {
   };
 
   // Authenticator codes are 6 digits: submit the moment the sixth one lands.
-  const onCodeChange = (value: string, submit: () => void) => {
+  const onCodeChange = (value: string, submit: (e: undefined, value: string) => void) => {
     const next = useBackup ? value : value.replace(/\D/g, "").slice(0, 6);
     setCode(next);
-    if (!useBackup && next.length === 6) requestAnimationFrame(submit);
+    if (!useBackup && next.length === 6 && !busy) submit(undefined, next);
   };
 
   let title = "";
@@ -245,8 +248,9 @@ export function AccountDialog() {
       body = (
         <form className="account-form" onSubmit={submitSignUp}>
           <p className="account-lede">
-            Free. Stores your email, a securely hashed password, and your favorites. Delete it any time from Settings.
+            Free. Stores your email, a securely hashed password, and your favorites. Delete it any time.
           </p>
+          <BetaPasswordWarning />
           <Field id="account-name" label="Name (optional)">
             <input ref={firstInput} id="account-name" type="text" autoComplete="nickname" maxLength={40} value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
@@ -256,7 +260,7 @@ export function AccountDialog() {
           <Field
             id="account-password-new"
             label="Password"
-            hint={`At least ${MIN_PASSWORD} characters. There's no email reset yet, so use a password manager.`}
+            hint={`At least ${MIN_PASSWORD} characters.`}
           >
             <input id="account-password-new" type="password" autoComplete="new-password" required minLength={MIN_PASSWORD} value={password} onChange={(e) => setPassword(e.target.value)} />
           </Field>

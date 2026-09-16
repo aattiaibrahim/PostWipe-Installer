@@ -81,6 +81,11 @@ impl AccountApi {
         Self { base: base.into().trim_end_matches('/').to_string(), http, token: Mutex::new(token) }
     }
 
+    /// The Worker's URL. Community stats live on the same Worker, so they share it.
+    pub fn base(&self) -> &str {
+        &self.base
+    }
+
     pub fn token(&self) -> Option<String> {
         self.token.lock().unwrap().clone()
     }

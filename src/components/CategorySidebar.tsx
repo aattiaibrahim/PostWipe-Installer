@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
 import { categoryColor } from "../lib/categoryColors";
-import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
 import { useAccountStore } from "../state/accountStore";
 import { useSelectionStore } from "../state/selectionStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
@@ -71,14 +71,14 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
     const nav = navRef.current;
     const cats = catsRef.current;
     if (!nav || !cats) return;
-    const dock = document.querySelector(".settings-dock");
+    const dock = document.querySelector(".dock");
     const measure = () => {
       // Cap the list so it simply STOPS just above the Settings dock, instead of running
       // behind it and reserving padding underneath to compensate — that padding was the
       // dead space under the last row (Specials). Measured off the Settings BUTTON: the dock
       // is bottom-anchored, so the button's top edge stays put whether the settings panel is
       // expanded or not, which keeps this stable across the expand animation.
-      const btn = dock?.querySelector(".sidebar-settings__btn") as HTMLElement | null;
+      const btn = dock?.querySelector(".dock__bar") as HTMLElement | null;
       const limit = btn ? btn.getBoundingClientRect().top - 12 : window.innerHeight - 52;
       const navTop = nav.getBoundingClientRect().top;
       nav.style.maxHeight = `${Math.max(160, Math.floor(limit - navTop))}px`;
@@ -129,6 +129,14 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
       {/* While settings is expanded the categories dim + shrink out of the way; closing
           settings restores them untouched. */}
       <div ref={catsRef} className="sidebar__categories">
+        <button
+          className={`sidebar__item${selectedId === HOME_CATEGORY_ID ? " sidebar__item--active" : ""}`}
+          onClick={() => onSelect(HOME_CATEGORY_ID)}
+        >
+          {selectedId === HOME_CATEGORY_ID && <ActiveIndicator />}
+          <CategoryIcon categoryId={HOME_CATEGORY_ID} className="sidebar__icon" />
+          <span className="sidebar__label">Home</span>
+        </button>
         <button
           className={`sidebar__item${selectedId === ALL_CATEGORY_ID ? " sidebar__item--active" : ""}`}
           onClick={() => onSelect(ALL_CATEGORY_ID)}

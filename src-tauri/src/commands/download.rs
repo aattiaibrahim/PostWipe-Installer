@@ -50,7 +50,11 @@ pub fn start_download(app_handle: AppHandle, manager: State<'_, DownloadManager>
     let filename = platform.filename.clone().unwrap_or_else(|| app_entry.id.clone());
     let dest_path = postwipe_downloads_dir(&app_handle)?.join(filename);
 
-    Ok(manager.start_download(app_handle.clone(), app_entry.id.clone(), app_entry.name.clone(), resolver_spec, dest_path))
+    let job_id = manager.start_download(app_handle.clone(), app_entry.id.clone(), app_entry.name.clone(), resolver_spec, dest_path);
+    // Counted when a download STARTS: whether it then finishes depends on the user's network,
+    // which says nothing about how popular the app is.
+    crate::commands::stats::record_download(&app_handle, &app_entry.id, os);
+    Ok(job_id)
 }
 
 #[tauri::command]

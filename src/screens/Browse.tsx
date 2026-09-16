@@ -7,7 +7,8 @@ import { VendorToggle } from "../components/VendorToggle";
 import { SearchFilterBar } from "../components/SearchFilterBar";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
-import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
+import { HomePage } from "../components/HomePage";
 import { useAccountStore } from "../state/accountStore";
 
 export function Browse() {
@@ -41,7 +42,7 @@ export function Browse() {
   // valid on every OS, so they must count as available or this would bounce you off them.
   useEffect(() => {
     if (!catalog) return;
-    if (selectedCategoryId === ALL_CATEGORY_ID) return;
+    if (selectedCategoryId === ALL_CATEGORY_ID || selectedCategoryId === HOME_CATEGORY_ID) return;
     // Favorites is a virtual view, valid on either OS — until the account signs out.
     if (selectedCategoryId === FAVORITES_CATEGORY_ID) {
       if (!signedIn) setSelectedCategory(ALL_CATEGORY_ID);
@@ -78,12 +79,17 @@ export function Browse() {
           selectedId={selectedCategoryId}
           onSelect={setSelectedCategory}
         />
-        <CategoryPanel
-          catalog={catalog}
-          os={deferredOs}
-          searchQuery={deferredQuery}
-          selectedCategoryId={selectedCategoryId}
-        />
+        {/* Typing a search from Home shows results, not the storefront. */}
+        {selectedCategoryId === HOME_CATEGORY_ID && !deferredQuery.trim() ? (
+          <HomePage catalog={catalog} os={deferredOs} />
+        ) : (
+          <CategoryPanel
+            catalog={catalog}
+            os={deferredOs}
+            searchQuery={deferredQuery}
+            selectedCategoryId={selectedCategoryId}
+          />
+        )}
       </div>
     </div>
   );

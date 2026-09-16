@@ -221,9 +221,30 @@ html.tauri.window-maximized[data-backdrop] {
 }
 
 /* Category icons go monochrome: colour is now reserved for things that MEAN something
-   (download health, the one primary action), not for decorating navigation. */
+   (download health, the one primary action), not for decorating navigation.
+
+   They were hard to read, though: thin 1.6px strokes in the MUTED text colour, over glass
+   that lets the wallpaper's brightest patch sit right behind them. So the icons take the full
+   text colour with a heavier stroke, and the sidebar's glass gets more body than other
+   chrome — still frosted, but no longer see-through enough to fight a 16px glyph. */
+.sidebar {
+  background-color: color-mix(in srgb, var(--surface-solid) 58%, rgba(255, 255, 255, 0.06));
+}
+
 .sidebar__icon {
-  color: currentColor;
+  color: var(--text);
+  opacity: 0.92;
+  /* Beats the SVG's strokeWidth="1.6" attribute: CSS outranks presentation attributes. */
+  stroke-width: 2;
+}
+
+.sidebar__label {
+  color: var(--text);
+  opacity: 0.88;
+}
+
+.sidebar__item--active .sidebar__label {
+  opacity: 1;
 }
 
 .sidebar__active-bg {
@@ -255,9 +276,23 @@ html.tauri.window-maximized[data-backdrop] {
   background-color: var(--glass-stroke);
 }
 
-/* ─── Settings dock ─────────────────────────────────────────────────────────────────── */
+/* ─── Bottom-left dock: Settings + Account bubbles ─────────────────────────────────── */
 
-.settings-dock {
+/* Anchored to the window's bottom edge so its panel can only grow UPWARD, never out of view.
+   The container itself takes no clicks — only the bubbles and an open panel do — so the
+   empty space beside two closed bubbles doesn't swallow clicks on the sidebar above. */
+.dock {
+  position: fixed;
+  left: 24px;
+  bottom: 36px;
+  z-index: 54;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.dock__panel {
   border-radius: 24px;
   border: 1px solid var(--glass-stroke);
   background-color: var(--glass-fill-strong);
@@ -266,25 +301,94 @@ html.tauri.window-maximized[data-backdrop] {
   box-shadow:
     inset 0 1px 0 var(--glass-hi),
     var(--glass-shadow);
+  transform-origin: bottom left;
 }
 
-.settings-dock--shadow {
+.dock__panel--shadow {
   box-shadow:
     inset 0 1px 0 var(--glass-hi),
     0 -12px 30px -10px rgba(0, 0, 0, 0.4);
 }
 
-.sidebar-settings__btn {
+.dock__bar {
+  display: flex;
+  gap: 8px;
+  height: 44px;
+  pointer-events: auto;
+  align-self: flex-start;
+}
+
+.dock__bubble {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 44px;
+  padding: 0 0 0 13px;
+  overflow: hidden;
   border-radius: 999px;
+  border: 1px solid var(--glass-stroke);
+  background-color: var(--glass-fill-strong);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    var(--glass-shadow);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-.sidebar-settings__btn:hover {
-  background-color: var(--glass-hover);
+.dock__bubble:hover {
+  background-color: color-mix(in srgb, var(--surface-solid) 78%, rgba(255, 255, 255, 0.08));
 }
 
-.sidebar-settings__btn--open {
+.dock__bubble--open {
   background-color: var(--glass-lens);
-  box-shadow: inset 0 1px 0 var(--glass-hi);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+    var(--glass-shadow);
+}
+
+.dock__bubble:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.dock__icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.dock__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Signed in: the account bubble shows the account's initial instead of the person glyph. */
+.dock__initial {
+  width: 24px;
+  height: 24px;
+  margin-left: -3px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 80%, var(--text));
+  color: var(--accent-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.dock__label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .settings-panel__row + .settings-panel__row {

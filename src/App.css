@@ -480,38 +480,6 @@ h3 {
   height: 100%;
 }
 
-/* Settings dock: its own little sidebar fixed to the very bottom-left. Anchored to the
-   window bottom, so the panel can only expand UPWARD — it can never grow out of view. */
-.settings-dock {
-  position: fixed;
-  left: 24px;
-  bottom: 40px;
-  z-index: 54;
-  width: 236px;
-  display: flex;
-  flex-direction: column;
-  /* Shadow fades in/out as sidebar rows move behind the dock (class from CategorySidebar). */
-  transition: box-shadow 0.3s ease;
-  /* NO gap here: the panel stays mounted at height 0 when closed, and a flex gap would
-     still reserve space above the Settings button. The open-state spacing lives inside
-     the panel's measured content (padding-bottom below) so it clips away with it. */
-  padding: 0.45rem;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background-color: var(--surface-solid);
-  box-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.45);
-}
-
-.settings-dock--shadow {
-  box-shadow:
-    0 -10px 26px rgba(0, 0, 0, 0.28),
-    0 -2px 8px rgba(0, 0, 0, 0.16);
-}
-
-.settings-dock__panel {
-  transform-origin: bottom left;
-}
-
 .settings-dock__panel-inner {
   padding-bottom: 0.35rem;
   /* The real cap is measured in SidebarSettings and applied inline (magic numbers were wrong
@@ -520,39 +488,6 @@ h3 {
   overflow-y: auto;
 }
 
-
-.sidebar-settings__btn {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  padding: 0.55rem 0.6rem;
-  border: none;
-  border-radius: 9px;
-  background: none;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.sidebar-settings__btn:hover {
-  background-color: color-mix(in srgb, var(--text) 12%, transparent);
-  color: var(--text);
-}
-
-.sidebar-settings__btn--open {
-  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
-  color: var(--text);
-}
-
-.sidebar-settings__btn svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
 
 .sidebar__categories {
   display: flex;

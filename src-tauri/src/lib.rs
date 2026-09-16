@@ -20,6 +20,7 @@ use commands::scripts::{
     cleanup_legacy_startup_pins, find_generated_script, generate_script, is_script_pinned, pin_script_to_start_menu,
     unpin_script_from_start_menu,
 };
+use commands::stats::{get_share_stats, set_share_stats, stats_popular};
 use commands::settings::{
     clear_vault_key, get_backdrop, get_theme, get_vault_key, set_backdrop, set_theme, set_vault_key,
 };
@@ -103,7 +104,10 @@ pub fn run() {
             account_sign_out,
             account_delete,
             profile_get,
-            profile_save
+            profile_save,
+            get_share_stats,
+            set_share_stats,
+            stats_popular
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
