@@ -1,0 +1,24 @@
+# PostWipe accounts: sign-in with 2FA, plus synced favorites, sets and settings.
+# Better Auth (MIT) on a Worker with a D1 database — see README.md for setup and deploy.
+
+name = "postwipe-accounts"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+# Native node:crypto scrypt. Without it password hashing falls back to pure JS, which blows
+# the free plan's 10ms CPU limit on every sign-up and sign-in (see src/password.ts).
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# The Worker's own public URL. Better Auth uses it for token signing and origin checks.
+BETTER_AUTH_URL = "https://postwipe-accounts.andrewattiaibrahim.workers.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "postwipe-accounts"
+# Filled in by `npx wrangler d1 create postwipe-accounts` (see README). Local dev ignores it.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# BETTER_AUTH_SECRET is a secret, never committed:
+#   npx wrangler secret put BETTER_AUTH_SECRET      (production)
+#   .dev.vars                                        (local dev, gitignored)

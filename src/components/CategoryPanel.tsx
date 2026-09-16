@@ -2,7 +2,8 @@ import { Fragment, memo } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
-import { ALL_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
+import { useAccountStore } from "../state/accountStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { SpecialsLock } from "./SpecialsLock";
@@ -23,6 +24,7 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
   const justUnlocked = useSpecialsStore((s) => s.justUnlocked);
   // Vendor filter lives in the topbar now (VendorToggle) and applies to every category.
   const vendorFilter = useCatalogStore((s) => s.vendorFilter);
+  const favorites = useAccountStore((s) => s.profile.favorites);
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
 
@@ -38,11 +40,23 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
 
   // Specials content is dynamic (from the Worker), never rendered as normal catalog rows,
   // so its placeholder entries stay out of the All view and search entirely.
-  const categories = (
-    isSearching || selectedCategoryId === ALL_CATEGORY_ID
-      ? catalog.categories
-      : catalog.categories.filter((c) => c.id === selectedCategoryId)
-  ).filter((c) => c.id !== SPECIALS_CATEGORY_ID);
+  // Favorites gathers the starred apps from every category into one section.
+  const favoritesView = !isSearching && selectedCategoryId === FAVORITES_CATEGORY_ID;
+  const categories = favoritesView
+    ? [
+        {
+          id: FAVORITES_CATEGORY_ID,
+          name: "Favorites",
+          apps: catalog.categories
+            .filter((c) => c.id !== SPECIALS_CATEGORY_ID)
+            .flatMap((c) => c.apps)
+            .filter((app) => favorites.includes(app.id)),
+        },
+      ]
+    : (isSearching || selectedCategoryId === ALL_CATEGORY_ID
+        ? catalog.categories
+        : catalog.categories.filter((c) => c.id === selectedCategoryId)
+      ).filter((c) => c.id !== SPECIALS_CATEGORY_ID);
 
   const sections = categories
     .map((category) => ({
@@ -63,7 +77,11 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
       <div className="category-panel">
         {justUnlocked && <SpecialsUnlockBurst />}
         <p className="category-panel__empty">
-          {isSearching ? "No apps match your search." : "No apps in this category yet."}
+          {isSearching
+            ? "No apps match your search."
+            : favoritesView
+              ? "No favorites yet. Star an app with ☆ and it'll show up here on every PC you sign in on."
+              : "No apps in this category yet."}
         </p>
       </div>
     );

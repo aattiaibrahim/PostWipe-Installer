@@ -12,12 +12,16 @@ import { useWindowChrome } from "./hooks/useWindowChrome";
 import { useApplyBackdrop } from "./hooks/useApplyBackdrop";
 import { hydrateVaultUnlock } from "./state/specialsStore";
 import { useHealthStore } from "./state/healthStore";
+import { useAccountStore } from "./state/accountStore";
+import { AccountDialog } from "./components/AccountDialog";
+import { SaveSetDialog } from "./components/SaveSetDialog";
 import { isTauri } from "./lib/tauriCommands";
 import { playClick } from "./lib/sound";
 import "./App.css";
 // Loaded after App.css on purpose: it restyles the existing components into the Liquid Glass
 // look by overriding them, rather than forking every rule.
 import "./liquid-glass.css";
+import "./account.css";
 
 const CLICKABLE = 'button, [role="button"], a, input[type="checkbox"], .sidebar__item, .os-picker__tile';
 
@@ -52,6 +56,11 @@ function App() {
     void useHealthStore.getState().load();
   }, []);
 
+  // Restores a saved session and pulls the account's favorites, sets and settings.
+  useEffect(() => {
+    void useAccountStore.getState().init();
+  }, []);
+
   // Global click chime. Capture phase so it fires even when a handler stops propagation
   // (e.g. the Specials card checkbox); the store toggle gates whether it plays.
   useEffect(() => {
@@ -66,6 +75,8 @@ function App() {
     <main className="app-shell">
       {!splashDone && <LaunchSplash onDone={() => setSplashDone(true)} />}
       <UpdatePrompt />
+      <AccountDialog />
+      <SaveSetDialog />
       <SidebarSettings />
       <GlassBackdrop />
       <TitleBar />

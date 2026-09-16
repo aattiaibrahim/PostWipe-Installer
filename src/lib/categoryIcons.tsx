@@ -1,4 +1,4 @@
-import { ALL_CATEGORY_ID } from "./constants";
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "./constants";
 
 const PATHS: Record<string, string[]> = {
   gaming: [
@@ -33,6 +33,9 @@ const PATHS: Record<string, string[]> = {
   ],
   // The "void": concentric rings around a solid core, echoing the lock-screen glyph.
   specials: ["M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18Z", "M12 16.5a4.5 4.5 0 1 0 0-9a4.5 4.5 0 0 0 0 9Z"],
+  [FAVORITES_CATEGORY_ID]: ["M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9Z"],
+  // A saved set: stacked layers.
+  __set__: ["M12 3l9 5-9 5-9-5 9-5Z", "M3 13l9 5 9-5"],
 };
 
 const DOTS: Record<string, { cx: number; cy: number }[]> = {

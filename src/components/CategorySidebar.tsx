@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
 import { categoryColor } from "../lib/categoryColors";
-import { ALL_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
+import { useAccountStore } from "../state/accountStore";
+import { useSelectionStore } from "../state/selectionStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { useCatalogStore } from "../state/catalogStore";
 
@@ -53,6 +55,11 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   const vendorFilter = useCatalogStore((s) => s.vendorFilter);
   const setDockShadow = useCatalogStore((s) => s.setDockShadow);
   const query = searchQuery.trim().toLowerCase();
+  const signedIn = useAccountStore((s) => s.user !== null);
+  const favorites = useAccountStore((s) => s.profile.favorites);
+  const sets = useAccountStore((s) => s.profile.sets);
+  const deleteSet = useAccountStore((s) => s.deleteSet);
+  const replaceSelection = useSelectionStore((s) => s.replace);
 
   // The settings dock is fixed to the bottom-left, below this sidebar. Two things are
   // measured: the sidebar's max-height (so the list ends just above the dock rather than
@@ -106,6 +113,14 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
     return total + countIn(category);
   }, 0);
 
+  // Same OS/vendor/search filters as every other count, applied to the starred apps.
+  const favoriteIds = new Set(favorites);
+  const favoritesCount = countIn({
+    id: FAVORITES_CATEGORY_ID,
+    name: "Favorites",
+    apps: catalog.categories.flatMap((c) => c.apps).filter((app) => favoriteIds.has(app.id)),
+  });
+
   return (
     <nav
       ref={navRef}
@@ -123,6 +138,17 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
           <span className="sidebar__label">All</span>
           <span className="sidebar__count">{allCount}</span>
         </button>
+        {signedIn && (
+          <button
+            className={`sidebar__item${selectedId === FAVORITES_CATEGORY_ID ? " sidebar__item--active" : ""}`}
+            onClick={() => onSelect(FAVORITES_CATEGORY_ID)}
+          >
+            {selectedId === FAVORITES_CATEGORY_ID && <ActiveIndicator />}
+            <CategoryIcon categoryId={FAVORITES_CATEGORY_ID} className="sidebar__icon" />
+            <span className="sidebar__label">Favorites</span>
+            <span className="sidebar__count">{favoritesCount}</span>
+          </button>
+        )}
         <div className="sidebar__divider" />
         {catalog.categories.map((category) => {
           // Bookmarks have no platforms, so a links-only category must not be hidden here.
@@ -148,6 +174,40 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
             </button>
           );
         })}
+        {/* Saved sets aren't categories: clicking one SELECTS its apps for this OS, ready for
+            the title-bar Download button, rather than filtering the list. */}
+        {signedIn && sets.length > 0 && (
+          <>
+            <div className="sidebar__divider" />
+            <div className="sidebar__group-label">Your sets</div>
+            {sets.map((set) => {
+              const apps = set.apps[os] ?? [];
+              const osName = os === "windows" ? "Windows" : "macOS";
+              return (
+                <div key={set.id} className="sidebar__set">
+                  <button
+                    className="sidebar__item"
+                    onClick={() => replaceSelection(apps)}
+                    disabled={apps.length === 0}
+                    title={apps.length ? `Select these ${apps.length} apps` : `No ${osName} apps in this set`}
+                  >
+                    <CategoryIcon categoryId="__set__" className="sidebar__icon" />
+                    <span className="sidebar__label">{set.name}</span>
+                    <span className="sidebar__count">{apps.length}</span>
+                  </button>
+                  <button
+                    className="sidebar__set-delete"
+                    onClick={() => deleteSet(set.id)}
+                    aria-label={`Delete set ${set.name}`}
+                    title="Delete set"
+                  >
+                    ✕
+                  </button>
+                </div>
+              );
+            })}
+          </>
+        )}
       </div>
     </nav>
   );

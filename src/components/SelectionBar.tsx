@@ -3,6 +3,8 @@ import { useSelectionStore } from "../state/selectionStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { startDownload } from "../lib/tauriCommands";
 import { AppIcon } from "./AppIcon";
+import { useAccountStore } from "../state/accountStore";
+import { useSaveSetDialog } from "./SaveSetDialog";
 
 /** Batch-download pill that slides down from the very top of the app, centered in the
  *  title bar, whenever apps are checked. Hovering it drops a list of everything selected
@@ -13,6 +15,8 @@ export function SelectionBar() {
   const clear = useSelectionStore((s) => s.clear);
   const osFilter = useCatalogStore((s) => s.osFilter);
   const catalog = useCatalogStore((s) => s.catalog);
+  const signedIn = useAccountStore((s) => s.user !== null);
+  const openSaveSet = useSaveSetDialog((s) => s.open);
 
   const apps = catalog ? catalog.categories.flatMap((c) => c.apps) : [];
   const entries = selected.map((id) => apps.find((a) => a.id === id) ?? null);
@@ -55,6 +59,11 @@ export function SelectionBar() {
               <button className="selection-bar__clear" onClick={clear}>
                 Clear
               </button>
+              {signedIn && (
+                <button className="selection-bar__clear" onClick={() => openSaveSet(selected)} title="Save these apps as a set on your account">
+                  Save set
+                </button>
+              )}
               {/* The count lives ONLY here — no separate "N selected" label repeating it.
                   The number pops (re-keyed) on every select/deselect. */}
               <button className="selection-bar__download" onClick={downloadSelected}>

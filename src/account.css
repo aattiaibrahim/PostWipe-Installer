@@ -1,0 +1,454 @@
+/* ─── Account: settings row, dialog, favorites star, sidebar sets ──────────────────────
+   Built on the Liquid Glass tokens (liquid-glass.css), so it tints with every theme. */
+
+/* Settings row */
+.account-section__signin {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem 0.4rem 0.4rem;
+  border: 1px solid var(--glass-stroke);
+  border-radius: 999px;
+  background-color: var(--glass-fill);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.account-section__signin:hover {
+  background-color: var(--glass-lens);
+}
+
+.account-section__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.account-section__text strong {
+  font-size: 0.84rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-section__text span {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-section__text .account-section__status--error {
+  color: var(--danger);
+  white-space: normal;
+}
+
+.account-avatar {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 80%, var(--text));
+  color: var(--accent-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.account-avatar--empty {
+  background: var(--glass-lens);
+  color: var(--text-muted);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+}
+
+.account-avatar svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Dialog */
+.account-dialog {
+  width: min(380px, 92vw);
+  padding: 1.25rem 1.35rem 1.2rem;
+}
+
+.account-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.account-dialog__head .confirm-dialog__title {
+  margin: 0;
+  font-size: 1.1rem;
+  letter-spacing: -0.015em;
+}
+
+.account-close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.account-close:hover {
+  background-color: var(--glass-hover);
+  color: var(--text);
+}
+
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.account-lede {
+  margin: 0 0 0.15rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.account-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.account-field__label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.account-field__hint {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.account-field input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--glass-stroke);
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--surface-solid) 70%, transparent);
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.account-field input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.account-field input.account-code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 1.35rem;
+  letter-spacing: 0.4em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-primary,
+.account-secondary,
+.account-danger {
+  width: 100%;
+  padding: 0.62rem 1rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+}
+
+/* The dialog's one solid button: the thing this step is for. */
+.account-primary {
+  border: 1px solid transparent;
+  background-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.account-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.account-secondary {
+  border: 1px solid var(--glass-stroke);
+  background-color: transparent;
+  color: var(--text);
+}
+
+.account-secondary:hover:not(:disabled) {
+  background-color: var(--glass-hover);
+}
+
+.account-danger {
+  border: 1px solid transparent;
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.account-primary:disabled,
+.account-secondary:disabled,
+.account-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.account-primary--small,
+.account-secondary--small {
+  width: auto;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+}
+
+.account-switch {
+  margin: 0.1rem 0 0;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.account-link,
+.account-danger-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: color-mix(in srgb, var(--accent) 70%, var(--text));
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-link:hover {
+  text-decoration: underline;
+}
+
+.account-danger-link {
+  align-self: center;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--danger);
+}
+
+.account-error {
+  margin: 0.7rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.account-qr {
+  align-self: center;
+  padding: 10px;
+  border-radius: 18px;
+  /* QR codes need a light quiet zone to scan reliably, whatever the theme. */
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.account-qr img {
+  display: block;
+}
+
+.account-qr__placeholder {
+  width: 176px;
+  height: 176px;
+}
+
+.account-secret {
+  margin: 0;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.account-secret code,
+.account-codes code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  color: var(--text);
+  user-select: all;
+}
+
+.account-codes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  background-color: color-mix(in srgb, var(--surface-solid) 70%, transparent);
+  border: 1px solid var(--glass-stroke);
+  list-style: none;
+  font-size: 0.85rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-identity,
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.account-row {
+  justify-content: space-between;
+  padding: 0.7rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid var(--glass-stroke);
+}
+
+.account-identity > div,
+.account-row > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.account-identity strong,
+.account-row strong {
+  font-size: 0.9rem;
+}
+
+.account-identity span,
+.account-row span {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.account-identity .account-avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 1.05rem;
+}
+
+/* Favorites star on each row */
+.app-row__star {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.app-row:hover .app-row__star,
+.app-row__star:focus-visible {
+  opacity: 1;
+}
+
+.app-row__star:hover {
+  background-color: var(--glass-hover);
+  color: var(--text);
+}
+
+.app-row__star svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+}
+
+/* A starred app keeps its star visible without hovering, in a warm gold that reads on every
+   theme's sheet. */
+.app-row__star--on {
+  opacity: 1;
+  color: #f5b301;
+}
+
+.app-row__star--on:hover {
+  color: #f5b301;
+}
+
+.app-row__star--on svg {
+  fill: currentColor;
+}
+
+.app-row__star:active {
+  transform: scale(0.88);
+}
+
+/* Sidebar: saved sets */
+.sidebar__group-label {
+  padding: 0.35rem 0.75rem 0.15rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.sidebar__set {
+  position: relative;
+  display: flex;
+}
+
+.sidebar__set .sidebar__item {
+  padding-right: 2rem;
+}
+
+.sidebar__set .sidebar__item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sidebar__set-delete {
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar__set:hover .sidebar__set-delete,
+.sidebar__set-delete:focus-visible {
+  opacity: 1;
+}
+
+/* The count and the delete button share the right edge; the count steps aside on hover. */
+.sidebar__set:hover .sidebar__count {
+  opacity: 0;
+}
+
+.sidebar__set-delete:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}

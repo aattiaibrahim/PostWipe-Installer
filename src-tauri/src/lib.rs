@@ -1,3 +1,4 @@
+mod accounts;
 mod catalog;
 mod commands;
 mod downloader;
@@ -5,6 +6,10 @@ mod health;
 mod resolver;
 mod scripts;
 
+use commands::account::{
+    account_delete, account_disable_two_factor, account_enable_two_factor, account_sign_in, account_sign_out,
+    account_sign_up, account_status, account_verify_code, profile_get, profile_save,
+};
 use commands::catalog::list_categories;
 use commands::download::{
     cancel_download, delete_download, list_active_downloads, open_downloads_folder, paths_exist, start_download,
@@ -20,6 +25,7 @@ use commands::settings::{
 };
 use commands::specials::{apply_cursor_variant, install_specials_item, list_cursor_variants, specials_item_installed};
 use downloader::DownloadManager;
+use tauri::Manager;
 
 /// Writes any Rust panic (message + backtrace) to a fixed log file so a crash
 /// report actually exists to inspect afterward, instead of just vanishing
@@ -54,6 +60,12 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .manage(DownloadManager::new())
+        .setup(|app| {
+            // Needs the app handle to find the saved session token, so it can't be built
+            // before the builder runs like DownloadManager is.
+            app.manage(commands::account::init(app.handle()));
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             list_categories,
             start_download,
@@ -81,7 +93,17 @@ pub fn run() {
             clear_vault_key,
             load_catalog_health,
             run_health_check,
-            clear_local_health
+            clear_local_health,
+            account_status,
+            account_sign_up,
+            account_sign_in,
+            account_verify_code,
+            account_enable_two_factor,
+            account_disable_two_factor,
+            account_sign_out,
+            account_delete,
+            profile_get,
+            profile_save
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

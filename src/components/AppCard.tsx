@@ -15,6 +15,7 @@ import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { useSelectionStore } from "../state/selectionStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useEntryHealth } from "../state/healthStore";
+import { useAccountStore } from "../state/accountStore";
 import { AppIcon } from "./AppIcon";
 import { HealthBadge } from "./HealthBadge";
 
@@ -58,6 +59,11 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
   // Null until a sweep has covered this entry — bookmarks, scripts and freshly added apps
   // simply show no badge rather than an invented status.
   const health = useEntryHealth(app.id, os);
+  // Stars only exist for signed-in accounts: a favourite that silently lived on one PC only
+  // would defeat the point, which is getting your picks back after the next wipe.
+  const signedIn = useAccountStore((s) => s.user !== null);
+  const favorite = useAccountStore((s) => s.profile.favorites.includes(app.id));
+  const toggleFavorite = useAccountStore((s) => s.toggleFavorite);
 
   useEffect(() => {
     if (!scriptId) return;
@@ -237,6 +243,19 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
         </div>
         <div className="app-row__action-col">
           <div className="app-row__action-row">
+            {signedIn && (
+              <button
+                className={`app-row__star${favorite ? " app-row__star--on" : ""}`}
+                onClick={() => toggleFavorite(app.id)}
+                aria-pressed={favorite}
+                aria-label={favorite ? `Remove ${app.name} from favorites` : `Add ${app.name} to favorites`}
+                title={favorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                <svg viewBox="0 0 24 24" strokeWidth="1.8" strokeLinejoin="round">
+                  <path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9Z" />
+                </svg>
+              </button>
+            )}
             {isScript && (
               <button
                 className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}

@@ -7,7 +7,8 @@ import { VendorToggle } from "../components/VendorToggle";
 import { SearchFilterBar } from "../components/SearchFilterBar";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
-import { ALL_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
+import { useAccountStore } from "../state/accountStore";
 
 export function Browse() {
   const {
@@ -20,6 +21,7 @@ export function Browse() {
     setSelectedCategory,
     load,
   } = useCatalogStore();
+  const signedIn = useAccountStore((s) => s.user !== null);
   useOsDetect();
   useDownloadEvents();
 
@@ -40,6 +42,11 @@ export function Browse() {
   useEffect(() => {
     if (!catalog) return;
     if (selectedCategoryId === ALL_CATEGORY_ID) return;
+    // Favorites is a virtual view, valid on either OS — until the account signs out.
+    if (selectedCategoryId === FAVORITES_CATEGORY_ID) {
+      if (!signedIn) setSelectedCategory(ALL_CATEGORY_ID);
+      return;
+    }
     const usable = (app: { kind: string; platforms: Record<string, unknown> }) =>
       app.kind === "link" || !!app.platforms[osFilter];
     const stillAvailable = catalog.categories.some(
@@ -48,7 +55,7 @@ export function Browse() {
     if (stillAvailable) return;
     const fallback = catalog.categories.find((c) => c.apps.some(usable));
     setSelectedCategory(fallback ? fallback.id : ALL_CATEGORY_ID);
-  }, [catalog, osFilter, selectedCategoryId, setSelectedCategory]);
+  }, [catalog, osFilter, selectedCategoryId, setSelectedCategory, signedIn]);
 
   if (loading) return <div className="status-message">Loading catalog...</div>;
   if (error) return <div className="status-message status-message--error">Failed to load catalog: {error}</div>;

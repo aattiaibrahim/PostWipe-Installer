@@ -6,6 +6,8 @@ interface SelectionState {
   selected: string[];
   toggle: (appId: string) => void;
   clear: () => void;
+  /** Replace the whole selection (loading a saved set) and enter select mode. */
+  replace: (appIds: string[]) => void;
 }
 
 export const useSelectionStore = create<SelectionState>((set) => ({
@@ -22,5 +24,9 @@ export const useSelectionStore = create<SelectionState>((set) => ({
   clear: () => {
     useCatalogStore.getState().setSelectMode(false);
     set({ selected: [] });
+  },
+  replace: (appIds) => {
+    useCatalogStore.getState().setSelectMode(appIds.length > 0);
+    set({ selected: [...new Set(appIds)] });
   },
 }));

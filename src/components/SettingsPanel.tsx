@@ -11,6 +11,7 @@ import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useSpecialsStore } from "../state/specialsStore";
 import { HealthCheckPanel } from "./HealthCheckPanel";
+import { AccountSection } from "./AccountSection";
 import { nativeBackdropSupported, useBackdropStore } from "../state/backdropStore";
 import type { Backdrop } from "../lib/tauriCommands";
 import { isMacOS } from "../lib/platform";
@@ -177,6 +178,7 @@ export function SettingsPanel() {
 
   return (
     <div className="settings-panel">
+      <AccountSection />
       <div className="settings-panel__row settings-panel__row--theme">
         <span className="settings-panel__label">Theme</span>
         <ThemePicker />
