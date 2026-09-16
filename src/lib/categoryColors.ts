@@ -4,6 +4,7 @@ const COLORS: Record<string, string> = {
   "file-compressors": "#14b8a6",
   security: "#22c55e",
   "dev-tools": "#3b82f6",
+  "virtual-machines": "#0ea5e9",
   browsers: "#a855f7",
   social: "#ec4899",
   music: "#10b981",

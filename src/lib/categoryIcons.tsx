@@ -13,6 +13,12 @@ const PATHS: Record<string, string[]> = {
   ],
   security: ["M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"],
   "dev-tools": ["M9 8l-4 4 4 4", "M15 8l4 4-4 4"],
+  // A monitor inside a monitor — a guest OS running in a window on the host.
+  "virtual-machines": [
+    "M3 5h18a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z",
+    "M7 9h8v4H7z",
+    "M9 19h6",
+  ],
   browsers: ["M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z", "M4 12h16", "M12 4c3 3 3 13 0 16", "M12 4c-3 3-3 13 0 16"],
   social: ["M4 5h16v10H8l-4 4V5Z"],
   music: ["M9 18V5l10-2v13", "M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z", "M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"],

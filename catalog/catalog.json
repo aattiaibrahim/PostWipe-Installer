@@ -919,6 +919,74 @@
       ]
     },
     {
+      "id": "virtual-machines",
+      "name": "Virtual Machines",
+      "apps": [
+        {
+          "id": "virtualbox",
+          "name": "VirtualBox",
+          "bio": "Oracle's free hypervisor for running other OSes in a window.",
+          "description": "VirtualBox is Oracle's free, open-source hypervisor — run Windows, Linux or BSD inside a window on your normal desktop, with snapshots you can roll back to, shared folders, USB passthrough and virtual networking. The usual reasons: testing something sketchy without touching your real install, keeping an old OS around for one program, or trying a Linux distro before committing a partition to it.",
+          "icon": "virtualbox.png",
+          "domain": "virtualbox.org",
+          "website": "https://www.virtualbox.org/wiki/Downloads",
+          "kind": "download",
+          "notes": "html_regex against the wiki Downloads page, whose links sit in the static HTML and carry both the version and the build number (7.2.18-175117 at time of writing), so the regex has to allow both — a [0-9.]+ alone won't match. Verified live 2026-09-16: page 200 (23 KB), each regex matched exactly one URL. macOS is the ARM build ON PURPOSE (Andrew's call): there is no universal dmg, and the Intel build simply will not run on Apple Silicon. The trade-off is that VirtualBox on ARM only runs ARM guests — a stock x86 Windows ISO won't boot in it — which is why the guide says so outright rather than letting someone discover it after a 100 MB download. Intel Macs need the -OSX.dmg from the same page.",
+          "guide": {
+            "title": "Before you install on a Mac",
+            "steps": [
+              "This entry downloads the Apple Silicon (M1–M4) build. On an Intel Mac, grab the '-OSX.dmg' file from virtualbox.org/wiki/Downloads instead — the ARM build won't run.",
+              "On Apple Silicon, VirtualBox can only run ARM guests. A normal x86 Windows ISO will not boot; you need an ARM build of Windows or an ARM Linux image.",
+              "macOS will block the kernel extensions on first install: open System Settings ▸ Privacy & Security, click 'Allow' next to the Oracle message, then reboot.",
+              "If you want x86 guests on Apple Silicon, VMware Fusion or Parallels emulate them — VirtualBox does not."
+            ]
+          },
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://www.virtualbox.org/wiki/Downloads",
+                "url_regex": "https://download\\.virtualbox\\.org/virtualbox/[0-9.]+/VirtualBox-[0-9.]+-[0-9]+-Win\\.exe"
+              },
+              "filename": "VirtualBox-Setup.exe"
+            },
+            "macos": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://www.virtualbox.org/wiki/Downloads",
+                "url_regex": "https://download\\.virtualbox\\.org/virtualbox/[0-9.]+/VirtualBox-[0-9.]+-[0-9]+-macOSArm64\\.dmg"
+              },
+              "filename": "VirtualBox-AppleSilicon.dmg"
+            }
+          }
+        },
+        {
+          "id": "vmware-fusion",
+          "name": "VMware Fusion",
+          "bio": "VMware's Mac hypervisor — free for personal use, Broadcom login required.",
+          "description": "VMware Fusion runs Windows and Linux VMs on macOS, and unlike VirtualBox on Apple Silicon it can emulate x86 guests, so a normal Windows ISO actually boots. Broadcom made it free for personal use in 2024. The catch is distribution: downloads are gated behind a free Broadcom account, so this opens their portal rather than downloading directly.",
+          "icon": "vmware.png",
+          "domain": "vmware.com",
+          "website": "https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware+Fusion",
+          "kind": "link",
+          "notes": "LINK, not download, and it has to stay that way: since Broadcom absorbed VMware every Fusion/Workstation build sits behind an authenticated portal (support.broadcom.com), with per-session tokenised URLs and no anonymous endpoint to resolve. Any resolver we wrote would 302 to a login page — exactly the 'served a web page instead of a file' failure the health check now catches. Portal URL verified 200 on 2026-09-16. Free for personal use; a free Broadcom account is still required.",
+          "platforms": {}
+        },
+        {
+          "id": "vmware-workstation",
+          "name": "VMware Workstation Pro",
+          "bio": "VMware's Windows/Linux hypervisor — free for personal use, Broadcom login required.",
+          "description": "VMware Workstation Pro is the Windows and Linux counterpart to Fusion — nested virtualisation, snapshots, virtual networks, and considerably better performance than VirtualBox for Windows guests. Free for personal use since 2024. Like Fusion, downloads are gated behind a free Broadcom account, so this opens their portal.",
+          "icon": "vmware.png",
+          "domain": "vmware.com",
+          "website": "https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware+Workstation+Pro",
+          "kind": "link",
+          "notes": "Same Broadcom gating as vmware-fusion — see that entry's notes. Link entry on purpose; there is no anonymous download URL to resolve.",
+          "platforms": {}
+        }
+      ]
+    },
+    {
       "id": "browsers",
       "name": "Browsers",
       "apps": [

@@ -1,5 +1,5 @@
 {
-  "generated_at": 1789536569,
+  "generated_at": 1789537583,
   "source": "ci",
   "entries": [
     {
@@ -77,8 +77,8 @@
     {
       "app_id": "bsg-launcher",
       "os": "windows",
-      "status": "unknown",
-      "detail": "vendor answered 403 Forbidden — likely a bot-block or rate limit"
+      "status": "ok",
+      "detail": "https://launcher.escapefromtarkov.com/launcher/download"
     },
     {
       "app_id": "cinebench-r23",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.0_setup.exe"
+      "detail": "https://files3.majorgeeks.com/1cf47b6e077167d3e6466ce8cd864a64709c62bc/drivers/DDU v18.1.6.0_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -419,8 +419,8 @@
     {
       "app_id": "prime95",
       "os": "windows",
-      "status": "unknown",
-      "detail": "couldn't reach the download: error sending request for url (https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip)"
+      "status": "ok",
+      "detail": "https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip"
     },
     {
       "app_id": "process-explorer",
@@ -661,6 +661,18 @@
       "os": "windows",
       "status": "ok",
       "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.1/VencordInstaller.exe"
+    },
+    {
+      "app_id": "virtualbox",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://download.virtualbox.org/virtualbox/7.2.18/VirtualBox-7.2.18-175117-macOSArm64.dmg"
+    },
+    {
+      "app_id": "virtualbox",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.virtualbox.org/virtualbox/7.2.18/VirtualBox-7.2.18-175117-Win.exe"
     },
     {
       "app_id": "vscode",

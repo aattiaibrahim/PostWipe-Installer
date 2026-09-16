@@ -1,5 +1,5 @@
 {
-  "generated_at": 1789533897,
+  "generated_at": 1789537583,
   "source": "ci",
   "entries": [
     {
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.0_setup.exe"
+      "detail": "https://files3.majorgeeks.com/1cf47b6e077167d3e6466ce8cd864a64709c62bc/drivers/DDU v18.1.6.0_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -569,14 +569,14 @@
     {
       "app_id": "teamspeak",
       "os": "macos",
-      "status": "unknown",
-      "detail": "vendor answered 429 Too Many Requests — likely a bot-block or rate limit"
+      "status": "ok",
+      "detail": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-macosx-3.6.2.dmg"
     },
     {
       "app_id": "teamspeak",
       "os": "windows",
-      "status": "unknown",
-      "detail": "vendor answered 429 Too Many Requests — likely a bot-block or rate limit"
+      "status": "ok",
+      "detail": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe"
     },
     {
       "app_id": "teamviewer",
@@ -661,6 +661,18 @@
       "os": "windows",
       "status": "ok",
       "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.1/VencordInstaller.exe"
+    },
+    {
+      "app_id": "virtualbox",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://download.virtualbox.org/virtualbox/7.2.18/VirtualBox-7.2.18-175117-macOSArm64.dmg"
+    },
+    {
+      "app_id": "virtualbox",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.virtualbox.org/virtualbox/7.2.18/VirtualBox-7.2.18-175117-Win.exe"
     },
     {
       "app_id": "vscode",
