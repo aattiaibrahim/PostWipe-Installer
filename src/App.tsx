@@ -15,7 +15,8 @@ import { useHealthStore } from "./state/healthStore";
 import { useAccountStore } from "./state/accountStore";
 import { AccountDialog } from "./components/AccountDialog";
 import { SaveSetDialog } from "./components/SaveSetDialog";
-import { isTauri } from "./lib/tauriCommands";
+import { KickstartDialog, useKickstart } from "./components/KickstartDialog";
+import { getFlag, isTauri, setFlag } from "./lib/tauriCommands";
 import { playClick } from "./lib/sound";
 import "./App.css";
 // Loaded after App.css on purpose: it restyles the existing components into the Liquid Glass
@@ -23,6 +24,7 @@ import "./App.css";
 import "./liquid-glass.css";
 import "./account.css";
 import "./home.css";
+import "./kickstart.css";
 
 const CLICKABLE = 'button, [role="button"], a, input[type="checkbox"], .sidebar__item, .os-picker__tile';
 
@@ -57,6 +59,22 @@ function App() {
     void useHealthStore.getState().load();
   }, []);
 
+  // First launch only: offer Kickstart once, after the splash, so a new user lands on a
+  // guided start instead of a 120-app list. The flag is written the moment it's shown, so
+  // closing it without answering still counts — it never nags again.
+  useEffect(() => {
+    if (!splashDone || !isTauri) return;
+    let cancelled = false;
+    void getFlag("kickstart-offered").then((offered) => {
+      if (cancelled || offered) return;
+      void setFlag("kickstart-offered");
+      useKickstart.getState().show();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [splashDone]);
+
   // Restores a saved session and pulls the account's favorites, sets and settings.
   useEffect(() => {
     void useAccountStore.getState().init();
@@ -78,6 +96,7 @@ function App() {
       <UpdatePrompt />
       <AccountDialog />
       <SaveSetDialog />
+      <KickstartDialog />
       <SidebarSettings />
       <GlassBackdrop />
       <TitleBar />

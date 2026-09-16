@@ -1,0 +1,275 @@
+/* ─── Kickstart wizard ─────────────────────────────────────────────────────────────────
+   A glass dialog (reuses .confirm-dialog's material from liquid-glass.css) with big,
+   tappable answer cards, a progress hairline, and a review list with a reason per app. */
+
+.kickstart {
+  width: min(560px, 94vw);
+  max-height: min(720px, 88vh);
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.35rem 1.1rem;
+}
+
+.kickstart__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kickstart__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--accent) 65%, var(--text));
+}
+
+.kickstart__progress {
+  height: 3px;
+  margin: 0.55rem 0 1rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--glass-hover);
+}
+
+.kickstart__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.kickstart__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.kickstart__title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.kickstart__subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.kickstart__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.kickstart__option {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 16px;
+  border: 1px solid var(--glass-stroke);
+  background: color-mix(in srgb, var(--surface-solid) 55%, transparent);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
+}
+
+.kickstart__option:hover {
+  background: color-mix(in srgb, var(--surface-solid) 80%, transparent);
+}
+
+.kickstart__option:active {
+  transform: scale(0.98);
+}
+
+.kickstart__option--on {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.kickstart__option--on:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.kickstart__check {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  border: 1.5px solid var(--glass-stroke);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent-text);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.kickstart__option--on .kickstart__check {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.kickstart__option-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.kickstart__option-text strong {
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.kickstart__option-text span {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* Review */
+.kickstart__review {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kickstart__pick {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.kickstart__pick:hover {
+  background: var(--glass-hover);
+}
+
+.kickstart__pick input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.kickstart__pick--off {
+  opacity: 0.5;
+}
+
+.kickstart__pick .kickstart__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+
+.kickstart__pick-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.kickstart__pick-text strong {
+  font-size: 0.9rem;
+}
+
+.kickstart__pick-text span {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kickstart__save {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.kickstart__save input {
+  accent-color: var(--accent);
+}
+
+/* Done */
+.kickstart__done {
+  align-items: center;
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+}
+
+.kickstart__done-mark {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.8rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--health-ok) 18%, transparent);
+  color: var(--health-ok);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+/* Footer */
+.kickstart__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--glass-stroke);
+}
+
+.kickstart__count {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.kickstart__footer .account-link {
+  font-size: 0.8rem;
+}
+
+.kickstart__footer .account-link:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.kickstart__finish {
+  margin-left: auto;
+}
+
+/* Home hero: Kickstart is the lead action. */
+.home-hero__kickstart {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kickstart__option,
+  .kickstart__option:active {
+    transition: none;
+    transform: none;
+  }
+}

@@ -58,6 +58,30 @@ pub fn set_backdrop(app_handle: AppHandle, backdrop: String) -> Result<(), Strin
     std::fs::write(backdrop_file(&app_handle)?, backdrop).map_err(|e| e.to_string())
 }
 
+/// One-time UI flags ("already shown X") that must survive restarts — the packaged WebView's
+/// localStorage doesn't reliably, so a flag kept there would re-show its prompt every launch.
+/// Whitelisted so the frontend can't write arbitrary files into the config dir.
+const FLAGS: &[&str] = &["kickstart-offered"];
+
+fn flag_file(app_handle: &AppHandle, name: &str) -> Result<PathBuf, String> {
+    if !FLAGS.contains(&name) {
+        return Err(format!("unknown flag '{name}'"));
+    }
+    let dir = app_handle.path().app_config_dir().map_err(|e| e.to_string())?.join("flags");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir.join(name))
+}
+
+#[tauri::command]
+pub fn get_flag(app_handle: AppHandle, name: String) -> Result<bool, String> {
+    Ok(flag_file(&app_handle, &name)?.exists())
+}
+
+#[tauri::command]
+pub fn set_flag(app_handle: AppHandle, name: String) -> Result<(), String> {
+    std::fs::write(flag_file(&app_handle, &name)?, "1").map_err(|e| e.to_string())
+}
+
 /// Where the remembered Specials key lives. Stored as `<app version>\n<key>` so an
 /// app UPDATE invalidates it and the vault returns to its locked default.
 fn vault_file(app_handle: &AppHandle) -> Result<PathBuf, String> {

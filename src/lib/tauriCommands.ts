@@ -242,3 +242,26 @@ export async function statsPopular(os: Os): Promise<PopularApp[]> {
     return [];
   }
 }
+
+/** One-time UI flags kept on disk (see settings.rs): e.g. whether Kickstart was already
+ *  offered. Browser preview has no disk, so it reports every flag as unset. */
+export type Flag = "kickstart-offered";
+
+export async function getFlag(name: Flag): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    return await invoke<boolean>("get_flag", { name });
+  } catch {
+    // If the flag can't be read, don't risk nagging on every launch.
+    return true;
+  }
+}
+
+export async function setFlag(name: Flag): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_flag", { name });
+  } catch {
+    /* best-effort */
+  }
+}

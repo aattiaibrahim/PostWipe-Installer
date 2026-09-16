@@ -9,6 +9,7 @@ import { useSelectionStore } from "../state/selectionStore";
 import { useAccountStore } from "../state/accountStore";
 import { useEntryHealth } from "../state/healthStore";
 import { AppIcon } from "./AppIcon";
+import { useKickstart } from "./KickstartDialog";
 
 interface Located {
   app: AppEntry;
@@ -112,6 +113,7 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
   const favorites = useAccountStore((s) => s.profile.favorites);
   const sets = useAccountStore((s) => s.profile.sets);
   const openAccount = useCatalogStore((s) => s.setDockView);
+  const showKickstart = useKickstart((s) => s.show);
 
   const index = useMemo(() => {
     const map = new Map<string, Located>();
@@ -155,14 +157,17 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
           <p className="home-hero__eyebrow">Fresh wipe?</p>
           <h2 className="home-hero__title">Get your {osName} setup back in minutes.</h2>
           <p className="home-hero__lede">
-            {appCount} apps, each download checked every week. Pick the essentials in one click, or browse by category.
+            {appCount} apps, each download checked every week. Answer a few questions and Kickstart picks the right ones for you.
           </p>
           <div className="home-hero__actions">
-            <button className="home-hero__primary" onClick={() => replaceSelection(downloadable.map((e) => e.app.id))}>
+            <button className="home-hero__primary home-hero__kickstart" onClick={showKickstart}>
+              <span aria-hidden="true">⚡</span> Kickstart my setup
+            </button>
+            <button className="home-hero__secondary" onClick={() => replaceSelection(downloadable.map((e) => e.app.id))}>
               Select {downloadable.length} essentials
             </button>
             <button className="home-hero__secondary" onClick={() => setCategory(ALL_CATEGORY_ID)}>
-              Browse all apps
+              Browse all
             </button>
           </div>
         </div>

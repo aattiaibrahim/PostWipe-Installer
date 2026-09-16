@@ -22,7 +22,7 @@ use commands::scripts::{
 };
 use commands::stats::{get_share_stats, set_share_stats, stats_popular};
 use commands::settings::{
-    clear_vault_key, get_backdrop, get_theme, get_vault_key, set_backdrop, set_theme, set_vault_key,
+    clear_vault_key, get_backdrop, get_flag, get_theme, get_vault_key, set_backdrop, set_flag, set_theme, set_vault_key,
 };
 use commands::specials::{apply_cursor_variant, install_specials_item, list_cursor_variants, specials_item_installed};
 use downloader::DownloadManager;
@@ -89,6 +89,8 @@ pub fn run() {
             set_theme,
             get_backdrop,
             set_backdrop,
+            get_flag,
+            set_flag,
             get_vault_key,
             set_vault_key,
             clear_vault_key,
