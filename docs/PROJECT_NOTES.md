@@ -33,6 +33,32 @@ network resolvers, concurrent downloads, auto-updating via CI.
   builds, signs (via `tauri-apps/tauri-action`), and publishes a GitHub Release with `latest.json`
   for the updater. Signing key lives only as a GitHub Actions secret + locally at
   `src-tauri/updater-signing-key.pem` (gitignored, never commit it).
+- **Catalog health** (`src-tauri/src/health/`, `.github/workflows/link-health.yml`): one checker
+  shared by the weekly CI sweep, the launch badges and Settings ▸ Check All Downloads. Three-way
+  status: `ok` / `unknown` (bot-block, 403/429, timeout, webview spec) / `broken` (404, HTML
+  instead of a binary, regex/asset gone). CI commits `health.json` to master; the app fetches it
+  from raw.githubusercontent at launch. A local check overlays it (both are cached separately, so
+  checking one OS never wipes the other's badges). A red weekly run is the alarm working, not a
+  broken workflow.
+- **Accounts + community stats** (`accounts-api/`): Better Auth (MIT) on a Cloudflare Worker + D1,
+  live at `https://postwipe-accounts.andrewattiaibrahim.workers.dev`. Email + password, TOTP 2FA,
+  backup codes, account deletion. `/api/profile` stores favorites, named sets and synced settings,
+  with 409-on-stale-write. `/api/stats/*` holds anonymous download counts for Home's Popular shelf.
+  The app talks to it **from Rust** (`src-tauri/src/accounts/`, `commands/account.rs`,
+  `commands/stats.rs`), never the webview. See `accounts-api/README.md` for deploy and local dev.
+  Wrangler isn't global: run `npx wrangler …` from `accounts-api/`.
+- **Liquid Glass UI** (`src/liquid-glass.css`, loaded after `App.css` and overriding it): chrome is
+  glass (sidebar, toolbar capsules, dock, dialogs) over a static wallpaper built from each theme's
+  own tokens; content sits on one mostly-opaque sheet. Settings ▸ Background switches to
+  "See-through" (Acrylic/vibrancy via `useApplyBackdrop`). Extra sheets: `account.css`,
+  `home.css`, `kickstart.css`.
+- **Landing + onboarding**: `HomePage.tsx` (`__home__`, the default view) has a hero, Popular
+  (all-time), Essentials, favorites and Recently added. Curated ids are in `src/lib/constants.ts`.
+  `KickstartDialog.tsx` is a question wizard whose data (steps, options, app picks, reasons)
+  lives in `src/lib/kickstart.ts`. It's offered once on first launch via the disk flag
+  `kickstart-offered`.
+- **Bottom-left dock** (`SidebarSettings.tsx`): two centered bubbles, Settings and Account. Either
+  pops into a pill with its panel above, one at a time (`catalogStore.dockView`).
 
 ## Known issues / stale catalog entries
 
@@ -126,6 +152,38 @@ network resolvers, concurrent downloads, auto-updating via CI.
 ## Backlog
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
+
+### Health checks, Liquid Glass, accounts, Home, Kickstart — 2026-09-12 → 2026-09-16
+Shipped in v0.1.97 and the release after it.
+- [done] **Weekly catalog health check** + Settings ▸ Check All Downloads (terminal overlay) +
+  green/amber/red badges. Broken entries are muted with "Download anyway", never disabled: 3 of
+  the first run's 6 "broken" verdicts were CI-runner bot-blocks.
+- [done] Catalog fixes the sweep found: Windscribe → its own GitHub releases (the versionless
+  redirect died); Vencord mac `.MacOS.zip` → `.dmg`; Elgato Stream Deck mac left resolver-less
+  (the link is JS-built, and guessing the `.pkg` URL risks a silent 403). Added Obsidian and a
+  **Virtual Machines** category (VirtualBox, with the Apple Silicon build on mac; VMware Fusion
+  and Workstation are links because Broadcom gates downloads behind a login).
+- [done] **Liquid Glass redesign**. Rainbow category icons went monochrome, the per-row solid
+  Download buttons became tinted capsules, and the ambient blobs became a static wallpaper.
+  Sidebar icons got full-strength color and a 2px stroke for legibility on glass. Dark themes set
+  `color-scheme: dark` so native controls match.
+- [done] **Accounts** (beta): sign-up/sign-in, 2FA with QR code and backup codes, favorites star
+  on every row, a Favorites view, saved sets (per-OS app lists, loaded from the sidebar), synced
+  theme/background/sound/update settings, and a three-way merge when two PCs edit at once. The
+  beta warning (no password reset, so a forgotten password loses the account) is shown on
+  sign-up and in the account panel.
+- [done] **Home** storefront + **Kickstart** wizard (interests, experience level, hardware →
+  pre-checked review with a reason per app → download, select in list, or save as a set). Every
+  answer card shows real app logos. Every checkbox in the app is round (`.round-check`).
+- [done] Anonymous **community download counts** with an opt-out in Settings (stored on disk).
+- [blocked: needs decision] **Email** for verification and password reset. Needs a domain on
+  Cloudflare (~$10/yr); then wire Cloudflare Email Service into Better Auth.
+- [idea: needs discussion] **Silent installs** (winget / per-app silent flags) so Kickstart can
+  install, not just download. Deliberately scoped out: a new install engine with admin prompts.
+- [ ] **Untested on a Mac**: the transparent macOS window + `macOSPrivateApi` needed for
+  See-through. CI builds it, but no one has opened it on a Mac.
+- [ ] **Not clicked through in the running app**: sign up → star → restart → star persists. The
+  server, the Rust client, and the UI rendering are each verified separately.
 
 ### Second big batch (2026-07-09)
 - [done] Scripts are now self-elevating **`.bat`** files, not `.ps1` (double-clicking a `.ps1` opens
@@ -914,6 +972,46 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-09-16 — Anonymous community counts: all-time, opt-out, nothing identifying stored
+Home's Popular shelf needs other installs' data. We send only the catalog app id and OS, and never
+for Specials vault items. Repeats from one connection count once per day using a salted SHA-256 of
+secret + day + IP + app, deleted after that day; no account, device id or IP is stored. On by
+default, with an opt-out kept on disk (an opt-out that reset when localStorage dropped would be
+worse than none). All-time rather than 30 days because a post-wipe tool is opened rarely, so a
+rolling window would stay near-empty. Rules out: most-favorited-only (too thin) and per-user
+analytics.
+
+### 2026-09-16 — Accounts: Better Auth on Cloudflare D1, talked to from Rust
+Compared: Clerk (used in practice-app) puts MFA behind the $25/mo plan and isn't open source;
+Supabase and Appwrite free projects pause after 7 idle days (Appwrite then deletes them after 90),
+which breaks a rarely-opened tool; Logto's free tier has no MFA; PocketBase has no authenticator
+apps. Better Auth is MIT, has free TOTP and backup codes, never pauses, and sits on the Cloudflare
+account the Specials gate already uses. Two traps, both handled:
+- **Free-plan CPU:** Workers get 10ms of CPU per request and Better Auth's JS scrypt takes ~80ms,
+  so every sign-up would die. `accounts-api/src/password.ts` uses native `node:crypto` scrypt
+  (same params and format). Confirmed on the deployed Worker; `wrangler dev` doesn't enforce the
+  limit.
+- **Tauri cookie wall:** Better Auth keeps the pending-2FA step in a cookie a webview won't hold
+  cross-origin (the same reason Clerk struggles in Tauri). So all account HTTP runs in Rust with a
+  reqwest cookie jar, plus a bearer token saved to the app config dir.
+Also rules out copying practice-app's setup: its Supabase policies let anyone read or write any
+row, with `user_id` set by the client.
+
+### 2026-09-16 — Liquid Glass is NOT gated on prefers-reduced-transparency
+WebView2 maps that media query to Windows' "Transparency effects" switch, which is off on the dev
+PC (`EnableTransparency=0`) and on many others for reasons unrelated to readability. Gating on it
+silently turned every glass surface into a flat panel. Legibility doesn't depend on it: body text
+sits on the mostly-opaque sheet. The OS setting still disables native Acrylic, so Settings ▸
+Background explains that when See-through looks solid. Never change the user's Windows setting.
+
+### 2026-09-14 — Health checks are three-way, and CI verdicts are never trusted alone
+The first scheduled sweep reported 6 broken entries; 3 (Tarkov 403, Prime95, PuTTY) worked fine
+from a home connection minutes later, because GitHub runner IPs get bot-blocked. So failures we
+can't tell apart from "the network hated us" are `unknown`, only definitive ones are `broken`, and
+broken downloads are muted rather than disabled. Local sweeps need
+`GITHUB_TOKEN="$(gh auth token)"`, or ~48 github_release entries hit the anonymous 60/hour cap and
+report bogus 403s.
 
 ### 2026-07-08 — JS-rendered pages: prefer local-only (hidden WebView), not a networked helper
 Revisited after asking "why not just run Selenium on the user's own machine instead of a Pi?" —
