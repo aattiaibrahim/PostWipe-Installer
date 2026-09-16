@@ -10,11 +10,6 @@ html.is-resizing {
   --glass-blur: 0px;
 }
 
-html.is-resizing .ambient-bg__blob {
-  animation-play-state: paused;
-  filter: blur(24px);
-}
-
 :root {
   --bg: #f0f1fa;
   --surface: rgba(255, 255, 255, 0.85);
@@ -252,7 +247,7 @@ html.tauri:not(.platform-macos) .app-shell {
   border-radius: var(--win-radius);
 }
 
-html.tauri:not(.platform-macos) .ambient-bg {
+html.tauri:not(.platform-macos) .glass-backdrop {
   border-radius: var(--win-radius);
 }
 
@@ -319,71 +314,6 @@ h2,
 h3 {
   letter-spacing: -0.02em;
   font-weight: 600;
-}
-
-.ambient-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-@keyframes blob-hue-cycle {
-  from {
-    filter: blur(70px) hue-rotate(0deg);
-  }
-  to {
-    filter: blur(70px) hue-rotate(360deg);
-  }
-}
-
-.ambient-bg__blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.4;
-  mix-blend-mode: normal;
-  will-change: transform, filter;
-  animation: blob-hue-cycle 30s linear infinite;
-}
-
-.ambient-bg__blob--2 {
-  animation-delay: -10s;
-}
-
-.ambient-bg__blob--3 {
-  animation-delay: -20s;
-}
-
-:root[data-theme="light"] .ambient-bg__blob {
-  opacity: 0.22;
-  mix-blend-mode: multiply;
-}
-
-.ambient-bg__blob--1 {
-  width: 50vw;
-  height: 50vw;
-  top: -14vw;
-  left: -10vw;
-  background: radial-gradient(circle, var(--blob-1), transparent 68%);
-}
-
-.ambient-bg__blob--2 {
-  width: 44vw;
-  height: 44vw;
-  bottom: -16vw;
-  right: -8vw;
-  background: radial-gradient(circle, var(--blob-2), transparent 68%);
-}
-
-.ambient-bg__blob--3 {
-  width: 38vw;
-  height: 38vw;
-  bottom: 6vh;
-  left: 22vw;
-  background: radial-gradient(circle, var(--blob-3), transparent 68%);
-  opacity: 0.28;
 }
 
 .app-shell {

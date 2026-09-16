@@ -32,6 +32,32 @@ pub fn set_theme(app_handle: AppHandle, theme: String) -> Result<(), String> {
     std::fs::write(path, theme.trim()).map_err(|e| e.to_string())
 }
 
+/// What sits behind the Liquid Glass chrome: `"wallpaper"` (a themed gradient painted by the
+/// app — the default, identical everywhere) or `"native"` (the OS blurs the real desktop —
+/// Acrylic on Windows, vibrancy on macOS). Disk-backed for the same reason as the theme.
+fn backdrop_file(app_handle: &AppHandle) -> Result<PathBuf, String> {
+    let dir = app_handle.path().app_config_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir.join("backdrop"))
+}
+
+#[tauri::command]
+pub fn get_backdrop(app_handle: AppHandle) -> Option<String> {
+    let value = std::fs::read_to_string(backdrop_file(&app_handle).ok()?).ok()?;
+    match value.trim() {
+        v @ ("wallpaper" | "native") => Some(v.to_string()),
+        _ => None,
+    }
+}
+
+#[tauri::command]
+pub fn set_backdrop(app_handle: AppHandle, backdrop: String) -> Result<(), String> {
+    if backdrop != "wallpaper" && backdrop != "native" {
+        return Err(format!("unknown backdrop '{backdrop}'"));
+    }
+    std::fs::write(backdrop_file(&app_handle)?, backdrop).map_err(|e| e.to_string())
+}
+
 /// Where the remembered Specials key lives. Stored as `<app version>\n<key>` so an
 /// app UPDATE invalidates it and the vault returns to its locked default.
 fn vault_file(app_handle: &AppHandle) -> Result<PathBuf, String> {

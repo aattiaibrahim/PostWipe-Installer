@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Browse } from "./screens/Browse";
-import { AmbientBackground } from "./components/AmbientBackground";
+import { GlassBackdrop } from "./components/GlassBackdrop";
 import { TitleBar } from "./components/TitleBar";
 import { LaunchSplash } from "./components/LaunchSplash";
 import { UpdatePrompt } from "./components/UpdatePrompt";
@@ -9,11 +9,15 @@ import { SidebarSettings } from "./components/SidebarSettings";
 import { useResizeGlitchGuard } from "./hooks/useResizeGlitchGuard";
 import { useApplyTheme } from "./hooks/useApplyTheme";
 import { useWindowChrome } from "./hooks/useWindowChrome";
+import { useApplyBackdrop } from "./hooks/useApplyBackdrop";
 import { hydrateVaultUnlock } from "./state/specialsStore";
 import { useHealthStore } from "./state/healthStore";
 import { isTauri } from "./lib/tauriCommands";
 import { playClick } from "./lib/sound";
 import "./App.css";
+// Loaded after App.css on purpose: it restyles the existing components into the Liquid Glass
+// look by overriding them, rather than forking every rule.
+import "./liquid-glass.css";
 
 const CLICKABLE = 'button, [role="button"], a, input[type="checkbox"], .sidebar__item, .os-picker__tile';
 
@@ -31,6 +35,7 @@ function App() {
   useResizeGlitchGuard();
   useApplyTheme();
   useWindowChrome();
+  useApplyBackdrop();
   const [splashDone, setSplashDone] = useState(false);
 
   // Restore a remembered Specials unlock (the vault is locked by default; the padlock in
@@ -62,7 +67,7 @@ function App() {
       {!splashDone && <LaunchSplash onDone={() => setSplashDone(true)} />}
       <UpdatePrompt />
       <SidebarSettings />
-      <AmbientBackground />
+      <GlassBackdrop />
       <TitleBar />
       <div className="app-content">
         <Browse />

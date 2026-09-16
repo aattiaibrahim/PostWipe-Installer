@@ -11,6 +11,9 @@ import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useSpecialsStore } from "../state/specialsStore";
 import { HealthCheckPanel } from "./HealthCheckPanel";
+import { nativeBackdropSupported, useBackdropStore } from "../state/backdropStore";
+import type { Backdrop } from "../lib/tauriCommands";
+import { isMacOS } from "../lib/platform";
 
 /** Swatch grid of every named theme. Each swatch previews the theme's background + accent;
  *  picking one applies it instantly and themeStore persists it across launches. */
@@ -44,6 +47,59 @@ function ThemePicker() {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/** Wallpaper vs. the OS's own see-through blur. Hidden in the browser preview, where there's
+ *  no native window to make see-through. */
+function BackdropPicker() {
+  const backdrop = useBackdropStore((s) => s.backdrop);
+  const setBackdrop = useBackdropStore((s) => s.setBackdrop);
+  if (!nativeBackdropSupported) return null;
+  // The OS draws native blur as a flat colour when the user has transparency turned off
+  // system-wide, and the webview reports that switch through this media query.
+  const osBlocksTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
+
+  const options: { value: Backdrop; label: string }[] = [
+    { value: "wallpaper", label: "Wallpaper" },
+    { value: "native", label: "See-through" },
+  ];
+
+  return (
+    <div className="settings-panel__row settings-panel__row--theme">
+      <span className="settings-panel__label">Background</span>
+      <div className="os-picker backdrop-picker">
+        {options.map((opt) => {
+          const active = backdrop === opt.value;
+          return (
+            <button
+              key={opt.value}
+              className={`os-picker__tile${active ? " os-picker__tile--active" : ""}`}
+              onClick={() => setBackdrop(opt.value)}
+              aria-pressed={active}
+            >
+              {active && (
+                <motion.div
+                  className="os-picker__indicator"
+                  layoutId="backdrop-picker-indicator"
+                  transition={{ type: "spring", stiffness: 700, damping: 46, mass: 0.7 }}
+                />
+              )}
+              <span>{opt.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="settings-panel__hint">
+        {backdrop === "native"
+          ? osBlocksTransparency
+            ? isMacOS
+              ? "“Reduce transparency” is on in System Settings ▸ Accessibility ▸ Display, so macOS draws this as a solid colour."
+              : "Windows transparency effects are off, so this shows as a solid colour. Turn them on in Settings ▸ Personalization ▸ Colors."
+            : "Blurs your real desktop behind the window. On some PCs this can stutter while you drag or resize."
+          : "A backdrop made from your theme's colours. Looks the same on every machine."}
+      </p>
     </div>
   );
 }
@@ -125,6 +181,7 @@ export function SettingsPanel() {
         <span className="settings-panel__label">Theme</span>
         <ThemePicker />
       </div>
+      <BackdropPicker />
       <div className="settings-panel__row">
         <label className="settings-panel__toggle">
           <input

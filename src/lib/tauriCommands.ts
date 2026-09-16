@@ -108,6 +108,27 @@ export async function saveTheme(theme: string): Promise<void> {
   }
 }
 
+export type Backdrop = "wallpaper" | "native";
+
+/** Disk-backed backdrop choice (see settings.rs), for the same durability reason as theme. */
+export async function getSavedBackdrop(): Promise<Backdrop | null> {
+  if (!isTauri) return null;
+  try {
+    return await invoke<Backdrop | null>("get_backdrop");
+  } catch {
+    return null;
+  }
+}
+
+export async function saveBackdrop(backdrop: Backdrop): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_backdrop", { backdrop });
+  } catch {
+    /* best-effort */
+  }
+}
+
 /** Remembered Specials key (see settings.rs). Returns null when the vault should be
  *  locked: never unlocked, explicitly locked, or the app was updated since. */
 export async function getVaultKey(): Promise<string | null> {
