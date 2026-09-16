@@ -1,5 +1,5 @@
 {
-  "generated_at": 1789533897,
+  "generated_at": 1789536569,
   "source": "ci",
   "entries": [
     {
@@ -77,8 +77,8 @@
     {
       "app_id": "bsg-launcher",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://launcher.escapefromtarkov.com/launcher/download"
+      "status": "unknown",
+      "detail": "vendor answered 403 Forbidden — likely a bot-block or rate limit"
     },
     {
       "app_id": "cinebench-r23",
@@ -419,8 +419,8 @@
     {
       "app_id": "prime95",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip"
+      "status": "unknown",
+      "detail": "couldn't reach the download: error sending request for url (https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip)"
     },
     {
       "app_id": "process-explorer",
@@ -569,14 +569,14 @@
     {
       "app_id": "teamspeak",
       "os": "macos",
-      "status": "unknown",
-      "detail": "vendor answered 429 Too Many Requests — likely a bot-block or rate limit"
+      "status": "ok",
+      "detail": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-macosx-3.6.2.dmg"
     },
     {
       "app_id": "teamspeak",
       "os": "windows",
-      "status": "unknown",
-      "detail": "vendor answered 429 Too Many Requests — likely a bot-block or rate limit"
+      "status": "ok",
+      "detail": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe"
     },
     {
       "app_id": "teamviewer",
