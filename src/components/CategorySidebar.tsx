@@ -79,7 +79,7 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
       // is bottom-anchored, so the button's top edge stays put whether the settings panel is
       // expanded or not, which keeps this stable across the expand animation.
       const btn = dock?.querySelector(".dock__bar") as HTMLElement | null;
-      const limit = btn ? btn.getBoundingClientRect().top - 12 : window.innerHeight - 52;
+      const limit = btn ? btn.getBoundingClientRect().top - 6 : window.innerHeight - 52;
       const navTop = nav.getBoundingClientRect().top;
       nav.style.maxHeight = `${Math.max(160, Math.floor(limit - navTop))}px`;
       const dockTop = dock ? dock.getBoundingClientRect().top : Infinity;

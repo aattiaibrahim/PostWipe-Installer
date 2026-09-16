@@ -4,11 +4,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { create } from "zustand";
 import type { Os } from "../types/catalog";
 import {
+  DEVICE_GROUPS,
   KICKSTART_DEFAULTS,
+  deviceOs,
   recommend,
   visibleSteps,
   type KickstartAnswers,
   type KickstartOption,
+  type KickstartStep,
 } from "../lib/kickstart";
 import { isTauri, startDownload } from "../lib/tauriCommands";
 import { useCatalogStore } from "../state/catalogStore";
@@ -29,6 +32,14 @@ export const useKickstart = create<KickstartState>((set) => ({
   close: () => set({ open: false }),
 }));
 
+/** Always the first screen; rendered as segmented rows rather than answer cards. */
+const DEVICE_STEP: KickstartStep = {
+  id: "device",
+  title: "First, tell us about your computer",
+  subtitle: "This decides which downloads fit and which hardware tools apply.",
+  options: [],
+};
+
 type Phase = { kind: "step"; index: number } | { kind: "review" } | { kind: "done"; count: number };
 
 /** Whether an option leads to anything on this OS. Options that only unlock a later step (or,
@@ -41,7 +52,8 @@ export function KickstartDialog() {
   const open = useKickstart((s) => s.open);
   const close = useKickstart((s) => s.close);
   const catalog = useCatalogStore((s) => s.catalog);
-  const os = useCatalogStore((s) => s.osFilter);
+  const appOs = useCatalogStore((s) => s.osFilter);
+  const setOsFilter = useCatalogStore((s) => s.setOsFilter);
   const signedIn = useAccountStore((s) => s.user !== null);
   const saveSet = useAccountStore((s) => s.saveSet);
   const replaceSelection = useSelectionStore((s) => s.replace);
@@ -55,13 +67,16 @@ export function KickstartDialog() {
   // Start fresh each time it opens.
   useEffect(() => {
     if (!open) return;
-    setAnswers(KICKSTART_DEFAULTS);
+    // Pre-select the OS the app already detected; it's still the first thing they confirm.
+    setAnswers({ ...KICKSTART_DEFAULTS, os: [useCatalogStore.getState().osFilter] });
     setPhase({ kind: "step", index: 0 });
     setUnchecked(new Set());
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, close]);
+
+  const os = deviceOs(answers);
 
   const available = useMemo(() => {
     const ids = new Set<string>();
@@ -71,10 +86,24 @@ export function KickstartDialog() {
     return ids;
   }, [catalog, os]);
 
-  const steps = visibleSteps(answers)
-    .map((step) => ({ ...step, options: step.options.filter((o) => optionAvailable(o, available)) }))
-    .filter((step) => step.options.length > 0);
-  const recommendations = catalog ? recommend(catalog, os, answers) : [];
+  const steps = [
+    DEVICE_STEP,
+    ...visibleSteps(answers)
+      .map((step) => ({ ...step, options: step.options.filter((o) => optionAvailable(o, available)) }))
+      .filter((step) => step.options.length > 0),
+  ];
+  const recommendations = catalog ? recommend(catalog, answers) : [];
+
+  /** Picking a different OS clears processor/graphics, whose choices differ per OS. */
+  const chooseDevice = (group: "os" | "cpu" | "gpu", choice: string) =>
+    setAnswers((a) =>
+      group === "os" && a.os?.[0] !== choice ? { ...a, os: [choice], cpu: [], gpu: [] } : { ...a, [group]: [choice] },
+    );
+
+  /** Kickstart's OS answer becomes the app's OS, so the downloads and any selection match it. */
+  const adoptOs = () => {
+    if (appOs !== os) setOsFilter(os);
+  };
   const chosen = recommendations.filter((r) => !unchecked.has(r.app.id));
   const osName = os === "windows" ? "Windows" : "macOS";
 
@@ -97,6 +126,7 @@ export function KickstartDialog() {
     if (!chosen.length) return;
     setBusy(true);
     const ids = chosen.map((r) => r.app.id);
+    adoptOs();
     if (signedIn && saveAsSet) {
       // The set records the picks for both platforms that exist, so it also works on a Mac.
       const onOs = (target: Os) =>
@@ -164,6 +194,44 @@ export function KickstartDialog() {
                     {step.title}
                   </h3>
                   {step.subtitle && <p className="kickstart__subtitle">{step.subtitle}</p>}
+                  {step.id === "device" && (
+                    <div className="kickstart__device">
+                      {DEVICE_GROUPS.map((group) => {
+                        const choices = group.choices(os);
+                        if (!choices.length) return null;
+                        return (
+                          <div key={group.id} className="kickstart__device-row">
+                            <span className="kickstart__device-label">{group.label}</span>
+                            <div className="os-picker kickstart__segments" role="radiogroup" aria-label={group.label}>
+                              {choices.map((choice) => {
+                                const on = answers[group.id]?.[0] === choice.id;
+                                return (
+                                  <button
+                                    key={choice.id}
+                                    role="radio"
+                                    aria-checked={on}
+                                    className={`os-picker__tile${on ? " os-picker__tile--active" : ""}`}
+                                    onClick={() => chooseDevice(group.id, choice.id)}
+                                  >
+                                    {on && (
+                                      // A div, not a span: `.os-picker__tile span` makes spans position:relative
+                                      // (for the label), which collapsed this absolutely-sized lens to 0×0.
+                                      <motion.div
+                                        className="os-picker__indicator"
+                                        layoutId={`kickstart-${group.id}`}
+                                        transition={{ type: "spring", stiffness: 600, damping: 44 }}
+                                      />
+                                    )}
+                                    <span>{choice.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                   <div className="kickstart__options">
                     {step.options.map((option) => {
                       const on = answers[step.id]?.includes(option.id) ?? false;
@@ -300,6 +368,7 @@ export function KickstartDialog() {
                     className="account-link"
                     disabled={!chosen.length}
                     onClick={() => {
+                      adoptOs();
                       replaceSelection(chosen.map((r) => r.app.id));
                       close();
                     }}

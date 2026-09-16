@@ -300,7 +300,9 @@ html.tauri.window-maximized[data-backdrop] {
 .dock {
   position: fixed;
   left: 24px;
-  bottom: 36px;
+  /* Tucked a few pixels under the sidebar's bottom edge (the sidebar's max-height is measured
+     from .dock__bar's top, with a 6px gap), sitting just above the footer. */
+  bottom: 30px;
   z-index: 54;
   display: flex;
   flex-direction: column;
@@ -331,7 +333,7 @@ html.tauri.window-maximized[data-backdrop] {
 .dock__bar {
   display: flex;
   gap: 8px;
-  height: 44px;
+  height: 50px;
   pointer-events: auto;
   align-self: center;
 }
@@ -340,15 +342,18 @@ html.tauri.window-maximized[data-backdrop] {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  height: 44px;
-  padding: 0 0 0 13px;
+  gap: 0.55rem;
+  height: 50px;
+  /* (50 - 20px icon) / 2 - 1px border: the icon sits dead-centre while round. */
+  padding: 0 0 0 14px;
   overflow: hidden;
   border-radius: 999px;
   border: 1px solid var(--glass-stroke);
-  background-color: var(--glass-fill-strong);
-  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  /* No backdrop-filter here, deliberately: re-blurring what's behind an element whose width
+     changes every frame was a big part of the stutter. At this fill the frost was barely
+     visible anyway. */
+  background-color: color-mix(in srgb, var(--surface-solid) 78%, rgba(255, 255, 255, 0.05));
+  will-change: width;
   box-shadow:
     inset 0 1px 0 var(--glass-hi),
     var(--glass-shadow);
@@ -378,21 +383,21 @@ html.tauri.window-maximized[data-backdrop] {
 
 .dock__icon {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
 }
 
 .dock__icon svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 /* Signed in: the account bubble shows the account's initial instead of the person glyph. */
 .dock__initial {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   margin-left: -3px;
   display: grid;
   place-items: center;
@@ -403,10 +408,12 @@ html.tauri.window-maximized[data-backdrop] {
   font-weight: 700;
 }
 
+/* Natural width, never truncated: the pill's own overflow clip reveals it. */
 .dock__label {
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .settings-panel__row + .settings-panel__row {

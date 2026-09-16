@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useCatalogStore, type DockView } from "../state/catalogStore";
 import { useAccountStore } from "../state/accountStore";
 import { SettingsPanel } from "./SettingsPanel";
@@ -7,7 +7,7 @@ import { AccountPanel } from "./AccountPanel";
 
 /** The dock is as wide as the category sidebar above it. */
 const DOCK_WIDTH = 236;
-const BUBBLE = 44;
+const BUBBLE = 50;
 const GAP = 8;
 /** An opened bubble stretches into a pill across the rest of the dock. */
 const PILL_WIDTH = DOCK_WIDTH - BUBBLE - GAP;
@@ -38,9 +38,22 @@ function PersonIcon({ initial }: { initial: string | null }) {
   );
 }
 
+/** Shared by the bubble's width and its label, so the text is always revealed in lockstep with
+ *  the edge that uncovers it. A tween, not a spring: a spring's settle overshoots the width,
+ *  which read as the pill "wobbling" around its label. */
+const STRETCH = { duration: 0.34, ease: [0.22, 1, 0.36, 1] } as const;
+
 /** One round glass bubble that pops and stretches into a labelled pill when it's the open one.
- *  The label unrolls out of the icon (its width grows from 0), so "Settings" reads as coming
- *  out of the gear rather than fading in beside it. */
+ *
+ *  Smoothness rules learned the hard way ("cut off", "choppy"):
+ *   - The label is ALWAYS mounted, at its full natural width, with nowrap. Growing the button
+ *     simply uncovers it (the button clips), so the text never reflows or gets truncated
+ *     mid-animation. The old version mounted it and animated its own width 0→auto on a
+ *     different curve from the button, which chopped letters off and jumped at the end.
+ *   - Only the button's width animates as layout; the label just fades/slides (transform +
+ *     opacity, compositor-only).
+ *   - The "pop" is a separate, quick transform on the icon, not a scale on the whole
+ *     resizing button, so the two never fight. */
 function Bubble({
   open,
   label,
@@ -64,27 +77,29 @@ function Bubble({
       initial={false}
       // Numeric widths, not framer `layout`: layout animates with a scale transform, which
       // would squash the icon and text mid-stretch.
-      animate={{ width: open ? PILL_WIDTH : BUBBLE, scale: open ? [1, 1.1, 0.97, 1] : 1 }}
-      transition={{
-        width: { type: "spring", stiffness: 420, damping: 30 },
-        scale: { duration: 0.42, times: [0, 0.35, 0.7, 1], ease: "easeOut" },
-      }}
-      whileTap={{ scale: 0.9 }}
+      animate={{ width: open ? PILL_WIDTH : BUBBLE }}
+      transition={{ width: STRETCH }}
+      whileTap={{ scale: 0.94 }}
     >
-      <span className="dock__icon">{icon}</span>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.span
-            className="dock__label"
-            initial={{ width: 0, opacity: 0, x: -10 }}
-            animate={{ width: "auto", opacity: 1, x: 0 }}
-            exit={{ width: 0, opacity: 0, x: -10 }}
-            transition={{ duration: 0.24, ease: [0.33, 0.8, 0.3, 1] }}
-          >
-            {label}
-          </motion.span>
-        )}
-      </AnimatePresence>
+      <motion.span
+        className="dock__icon"
+        initial={false}
+        animate={{ scale: open ? [1, 1.22, 1] : 1 }}
+        transition={{ duration: 0.36, ease: "easeOut" }}
+      >
+        {icon}
+      </motion.span>
+      <motion.span
+        className="dock__label"
+        aria-hidden={!open}
+        initial={false}
+        animate={{ opacity: open ? 1 : 0, x: open ? 0 : -8 }}
+        // Fades in slightly after the edge starts moving, and out quickly on close, so the
+        // label is never visible being clipped by a shrinking pill.
+        transition={open ? { duration: 0.24, delay: 0.08, ease: "easeOut" } : { duration: 0.12, ease: "easeIn" }}
+      >
+        {label}
+      </motion.span>
     </motion.button>
   );
 }

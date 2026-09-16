@@ -51,6 +51,62 @@ const ADVANCED_APPS = new Set([
   "putty",
 ]);
 
+/** The very first screen: what machine this is. Asked up front (not mid-wizard) because the
+ *  answers decide everything after it — which OS's downloads exist, which vendor tools apply —
+ *  and the OS choice also switches the app's own OS picker when Kickstart finishes. */
+export interface DeviceChoice {
+  id: string;
+  label: string;
+}
+
+export interface DeviceGroup {
+  id: "os" | "cpu" | "gpu";
+  label: string;
+  /** Choices depend on the OS picked (e.g. Macs have Apple Silicon, and no GPU question). */
+  choices: (os: Os) => DeviceChoice[];
+}
+
+export const DEVICE_GROUPS: DeviceGroup[] = [
+  {
+    id: "os",
+    label: "Operating system",
+    choices: () => [
+      { id: "windows", label: "Windows" },
+      { id: "macos", label: "macOS" },
+    ],
+  },
+  {
+    id: "cpu",
+    label: "Processor",
+    choices: (os) =>
+      os === "macos"
+        ? [
+            { id: "apple", label: "Apple Silicon" },
+            { id: "intel", label: "Intel" },
+          ]
+        : [
+            { id: "intel", label: "Intel" },
+            { id: "amd", label: "AMD" },
+            { id: "unsure", label: "Not sure" },
+          ],
+  },
+  {
+    id: "gpu",
+    label: "Graphics",
+    choices: (os) =>
+      os === "macos"
+        ? []
+        : [
+            { id: "nvidia", label: "NVIDIA" },
+            { id: "amd", label: "AMD" },
+            { id: "intel", label: "Intel" },
+            { id: "unsure", label: "Not sure" },
+          ],
+  },
+];
+
+export const deviceOs = (answers: KickstartAnswers): Os => (answers.os?.[0] === "macos" ? "macos" : "windows");
+
 export const KICKSTART_STEPS: KickstartStep[] = [
   {
     id: "uses",
@@ -111,15 +167,8 @@ export const KICKSTART_STEPS: KickstartStep[] = [
   {
     id: "hardware",
     title: "What hardware do you have?",
-    subtitle: "Brands you own get their companion apps. Skip anything you don't have.",
+    subtitle: "Gear you own gets its companion app. Skip anything you don't have.",
     options: [
-      {
-        id: "nvidia",
-        label: "NVIDIA graphics",
-        apps: ["nvidia-broadcast", "nvidia-profile-inspector", "msi-afterburner"],
-        reason: "You have an NVIDIA GPU",
-      },
-      { id: "amd", label: "AMD or Intel graphics", apps: ["msi-afterburner"], reason: "You have an AMD or Intel GPU" },
       { id: "elgato", label: "Elgato Stream Deck", apps: ["elgato-stream-deck"], reason: "You have an Elgato Stream Deck" },
       { id: "focusrite", label: "Focusrite audio interface", apps: ["focusrite-control"], reason: "You have a Focusrite interface" },
       { id: "insta360", label: "Insta360 Link webcam", apps: ["insta360-link-controller"], reason: "You have an Insta360 Link" },
@@ -213,6 +262,9 @@ export const KICKSTART_STEPS: KickstartStep[] = [
  *  produces a useful list. The first step starts empty on purpose — guessing someone's a
  *  gamer is presumptuous in a way that pre-ticking "password manager" isn't. */
 export const KICKSTART_DEFAULTS: KickstartAnswers = {
+  os: ["windows"],
+  cpu: [],
+  gpu: [],
   uses: [],
   experience: ["comfortable"],
   everyday: ["passwords", "archives"],
@@ -230,25 +282,47 @@ export interface Recommendation {
 /** Downloadable apps for `os` from the answers, in question order, deduplicated (an app picked
  *  for two reasons lists both). Entries without a working download on this OS are dropped —
  *  Kickstart only offers what it can actually fetch. */
-export function recommend(catalog: Catalog, os: Os, answers: KickstartAnswers): Recommendation[] {
+export function recommend(catalog: Catalog, answers: KickstartAnswers): Recommendation[] {
+  const os = deviceOs(answers);
+  const cpu = answers.cpu?.[0];
+  const gpu = answers.gpu?.[0];
   const apps = new Map(catalog.categories.flatMap((c) => c.apps).map((a) => [a.id, a]));
   const simple = picked(answers, "experience", "simple");
   const out = new Map<string, Recommendation>();
+
+  const add = (id: string, reason: string) => {
+    if (simple && ADVANCED_APPS.has(id)) return;
+    // The catalog's macOS VirtualBox is the Apple Silicon build; it won't run on an Intel Mac.
+    if (id === "virtualbox" && os === "macos" && cpu === "intel") return;
+    // NVIDIA-only tools (Broadcast needs an RTX card) are dropped for anyone who told us their
+    // graphics are AMD or Intel — even when another answer, like streaming, would add them.
+    if (id.startsWith("nvidia-") && (gpu === "amd" || gpu === "intel")) return;
+    const app = apps.get(id);
+    if (!app || app.kind !== "download" || !app.platforms[os]?.resolver) return;
+    const existing = out.get(id);
+    if (existing) {
+      if (!existing.reasons.includes(reason)) existing.reasons.push(reason);
+    } else {
+      out.set(id, { app, reasons: [reason] });
+    }
+  };
+
   for (const step of visibleSteps(answers)) {
     for (const option of step.options) {
       if (!answers[step.id]?.includes(option.id)) continue;
-      for (const id of option.apps) {
-        if (simple && ADVANCED_APPS.has(id)) continue;
-        const app = apps.get(id);
-        if (!app || app.kind !== "download" || !app.platforms[os]?.resolver) continue;
-        const existing = out.get(id);
-        if (existing) {
-          if (!existing.reasons.includes(option.reason)) existing.reasons.push(option.reason);
-        } else {
-          out.set(id, { app, reasons: [option.reason] });
-        }
-      }
+      for (const id of option.apps) add(id, option.reason);
     }
   }
+
+  // Graphics card companions.
+  if (gpu === "nvidia") {
+    add("nvidia-broadcast", "You have an NVIDIA GPU");
+    add("nvidia-profile-inspector", "You have an NVIDIA GPU");
+  }
+  const tuning = picked(answers, "gaming", "tuning") || picked(answers, "experience", "power");
+  if (tuning && gpu && gpu !== "unsure") add("msi-afterburner", "Tunes and monitors your graphics card");
+  // AMD Ryzen memory tuning is vendor-specific (tagged vendor: amd in the catalog).
+  if (tuning && cpu === "amd") add("zentimings", "Shows your AMD Ryzen memory timings");
+
   return [...out.values()];
 }
