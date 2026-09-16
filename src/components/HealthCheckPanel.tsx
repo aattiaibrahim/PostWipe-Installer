@@ -41,7 +41,7 @@ function ago(unixSeconds: number): string {
 export function HealthCheckPanel() {
   const osFilter = useCatalogStore((s) => s.osFilter);
   const catalog = useCatalogStore((s) => s.catalog);
-  const { running, done, total, lines, report, finishedAt } = useHealthStore();
+  const { running, done, total, lines, report, finishedAt, checkedOs } = useHealthStore();
   const run = useHealthStore((s) => s.run);
   const start = useHealthStore((s) => s.start);
   const push = useHealthStore((s) => s.push);
@@ -118,7 +118,10 @@ export function HealthCheckPanel() {
         </button>
         {!running && report && (
           <span className="health-check__meta">
-            {report.source === "local" ? "You checked" : "Weekly check"} · {ago(report.generated_at)}
+            {report.source === "local"
+              ? `You checked ${checkedOs === "macos" ? "macOS" : checkedOs === "windows" ? "Windows" : ""}`.trim()
+              : "Weekly check"}{" "}
+            · {ago(report.generated_at)}
             {counts && (
               <>
                 {" · "}

@@ -29,6 +29,10 @@ interface HealthState {
   total: number;
   lines: CheckLine[];
   finishedAt: number | null;
+  /** Which OS the last live check actually swept — the summary line says so, because a
+   *  Windows-only run reporting 81 of the catalog's 121 entries otherwise reads like
+   *  entries went missing. */
+  checkedOs: Os | null;
 
   load: () => Promise<void>;
   start: (total: number) => void;
@@ -53,6 +57,7 @@ export const useHealthStore = create<HealthState>((set, get) => ({
   total: 0,
   lines: [],
   finishedAt: null,
+  checkedOs: null,
 
   load: async () => {
     const report = await loadCatalogHealth();
@@ -69,8 +74,28 @@ export const useHealthStore = create<HealthState>((set, get) => ({
       lines: [...s.lines, line],
     })),
 
+  /* MERGE, never replace. A live check only covers the OS you're running, so assigning its
+     report wholesale would drop every badge for the other platform the moment the sweep
+     finished — and they'd stay gone until the next launch re-read the published file. The
+     Rust loader does the same overlay on startup; this keeps the two consistent. */
   finish: (report) =>
-    set({ running: false, report, byKey: index(report), finishedAt: Date.now(), loaded: true }),
+    set((s) => {
+      const entries = [...(s.report?.entries ?? [])];
+      for (const entry of report.entries) {
+        const at = entries.findIndex((e) => e.app_id === entry.app_id && e.os === entry.os);
+        if (at === -1) entries.push(entry);
+        else entries[at] = entry;
+      }
+      const merged: HealthReport = { ...report, entries };
+      return {
+        running: false,
+        report: merged,
+        byKey: index(merged),
+        checkedOs: report.entries[0]?.os ?? s.checkedOs,
+        finishedAt: Date.now(),
+        loaded: true,
+      };
+    }),
 
   run: async (os) => {
     if (get().running) return;
