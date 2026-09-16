@@ -59,17 +59,20 @@ export async function recordDownload(c: Ctx) {
 export async function popular(c: Ctx) {
   const os = c.req.query("os") ?? "";
   if (!OS.has(os)) return c.json({ error: "os must be windows or macos" }, 400);
-  const days = Math.min(Math.max(Number(c.req.query("days")) || 30, 1), 90);
+  // All-time by default: most people open a post-wipe tool rarely, so a rolling 30-day window
+  // would stay near-empty for a long time. `days` still narrows it when asked for.
+  const daysParam = Number(c.req.query("days"));
+  const days = Number.isFinite(daysParam) && daysParam > 0 ? Math.min(daysParam, 3650) : null;
   const limit = Math.min(Math.max(Number(c.req.query("limit")) || 12, 1), 50);
 
   // Every app open hits this, so it's served from Cloudflare's edge cache for 10 minutes
   // instead of querying D1 per launch.
-  const cacheKey = new Request(`https://stats.cache/popular?os=${os}&days=${days}&limit=${limit}`);
+  const cacheKey = new Request(`https://stats.cache/popular?os=${os}&days=${days ?? "all"}&limit=${limit}`);
   const cache = (caches as unknown as { default: Cache }).default;
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
-  const since = Math.floor(Date.now() / DAY_MS) - days;
+  const since = days === null ? -1 : Math.floor(Date.now() / DAY_MS) - days;
   const { results } = await c.env.DB.prepare(
     `SELECT app_id AS appId, SUM(count) AS count FROM download_counts
      WHERE os = ? AND day > ? GROUP BY app_id ORDER BY count DESC LIMIT ?`,
@@ -77,7 +80,7 @@ export async function popular(c: Ctx) {
     .bind(os, since, limit)
     .all<{ appId: string; count: number }>();
 
-  const response = new Response(JSON.stringify({ days, apps: results }), {
+  const response = new Response(JSON.stringify({ days: days ?? "all", apps: results }), {
     headers: { "content-type": "application/json", "cache-control": "public, max-age=600" },
   });
   c.executionCtx.waitUntil(cache.put(cacheKey, response.clone()));

@@ -15,12 +15,19 @@ export interface KickstartOption {
   hint?: string;
   apps: string[];
   reason: string;
+  /** Logos to show for an option that adds no apps itself but unlocks a follow-up step — a
+   *  taste of what that path leads to. Display only; never recommended from here. */
+  preview?: string[];
+  /** Category glyph, for an option with neither apps nor a preview (e.g. "Keep it simple"). */
+  icon?: string;
 }
 
 export interface KickstartStep {
   id: string;
   title: string;
   subtitle?: string;
+  /** One answer only (e.g. experience level) instead of pick-any. */
+  single?: boolean;
   /** Show this step only when an earlier answer calls for it. */
   when?: (answers: KickstartAnswers) => boolean;
   options: KickstartOption[];
@@ -31,15 +38,93 @@ export type KickstartAnswers = Record<string, string[]>;
 
 const picked = (answers: KickstartAnswers, step: string, option: string) => answers[step]?.includes(option) ?? false;
 
+/** Tools that are great for power users and confusing (or risky, in DDU's case) for everyone
+ *  else. "Keep it simple" drops them even when another answer would have added them. */
+const ADVANCED_APPS = new Set([
+  "ddu",
+  "timer-resolution",
+  "process-explorer",
+  "autoruns",
+  "nvidia-profile-inspector",
+  "prowlarr",
+  "flaresolverr",
+  "putty",
+]);
+
 export const KICKSTART_STEPS: KickstartStep[] = [
   {
     id: "uses",
     title: "What do you use this computer for?",
     subtitle: "Pick everything that applies. Everyday basics are always included.",
     options: [
-      { id: "gaming", label: "Gaming", hint: "Launchers and performance tools", apps: [], reason: "" },
-      { id: "create", label: "Streaming & creating", hint: "Recording, screenshots, editing", apps: [], reason: "" },
-      { id: "dev", label: "Coding & dev", hint: "Editors, Git, containers, VMs", apps: [], reason: "" },
+      { id: "gaming", label: "Gaming", hint: "Launchers and performance tools", preview: ["steam", "epic-games", "battle-net"], apps: [], reason: "" },
+      { id: "create", label: "Streaming & creating", hint: "Recording, screenshots, editing", preview: ["obs-studio", "sharex", "losslesscut"], apps: [], reason: "" },
+      { id: "dev", label: "Coding & dev", hint: "Editors, Git, containers, VMs", preview: ["vscode", "git", "docker-desktop"], apps: [], reason: "" },
+      {
+        id: "music",
+        label: "Listening to music",
+        hint: "Streaming and Discord status",
+        apps: ["spotify", "music-presence"],
+        reason: "You listen to music",
+      },
+      { id: "printing", label: "3D printing", hint: "Slicer for Bambu Lab printers", apps: ["bambu-studio"], reason: "You 3D print" },
+      {
+        id: "remote",
+        label: "Remote access",
+        hint: "Control or help another PC",
+        apps: ["rustdesk", "teamviewer"],
+        reason: "You connect to other computers",
+      },
+      { id: "media", label: "Downloads & media server", hint: "Torrents, Sonarr/Radarr, Plex", preview: ["qbittorrent", "sonarr", "plex"], apps: [], reason: "" },
+      {
+        id: "privacy",
+        label: "Privacy & security",
+        hint: "VPN and a password manager",
+        apps: ["windscribe", "bitwarden"],
+        reason: "You care about privacy",
+      },
+    ],
+  },
+  {
+    id: "experience",
+    title: "How comfortable are you tweaking your PC?",
+    subtitle: "This decides how many advanced tools make the list.",
+    single: true,
+    options: [
+      { id: "simple", label: "Keep it simple", hint: "Just the apps I'll actually use", apps: [], reason: "", icon: "__all__" },
+      {
+        id: "comfortable",
+        label: "I know my way around",
+        hint: "A few handy utilities too",
+        apps: ["powertoys", "twinkle-tray", "7-zip"],
+        reason: "Handy everyday utilities",
+      },
+      {
+        id: "power",
+        label: "Power user",
+        hint: "Monitoring, startup and driver tools",
+        apps: ["powertoys", "process-explorer", "autoruns", "hwinfo", "notepad-plus-plus"],
+        reason: "Power-user tools",
+      },
+    ],
+  },
+  {
+    id: "hardware",
+    title: "What hardware do you have?",
+    subtitle: "Brands you own get their companion apps. Skip anything you don't have.",
+    options: [
+      {
+        id: "nvidia",
+        label: "NVIDIA graphics",
+        apps: ["nvidia-broadcast", "nvidia-profile-inspector", "msi-afterburner"],
+        reason: "You have an NVIDIA GPU",
+      },
+      { id: "amd", label: "AMD or Intel graphics", apps: ["msi-afterburner"], reason: "You have an AMD or Intel GPU" },
+      { id: "elgato", label: "Elgato Stream Deck", apps: ["elgato-stream-deck"], reason: "You have an Elgato Stream Deck" },
+      { id: "focusrite", label: "Focusrite audio interface", apps: ["focusrite-control"], reason: "You have a Focusrite interface" },
+      { id: "insta360", label: "Insta360 Link webcam", apps: ["insta360-link-controller"], reason: "You have an Insta360 Link" },
+      { id: "endgame", label: "Endgame Gear OP1 8K mouse", apps: ["endgame-op1-8k-v2"], reason: "You have an Endgame Gear mouse" },
+      { id: "bambu", label: "Bambu Lab 3D printer", apps: ["bambu-studio"], reason: "You have a Bambu Lab printer" },
     ],
   },
   {
@@ -73,7 +158,6 @@ export const KICKSTART_STEPS: KickstartStep[] = [
       { id: "stream", label: "Stream or record", apps: ["obs-studio", "nvidia-broadcast"], reason: "You stream or record" },
       { id: "capture", label: "Screenshots & GIFs", apps: ["sharex", "screentogif"], reason: "You capture your screen" },
       { id: "edit", label: "Trim & convert video", apps: ["losslesscut", "handbrake"], reason: "You work with video" },
-      { id: "streamdeck", label: "Use a Stream Deck", apps: ["elgato-stream-deck"], reason: "You use an Elgato Stream Deck" },
     ],
   },
   {
@@ -85,13 +169,19 @@ export const KICKSTART_STEPS: KickstartStep[] = [
       { id: "git", label: "Git & remote shells", apps: ["git", "putty"], reason: "You use Git and SSH" },
       { id: "containers", label: "Containers", apps: ["docker-desktop"], reason: "You run containers" },
       { id: "vms", label: "Virtual machines", apps: ["virtualbox"], reason: "You run virtual machines" },
-      {
-        id: "power",
-        label: "Windows power tools",
-        apps: ["powertoys", "process-explorer", "autoruns"],
-        reason: "You like power-user tools",
-      },
       { id: "ai", label: "AI coding assistants", apps: ["claude-desktop", "codex"], reason: "You code with AI" },
+    ],
+  },
+  {
+    id: "media",
+    title: "What should your media setup do?",
+    when: (a) => picked(a, "uses", "media"),
+    options: [
+      { id: "torrents", label: "Download torrents", apps: ["qbittorrent"], reason: "You download torrents" },
+      { id: "tv", label: "Grab TV shows automatically", apps: ["sonarr", "prowlarr"], reason: "You automate TV downloads" },
+      { id: "movies", label: "Grab movies automatically", apps: ["radarr", "prowlarr"], reason: "You automate movie downloads" },
+      { id: "music-lib", label: "Grab music automatically", apps: ["lidarr", "prowlarr"], reason: "You automate music downloads" },
+      { id: "plex", label: "Stream your library", hint: "To your TV or phone", apps: ["plex"], reason: "You stream your media library" },
     ],
   },
   {
@@ -111,12 +201,10 @@ export const KICKSTART_STEPS: KickstartStep[] = [
     options: [
       { id: "discord", label: "Discord", apps: ["discord"], reason: "You chat on Discord" },
       { id: "telegram", label: "Telegram", apps: ["telegram"], reason: "You chat on Telegram" },
-      { id: "spotify", label: "Spotify", apps: ["spotify"], reason: "You listen on Spotify" },
-      { id: "tidal", label: "Tidal", apps: ["tidal"], reason: "You listen on Tidal" },
       { id: "passwords", label: "Password manager", apps: ["bitwarden"], reason: "Keeps your logins safe" },
       { id: "archives", label: "Open zip & rar files", apps: ["7-zip"], reason: "Opens .zip, .rar and .7z files" },
       { id: "notes", label: "Notes", apps: ["obsidian"], reason: "You take notes" },
-      { id: "vpn", label: "VPN", apps: ["windscribe"], reason: "You want a VPN" },
+      { id: "flashcards", label: "Study flashcards", apps: ["anki"], reason: "You study with flashcards" },
     ],
   },
 ];
@@ -126,6 +214,7 @@ export const KICKSTART_STEPS: KickstartStep[] = [
  *  gamer is presumptuous in a way that pre-ticking "password manager" isn't. */
 export const KICKSTART_DEFAULTS: KickstartAnswers = {
   uses: [],
+  experience: ["comfortable"],
   everyday: ["passwords", "archives"],
 };
 
@@ -143,11 +232,13 @@ export interface Recommendation {
  *  Kickstart only offers what it can actually fetch. */
 export function recommend(catalog: Catalog, os: Os, answers: KickstartAnswers): Recommendation[] {
   const apps = new Map(catalog.categories.flatMap((c) => c.apps).map((a) => [a.id, a]));
+  const simple = picked(answers, "experience", "simple");
   const out = new Map<string, Recommendation>();
   for (const step of visibleSteps(answers)) {
     for (const option of step.options) {
       if (!answers[step.id]?.includes(option.id)) continue;
       for (const id of option.apps) {
+        if (simple && ADVANCED_APPS.has(id)) continue;
         const app = apps.get(id);
         if (!app || app.kind !== "download" || !app.platforms[os]?.resolver) continue;
         const existing = out.get(id);

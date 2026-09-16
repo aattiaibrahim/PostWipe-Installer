@@ -65,7 +65,7 @@ struct PopularResponse {
     apps: Vec<PopularApp>,
 }
 
-/// The most-downloaded apps for `os` over the last 30 days. An empty list (rather than an
+/// The most-downloaded apps for `os` of all time. An empty list (rather than an
 /// error) when the service can't be reached, so Home just hides the shelf.
 #[tauri::command]
 pub async fn stats_popular(state: State<'_, AccountState>, os: Os) -> Result<Vec<PopularApp>, String> {
@@ -73,7 +73,7 @@ pub async fn stats_popular(state: State<'_, AccountState>, os: Os) -> Result<Vec
         Os::Windows => "windows",
         Os::Macos => "macos",
     };
-    let url = format!("{}/api/stats/popular?os={os}&days=30&limit=12", state.0.base());
+    let url = format!("{}/api/stats/popular?os={os}&limit=12", state.0.base());
     let client = reqwest::Client::builder().timeout(Duration::from_secs(8)).build().map_err(|e| e.to_string())?;
     let Ok(res) = client.get(url).send().await else { return Ok(Vec::new()) };
     if !res.status().is_success() {

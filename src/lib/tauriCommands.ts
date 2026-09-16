@@ -233,7 +233,7 @@ export interface PopularApp {
   count: number;
 }
 
-/** Most-downloaded apps for `os` over 30 days; empty when offline or not enough data. */
+/** Most-downloaded apps for `os` of all time; empty when offline or not enough data. */
 export async function statsPopular(os: Os): Promise<PopularApp[]> {
   if (!isTauri) return [];
   try {

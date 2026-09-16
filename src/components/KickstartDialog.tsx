@@ -15,6 +15,7 @@ import { useCatalogStore } from "../state/catalogStore";
 import { useAccountStore } from "../state/accountStore";
 import { useSelectionStore } from "../state/selectionStore";
 import { AppIcon } from "./AppIcon";
+import { CategoryIcon } from "../lib/categoryIcons";
 
 interface KickstartState {
   open: boolean;
@@ -30,8 +31,8 @@ export const useKickstart = create<KickstartState>((set) => ({
 
 type Phase = { kind: "step"; index: number } | { kind: "review" } | { kind: "done"; count: number };
 
-/** Whether an option leads to anything on this OS. The first step's options carry no apps of
- *  their own (they only unlock later steps), so they always show. */
+/** Whether an option leads to anything on this OS. Options that only unlock a later step (or,
+ *  like "Keep it simple", only change how the list is built) carry no apps, so they always show. */
 function optionAvailable(option: KickstartOption, available: Set<string>) {
   return option.apps.length === 0 || option.apps.some((id) => available.has(id));
 }
@@ -77,9 +78,15 @@ export function KickstartDialog() {
   const chosen = recommendations.filter((r) => !unchecked.has(r.app.id));
   const osName = os === "windows" ? "Windows" : "macOS";
 
-  const toggleOption = (stepId: string, optionId: string) =>
+  const appsById = useMemo(
+    () => new Map((catalog?.categories.flatMap((c) => c.apps) ?? []).map((a) => [a.id, a])),
+    [catalog],
+  );
+
+  const toggleOption = (stepId: string, optionId: string, single: boolean) =>
     setAnswers((a) => {
       const current = a[stepId] ?? [];
+      if (single) return { ...a, [stepId]: [optionId] };
       return {
         ...a,
         [stepId]: current.includes(optionId) ? current.filter((id) => id !== optionId) : [...current, optionId],
@@ -165,7 +172,7 @@ export function KickstartDialog() {
                           key={option.id}
                           className={`kickstart__option${on ? " kickstart__option--on" : ""}`}
                           aria-pressed={on}
-                          onClick={() => toggleOption(step.id, option.id)}
+                          onClick={() => toggleOption(step.id, option.id, !!step.single)}
                         >
                           <span className="kickstart__check" aria-hidden="true">
                             {on ? "✓" : ""}
@@ -173,6 +180,22 @@ export function KickstartDialog() {
                           <span className="kickstart__option-text">
                             <strong>{option.label}</strong>
                             {option.hint && <span>{option.hint}</span>}
+                          </span>
+                          {/* Real logos for what the answer adds, so "Riot" shows the Riot mark
+                              instead of just a word; answers that only unlock later questions
+                              show their category glyph instead. */}
+                          <span className="kickstart__logos" aria-hidden="true">
+                            {option.apps.length > 0 || option.preview
+                              ? (option.apps.length > 0 ? option.apps : (option.preview ?? []))
+                                  .filter((id) => available.has(id))
+                                  .slice(0, 3)
+                                  .map((id) => {
+                                    const app = appsById.get(id);
+                                    return app ? (
+                                      <AppIcon key={id} appId={id} name={app.name} domain={app.domain} className="kickstart__logo" />
+                                    ) : null;
+                                  })
+                              : option.icon && <CategoryIcon categoryId={option.icon} className="kickstart__glyph" />}
                           </span>
                         </button>
                       );
@@ -206,6 +229,7 @@ export function KickstartDialog() {
                           <label className={`kickstart__pick${on ? "" : " kickstart__pick--off"}`}>
                             <input
                               type="checkbox"
+                              className="round-check"
                               checked={on}
                               onChange={() =>
                                 setUnchecked((prev) => {
@@ -228,7 +252,7 @@ export function KickstartDialog() {
                   </ul>
                   {signedIn && recommendations.length > 0 && (
                     <label className="kickstart__save">
-                      <input type="checkbox" checked={saveAsSet} onChange={(e) => setSaveAsSet(e.target.checked)} />
+                      <input type="checkbox" className="round-check" checked={saveAsSet} onChange={(e) => setSaveAsSet(e.target.checked)} />
                       Save as a set called “Kickstart” on my account
                     </label>
                   )}

@@ -106,8 +106,8 @@
   height: 22px;
   display: grid;
   place-items: center;
-  border-radius: 7px;
-  border: 1.5px solid var(--glass-stroke);
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
   font-size: 0.75rem;
   font-weight: 800;
   color: var(--accent-text);
@@ -121,6 +121,7 @@
 
 .kickstart__option-text {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
   line-height: 1.3;
@@ -160,11 +161,29 @@
   background: var(--glass-hover);
 }
 
-.kickstart__pick input {
-  width: 17px;
-  height: 17px;
-  accent-color: var(--accent);
+/* Answer-card logos: a small overlapping stack, like app icons on a shelf. */
+.kickstart__logos {
+  display: flex;
   flex-shrink: 0;
+  align-items: center;
+}
+
+.kickstart__option .kickstart__logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--surface-solid) 90%, transparent);
+}
+
+.kickstart__option .kickstart__logo + .kickstart__logo {
+  margin-left: -8px;
+}
+
+.kickstart__glyph {
+  width: 22px;
+  height: 22px;
+  color: var(--text-muted);
+  fill: none;
 }
 
 .kickstart__pick--off {
@@ -205,9 +224,6 @@
   color: var(--text);
 }
 
-.kickstart__save input {
-  accent-color: var(--accent);
-}
 
 /* Done */
 .kickstart__done {

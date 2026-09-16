@@ -194,7 +194,7 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
 
       <Shelf
         title="Popular with the community"
-        subtitle={`Most downloaded on ${osName} in the last 30 days`}
+        subtitle={`Most downloaded on ${osName}, all time`}
         empty={
           popular !== null && popularItems.length === 0
             ? "Not enough downloads counted yet — this fills in as people use PostWipe. You can opt out of counting in Settings."

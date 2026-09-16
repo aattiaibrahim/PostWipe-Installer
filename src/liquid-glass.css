@@ -210,6 +210,22 @@ html.tauri.window-maximized[data-backdrop] {
   padding: 0.5rem;
 }
 
+/* The scrollbar ran the full height of the sidebar, so its ends poked out through the 24px
+   rounded corners. Insetting the TRACK keeps the thumb inside the straight part of the edge.
+   (Not scrollbar-gutter or overflow changes: those resize the content and once left a dead
+   strip down the right side.) */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  margin-block: 22px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  border-width: 2px 3px 2px 0;
+}
+
 .sidebar__item {
   border-radius: 999px;
   color: var(--text-muted);
@@ -310,12 +326,14 @@ html.tauri.window-maximized[data-backdrop] {
     0 -12px 30px -10px rgba(0, 0, 0, 0.4);
 }
 
+/* Centered under the sidebar. When a bubble stretches into a pill the row grows outward from
+   the middle, and at full width it lines up with the panel above. */
 .dock__bar {
   display: flex;
   gap: 8px;
   height: 44px;
   pointer-events: auto;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .dock__bubble {
@@ -585,4 +603,70 @@ html.tauri.window-maximized[data-backdrop] {
   font-size: 0.72rem;
   line-height: 1.4;
   color: var(--text-muted);
+}
+
+/* ─── Round checkboxes ───────────────────────────────────────────────────────────────
+   Every checkbox in the app is a circle: the app-row and Specials selectors already were,
+   and native checkboxes are square (and ignore the theme). Same drawing as .app-row__select. */
+.round-check {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.round-check:hover {
+  border-color: var(--accent);
+}
+
+.round-check:checked {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+.round-check:checked::before {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid var(--accent-text);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.round-check:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Native controls follow the theme ───────────────────────────────────────────────
+   Without color-scheme, WebView2 draws native bits — checkbox fallbacks, scrollbar arrows,
+   autofill, select menus, number spinners — in LIGHT mode on every theme. */
+:root {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"],
+:root[data-theme="solarized"] {
+  color-scheme: light;
+}
+
+/* Chromium paints autofilled inputs pale yellow/blue regardless of theme, which is jarring in
+   the dark sign-in dialog. Cover it with the field's own background. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--surface-solid) 92%, var(--bg)) inset;
+  caret-color: var(--text);
+  transition: background-color 9999s ease-out 0s;
 }
