@@ -15,8 +15,8 @@ BETTER_AUTH_URL = "https://postwipe-accounts.andrewattiaibrahim.workers.dev"
 [[d1_databases]]
 binding = "DB"
 database_name = "postwipe-accounts"
-# Filled in by `npx wrangler d1 create postwipe-accounts` (see README). Local dev ignores it.
-database_id = "00000000-0000-0000-0000-000000000000"
+# Created 2026-09-16 with `npx wrangler d1 create postwipe-accounts` (region WNAM).
+database_id = "4c9ed037-bde5-40d4-b2f2-78105a8873a0"
 migrations_dir = "migrations"
 
 # BETTER_AUTH_SECRET is a secret, never committed:
