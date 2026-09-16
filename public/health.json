@@ -1,0 +1,720 @@
+{
+  "generated_at": 1789533897,
+  "source": "ci",
+  "entries": [
+    {
+      "app_id": "7-zip",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe"
+    },
+    {
+      "app_id": "anki",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/ankitects/anki/releases/download/26.09.2/anki-26.09.2-mac-apple.dmg"
+    },
+    {
+      "app_id": "anki",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/ankitects/anki/releases/download/26.09.2/anki-26.09.2-win-x64.msi"
+    },
+    {
+      "app_id": "autoruns",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.sysinternals.com/files/Autoruns.zip"
+    },
+    {
+      "app_id": "bambu-studio",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/bambulab/BambuStudio/releases/download/v02.08.02.61/Bambu_Studio_mac-v02.08.02.61-20260820225108.dmg"
+    },
+    {
+      "app_id": "bambu-studio",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/bambulab/BambuStudio/releases/download/v02.08.02.61/Bambu_Studio_win-v02.08.02.61-20260820225108.exe"
+    },
+    {
+      "app_id": "battle-net",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://www.battle.net/download/getInstallerForGame?os=mac&gameProgram=BATTLENET_APP&version=LIVE"
+    },
+    {
+      "app_id": "battle-net",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE"
+    },
+    {
+      "app_id": "bitwarden",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://vault.bitwarden.com/download/?app=desktop&platform=macos"
+    },
+    {
+      "app_id": "bitwarden",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://vault.bitwarden.com/download/?app=desktop&platform=windows"
+    },
+    {
+      "app_id": "brave",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.95.101/Brave-Browser-universal.dmg"
+    },
+    {
+      "app_id": "brave",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.95.101/BraveBrowserSetup.exe"
+    },
+    {
+      "app_id": "bsg-launcher",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://launcher.escapefromtarkov.com/launcher/download"
+    },
+    {
+      "app_id": "cinebench-r23",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://installer.maxon.net/cinebench/CinebenchR23.zip"
+    },
+    {
+      "app_id": "claude-desktop",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest/Claude.dmg"
+    },
+    {
+      "app_id": "claude-desktop",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe"
+    },
+    {
+      "app_id": "codex",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.154.0/codex-x86_64-apple-darwin.dmg"
+    },
+    {
+      "app_id": "codex",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.154.0/codex-x86_64-pc-windows-msvc.exe"
+    },
+    {
+      "app_id": "cpu-z",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.cpuid.com/cpu-z/cpu-z_3.01-en.exe"
+    },
+    {
+      "app_id": "ddu",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.0_setup.exe"
+    },
+    {
+      "app_id": "deceive",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/molenzwiebel/Deceive/releases/download/v1.18.0/Deceive.exe"
+    },
+    {
+      "app_id": "deluge",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://ftp.osuosl.org/pub/deluge/windows/deluge-2.2.0-win64-setup.exe"
+    },
+    {
+      "app_id": "discord",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://discord.com/api/download?platform=osx"
+    },
+    {
+      "app_id": "discord",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://discord.com/api/download?platform=win"
+    },
+    {
+      "app_id": "docker-desktop",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://desktop.docker.com/mac/main/arm64/Docker.dmg"
+    },
+    {
+      "app_id": "docker-desktop",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe"
+    },
+    {
+      "app_id": "ea-app",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe"
+    },
+    {
+      "app_id": "elgato-stream-deck",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://edge.elgato.com/egc/windows/sd/Stream_Deck_7.4.1.22720.msi"
+    },
+    {
+      "app_id": "endgame-op1-8k-v2",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://img.endgamegear.com/downloads/Endgame_Gear_OP1_8k_v2_Configuration_Tool_v1.07.zip"
+    },
+    {
+      "app_id": "epic-games",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi"
+    },
+    {
+      "app_id": "firefox",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US"
+    },
+    {
+      "app_id": "firefox",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US"
+    },
+    {
+      "app_id": "flaresolverr",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/FlareSolverr/FlareSolverr/releases/download/v3.5.2/flaresolverr_windows_x64.zip"
+    },
+    {
+      "app_id": "flux",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://justgetflux.com/mac/Flux.zip"
+    },
+    {
+      "app_id": "flux",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://justgetflux.com/flux-setup.exe"
+    },
+    {
+      "app_id": "focusrite-control",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://fael-downloads-prod.focusrite.com/customer/prod/downloads/focusrite_control_v3_27_0_2.dmg"
+    },
+    {
+      "app_id": "focusrite-control",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://fael-downloads-prod.focusrite.com/customer/prod/downloads/focusrite_control_v3_27_0.exe"
+    },
+    {
+      "app_id": "git",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.5/Git-2.55.0.5-64-bit.exe"
+    },
+    {
+      "app_id": "gog-galaxy",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe"
+    },
+    {
+      "app_id": "handbrake",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/HandBrake/HandBrake/releases/download/1.11.2/HandBrake-1.11.2.dmg"
+    },
+    {
+      "app_id": "handbrake",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/HandBrake/HandBrake/releases/download/1.11.2/HandBrake-1.11.2-x86_64-Win_GUI.exe"
+    },
+    {
+      "app_id": "houdoku",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/xgi/houdoku/releases/download/v2.16.0/Houdoku-2.16.0-arm64.dmg"
+    },
+    {
+      "app_id": "houdoku",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/xgi/houdoku/releases/download/v2.16.0/Houdoku-Setup-2.16.0.exe"
+    },
+    {
+      "app_id": "hwinfo",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://www.hwinfo.com/files/hwi64_852.exe"
+    },
+    {
+      "app_id": "hwmonitor",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.cpuid.com/hwmonitor/hwmonitor_1.68.exe"
+    },
+    {
+      "app_id": "insta360-link-controller",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://wassets.insta360.com/common/f5d12724880a43bbb77753d6daa1e9cd/Insta360LinkController_2.2.4(build14).pkg"
+    },
+    {
+      "app_id": "insta360-link-controller",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://wassets.insta360.com/common/ba64efbd74f6411aa9c356b95aa5126e/Insta360LinkController_2.2.4(build14).exe"
+    },
+    {
+      "app_id": "librewolf",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://dl.librewolf.net/librewolf/155.0.1-1/librewolf-155.0.1-1-macos-x86_64-package.dmg"
+    },
+    {
+      "app_id": "librewolf",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://dl.librewolf.net/librewolf/155.0.1-1/librewolf-155.0.1-1-windows-x86_64-setup.exe"
+    },
+    {
+      "app_id": "lidarr",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.0.4875/Lidarr.master.3.1.0.4875.osx-app-core-arm64.zip"
+    },
+    {
+      "app_id": "lidarr",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.0.4875/Lidarr.master.3.1.0.4875.windows-core-x64-installer.exe"
+    },
+    {
+      "app_id": "losslesscut",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.69.0/LosslessCut-mac-arm64.dmg"
+    },
+    {
+      "app_id": "losslesscut",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.69.0/LosslessCut-win-x64.7z"
+    },
+    {
+      "app_id": "msi-afterburner",
+      "os": "windows",
+      "status": "unknown",
+      "detail": "needs a real browser page — verify this one by hand"
+    },
+    {
+      "app_id": "music-presence",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-mac-arm64.dmg"
+    },
+    {
+      "app_id": "music-presence",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-windows-x64-installer.exe"
+    },
+    {
+      "app_id": "nanazip",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1832.0/NanaZip_7.0.1832.0.msixbundle"
+    },
+    {
+      "app_id": "netlimiter",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.netlimiter.com/nl/netlimiter-5.3.27.0.exe"
+    },
+    {
+      "app_id": "notepad-plus-plus",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8/npp.8.9.8.Installer.x64.exe"
+    },
+    {
+      "app_id": "nvidia-broadcast",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://international.download.nvidia.com/Windows/broadcast/2.2.1/NVIDIA_Broadcast_v2.2.1.58338310.exe"
+    },
+    {
+      "app_id": "nvidia-profile-inspector",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Orbmu2k/nvidiaProfileInspector/releases/download/v3.0.2.1/nvidiaProfileInspector.zip"
+    },
+    {
+      "app_id": "obs-studio",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-macOS-Apple.dmg"
+    },
+    {
+      "app_id": "obs-studio",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-Windows-x64-Installer.exe"
+    },
+    {
+      "app_id": "obsidian",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.7/Obsidian-1.13.7.dmg"
+    },
+    {
+      "app_id": "obsidian",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.7/Obsidian-1.13.7.exe"
+    },
+    {
+      "app_id": "occt",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://www.ocbase.com/download/OCCT.zip"
+    },
+    {
+      "app_id": "plex",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://downloads.plex.tv/plex-desktop/1.115.0.426-4e960a1d/macos/Plex-1.115.0.426-4e960a1d-universal.zip"
+    },
+    {
+      "app_id": "plex",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://downloads.plex.tv/plex-desktop/1.115.0.426-4e960a1d/windows/Plex-1.115.0.426-4e960a1d-x86_64.exe"
+    },
+    {
+      "app_id": "powertoys",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/PowerToysUserSetup-0.101.2362.0-x64.exe"
+    },
+    {
+      "app_id": "prime95",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip"
+    },
+    {
+      "app_id": "process-explorer",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.sysinternals.com/files/ProcessExplorer.zip"
+    },
+    {
+      "app_id": "prowlarr",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.5.2.5491/Prowlarr.master.2.5.2.5491.osx-app-core-arm64.zip"
+    },
+    {
+      "app_id": "prowlarr",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.5.2.5491/Prowlarr.master.2.5.2.5491.windows-core-x64-installer.exe"
+    },
+    {
+      "app_id": "putty",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.85-installer.msi"
+    },
+    {
+      "app_id": "pycharm",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://data.services.jetbrains.com/products/download?code=PCC&platform=mac"
+    },
+    {
+      "app_id": "pycharm",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://data.services.jetbrains.com/products/download?code=PCC&platform=windows"
+    },
+    {
+      "app_id": "qbittorrent",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.3/qbittorrent-5.2.3.dmg"
+    },
+    {
+      "app_id": "qbittorrent",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.3/qbittorrent_5.2.3_x64_setup.exe"
+    },
+    {
+      "app_id": "qobuz",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://desktop.qobuz.com/releases/darwin/arm64/bigsur/8.2.0-b033/Qobuz.dmg"
+    },
+    {
+      "app_id": "qobuz",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://desktop.qobuz.com/releases/win32/x64/windows7_8_10/8.2.0-b033/Qobuz_Installer.exe"
+    },
+    {
+      "app_id": "radarr",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.3.0.10514/Radarr.master.6.3.0.10514.osx-app-core-arm64.zip"
+    },
+    {
+      "app_id": "radarr",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.3.0.10514/Radarr.master.6.3.0.10514.windows-core-x64-installer.exe"
+    },
+    {
+      "app_id": "riot-client",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.na.exe"
+    },
+    {
+      "app_id": "rsi-launcher",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://install.robertsspaceindustries.com/rel/2/RSI%20Launcher-Setup-2.17.0.exe"
+    },
+    {
+      "app_id": "rustdesk",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-aarch64.dmg"
+    },
+    {
+      "app_id": "rustdesk",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-x86_64.exe"
+    },
+    {
+      "app_id": "screentogif",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/NickeManarin/ScreenToGif/releases/download/2.43.2/ScreenToGif.2.43.2.Setup.x64.msi"
+    },
+    {
+      "app_id": "sharex",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/ShareX/ShareX/releases/download/v21.0.0/ShareX-21.0.0-setup-x64.exe"
+    },
+    {
+      "app_id": "sonarr",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.19.2979/Sonarr.main.4.0.19.2979.osx-arm64-app.zip"
+    },
+    {
+      "app_id": "sonarr",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.19.2979/Sonarr.main.4.0.19.2979.win-x64-installer.exe"
+    },
+    {
+      "app_id": "spotify",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://download.scdn.co/Spotify.dmg"
+    },
+    {
+      "app_id": "spotify",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.scdn.co/SpotifySetup.exe"
+    },
+    {
+      "app_id": "steam",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://media.steampowered.com/client/installer/steam.dmg"
+    },
+    {
+      "app_id": "steam",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+    },
+    {
+      "app_id": "teamspeak",
+      "os": "macos",
+      "status": "unknown",
+      "detail": "vendor answered 429 Too Many Requests — likely a bot-block or rate limit"
+    },
+    {
+      "app_id": "teamspeak",
+      "os": "windows",
+      "status": "unknown",
+      "detail": "vendor answered 429 Too Many Requests — likely a bot-block or rate limit"
+    },
+    {
+      "app_id": "teamviewer",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://download.teamviewer.com/download/TeamViewer.dmg"
+    },
+    {
+      "app_id": "teamviewer",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe"
+    },
+    {
+      "app_id": "telegram",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://osx.telegram.org/updates/Telegram.dmg"
+    },
+    {
+      "app_id": "telegram",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://telegram.org/dl/desktop/win"
+    },
+    {
+      "app_id": "testmem5",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/CoolCmd/TestMem5/releases/download/v0.13.1/TestMem5.7z"
+    },
+    {
+      "app_id": "tidal",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://download.tidal.com/desktop/TIDAL.dmg"
+    },
+    {
+      "app_id": "tidal",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.tidal.com/desktop/TIDALSetup.exe"
+    },
+    {
+      "app_id": "timer-resolution",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/valleyofdoom/TimerResolution/releases/download/SetTimerResolution-v1.0.0/SetTimerResolution.exe"
+    },
+    {
+      "app_id": "timing-configurator",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://download.asrock.com/Utility/Formula/TimingConfigurator(v4.0.4).zip"
+    },
+    {
+      "app_id": "translucenttb",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/TranslucentTB/TranslucentTB/releases/download/2026.2/TranslucentTB.appinstaller"
+    },
+    {
+      "app_id": "twinkle-tray",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/xanderfrangos/twinkle-tray/releases/download/v1.17.2/Twinkle.Tray.v1.17.2.exe"
+    },
+    {
+      "app_id": "ubisoft-connect",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe"
+    },
+    {
+      "app_id": "vencord",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.1/VencordInstaller.dmg"
+    },
+    {
+      "app_id": "vencord",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.1/VencordInstaller.exe"
+    },
+    {
+      "app_id": "vscode",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://update.code.visualstudio.com/latest/darwin-universal/stable"
+    },
+    {
+      "app_id": "vscode",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user"
+    },
+    {
+      "app_id": "wargaming-game-center",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://redirect.wargaming.net/WGC/Wargaming_Game_Center_Install_NA.exe"
+    },
+    {
+      "app_id": "windscribe",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_universal.dmg"
+    },
+    {
+      "app_id": "windscribe",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_amd64.exe"
+    },
+    {
+      "app_id": "winrar",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-723.exe"
+    },
+    {
+      "app_id": "zen-browser",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.1b/zen.macos-universal.dmg"
+    },
+    {
+      "app_id": "zen-browser",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.1b/zen.installer.exe"
+    },
+    {
+      "app_id": "zentimings",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/irusanov/ZenTimings/releases/download/v140.587/ZenTimings_v140.587_beta.zip"
+    }
+  ]
+}

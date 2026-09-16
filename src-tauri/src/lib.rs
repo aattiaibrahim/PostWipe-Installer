@@ -1,6 +1,7 @@
 mod catalog;
 mod commands;
 mod downloader;
+mod health;
 mod resolver;
 mod scripts;
 
@@ -9,6 +10,7 @@ use commands::download::{
     cancel_download, delete_download, list_active_downloads, open_downloads_folder, paths_exist, start_download,
     start_specials_download,
 };
+use commands::health::{clear_local_health, load_catalog_health, run_health_check};
 use commands::scripts::{
     cleanup_legacy_startup_pins, find_generated_script, generate_script, is_script_pinned, pin_script_to_start_menu,
     unpin_script_from_start_menu,
@@ -72,7 +74,10 @@ pub fn run() {
             set_theme,
             get_vault_key,
             set_vault_key,
-            clear_vault_key
+            clear_vault_key,
+            load_catalog_health,
+            run_health_check,
+            clear_local_health
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

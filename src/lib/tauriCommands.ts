@@ -128,6 +128,61 @@ export async function saveVaultKey(key: string): Promise<void> {
   }
 }
 
+/** Health of one catalog download — see `src-tauri/src/health/mod.rs` for the rules.
+ *  `unknown` explicitly means "couldn't verify", NOT "broken": bot-blocks and dead
+ *  connections land here so a flaky CI network can never grey out a working download. */
+export type HealthStatus = "ok" | "unknown" | "broken";
+
+export interface EntryHealth {
+  app_id: string;
+  os: Os;
+  status: HealthStatus;
+  detail: string;
+}
+
+export interface HealthReport {
+  /** Unix seconds. */
+  generated_at: number;
+  /** "ci" = the weekly published sweep, "local" = a check the user ran themselves. */
+  source: string;
+  entries: EntryHealth[];
+}
+
+/** Badges for launch: the published weekly sweep (one request), a local check if the user
+ *  has run one, or null when nothing trustworthy exists — in which case show no badges. */
+export async function loadCatalogHealth(): Promise<HealthReport | null> {
+  if (!isTauri) {
+    // Browser dev preview has no IPC — read the copy in public/, mirroring the
+    // catalog.json fallback above. The real app always goes through the Rust command,
+    // which also handles caching and the local-check override.
+    try {
+      const res = await fetch("/health.json");
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null;
+    }
+  }
+  try {
+    return await invoke<HealthReport | null>("load_catalog_health");
+  } catch {
+    return null;
+  }
+}
+
+/** Really resolves and fetches every download for `os`. Streams `health-check:*` events. */
+export function runHealthCheck(os: Os): Promise<HealthReport> {
+  return invoke("run_health_check", { os });
+}
+
+export async function clearLocalHealth(): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("clear_local_health");
+  } catch {
+    /* best-effort */
+  }
+}
+
 export async function clearVaultKey(): Promise<void> {
   if (!isTauri) return;
   try {

@@ -155,23 +155,24 @@ mod live_tests {
     }
 
     #[tokio::test]
-    async fn windscribe_download_page_is_js_rendered_but_has_a_stable_redirect() {
-        // The marketing page (windscribe.com/download) really is JS-rendered — a plain fetch
-        // sees an empty Next.js shell with no .exe link anywhere. But windscribe.com also
-        // exposes a stable, versionless redirect endpoint that isn't gated behind any JS at
-        // all, so the `static` resolver can just point at that instead of needing a webview.
-        let marketing_page = reqwest::get("https://windscribe.com/download").await.unwrap().text().await.unwrap();
-        assert!(
-            !marketing_page.contains(".exe"),
-            "windscribe.com/download started containing a direct .exe link — the marketing page may no longer be JS-only"
-        );
-
-        let spec = ResolverSpec::Static {
-            url: "https://windscribe.com/install/desktop/windows".to_string(),
+    async fn windscribe_resolves_from_their_own_github_releases() {
+        // windscribe.com/download is JS-rendered (a Next.js shell with no installer URL in
+        // the raw HTML at all), and the /install/desktop/<os> redirect that used to sidestep
+        // that stopped redirecting in September 2026 — it now answers 200 text/html and
+        // bounces to that same JS page, which is how this entry silently broke.
+        //
+        // Windscribe's desktop client is open source and their own org publishes the same
+        // signed builds per release, so that's the source now: no JS, no scraping, and the
+        // version tracks itself.
+        let spec = ResolverSpec::GithubRelease {
+            repo: "Windscribe/Desktop-App".to_string(),
+            asset_pattern: "Windscribe_*_amd64.exe".to_string(),
         };
-        let url = static_resolver::resolve(&spec).unwrap();
-        let response = reqwest::get(&url).await.expect("should follow the redirect to a real installer");
-        assert!(response.url().as_str().ends_with(".exe"), "unexpected final url: {}", response.url());
+        let url = github_release_resolver::resolve(&spec)
+            .await
+            .expect("should resolve a real Windscribe installer");
+        assert!(url.contains("Windscribe_"), "unexpected url: {url}");
+        assert!(url.ends_with("_amd64.exe"), "unexpected url: {url}");
     }
 
     #[tokio::test]
@@ -300,95 +301,49 @@ mod live_tests {
     /// Resolves EVERY catalog entry through the real resolver code, then fetches each
     /// resolved URL with the same client configuration the downloader uses (same
     /// User-Agent — a curl-with-flags check once passed while the app 403'd, precisely
-    /// because the verification client didn't match the app's). `#[ignore]`d because it
-    /// hammers ~40 vendor sites; run manually before releases:
-    /// `cargo test --lib -- --ignored full_catalog_sweep`
+    /// because the verification client didn't match the app's).
+    ///
+    /// The checking and classification live in `crate::health` so that this sweep, the
+    /// badges the app shows at launch, and the live check in Settings can never disagree
+    /// about what "broken" means. This test is the CI half: it also writes `health.json`,
+    /// which the workflow commits and the shipped app reads.
+    ///
+    /// `#[ignore]`d because it hammers ~40 vendor sites; run manually before releases:
+    /// `cargo test --lib -- --ignored --nocapture full_catalog_sweep`
     #[tokio::test]
     #[ignore = "hits every vendor site in the catalog — run manually"]
     async fn full_catalog_sweep_every_entry_resolves_and_downloads() {
+        use crate::health::{self, HealthStatus};
+
         let catalog = crate::catalog::loader::load_catalog();
-        let client = reqwest::Client::builder()
-            .connect_timeout(std::time::Duration::from_secs(15))
-            .user_agent(html_resolver::BROWSER_USER_AGENT)
-            .build()
-            .unwrap();
+        let report = health::sweep(&catalog, None, health::DEFAULT_CONCURRENCY, "ci", |_| {}).await;
+        let (ok, unknown, broken) = report.counts();
 
-        // Resolve one entry and confirm the result actually serves a file.
-        async fn check(spec: &ResolverSpec, client: &reqwest::Client) -> Result<(), String> {
-            let url = match spec {
-                ResolverSpec::Static { .. } => static_resolver::resolve(spec),
-                ResolverSpec::GithubRelease { .. } => github_release_resolver::resolve(spec).await,
-                ResolverSpec::Html { .. } => html_resolver::resolve(spec).await,
-                ResolverSpec::HtmlRegex { .. } => html_regex_resolver::resolve(spec).await,
-                ResolverSpec::Webview { .. } => unreachable!("webview specs are filtered out before check()"),
-            }
-            .map_err(|err| format!("resolve failed: {err}"))?;
-
-            // GET (not HEAD — some hosts reject HEAD) but drop the body unread.
-            match client.get(&url).send().await {
-                Ok(response) if response.status().is_success() => {
-                    let content_type = response.headers().get("content-type").and_then(|v| v.to_str().ok()).unwrap_or("");
-                    if content_type.contains("text/html") {
-                        Err(format!("{url} served text/html, not a download"))
-                    } else {
-                        Ok(())
-                    }
-                }
-                Ok(response) => Err(format!("{url} returned {}", response.status())),
-                Err(err) => Err(format!("{url} request failed: {err}")),
-            }
-        }
-
-        let mut failures: Vec<String> = Vec::new();
-        let mut skipped: Vec<String> = Vec::new();
-        let mut suspects: Vec<(String, &ResolverSpec)> = Vec::new();
-        let mut checked = 0usize;
-
-        for category in &catalog.categories {
-            for app in &category.apps {
-                for (os, platform) in &app.platforms {
-                    let Some(spec) = &platform.resolver else { continue };
-                    let label = format!("{}/{:?}", app.id, os);
-
-                    // A webview spec needs a real window, so it can't run on a headless
-                    // runner. Report it as UNCOVERED rather than a failure — otherwise the
-                    // scheduled health check is permanently red and stops meaning anything.
-                    if matches!(spec, ResolverSpec::Webview { .. }) {
-                        skipped.push(format!("{label}: webview spec — needs a desktop session, check by hand"));
-                        continue;
-                    }
-
-                    checked += 1;
-                    if check(spec, &client).await.is_err() {
-                        suspects.push((label, spec));
-                    }
-                }
-            }
-        }
-
-        // Second pass over just the failures. Vendors rate-limit (TeamSpeak answered 429 on
-        // one run and fine on the next) and connections time out, and a weekly job that
-        // opens an issue must not cry wolf over a blip — only a SECOND failure counts.
-        if !suspects.is_empty() {
-            println!("re-checking {} suspect(s) after a pause...", suspects.len());
-            tokio::time::sleep(std::time::Duration::from_secs(20)).await;
-            for (label, spec) in suspects {
-                if let Err(err) = check(spec, &client).await {
-                    failures.push(format!("{label}: {err}"));
-                }
-            }
-        }
+        // Written next to the crate so the workflow can commit it to master; the app then
+        // fetches it at launch and badges the catalog without making a single vendor request.
+        let json = serde_json::to_string_pretty(&report).expect("report should serialise");
+        std::fs::write("health.json", json).expect("should be able to write health.json");
 
         // Printed (use --nocapture) so the scheduled health check can paste it into an issue.
-        println!("--- catalog sweep: {checked} entr(ies) checked, {} broken, {} uncovered ---", failures.len(), skipped.len());
-        for s in &skipped {
-            println!("UNCOVERED  {s}");
-        }
-        for f in &failures {
-            println!("BROKEN     {f}");
+        println!("--- catalog sweep: {} entr(ies) checked, {broken} broken, {unknown} unverified, {ok} ok ---", report.entries.len());
+        for entry in &report.entries {
+            match entry.status {
+                HealthStatus::Ok => {}
+                HealthStatus::Unknown => println!("UNCOVERED  {}/{:?}: {}", entry.app_id, entry.os, entry.detail),
+                HealthStatus::Broken => println!("BROKEN     {}/{:?}: {}", entry.app_id, entry.os, entry.detail),
+            }
         }
 
-        assert!(failures.is_empty(), "catalog sweep failures:\n{}", failures.join("\n"));
+        // Only definitive breakage fails the sweep. Bot-blocks and dead connections land in
+        // Unknown on purpose — the first scheduled run called 6 entries broken and 3 of them
+        // (Tarkov, Prime95, PuTTY) worked fine from a normal connection minutes later.
+        let broken_list: Vec<String> = report
+            .entries
+            .iter()
+            .filter(|e| e.status == HealthStatus::Broken)
+            .map(|e| format!("{}/{:?}: {}", e.app_id, e.os, e.detail))
+            .collect();
+        assert!(broken_list.is_empty(), "catalog sweep failures:\n{}", broken_list.join("\n"));
     }
 
     #[tokio::test]

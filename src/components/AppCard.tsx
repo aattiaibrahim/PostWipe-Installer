@@ -14,7 +14,9 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useDownloadQueueStore } from "../state/downloadQueueStore";
 import { useSelectionStore } from "../state/selectionStore";
 import { useCatalogStore } from "../state/catalogStore";
+import { useEntryHealth } from "../state/healthStore";
 import { AppIcon } from "./AppIcon";
+import { HealthBadge } from "./HealthBadge";
 
 interface AppCardProps {
   app: AppEntry;
@@ -53,6 +55,9 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
 
   const platform = app.platforms[os];
   const scriptId = platform?.script_id;
+  // Null until a sweep has covered this entry — bookmarks, scripts and freshly added apps
+  // simply show no badge rather than an invented status.
+  const health = useEntryHealth(app.id, os);
 
   useEffect(() => {
     if (!scriptId) return;
@@ -149,6 +154,10 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
 
   const showStatusArea = (!isDownloadingJob && !!failureMessage) || !!pinError || !!pinMsg;
 
+  /* Only a definitive `broken` softens the row. `unknown` deliberately does nothing beyond
+     its badge — it usually means the checker got blocked, not that anything is wrong. */
+  const isBroken = health?.status === "broken";
+
   const statusClass = isDownloadingJob
     ? " app-row--downloading"
     : failureMessage
@@ -202,6 +211,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
                 needs check
               </span>
             )}
+            {health && <HealthBadge health={health} />}
             {hasDetails && (
               <button
                 className="app-row__expand-toggle"
@@ -266,8 +276,17 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
                 Cancel
               </button>
             ) : (
-              <button className="app-row__action" disabled={busy} onClick={handleClick}>
-                {actionLabel}
+              /* A failed health check mutes the button and renames it, but never disables
+                 it. Half of the first sweep's "broken" verdicts were the CI runner being
+                 bot-blocked, and a vendor can fix a link the day after a check — so the
+                 user always keeps the final say. */
+              <button
+                className={`app-row__action${isBroken ? " app-row__action--risky" : ""}`}
+                disabled={busy}
+                onClick={handleClick}
+                title={isBroken ? `Last check failed: ${health?.detail ?? ""}` : undefined}
+              >
+                {isBroken && !busy ? "Download anyway" : actionLabel}
               </button>
             )}
           </div>

@@ -15,7 +15,10 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  # write, not read: the sweep publishes health.json back to master, which the shipped app
+  # fetches at launch to badge each download. The catalog itself is compiled into the
+  # binary, so this file is the only way a link that rots mid-release ever gets flagged.
+  contents: write
   issues: write
 
 concurrency:
@@ -64,6 +67,9 @@ jobs:
           # Individual failure lines can still be long (a vendor page snippet), so cap them.
           grep -a '^BROKEN' "$LOG" | cut -c1-300 > broken.txt || true
           grep -a '^UNCOVERED' "$LOG" | cut -c1-300 > uncovered.txt || true
+          # The sweep writes this next to the crate; it belongs at the repo root, where the
+          # app's raw.githubusercontent URL points.
+          mv src-tauri/health.json health.json 2>/dev/null || true
           SUMMARY=$(grep -a 'catalog sweep:' "$LOG" | head -1)
           COUNT=$(wc -l < broken.txt | tr -d ' ')
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
@@ -84,17 +90,36 @@ jobs:
             fi
             if [ -s uncovered.txt ]; then
               echo ""
-              echo "### Not covered by this check"
+              echo "### Couldn't verify ($(wc -l < uncovered.txt | tr -d ' '))"
               echo '```'
               cat uncovered.txt
               echo '```'
-              echo "> Webview resolvers need a real desktop session, so they can't be swept headlessly — verify those by hand."
+              echo "> **These are not failures.** A GitHub runner's IP gets bot-blocked and rate-limited by vendors that answer a home connection fine — the first run of this workflow called 6 entries broken and 3 of them (Tarkov, Prime95, PuTTY) worked perfectly minutes later. Webview resolvers also land here, since they need a real desktop session. Check these by hand, or from the app's own Settings ▸ Check All Downloads, before changing anything."
             fi
             echo ""
             echo "<sub>[run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) · sweeps every entry through the real resolver + downloader client</sub>"
           } > body.md
 
           cat body.md >> "$GITHUB_STEP_SUMMARY"
+
+      # The shipped app reads this at launch to badge each download green/amber/red. It's
+      # committed rather than uploaded as an artifact so raw.githubusercontent.com can serve
+      # it to the app with no token, no API quota and no release.
+      - name: Publish health.json
+        if: hashFiles('health.json') != ''
+        shell: bash
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add health.json
+          if git diff --cached --quiet; then
+            echo "health unchanged since last run"
+          else
+            git commit -m "chore: publish catalog health [skip ci]"
+            # Another job may have landed on master while the sweep was running.
+            git pull --rebase --autostash origin master
+            git push origin HEAD:master
+          fi
 
       # One long-lived issue that gets reopened/updated rather than a new one each week,
       # so this can't spam the tracker. Closed automatically once everything passes again.

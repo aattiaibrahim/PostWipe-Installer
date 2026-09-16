@@ -10,6 +10,7 @@ import { useSettingsStore } from "../state/settingsStore";
 import { useSoundStore } from "../state/soundStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useSpecialsStore } from "../state/specialsStore";
+import { HealthCheckPanel } from "./HealthCheckPanel";
 
 /** Swatch grid of every named theme. Each swatch previews the theme's background + accent;
  *  picking one applies it instantly and themeStore persists it across launches. */
@@ -167,6 +168,9 @@ export function SettingsPanel() {
         {version && <span className="settings-panel__version">Version {version}</span>}
       </div>
       {status && <p className="settings-panel__status">{status}</p>}
+      <div className="settings-panel__row settings-panel__row--health">
+        <HealthCheckPanel />
+      </div>
       <div className="settings-panel__row">
         <button className="settings-panel__download-all" onClick={() => setConfirmAllOpen(true)}>
           Download All Apps

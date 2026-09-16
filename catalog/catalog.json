@@ -618,19 +618,21 @@
           "icon": "windscribe.ico",
           "domain": "windscribe.com",
           "kind": "download",
-          "notes": "windscribe.com/download itself is JS-rendered (Next.js, no .exe link in the raw HTML), but windscribe.com/install/desktop/<os> is a stable, versionless redirect straight to the current installer — verified live, no JS execution needed.",
+          "notes": "Was static windscribe.com/install/desktop/<os>, a versionless redirect to the installer — that redirect DIED (2026-09-15): both slugs now answer 200 text/html and bounce to the JS-rendered /download page, which carries no installer URL in its raw HTML at all (verified: 0 .exe/.dmg matches in 173 KB). Windscribe's desktop client is open source, and their own GitHub org publishes the identical signed builds per release, so that's the source now — no JS, no scraping, and it tracks versions automatically. Verified live 2026-09-15 against v2.24.13. amd64 (not arm64) for Windows to match every other entry; the macOS build is a universal dmg.",
           "platforms": {
             "windows": {
               "resolver": {
-                "type": "static",
-                "url": "https://windscribe.com/install/desktop/windows"
+                "type": "github_release",
+                "repo": "Windscribe/Desktop-App",
+                "asset_pattern": "Windscribe_*_amd64.exe"
               },
               "filename": "Windscribe-Setup.exe"
             },
             "macos": {
               "resolver": {
-                "type": "static",
-                "url": "https://windscribe.com/install/desktop/macos"
+                "type": "github_release",
+                "repo": "Windscribe/Desktop-App",
+                "asset_pattern": "Windscribe_*_universal.dmg"
               },
               "filename": "Windscribe.dmg"
             }
@@ -1128,7 +1130,7 @@
           "domain": "vencord.dev",
           "website": "https://vencord.dev",
           "kind": "download",
-          "notes": "GitHub Vencord/Installer, verified live 2026-07-17: v1.4.0 ships VencordInstaller.exe (GUI) and VencordInstallerCli.exe on Windows, VencordInstaller.MacOS.zip on macOS. Exact-name patterns so the GUI build wins over the Cli one. Client mods are technically against Discord's ToS.",
+          "notes": "GitHub Vencord/Installer. Windows ships VencordInstaller.exe (GUI) and VencordInstallerCli.exe — exact-name patterns so the GUI build wins over the Cli one. macOS changed format in v1.4.1: VencordInstaller.MacOS.zip became VencordInstaller.dmg, which silently broke that platform until the weekly sweep caught it. Verified live 2026-09-15 against v1.4.1. Client mods are technically against Discord's ToS.",
           "platforms": {
             "windows": {
               "resolver": {
@@ -1142,9 +1144,9 @@
               "resolver": {
                 "type": "github_release",
                 "repo": "Vencord/Installer",
-                "asset_pattern": "VencordInstaller.MacOS.zip"
+                "asset_pattern": "VencordInstaller.dmg"
               },
-              "filename": "VencordInstaller.MacOS.zip"
+              "filename": "VencordInstaller.dmg"
             }
           }
         }
@@ -1827,7 +1829,7 @@
           "domain": "elgato.com",
           "website": "https://www.elgato.com/us/en/s/downloads",
           "kind": "download",
-          "notes": "Elgato downloads page, verified live 2026-07-17: current 6.2.1.18825, both URLs return 206. The msi/pkg links sit in the STATIC page HTML, so html_regex follows version bumps automatically (unlike Insta360's hashed CDN paths, which must be re-pinned). Each regex matched exactly one URL on the page.",
+          "notes": "Windows: the .msi link sits in the STATIC page HTML, so html_regex follows version bumps automatically (verified 2026-09-15, currently 7.4.1.22720). macOS: NO LONGER RESOLVABLE — Elgato stopped server-rendering the mac link, and the page now contains only the Windows URL regardless of User-Agent (checked with a Safari/macOS UA: byte-identical 1.83 MB response). The .pkg itself still exists at the mirrored path edge.elgato.com/egc/macos/sd/Stream_Deck_<same version>.pkg, but nothing on the page states it, so any resolver would be us GUESSING the URL from the Windows one — and a wrong guess silently hands someone a 403. Left resolver-less on purpose: the row falls back to 'Get from site ↗', which is honest and can't rot. Revisit if Elgato ships a real manifest.",
           "platforms": {
             "windows": {
               "resolver": {
@@ -1838,11 +1840,6 @@
               "filename": "StreamDeckSetup.msi"
             },
             "macos": {
-              "resolver": {
-                "type": "html_regex",
-                "page_url": "https://www.elgato.com/us/en/s/downloads",
-                "url_regex": "https://edge\\.elgato\\.com/egc/macos/sd/Stream_Deck_[0-9.]+\\.pkg"
-              },
               "filename": "StreamDeck.pkg"
             }
           },

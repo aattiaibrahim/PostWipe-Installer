@@ -3617,3 +3617,232 @@ h3 {
 .app-row--select-mode:hover {
   background-color: var(--surface-hover);
 }
+
+/* ── Download health ───────────────────────────────────────────────────────────
+   Badges sourced from the weekly CI sweep (or a live check run in Settings).
+   Colours come from existing tokens so every theme picks them up for free:
+   --stale is already the amber pair, --danger the red. Green has no token yet,
+   so it's defined here once and re-stated for dark themes below. */
+:root {
+  --health-ok: #15803d;
+  --health-ok-bg: #dcfce7;
+}
+
+/* Dark themes set --accent-text white on a dark --surface; the light-mode green
+   is unreadable there, so lift it. Keyed off the same attribute the themes use. */
+:root[data-theme="dark"],
+:root[data-theme="nord"],
+:root[data-theme="dracula"],
+:root[data-theme="catppuccin"],
+:root[data-theme="gruvbox"],
+:root[data-theme="rose-pine"] {
+  --health-ok: #4ade80;
+  --health-ok-bg: rgba(34, 197, 94, 0.16);
+}
+
+.health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding: 0.14rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.health-badge svg {
+  width: 0.62rem;
+  height: 0.62rem;
+  flex-shrink: 0;
+}
+
+.health-badge--ok {
+  color: var(--health-ok);
+  background-color: var(--health-ok-bg);
+}
+
+.health-badge--unknown {
+  color: var(--stale);
+  background-color: var(--stale-bg);
+}
+
+.health-badge--broken {
+  color: var(--danger);
+  background-color: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+
+/* A "working" badge on every healthy row would be visual noise on a list of 60.
+   The green one stays quiet until you look for it; amber and red keep full weight. */
+.health-badge--ok .health-badge__label {
+  display: none;
+}
+
+.health-badge--ok {
+  padding: 0.14rem 0.24rem;
+}
+
+/* Broken downloads are muted, NOT disabled — see AppCard for why. */
+.app-row__action--risky {
+  background-color: transparent;
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  color: var(--danger);
+  box-shadow: none;
+}
+
+.app-row__action--risky:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* ── Live check terminal ─────────────────────────────────────────────────────── */
+.health-check {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.health-check__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.health-check__meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.health-check__count--ok { color: var(--health-ok); font-weight: 600; }
+.health-check__count--unknown { color: var(--stale); font-weight: 600; }
+.health-check__count--broken { color: var(--danger); font-weight: 600; }
+
+.health-check__terminal {
+  position: relative;
+  width: min(46rem, 88vw);
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: #0d1117;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.health-check__close {
+  margin-left: auto;
+  padding: 0 0.25rem;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.health-check__close:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.health-check__terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.health-check__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+}
+
+.health-check__dot--red { background-color: #ff5f57; }
+.health-check__dot--amber { background-color: #febc2e; }
+.health-check__dot--green { background-color: #28c840; }
+
+.health-check__terminal-title {
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.health-check__log {
+  max-height: min(24rem, 60vh);
+  overflow-y: auto;
+  padding: 0.6rem 0.7rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  color: #c9d1d9;
+  scrollbar-width: thin;
+}
+
+.health-check__line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.health-check__line--muted { color: rgba(201, 209, 217, 0.45); }
+
+.health-check__tag {
+  flex-shrink: 0;
+  white-space: pre;
+  font-weight: 600;
+}
+
+.health-check__tag--ok { color: #3fb950; }
+.health-check__tag--unknown { color: #d29922; }
+.health-check__tag--broken { color: #f85149; }
+
+.health-check__app { flex-shrink: 0; }
+
+.health-check__detail {
+  color: rgba(201, 209, 217, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.health-check__cursor {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.85rem;
+  background-color: #3fb950;
+  animation: health-blink 1s step-end infinite;
+}
+
+@keyframes health-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .health-check__cursor { animation: none; }
+}
+
+.health-check__progress {
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.health-check__progress-fill {
+  height: 100%;
+  background-color: #3fb950;
+}
+
+.health-check__note {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  background-color: rgba(210, 153, 34, 0.12);
+  color: #d29922;
+  white-space: normal;
+  line-height: 1.5;
+}

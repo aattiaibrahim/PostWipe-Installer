@@ -10,6 +10,7 @@ import { useResizeGlitchGuard } from "./hooks/useResizeGlitchGuard";
 import { useApplyTheme } from "./hooks/useApplyTheme";
 import { useWindowChrome } from "./hooks/useWindowChrome";
 import { hydrateVaultUnlock } from "./state/specialsStore";
+import { useHealthStore } from "./state/healthStore";
 import { isTauri } from "./lib/tauriCommands";
 import { playClick } from "./lib/sound";
 import "./App.css";
@@ -36,6 +37,14 @@ function App() {
   // Settings forgets the key, and an app update invalidates it — see specialsStore).
   useEffect(() => {
     void hydrateVaultUnlock();
+  }, []);
+
+  // Download-health badges. ONE request for the file the weekly CI sweep publishes — not a
+  // live sweep of every vendor, which would take minutes, hammer ~40 sites on every launch
+  // and blow through GitHub's 60-req/hour anonymous API cap. The live version is the
+  // explicit "Check All Downloads" button in Settings.
+  useEffect(() => {
+    void useHealthStore.getState().load();
   }, []);
 
   // Global click chime. Capture phase so it fires even when a handler stops propagation
