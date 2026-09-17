@@ -48,6 +48,9 @@ export const verifyCode = (code: string, backup: boolean) =>
   invoke<AccountUser | null>("account_verify_code", { code, backup });
 export const enableTwoFactor = (password: string) => invoke<TwoFactorSetup>("account_enable_two_factor", { password });
 export const disableTwoFactor = (password: string) => invoke<void>("account_disable_two_factor", { password });
+export const generateBackupCodes = (password: string) => invoke<string[]>("account_generate_backup_codes", { password });
+/** Writes the codes to Downloads as a .txt and reveals it; resolves to the file's path. */
+export const saveBackupCodes = (email: string, codes: string[]) => invoke<string>("account_save_backup_codes", { email, codes });
 export const signOut = () => invoke<void>("account_sign_out");
 export const deleteAccount = (password: string) => invoke<void>("account_delete", { password });
 export const getProfile = () => invoke<Profile>("profile_get");

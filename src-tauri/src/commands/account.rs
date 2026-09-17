@@ -104,6 +104,53 @@ pub async fn account_disable_two_factor(state: State<'_, AccountState>, password
 }
 
 #[tauri::command]
+pub async fn account_generate_backup_codes(state: State<'_, AccountState>, password: String) -> Result<Vec<String>, String> {
+    state.0.generate_backup_codes(&password).await
+}
+
+/// Saves backup codes as a text file in Downloads and shows it in Explorer/Finder.
+///
+/// The webview can only hand over codes, never a path or file name: the file always lands in
+/// Downloads under a fixed name, and every code must look like a backup code, so this command
+/// can't be turned into "write arbitrary text anywhere".
+#[tauri::command]
+pub fn account_save_backup_codes(app_handle: AppHandle, email: String, codes: Vec<String>) -> Result<String, String> {
+    let valid_code = |c: &String| (4..=32).contains(&c.len()) && c.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '-');
+    if codes.is_empty() || codes.len() > 20 || !codes.iter().all(valid_code) {
+        return Err("Those don't look like backup codes.".into());
+    }
+    let email: String = email.chars().filter(|c| !c.is_control()).take(254).collect();
+
+    let dir = app_handle.path().download_dir().map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    // Never overwrite an earlier file: after regenerating, both copies should be obvious.
+    let mut path = dir.join("PostWipe backup codes.txt");
+    let mut n = 2;
+    while path.exists() {
+        path = dir.join(format!("PostWipe backup codes ({n}).txt"));
+        n += 1;
+    }
+
+    let mut text = String::from("PostWipe Installer — two-factor backup codes\r\n");
+    if !email.is_empty() {
+        text.push_str(&format!("Account: {email}\r\n"));
+    }
+    text.push_str("Each code signs you in once. Move these into your password manager, then delete this file.\r\n\r\n");
+    for code in &codes {
+        text.push_str(code);
+        text.push_str("\r\n");
+    }
+    // create_new: never follow a file (or link) that appeared at this path after the check.
+    use std::io::Write;
+    let mut file = std::fs::OpenOptions::new().write(true).create_new(true).open(&path).map_err(|e| e.to_string())?;
+    file.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
+
+    use tauri_plugin_opener::OpenerExt;
+    let _ = app_handle.opener().reveal_item_in_dir(&path);
+    Ok(path.to_string_lossy().to_string())
+}
+
+#[tauri::command]
 pub async fn account_sign_out(app_handle: AppHandle, state: State<'_, AccountState>) -> Result<(), String> {
     let result = state.0.sign_out().await;
     persist(&app_handle, &state);

@@ -513,3 +513,10 @@
 .account-beta strong {
   color: var(--stale);
 }
+
+/* Backup codes: download and copy sit side by side. */
+.account-codes__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}

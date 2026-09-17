@@ -16,6 +16,7 @@ export type AccountView =
   | "setupScan"
   | "setupCodes"
   | "manage"
+  | "newBackupCodes"
   | "disableTwoFactor"
   | "delete";
 
@@ -81,6 +82,7 @@ export function AccountDialog() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [savedTo, setSavedTo] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState("");
   const firstInput = useRef<HTMLInputElement>(null);
 
@@ -100,6 +102,8 @@ export function AccountDialog() {
       setQr(null);
       setUseBackup(false);
       setConfirmDelete("");
+      setCopied(false);
+      setSavedTo(null);
       return;
     }
     function onKey(e: KeyboardEvent) {
@@ -188,6 +192,25 @@ export function AccountDialog() {
       open("setupCodes");
     });
   };
+
+  const submitNewCodes = (e: FormEvent) => {
+    e.preventDefault();
+    void run(async () => {
+      const backupCodes = await api.generateBackupCodes(password);
+      setPassword("");
+      setCopied(false);
+      setSavedTo(null);
+      // Reuses the setup flow's codes screen; there's no QR here, only the codes.
+      setSetup({ totpURI: "", backupCodes });
+      open("setupCodes");
+    });
+  };
+
+  const downloadCodes = () =>
+    void run(async () => {
+      if (!setup) return;
+      setSavedTo(await api.saveBackupCodes(user?.email ?? "", setup.backupCodes));
+    });
 
   const submitDisable = (e: FormEvent) => {
     e.preventDefault();
@@ -396,14 +419,25 @@ export function AccountDialog() {
               </li>
             ))}
           </ul>
-          <button
-            className="account-secondary"
-            onClick={() => {
-              void navigator.clipboard.writeText(setup?.backupCodes.join("\n") ?? "").then(() => setCopied(true));
-            }}
-          >
-            {copied ? "Copied" : "Copy all codes"}
-          </button>
+          <div className="account-codes__actions">
+            <button className="account-secondary" disabled={busy} onClick={downloadCodes}>
+              {savedTo ? "Saved ✓" : "Download .txt"}
+            </button>
+            <button
+              className="account-secondary"
+              onClick={() => {
+                void navigator.clipboard.writeText(setup?.backupCodes.join("\n") ?? "").then(() => setCopied(true));
+              }}
+            >
+              {copied ? "Copied" : "Copy all codes"}
+            </button>
+          </div>
+          {savedTo && (
+            <p className="account-field__hint">
+              Saved as “{savedTo.split(/[\\/]/).pop()}” in Downloads. Move the codes into your password manager, then delete
+              the file.
+            </p>
+          )}
           <button className="account-primary" onClick={close}>
             I've saved them
           </button>
@@ -437,6 +471,17 @@ export function AccountDialog() {
               </button>
             )}
           </div>
+          {user.twoFactorEnabled && (
+            <div className="account-row">
+              <div>
+                <strong>Backup codes</strong>
+                <span>Lost them? Get a new set; the old codes stop working.</span>
+              </div>
+              <button className="account-secondary account-secondary--small" onClick={() => open("newBackupCodes")}>
+                New codes
+              </button>
+            </div>
+          )}
           <button className="account-secondary" disabled={busy} onClick={() => void run(async () => {
             await signOutAccount();
             close();
@@ -447,6 +492,27 @@ export function AccountDialog() {
             Delete account…
           </button>
         </div>
+      );
+      break;
+
+    case "newBackupCodes":
+      title = "New backup codes";
+      body = (
+        <form className="account-form" onSubmit={submitNewCodes}>
+          <p className="account-lede">
+            Saved codes can't be shown again, for your security, so this makes a fresh set. Codes you saved before will
+            stop working.
+          </p>
+          <Field id="account-password-codes" label="Password">
+            <input ref={firstInput} id="account-password-codes" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </Field>
+          <button className="account-primary" type="submit" disabled={busy}>
+            {busy ? "Making codes…" : "Replace my backup codes"}
+          </button>
+          <button type="button" className="account-secondary" onClick={() => open("manage")}>
+            Cancel
+          </button>
+        </form>
       );
       break;
 

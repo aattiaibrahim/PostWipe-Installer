@@ -5,9 +5,10 @@ mod downloader;
 mod health;
 mod resolver;
 mod scripts;
+mod shell;
 
 use commands::account::{
-    account_delete, account_disable_two_factor, account_enable_two_factor, account_sign_in, account_sign_out,
+    account_delete, account_disable_two_factor, account_enable_two_factor, account_generate_backup_codes, account_save_backup_codes, account_sign_in, account_sign_out,
     account_sign_up, account_status, account_verify_code, profile_get, profile_save,
 };
 use commands::catalog::list_categories;
@@ -104,6 +105,8 @@ pub fn run() {
             account_verify_code,
             account_enable_two_factor,
             account_disable_two_factor,
+            account_generate_backup_codes,
+            account_save_backup_codes,
             account_sign_out,
             account_delete,
             profile_get,

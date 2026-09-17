@@ -189,6 +189,14 @@ impl AccountApi {
         self.post("/api/auth/two-factor/disable", json!({ "password": password })).await.map(|_| ())
     }
 
+    /// A fresh set of backup codes; the old ones stop working. Better Auth keeps codes
+    /// encrypted and deliberately has no client endpoint to read them back, so "get my codes
+    /// again" means replacing them — behind the password, like enabling 2FA.
+    pub async fn generate_backup_codes(&self, password: &str) -> Result<Vec<String>, String> {
+        let value = self.post("/api/auth/two-factor/generate-backup-codes", json!({ "password": password })).await?;
+        serde_json::from_value(value["backupCodes"].clone()).map_err(|e| format!("Unexpected backup code response: {e}"))
+    }
+
     /// The signed-in user, or `None` when there's no valid session (never signed in, signed
     /// out, or the session expired server-side).
     pub async fn current_user(&self) -> Result<Option<AccountUser>, String> {
