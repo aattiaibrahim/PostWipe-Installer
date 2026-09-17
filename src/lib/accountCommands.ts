@@ -41,8 +41,7 @@ export interface TwoFactorSetup {
 }
 
 export const accountStatus = () => invoke<AccountUser | null>("account_status");
-export const signUp = (email: string, password: string, name: string) =>
-  invoke<AccountUser>("account_sign_up", { email, password, name });
+export const signUp = (email: string, password: string) => invoke<AccountUser>("account_sign_up", { email, password });
 export const signIn = (email: string, password: string) =>
   invoke<{ needsTwoFactor: boolean; user: AccountUser | null }>("account_sign_in", { email, password });
 export const verifyCode = (code: string, backup: boolean) =>

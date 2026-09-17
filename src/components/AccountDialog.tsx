@@ -73,7 +73,6 @@ export function AccountDialog() {
   const setUser = useAccountStore((s) => s.setUser);
 
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [useBackup, setUseBackup] = useState(false);
@@ -151,7 +150,7 @@ export function AccountDialog() {
       return;
     }
     void run(async () => {
-      const created = await api.signUp(email, password, name || email.split("@")[0]);
+      const created = await api.signUp(email, password);
       await onSignedIn(created);
       // Keep the password in memory for one more step: enabling 2FA requires it.
       open("offerTwoFactor");
@@ -248,14 +247,11 @@ export function AccountDialog() {
       body = (
         <form className="account-form" onSubmit={submitSignUp}>
           <p className="account-lede">
-            Free. Stores your email, a securely hashed password, and your favorites. Delete it any time.
+            Free. Stores only your email, a securely hashed password, and your favorites — no name, IP address or device info. Delete it any time.
           </p>
           <BetaPasswordWarning />
-          <Field id="account-name" label="Name (optional)">
-            <input ref={firstInput} id="account-name" type="text" autoComplete="nickname" maxLength={40} value={name} onChange={(e) => setName(e.target.value)} />
-          </Field>
           <Field id="account-email-new" label="Email">
-            <input id="account-email-new" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input ref={firstInput} id="account-email-new" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </Field>
           <Field
             id="account-password-new"

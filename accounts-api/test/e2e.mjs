@@ -55,10 +55,11 @@ const app = client();
 console.log(`accounts e2e against ${BASE}\n`);
 
 // ── sign-up and profile basics ────────────────────────────────────────────────────────
-let r = await app.call("POST", "/api/auth/sign-up/email", { email, password, name: "E2E" });
+let r = await app.call("POST", "/api/auth/sign-up/email", { email, password, name: "" });
 check("sign-up succeeds and issues a bearer token", r.status === 200 && !!app.token, `${r.status} ${r.text}`);
+check("no name is stored", r.json?.user?.name === "", JSON.stringify(r.json?.user?.name));
 
-r = await app.call("POST", "/api/auth/sign-up/email", { email: `short-${stamp}@example.test`, password: "short", name: "x" });
+r = await app.call("POST", "/api/auth/sign-up/email", { email: `short-${stamp}@example.test`, password: "short", name: "" });
 check("sign-up rejects a password under 10 characters", r.status >= 400, `${r.status}`);
 
 r = await app.call("GET", "/api/profile");
@@ -96,6 +97,7 @@ check("the authenticator code confirms 2FA setup", r.status === 200, `${r.status
 
 r = await app.call("GET", "/api/auth/get-session");
 check("the account now reports 2FA enabled", r.json?.user?.twoFactorEnabled === true, r.text);
+check("the session stores no IP address or device string", r.json?.session && !r.json.session.ipAddress && !r.json.session.userAgent, JSON.stringify({ ip: r.json?.session?.ipAddress, ua: r.json?.session?.userAgent }));
 
 // ── signing back in with 2FA ──────────────────────────────────────────────────────────
 await app.call("POST", "/api/auth/sign-out", {});
@@ -134,7 +136,7 @@ r = await app.call("POST", "/api/auth/two-factor/verify-backup-code", { code: ba
 
 // ── isolation between accounts ────────────────────────────────────────────────────────
 const other = client();
-await other.call("POST", "/api/auth/sign-up/email", { email: `other-${stamp}@example.test`, password, name: "Other" });
+await other.call("POST", "/api/auth/sign-up/email", { email: `other-${stamp}@example.test`, password, name: "" });
 r = await other.call("GET", "/api/profile");
 check("a different account can't see the first account's favorites", r.status === 200 && r.json.favorites.length === 0, r.text);
 

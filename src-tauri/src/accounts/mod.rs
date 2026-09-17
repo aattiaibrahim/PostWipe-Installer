@@ -153,8 +153,10 @@ impl AccountApi {
         }
     }
 
-    pub async fn sign_up(&self, email: &str, password: &str, name: &str) -> Result<AccountUser, String> {
-        let value = self.post("/api/auth/sign-up/email", json!({ "email": email, "password": password, "name": name })).await?;
+    /// No name is collected (privacy: an account is just an email and a password). Better
+    /// Auth's user table requires the column, so it's always sent empty.
+    pub async fn sign_up(&self, email: &str, password: &str) -> Result<AccountUser, String> {
+        let value = self.post("/api/auth/sign-up/email", json!({ "email": email, "password": password, "name": "" })).await?;
         serde_json::from_value(value["user"].clone()).map_err(|e| format!("Unexpected sign-up response: {e}"))
     }
 
@@ -269,7 +271,7 @@ mod tests {
         let password = "correct horse battery staple";
 
         let api = AccountApi::new(local(), None);
-        let user = api.sign_up(&email, password, "Rust").await.expect("sign-up");
+        let user = api.sign_up(&email, password).await.expect("sign-up");
         assert_eq!(user.email, email);
         assert!(api.token().is_some(), "sign-up should leave a session token");
 

@@ -23,6 +23,16 @@ export function authOptions(database: BetterAuthOptions["database"]): BetterAuth
         verify: verifyPassword,
       },
     },
+    // Privacy: sessions would otherwise store each sign-in's IP address and User-Agent. The
+    // app never uses them, so they're blanked before the row is written. (Rate limiting still
+    // works — it keys its own short-lived counters by IP, separately.)
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (session) => ({ data: { ...session, ipAddress: null, userAgent: null } }),
+        },
+      },
+    },
     user: {
       // "Delete my account" in the app. People trusting a hobby project with an email
       // address should be able to take it back without asking anyone.

@@ -61,9 +61,8 @@ pub async fn account_sign_up(
     state: State<'_, AccountState>,
     email: String,
     password: String,
-    name: String,
 ) -> Result<AccountUser, String> {
-    let user = state.0.sign_up(email.trim(), &password, name.trim()).await;
+    let user = state.0.sign_up(email.trim(), &password).await;
     persist(&app_handle, &state);
     user
 }
