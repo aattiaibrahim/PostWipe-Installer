@@ -16,7 +16,7 @@ import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 // On macOS only these vault categories are relevant (the rest are Windows-only: cursors,
 // sounds, themes, the programs folders). Everything shows on Windows.
 const MAC_FOLDERS = new Set(["PSD's", "Steam Profiles", "Fonts", "Wallpapers & Profile Pics"]);
-import { SpecialsCard, tileGradient } from "./SpecialsCard";
+import { SpecialsCard, tileGradient, tileTint } from "./SpecialsCard";
 import { resolvePreviews, categoryHeroImage, folderCoverImage } from "../lib/specialsPreview";
 import { SpecialsDetail } from "./SpecialsDetail";
 import { MusicGlyph } from "./MusicGlyph";
@@ -64,9 +64,16 @@ function CoverCard({
     <button className={`specials-cover${imageOnly ? " specials-cover--image-only" : ""}`} onClick={onOpen} aria-label={title}>
       {unique.length === 1 ? (
         <img className="specials-cover__fill" src={unique[0]} alt="" loading="lazy" />
-      ) : unique.length === 0 && sound ? (
-        <div className="specials-cover__fill specials-cover__glyph-fill" style={{ background: tileGradient(seed) }}>
-          <MusicGlyph className="specials-cover__music" />
+      ) : unique.length === 0 ? (
+        // No art at all: one graphite tile with a tinted glyph, not four empty colour blocks.
+        <div className="specials-cover__fill specials-cover__glyph-fill" style={{ background: tileGradient(seed), color: tileTint(seed) }}>
+          {sound ? (
+            <MusicGlyph className="specials-cover__music" />
+          ) : (
+            <svg className="specials-cover__music" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+            </svg>
+          )}
         </div>
       ) : (
         <div className="specials-cover__collage">

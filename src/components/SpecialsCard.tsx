@@ -19,11 +19,19 @@ export function fmtSize(n: number): string {
 }
 
 /** Deterministic per-name gradient for cards/covers with no preview image. */
-export function tileGradient(name: string): string {
+export function tileGradient(_name: string): string {
+  // One graphite tile for every item without preview art — the same dark tile app icons sit
+  // on. The old per-name rainbow gradients read as random discolouration across the grid.
+  return "linear-gradient(160deg, #2e2e31, #1f1f21)";
+}
+
+/** A soft per-item colour for the glyph or initial on that graphite tile, so tiles stay
+ *  distinguishable without painting the whole background. */
+export function tileTint(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
   const hue = ((hash % 360) + 360) % 360;
-  return `linear-gradient(135deg, hsl(${hue} 48% 38%), hsl(${(hue + 46) % 360} 55% 22%))`;
+  return `hsl(${hue} 70% 72%)`;
 }
 
 /** A single vault item as a gallery tile: preview art (or a gradient glyph tile) with the
@@ -83,7 +91,9 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
         ) : hasSound ? (
           <MusicGlyph className="specials-card__glyph specials-card__music" />
         ) : (
-          <span className="specials-card__glyph specials-card__glyph--initial">{item.name.charAt(0).toUpperCase()}</span>
+          <span className="specials-card__glyph specials-card__glyph--initial" style={{ color: tileTint(item.name) }}>
+            {item.name.charAt(0).toUpperCase()}
+          </span>
         )}
         {/* Check circle only exists while select mode is on (or this card is already
             selected) — idle cards stay clean. */}

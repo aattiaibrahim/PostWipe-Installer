@@ -2034,3 +2034,30 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
 .set-page__back + .set-page__head {
   margin-top: 0.2rem;
 }
+
+/* Windows: the lights sit in the top-right corner Windows users reach for. */
+.traffic-lights--right {
+  margin: 0 14px 0 auto;
+}
+
+/* ─── Download button counters stay inside the button ───────────────────────────────── */
+
+/* They used to hang 5px outside the button, above and below it, where the scrolling main
+   column clipped them. Both now sit inside the 36px square: finished downloads top-right,
+   in-progress downloads bottom-right. */
+.gg-toolbar .download-history__toggle--icon .download-history__count {
+  top: 1px;
+  right: 0;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  font-size: 0.6rem;
+  line-height: 15px;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+.gg-toolbar .download-history__toggle--icon .download-history__count--active {
+  top: 1px;
+  bottom: auto;
+  right: 0;
+}

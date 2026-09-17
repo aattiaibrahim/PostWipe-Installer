@@ -79,9 +79,12 @@ export function DownloadHistoryPanel() {
           <path d="M7 11l5 5 5-5" />
           <path d="M5 20h14" />
         </svg>
-        {downloadedEntries.length > 0 && <span className="download-history__count">{downloadedEntries.length}</span>}
-        {activeJobs.length > 0 && (
+        {/* One counter, never two stacked on a 36px button: what's downloading right now while
+            anything is, otherwise how many finished files are in the list. */}
+        {activeJobs.length > 0 ? (
           <span className="download-history__count download-history__count--active">{activeJobs.length}</span>
+        ) : (
+          downloadedEntries.length > 0 && <span className="download-history__count">{downloadedEntries.length}</span>
         )}
       </button>
       <AnimatePresence>
