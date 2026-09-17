@@ -10,6 +10,8 @@ import { useAccountStore } from "../state/accountStore";
 import { useEntryHealth } from "../state/healthStore";
 import { AppIcon } from "./AppIcon";
 import { useKickstart } from "./KickstartDialog";
+import { PublishVisibleSelectable } from "./SelectMode";
+import { setCategoryId } from "./SetPage";
 
 interface Located {
   app: AppEntry;
@@ -152,6 +154,7 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
 
   return (
     <div className="home">
+      <PublishVisibleSelectable ids="" />
       <header className="store-head">
         <h1 className="store-head__title">Discover</h1>
         <p className="store-head__sub">Everything you need after a fresh wipe, checked every week.</p>
@@ -185,7 +188,7 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
           {sets.map((set) => {
             const apps = set.apps[os] ?? [];
             return (
-              <button key={set.id} className="home-sets__chip" disabled={!apps.length} onClick={() => replaceSelection(apps)}>
+              <button key={set.id} className="home-sets__chip" onClick={() => setCategory(setCategoryId(set.id))}>
                 {set.name} <span>{apps.length}</span>
               </button>
             );

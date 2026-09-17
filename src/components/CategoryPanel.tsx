@@ -9,6 +9,8 @@ import { useCatalogStore } from "../state/catalogStore";
 import { SpecialsLock } from "./SpecialsLock";
 import { SpecialsUnlockBurst } from "./SpecialsUnlockBurst";
 import { SpecialsContent } from "./SpecialsContent";
+import { PublishVisibleSelectable } from "./SelectMode";
+import { SET_CATEGORY_PREFIX, SetPage } from "./SetPage";
 
 interface CategoryPanelProps {
   catalog: Catalog;
@@ -29,10 +31,15 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
 
+  if (!isSearching && selectedCategoryId?.startsWith(SET_CATEGORY_PREFIX)) {
+    return <SetPage catalog={catalog} os={os} setId={selectedCategoryId.slice(SET_CATEGORY_PREFIX.length)} />;
+  }
+
   // Specials selected directly: the gate if locked, the live vault contents if unlocked.
   if (!isSearching && selectedCategoryId === SPECIALS_CATEGORY_ID) {
     return (
       <div className="category-panel">
+        <PublishVisibleSelectable ids="" />
         {justUnlocked && <SpecialsUnlockBurst />}
         {specialsUnlocked ? <SpecialsContent /> : <SpecialsLock />}
       </div>
@@ -73,9 +80,17 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
     }))
     .filter((section) => section.apps.length > 0);
 
+  // What "Select all" in the toolbar selects: the downloadable apps on this page.
+  const visibleIds = sections
+    .flatMap((s) => s.apps)
+    .filter((app) => app.kind === "download" && !!app.platforms[os]?.resolver)
+    .map((app) => app.id)
+    .join(",");
+
   if (sections.length === 0) {
     return (
       <div className="category-panel">
+        <PublishVisibleSelectable ids="" />
         {justUnlocked && <SpecialsUnlockBurst />}
         <p className="category-panel__empty">
           {isSearching
@@ -102,6 +117,7 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
 
   return (
     <div className="category-panel">
+      <PublishVisibleSelectable ids={visibleIds} />
       {justUnlocked && <SpecialsUnlockBurst />}
       <header className="store-head">
         <h1 className="store-head__title">{pageTitle}</h1>

@@ -3,6 +3,7 @@ import { useCatalogStore } from "../state/catalogStore";
 import { useOsDetect } from "../hooks/useOsDetect";
 import { useDownloadEvents } from "../hooks/useDownloadEvents";
 import { SearchField, ToolbarActions } from "../components/SearchFilterBar";
+import { SelectionActionBar, SelectToolbar } from "../components/SelectMode";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
 import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
@@ -41,6 +42,11 @@ export function Browse() {
   useEffect(() => {
     if (!catalog) return;
     if (selectedCategoryId === ALL_CATEGORY_ID || selectedCategoryId === HOME_CATEGORY_ID) return;
+    // A saved set's page is valid while signed in (SetPage handles a set that was deleted).
+    if (selectedCategoryId?.startsWith("set:")) {
+      if (!signedIn) setSelectedCategory(HOME_CATEGORY_ID);
+      return;
+    }
     // Favorites is a virtual view, valid on either OS — until the account signs out.
     if (selectedCategoryId === FAVORITES_CATEGORY_ID) {
       if (!signedIn) setSelectedCategory(ALL_CATEGORY_ID);
@@ -77,6 +83,7 @@ export function Browse() {
       <main className="gg-main">
         <div className="gg-toolbar">
           {/* The OS and Intel/AMD come from this computer; Settings ▸ Apps shown overrides them. */}
+          <SelectToolbar />
           <span className="gg-toolbar__spacer" />
           <ToolbarActions />
         </div>
@@ -93,6 +100,7 @@ export function Browse() {
             />
           )}
         </div>
+        <SelectionActionBar />
       </main>
     </div>
   );

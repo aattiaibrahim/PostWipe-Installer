@@ -17,8 +17,7 @@ export const useSelectionStore = create<SelectionState>((set) => ({
       const selected = state.selected.includes(appId)
         ? state.selected.filter((id) => id !== appId)
         : [...state.selected, appId];
-      // Deselecting the last item ends "Select Multiple Apps" mode — same as Clear.
-      if (selected.length === 0) useCatalogStore.getState().setSelectMode(false);
+      // Select mode stays on at zero picks (the toolbar's Cancel leaves it), like Photos.
       return { selected };
     }),
   clear: () => {

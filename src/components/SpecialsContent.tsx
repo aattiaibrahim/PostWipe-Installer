@@ -147,15 +147,20 @@ function ItemGrid({
             <path d="m14.5 5-7 7 7 7" />
           </svg>
         </span>
-        <h2 className="specials-page__title">
-          {title}
-          {crumbs.map((c) => (
-            <span key={c} className="specials-page__crumb"> ▸ {c}</span>
-          ))}
-        </h2>
+        {/* Names where Back goes, like a Finder/App Store back button: "‹ Specials", "‹ Cursor Packs". */}
+        <span className="specials-page__title">
+          {crumbs.length ? [title, ...crumbs.slice(0, -1)].join(" ▸ ") : "Specials"}
+        </span>
       </div>
+      {/* Big App Store title like every other page; the sticky bar above only carries the way back. */}
+      <header className="store-head specials-page__head">
+        <h1 className="store-head__title">{crumbs.length ? crumbs[crumbs.length - 1] : title}</h1>
+        <p className="store-head__sub">
+          {items.length + subfolders.reduce((n, sf) => n + flattenSubfolder(sf).length, 0)} items
+          {meta.blurb && atRoot ? ` · ${meta.blurb}` : ""}
+        </p>
+      </header>
       {hero && atRoot && <img className="specials-page__hero" src={hero} alt={title} />}
-      {meta.blurb && atRoot && <p className="specials-page__blurb">{meta.blurb}</p>}
       <div className={`specials-grid${selecting ? " specials-grid--selecting" : ""}`}>
         {subfolders.map((sf) => {
           const all = flattenSubfolder(sf);
@@ -230,6 +235,12 @@ export function SpecialsContent() {
             exit={{ opacity: 0, x: -18 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
           >
+            <header className="store-head">
+              <h1 className="store-head__title">Specials</h1>
+              <p className="store-head__sub">
+                Your private vault · {groups.reduce((n, g) => n + flattenGroup(g).length, 0)} items
+              </p>
+            </header>
             <div className="specials-grid specials-grid--covers">
               {groups.map((g) => {
                 const all = flattenGroup(g);

@@ -5,9 +5,9 @@ import { CategoryIcon } from "../lib/categoryIcons";
 import { categoryColor } from "../lib/categoryColors";
 import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
 import { useAccountStore } from "../state/accountStore";
-import { useSelectionStore } from "../state/selectionStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { useCatalogStore } from "../state/catalogStore";
+import { setCategoryId } from "./SetPage";
 
 interface CategorySidebarProps {
   catalog: Catalog;
@@ -64,7 +64,6 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   const favorites = useAccountStore((s) => s.profile.favorites);
   const sets = useAccountStore((s) => s.profile.sets);
   const deleteSet = useAccountStore((s) => s.deleteSet);
-  const replaceSelection = useSelectionStore((s) => s.replace);
 
   // The settings dock is fixed to the bottom-left, below this sidebar. Two things are
   // measured: the sidebar's max-height (so the list ends just above the dock rather than
@@ -190,8 +189,7 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
             </button>
           );
         })}
-        {/* Saved sets aren't categories: clicking one SELECTS its apps for this OS, ready for
-            the title-bar Download button, rather than filtering the list. */}
+        {/* Saved sets open as their own page (SetPage): the apps, Download all, Delete. */}
         {signedIn && sets.length > 0 && (
           <>
             <div className="sidebar__divider" />
@@ -202,12 +200,12 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
               return (
                 <div key={set.id} className="sidebar__set">
                   <button
-                    className="sidebar__item"
+                    className={`sidebar__item${selectedId === setCategoryId(set.id) ? " sidebar__item--active" : ""}`}
                     style={chip(VIRTUAL_COLORS.set)}
-                    onClick={() => replaceSelection(apps)}
-                    disabled={apps.length === 0}
-                    title={apps.length ? `Select these ${apps.length} apps` : `No ${osName} apps in this set`}
+                    onClick={() => onSelect(setCategoryId(set.id))}
+                    title={apps.length ? `${set.name}: ${apps.length} ${osName} apps` : `No ${osName} apps in this set`}
                   >
+                    {selectedId === setCategoryId(set.id) && <ActiveIndicator />}
                     <CategoryIcon categoryId="__set__" className="sidebar__icon" />
                     <span className="sidebar__label">{set.name}</span>
                     <span className="sidebar__count">{apps.length}</span>

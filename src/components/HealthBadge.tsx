@@ -1,4 +1,5 @@
 import type { EntryHealth } from "../lib/tauriCommands";
+import type { PlatformEntry } from "../types/catalog";
 
 /** Human copy for each status. Deliberately says what we KNOW — "couldn't verify" rather
  *  than "might be broken" — because a yellow badge is usually our network's fault, not the
@@ -47,4 +48,41 @@ export function HealthBadge({ health }: { health: EntryHealth }) {
       <span className="health-badge__label">{label}</span>
     </span>
   );
+}
+
+/** What a download is checked against, shown next to the app's name.
+ *
+ *  - Green ✓: an exact checksum exists (GitHub publishes a SHA-256 for every release asset), so
+ *    the file is proven identical to the publisher's.
+ *  - Shield: the installer must carry the named company's signature, or it's deleted.
+ *  - Nothing: no checksum or pinned signer. Deliberately no warning mark, because that's
+ *    normal for plenty of good software and shouldn't scare anyone off (Andrew's call). */
+export function TrustBadge({ platform }: { platform: PlatformEntry | undefined }) {
+  if (platform?.resolver?.type === "github_release") {
+    return (
+      <span
+        className="trust-badge trust-badge--checksum"
+        title="Checksum verified: every download is compared with the SHA-256 the publisher lists on GitHub."
+        aria-label="Checksum verified"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 13l4 4L19 7" />
+        </svg>
+      </span>
+    );
+  }
+  if (platform?.signer) {
+    return (
+      <span
+        className="trust-badge trust-badge--signed"
+        title={`Signed by ${platform.signer}: the installer's signature is checked on download, and anything else is deleted.`}
+        aria-label={`Signed by ${platform.signer}`}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round">
+          <path d="M12 3l7.5 3v5.5c0 4.6-3.2 7.9-7.5 9-4.3-1.1-7.5-4.4-7.5-9V6z" />
+        </svg>
+      </span>
+    );
+  }
+  return null;
 }

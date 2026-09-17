@@ -224,3 +224,9 @@ export const useAccountStore = create<AccountState>((set, get) => {
     deleteSet: (id) => update((p) => ({ ...p, sets: p.sets.filter((s) => s.id !== id) })),
   };
 });
+
+// Dev-only handle so signed-in UI (sets, favorites, the dock initial) can be checked in the
+// browser preview, which has no account backend. Never set in production.
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__accountStore = useAccountStore;
+}

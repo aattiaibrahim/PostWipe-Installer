@@ -16,8 +16,7 @@ export const useSpecialsSelectionStore = create<SpecialsSelectionState>((set) =>
       const selected = state.selected.includes(objectKey)
         ? state.selected.filter((k) => k !== objectKey)
         : [...state.selected, objectKey];
-      // Deselecting the last item ends "Select Multiple Apps" mode — same as Clear.
-      if (selected.length === 0) useCatalogStore.getState().setSelectMode(false);
+      // Select mode stays on at zero picks (the toolbar's Cancel leaves it).
       return { selected };
     }),
   clear: () => {

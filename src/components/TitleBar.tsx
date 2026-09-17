@@ -1,50 +1,47 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { isTauri } from "../lib/tauriCommands";
 import { isMacOS } from "../lib/platform";
-import { SelectionBar } from "./SelectionBar";
-import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
-import { SelectModeToggle } from "./SelectModeToggle";
 import { LogoMark } from "./LogoMark";
 
 const appWindow = isTauri ? getCurrentWindow() : null;
 
 // macOS shows the native traffic lights (titleBarStyle Overlay) — native minimize/zoom
-// animations included — so the custom controls only render elsewhere.
+// animations included — so the custom ones only render elsewhere.
 const showCustomControls = !isMacOS;
+
+/** macOS Golden Gate window controls on every OS: close, minimize, zoom as red/yellow/green
+ *  lights at the top-left. Their symbols appear only while the pointer is over the group, the
+ *  way macOS does it, so the chrome stays quiet the rest of the time. */
+function TrafficLights() {
+  return (
+    <div className="traffic-lights" role="group" aria-label="Window controls">
+      <button className="traffic-light traffic-light--close" aria-label="Close" onClick={() => appWindow?.close()}>
+        <svg viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M3.5 3.5l5 5M8.5 3.5l-5 5" />
+        </svg>
+      </button>
+      <button className="traffic-light traffic-light--minimize" aria-label="Minimize" onClick={() => appWindow?.minimize()}>
+        <svg viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M3 6h6" />
+        </svg>
+      </button>
+      <button className="traffic-light traffic-light--zoom" aria-label="Maximize" onClick={() => appWindow?.toggleMaximize()}>
+        <svg viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M3.6 8.4V4.9l3.5 3.5zM8.4 3.6v3.5L4.9 3.6z" className="traffic-light__fill" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 export function TitleBar() {
   return (
     <div className="title-bar" data-tauri-drag-region>
       <div className="title-bar__brand" data-tauri-drag-region>
+        {showCustomControls && <TrafficLights />}
         <LogoMark className="title-bar__logo" />
         <span className="title-bar__title">PostWipe Installer</span>
       </div>
-      {/* One shared title-bar slot: the Select-Multiple tool shows while nothing is
-          selected, and swaps out for whichever "N selected" bar applies. */}
-      <SelectModeToggle />
-      <SelectionBar />
-      <SpecialsSelectionBar />
-      {showCustomControls && (
-      <div className="title-bar__actions">
-        <div className="title-bar__window-controls">
-          <button className="title-bar__win-btn" aria-label="Minimize" onClick={() => appWindow?.minimize()}>
-            <svg viewBox="0 0 10 10" width="10" height="10">
-              <rect x="0" y="4.5" width="10" height="1" fill="currentColor" />
-            </svg>
-          </button>
-          <button className="title-bar__win-btn" aria-label="Maximize" onClick={() => appWindow?.toggleMaximize()}>
-            <svg viewBox="0 0 10 10" width="10" height="10">
-              <rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor" />
-            </svg>
-          </button>
-          <button className="title-bar__win-btn title-bar__win-btn--close" aria-label="Close" onClick={() => appWindow?.close()}>
-            <svg viewBox="0 0 10 10" width="10" height="10">
-              <path d="M0 0 L10 10 M10 0 L0 10" stroke="currentColor" strokeWidth="1" />
-            </svg>
-          </button>
-        </div>
-      </div>
-      )}
     </div>
   );
 }

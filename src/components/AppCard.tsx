@@ -18,7 +18,7 @@ import { useCatalogStore } from "../state/catalogStore";
 import { useEntryHealth } from "../state/healthStore";
 import { useAccountStore } from "../state/accountStore";
 import { AppIcon } from "./AppIcon";
-import { HealthBadge } from "./HealthBadge";
+import { HealthBadge, TrustBadge } from "./HealthBadge";
 
 interface AppCardProps {
   app: AppEntry;
@@ -313,17 +313,6 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
         }}
       >
         <span className="app-row__status-glow" aria-hidden="true" />
-        {/* The circle only exists while "Select Multiple Apps" mode is on (or this row is
-            already part of a selection) — idle rows stay clean. */}
-        {selectable && (selectMode || selected) && (
-          <input
-            type="checkbox"
-            className="app-row__select"
-            checked={selected}
-            onChange={() => toggleSelected(app.id)}
-            aria-label={`Select ${app.name} for batch download`}
-          />
-        )}
         <AppIcon appId={app.id} name={app.name} domain={app.domain} className="app-row__icon" />
         <div className="app-row__body">
           <div className="app-row__name-line">
@@ -333,12 +322,30 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
                 needs check
               </span>
             )}
-            {health && <HealthBadge health={health} />}
+            {/* Link checks only speak up when a link is actually broken; the everyday mark is
+                what the download is verified against (TrustBadge). */}
+            <TrustBadge platform={platform} />
+            {health?.status === "broken" && <HealthBadge health={health} />}
           </div>
           {app.bio && <p className="app-row__bio">{app.bio}</p>}
         </div>
         <div className="app-row__action-col">
-          {actions}
+          {/* Select mode (toolbar ▸ Select): the Get pill becomes a circle, like Photos. */}
+          {selectMode && selectable ? (
+            <button
+              className={`select-circle${selected ? " select-circle--on" : ""}`}
+              role="checkbox"
+              aria-checked={selected}
+              aria-label={`Select ${app.name}`}
+              onClick={() => toggleSelected(app.id)}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 12.5l4 4 8-9" />
+              </svg>
+            </button>
+          ) : (
+            actions
+          )}
           {statusArea}
         </div>
       </div>
@@ -391,7 +398,8 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
                   <AppIcon appId={app.id} name={app.name} domain={app.domain} className="app-sheet__icon" />
                   <div className="app-sheet__title">
                     <h3 className="app-sheet__name">
-                      {app.name} {health && <HealthBadge health={health} />}
+                      {app.name} <TrustBadge platform={platform} />
+                      {health?.status === "broken" && <HealthBadge health={health} />}
                     </h3>
                     {app.bio && <p className="app-sheet__bio">{app.bio}</p>}
                     <div className="app-sheet__actions">{actions}</div>

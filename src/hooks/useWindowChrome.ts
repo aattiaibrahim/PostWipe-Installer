@@ -26,10 +26,18 @@ export function useWindowChrome() {
       else unlisten = u;
     });
 
+    // The traffic lights grey out while another window has focus, as on macOS.
+    const onBlur = () => root.classList.add("window-blurred");
+    const onFocus = () => root.classList.remove("window-blurred");
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+
     return () => {
       disposed = true;
       unlisten?.();
-      root.classList.remove("tauri", `platform-${osPlatform}`, "window-maximized");
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+      root.classList.remove("tauri", `platform-${osPlatform}`, "window-maximized", "window-blurred");
     };
   }, []);
 }

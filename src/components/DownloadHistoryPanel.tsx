@@ -145,10 +145,11 @@ export function DownloadHistoryPanel() {
                       >
                         {entry.appName}
                         {entry.verification && (
+                          // Green ✓ only for an exact checksum match, same rule as the badges on app names.
                           <span
-                            className={`download-history__verify${entry.verification.startsWith("Verified") ? " download-history__verify--ok" : ""}`}
+                            className={`download-history__verify${entry.verification.includes("SHA-256 matches") ? " download-history__verify--ok" : ""}`}
                           >
-                            {entry.verification.startsWith("Verified") ? "✓ " : ""}
+                            {entry.verification.includes("SHA-256 matches") ? "✓ " : ""}
                             {entry.verification.replace(/^(Verified|Unverified): /, "")}
                           </span>
                         )}
