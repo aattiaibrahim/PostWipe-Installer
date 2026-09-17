@@ -19,7 +19,8 @@
                 "type": "static",
                 "url": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
               },
-              "filename": "SteamSetup.exe"
+              "filename": "SteamSetup.exe",
+              "signer": "Valve Corp."
             },
             "macos": {
               "resolver": {
@@ -83,7 +84,8 @@
                 "type": "static",
                 "url": "https://redirect.wargaming.net/WGC/Wargaming_Game_Center_Install_NA.exe"
               },
-              "filename": "wgc_installer.exe"
+              "filename": "wgc_installer.exe",
+              "signer": "Wargaming Group Limited"
             }
           }
         },
@@ -102,7 +104,8 @@
                 "type": "static",
                 "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE"
               },
-              "filename": "Battle.net-Setup.exe"
+              "filename": "Battle.net-Setup.exe",
+              "signer": "Blizzard Entertainment, Inc."
             },
             "macos": {
               "resolver": {
@@ -128,7 +131,8 @@
                 "type": "static",
                 "url": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe"
               },
-              "filename": "UbisoftConnectInstaller.exe"
+              "filename": "UbisoftConnectInstaller.exe",
+              "signer": "UBISOFT ENTERTAINMENT INC."
             }
           }
         },
@@ -147,7 +151,8 @@
                 "type": "static",
                 "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe"
               },
-              "filename": "EAappInstaller.exe"
+              "filename": "EAappInstaller.exe",
+              "signer": "Electronic Arts, Inc."
             }
           }
         },
@@ -166,7 +171,8 @@
                 "type": "static",
                 "url": "https://launcher.escapefromtarkov.com/launcher/download"
               },
-              "filename": "BsgLauncher.exe"
+              "filename": "BsgLauncher.exe",
+              "signer": "BATTLESTATE GAMES LIMITED"
             }
           }
         },
@@ -185,7 +191,8 @@
                 "type": "static",
                 "url": "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.na.exe"
               },
-              "filename": "RiotClientInstaller.exe"
+              "filename": "RiotClientInstaller.exe",
+              "signer": "Riot Games, Inc."
             }
           }
         },
@@ -207,7 +214,8 @@
                 "url_regex": "RSI Launcher-Setup-[0-9.]+\\.exe",
                 "base_url": "https://install.robertsspaceindustries.com/rel/2/"
               },
-              "filename": "RSI-Launcher-Setup.exe"
+              "filename": "RSI-Launcher-Setup.exe",
+              "signer": "Roberts Space Industries LLC"
             }
           }
         },
@@ -318,7 +326,8 @@
                 "url_regex": "cpu-z_[^/]*-en\\.exe",
                 "base_url": "https://download.cpuid.com/cpu-z/"
               },
-              "filename": "cpu-z-installer.exe"
+              "filename": "cpu-z-installer.exe",
+              "signer": "CPUID"
             }
           }
         },
@@ -362,7 +371,8 @@
                 "url_regex": "hwmonitor_[^/]*\\.exe",
                 "base_url": "https://download.cpuid.com/hwmonitor/"
               },
-              "filename": "hwmonitor-installer.exe"
+              "filename": "hwmonitor-installer.exe",
+              "signer": "CPUID"
             }
           }
         },
@@ -483,7 +493,8 @@
                 "page_url": "https://www.majorgeeks.com/mg/getmirror/display_driver_uninstaller,1.html",
                 "url_regex": "https://files[0-9]+\\.majorgeeks\\.com/[a-f0-9]+/drivers/DDU[^<>\"]*?_setup\\.exe"
               },
-              "filename": "DDU_setup.exe"
+              "filename": "DDU_setup.exe",
+              "signer": "Wagnardsoft"
             }
           }
         },
@@ -555,7 +566,8 @@
                 "attr": "href",
                 "base_url": "https://www.win-rar.com/"
               },
-              "filename": "winrar-x64.exe"
+              "filename": "winrar-x64.exe",
+              "signer": "win.rar GmbH"
             }
           }
         },
@@ -599,7 +611,8 @@
                 "type": "static",
                 "url": "https://vault.bitwarden.com/download/?app=desktop&platform=windows"
               },
-              "filename": "Bitwarden-Installer.exe"
+              "filename": "Bitwarden-Installer.exe",
+              "signer": "Bitwarden Inc."
             },
             "macos": {
               "resolver": {
@@ -626,7 +639,8 @@
                 "repo": "Windscribe/Desktop-App",
                 "asset_pattern": "Windscribe_*_amd64.exe"
               },
-              "filename": "Windscribe-Setup.exe"
+              "filename": "Windscribe-Setup.exe",
+              "signer": "Windscribe Limited"
             },
             "macos": {
               "resolver": {
@@ -659,7 +673,8 @@
                 "type": "static",
                 "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user"
               },
-              "filename": "VSCodeUserSetup-x64.exe"
+              "filename": "VSCodeUserSetup-x64.exe",
+              "signer": "Microsoft Corporation"
             },
             "macos": {
               "resolver": {
@@ -685,7 +700,8 @@
                 "type": "static",
                 "url": "https://data.services.jetbrains.com/products/download?code=PCC&platform=windows"
               },
-              "filename": "pycharm-community-installer.exe"
+              "filename": "pycharm-community-installer.exe",
+              "signer": "JetBrains s.r.o."
             },
             "macos": {
               "resolver": {
@@ -713,7 +729,8 @@
                 "selector": "a[href*='download.netlimiter.com'][href$='.exe']",
                 "attr": "href"
               },
-              "filename": "netlimiter-setup.exe"
+              "filename": "netlimiter-setup.exe",
+              "signer": "Locktime Software s.r.o."
             }
           }
         },
@@ -732,7 +749,8 @@
                 "repo": "notepad-plus-plus/notepad-plus-plus",
                 "asset_pattern": "npp.*.Installer.x64.exe"
               },
-              "filename": "npp-installer-x64.exe"
+              "filename": "npp-installer-x64.exe",
+              "signer": "NOTEPAD++"
             }
           }
         },
@@ -772,7 +790,8 @@
                 "repo": "microsoft/PowerToys",
                 "asset_pattern": "PowerToysUserSetup-*-x64.exe"
               },
-              "filename": "PowerToysUserSetup-x64.exe"
+              "filename": "PowerToysUserSetup-x64.exe",
+              "signer": "Microsoft Corporation"
             }
           }
         },
@@ -829,7 +848,8 @@
                 "repo": "git-for-windows/git",
                 "asset_pattern": "Git-*-64-bit.exe"
               },
-              "filename": "GitSetup.exe"
+              "filename": "GitSetup.exe",
+              "signer": "Johannes Schindelin"
             }
           }
         },
@@ -849,7 +869,8 @@
                 "type": "static",
                 "url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe"
               },
-              "filename": "DockerDesktopInstaller.exe"
+              "filename": "DockerDesktopInstaller.exe",
+              "signer": "Docker Inc"
             },
             "macos": {
               "resolver": {
@@ -876,7 +897,8 @@
                 "type": "static",
                 "url": "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe"
               },
-              "filename": "Claude-Setup-x64.exe"
+              "filename": "Claude-Setup-x64.exe",
+              "signer": "Anthropic, PBC"
             },
             "macos": {
               "resolver": {
@@ -904,7 +926,8 @@
                 "repo": "openai/codex",
                 "asset_pattern": "codex-x86_64-pc-windows-msvc.exe"
               },
-              "filename": "codex.exe"
+              "filename": "codex.exe",
+              "signer": "OpenAI OpCo, LLC"
             },
             "macos": {
               "resolver": {
@@ -948,7 +971,8 @@
                 "page_url": "https://www.virtualbox.org/wiki/Downloads",
                 "url_regex": "https://download\\.virtualbox\\.org/virtualbox/[0-9.]+/VirtualBox-[0-9.]+-[0-9]+-Win\\.exe"
               },
-              "filename": "VirtualBox-Setup.exe"
+              "filename": "VirtualBox-Setup.exe",
+              "signer": "Oracle America, Inc."
             },
             "macos": {
               "resolver": {
@@ -1006,7 +1030,8 @@
                 "repo": "brave/brave-browser",
                 "asset_pattern": "BraveBrowserSetup.exe"
               },
-              "filename": "BraveBrowserSetup.exe"
+              "filename": "BraveBrowserSetup.exe",
+              "signer": "Brave Software, Inc."
             },
             "macos": {
               "resolver": {
@@ -1033,7 +1058,8 @@
                 "type": "static",
                 "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US"
               },
-              "filename": "FirefoxSetup.exe"
+              "filename": "FirefoxSetup.exe",
+              "signer": "Mozilla Corporation"
             },
             "macos": {
               "resolver": {
@@ -1061,7 +1087,8 @@
                 "selector": "a[href*='windows-x86_64-setup.exe']",
                 "attr": "href"
               },
-              "filename": "LibreWolf_Setup.exe"
+              "filename": "LibreWolf_Setup.exe",
+              "signer": "OSSign (Scheibling Consulting AB)"
             },
             "macos": {
               "resolver": {
@@ -1090,7 +1117,8 @@
                 "repo": "zen-browser/desktop",
                 "asset_pattern": "zen.installer.exe"
               },
-              "filename": "zen.installer.exe"
+              "filename": "zen.installer.exe",
+              "signer": "Open Source Developer Oscar Gonzalez Moreno"
             },
             "macos": {
               "resolver": {
@@ -1123,7 +1151,8 @@
                 "type": "static",
                 "url": "https://discord.com/api/download?platform=win"
               },
-              "filename": "DiscordSetup.exe"
+              "filename": "DiscordSetup.exe",
+              "signer": "Discord Inc."
             },
             "macos": {
               "resolver": {
@@ -1148,7 +1177,8 @@
                 "type": "static",
                 "url": "https://telegram.org/dl/desktop/win"
               },
-              "filename": "telegram-setup.exe"
+              "filename": "telegram-setup.exe",
+              "signer": "Telegram FZ-LLC"
             },
             "macos": {
               "resolver": {
@@ -1176,7 +1206,8 @@
                 "selector": "button[data-url*=\"TeamSpeak3-Client-win64\"]",
                 "attr": "data-url"
               },
-              "filename": "TeamSpeak3-Client-win64.exe"
+              "filename": "TeamSpeak3-Client-win64.exe",
+              "signer": "TeamSpeak Systems GmbH"
             },
             "macos": {
               "resolver": {
@@ -1238,7 +1269,8 @@
                 "type": "static",
                 "url": "https://download.scdn.co/SpotifySetup.exe"
               },
-              "filename": "SpotifySetup.exe"
+              "filename": "SpotifySetup.exe",
+              "signer": "Spotify AB"
             },
             "macos": {
               "resolver": {
@@ -1265,7 +1297,8 @@
                 "type": "static",
                 "url": "https://download.tidal.com/desktop/TIDALSetup.exe"
               },
-              "filename": "TIDAL Setup.exe"
+              "filename": "TIDAL Setup.exe",
+              "signer": "TIDAL Music AS"
             },
             "macos": {
               "resolver": {
@@ -1294,7 +1327,8 @@
                 "selector": "a[href*='Qobuz_Installer'][href$='.exe']",
                 "attr": "href"
               },
-              "filename": "Qobuz Setup.exe"
+              "filename": "Qobuz Setup.exe",
+              "signer": "XANDRIE SA"
             },
             "macos": {
               "resolver": {
@@ -1587,7 +1621,8 @@
                 "type": "static",
                 "url": "https://justgetflux.com/flux-setup.exe"
               },
-              "filename": "flux-setup.exe"
+              "filename": "flux-setup.exe",
+              "signer": "F.lux Software LLC"
             },
             "macos": {
               "resolver": {
@@ -1644,7 +1679,8 @@
                 "repo": "HandBrake/HandBrake",
                 "asset_pattern": "HandBrake-*-x86_64-Win_GUI.exe"
               },
-              "filename": "HandBrakeSetup.exe"
+              "filename": "HandBrakeSetup.exe",
+              "signer": "Open Source Developer, Scott Rae"
             },
             "macos": {
               "resolver": {
@@ -1702,7 +1738,8 @@
                 "page_url": "https://plex.tv/api/downloads/6.json",
                 "url_regex": "https://downloads\\.plex\\.tv/plex-desktop/[^\"]+/windows/Plex-[^\"]+-x86_64\\.exe"
               },
-              "filename": "PlexSetup.exe"
+              "filename": "PlexSetup.exe",
+              "signer": "Plex, Inc."
             },
             "macos": {
               "resolver": {
@@ -1753,7 +1790,8 @@
                 "selector": "a[href*='focusrite_control'][href$='.exe']",
                 "attr": "href"
               },
-              "filename": "FocusriteControlSetup.exe"
+              "filename": "FocusriteControlSetup.exe",
+              "signer": "Focusrite Audio Engineering Ltd"
             },
             "macos": {
               "resolver": {
@@ -1804,7 +1842,8 @@
                 "repo": "obsproject/obs-studio",
                 "asset_pattern": "OBS-Studio-*-Windows-x64-Installer.exe"
               },
-              "filename": "OBS-Studio-Installer.exe"
+              "filename": "OBS-Studio-Installer.exe",
+              "signer": "OBS Project, LLC"
             },
             "macos": {
               "resolver": {
@@ -1877,7 +1916,8 @@
                 "type": "static",
                 "url": "https://wassets.insta360.com/common/ba64efbd74f6411aa9c356b95aa5126e/Insta360LinkController_2.2.4(build14).exe"
               },
-              "filename": "Insta360LinkController_2.2.4(build14).exe"
+              "filename": "Insta360LinkController_2.2.4(build14).exe",
+              "signer": "影石创新科技股份有限公司"
             },
             "macos": {
               "resolver": {
@@ -1939,7 +1979,8 @@
                 "repo": "bambulab/BambuStudio",
                 "asset_pattern": "Bambu_Studio_win-*.exe"
               },
-              "filename": "BambuStudioSetup.exe"
+              "filename": "BambuStudioSetup.exe",
+              "signer": "Shanghai Lunkuo Technology Co., Ltd"
             },
             "macos": {
               "resolver": {
@@ -1982,7 +2023,8 @@
                 "page_url": "https://www.nvidia.com/en-us/geforce/broadcasting/broadcast-app/",
                 "url_regex": "https://international\\.download\\.nvidia\\.com/Windows/broadcast/[0-9.]+/NVIDIA_Broadcast_v[0-9.]+\\.exe"
               },
-              "filename": "NVIDIA_Broadcast_Setup.exe"
+              "filename": "NVIDIA_Broadcast_Setup.exe",
+              "signer": "NVIDIA Corporation"
             }
           }
         },
@@ -2063,7 +2105,8 @@
                 "type": "static",
                 "url": "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe"
               },
-              "filename": "TeamViewer_Setup_x64.exe"
+              "filename": "TeamViewer_Setup_x64.exe",
+              "signer": "TeamViewer Germany GmbH"
             },
             "macos": {
               "resolver": {
@@ -2101,7 +2144,8 @@
                 "repo": "rustdesk/rustdesk",
                 "asset_pattern": "rustdesk-*-x86_64.exe"
               },
-              "filename": "rustdesk-x86_64.exe"
+              "filename": "rustdesk-x86_64.exe",
+              "signer": "PURSLANE"
             },
             "macos": {
               "resolver": {
@@ -2130,7 +2174,8 @@
                 "page_url": "https://obsidian.md/download",
                 "url_regex": "https://github\\.com/obsidianmd/obsidian-releases/releases/download/v[0-9.]+/Obsidian-[0-9.]+\\.exe"
               },
-              "filename": "Obsidian-Setup.exe"
+              "filename": "Obsidian-Setup.exe",
+              "signer": "Dynalist Inc"
             },
             "macos": {
               "resolver": {

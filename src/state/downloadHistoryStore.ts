@@ -6,6 +6,8 @@ export interface HistoryEntry {
   appName: string;
   destPath: string;
   completedAt: number;
+  /** "Verified: …" / "Unverified: …" from the download's checksum and signature check. */
+  verification?: string;
 }
 
 interface DownloadHistoryState {

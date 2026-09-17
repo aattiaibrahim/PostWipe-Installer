@@ -2,7 +2,7 @@ use crate::catalog::{
     loader,
     model::{Os, ResolverSpec},
 };
-use crate::downloader::manager::ActiveDownload;
+use crate::downloader::manager::{ActiveDownload, Expectation};
 use crate::downloader::DownloadManager;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager, State};
@@ -53,7 +53,8 @@ pub fn start_download(app_handle: AppHandle, manager: State<'_, DownloadManager>
     let filename = platform.filename.clone().unwrap_or_else(|| app_entry.id.clone());
     let dest_path = postwipe_downloads_dir(&app_handle)?.join(filename);
 
-    let job_id = manager.start_download(app_handle.clone(), app_entry.id.clone(), app_entry.name.clone(), resolver_spec, dest_path);
+    let expect = Expectation { sha256: None, signer: platform.signer.clone(), hash_source: "the publisher" };
+    let job_id = manager.start_download(app_handle.clone(), app_entry.id.clone(), app_entry.name.clone(), resolver_spec, dest_path, expect);
     // Counted when a download STARTS: whether it then finishes depends on the user's network,
     // which says nothing about how popular the app is.
     crate::commands::stats::record_download(&app_handle, &app_entry.id, os);
@@ -117,6 +118,7 @@ pub fn start_specials_download(
     name: String,
     url: String,
     filename: String,
+    sha256: Option<String>,
 ) -> Result<SpecialsDownloadHandle, String> {
     // Both come from the webview (built from the vault listing). The URL may only point at the
     // Specials gate, and the file name may only be a plain name: a listing entry like
@@ -128,7 +130,10 @@ pub fn start_specials_download(
     let filename = crate::shell::safe_file_name(&filename)?;
     let dest = specials_downloads_dir(&app_handle)?.join(&filename);
     let spec = ResolverSpec::Static { url };
-    let job_id = manager.start_download(app_handle.clone(), item_id, name, spec, dest.clone());
+    // The vault manifest's digest for this file, when it has one: 64 hex characters or nothing.
+    let sha256 = sha256.map(|h| h.to_lowercase()).filter(|h| h.len() == 64 && h.chars().all(|c| c.is_ascii_hexdigit()));
+    let expect = Expectation { sha256, signer: None, hash_source: "the Specials vault" };
+    let job_id = manager.start_download(app_handle.clone(), item_id, name, spec, dest.clone(), expect);
     Ok(SpecialsDownloadHandle {
         job_id,
         dest_path: dest.to_string_lossy().to_string(),

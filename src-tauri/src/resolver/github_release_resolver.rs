@@ -14,6 +14,9 @@ struct Release {
 struct Asset {
     name: String,
     browser_download_url: String,
+    /// "sha256:<hex>", which GitHub computes for every release asset.
+    #[serde(default)]
+    digest: Option<String>,
 }
 
 /// Matches a filename against a simple `*`-wildcard pattern (no full glob/regex needed
@@ -47,6 +50,11 @@ fn glob_match(pattern: &str, text: &str) -> bool {
 }
 
 pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
+    resolve_with_digest(spec).await.map(|resolved| resolved.url)
+}
+
+/// The asset URL plus GitHub's own SHA-256 of it, which the downloader verifies against.
+pub async fn resolve_with_digest(spec: &ResolverSpec) -> Result<super::Resolved, ResolveError> {
     let (repo, asset_pattern) = match spec {
         ResolverSpec::GithubRelease { repo, asset_pattern } => (repo, asset_pattern),
         _ => return Err(ResolveError::Unsupported("github_release")),
@@ -87,7 +95,13 @@ pub async fn resolve(spec: &ResolverSpec) -> Result<String, ResolveError> {
         .into_iter()
         .filter(|asset| glob_match(asset_pattern, &asset.name))
         .min_by_key(|asset| asset.name.len())
-        .map(|asset| asset.browser_download_url)
+        .map(|asset| super::Resolved {
+            url: asset.browser_download_url,
+            sha256: asset
+                .digest
+                .and_then(|d| d.strip_prefix("sha256:").map(str::to_lowercase))
+                .filter(|hex| hex.len() == 64),
+        })
         .ok_or_else(|| ResolveError::NotFound(format!("no release asset matching '{asset_pattern}' in {repo}")))
 }
 

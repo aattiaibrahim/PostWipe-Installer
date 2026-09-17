@@ -44,8 +44,9 @@ export function startSpecialsDownload(
   name: string,
   url: string,
   filename: string,
+  sha256?: string,
 ): Promise<{ jobId: string; destPath: string }> {
-  return invoke("start_specials_download", { itemId, name, url, filename });
+  return invoke("start_specials_download", { itemId, name, url, filename, sha256: sha256 ?? null });
 }
 
 export function installSpecialsItem(archivePath: string, installType: string): Promise<string> {

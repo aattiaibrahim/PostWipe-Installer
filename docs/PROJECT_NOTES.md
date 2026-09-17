@@ -188,15 +188,49 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   - **CI:** actions pinned to SHAs.
   - **Attack suite:** `accounts-api/test/attack.mjs` has 32 checks, all passing locally. Against
     prod the non-flooding checks pass, and the sign-up limit trips as intended.
-- [blocked: needs decision]
-  - Commit 06c6058 in the PUBLIC repo's history holds `specials-gate/.wrangler/cache/cf.json` with
-    the dev machine's approximate location (city, postal code, lat/long). Removing it needs a
-    history rewrite + force-push.
-  - Also open: enabling Dependabot alerts and branch protection.
+- [done] **History rewrite.** A July commit in this PUBLIC repo had added
+  `specials-gate/.wrangler/cache/cf.json`, which holds the dev machine's approximate location.
+  `git filter-branch` removed `specials-gate/.wrangler` from master and all 101 tags, followed by
+  a force-push. **Every commit hash from that point on changed.**
+  - The "Prevent Deletion" ruleset (blocks deletion + force-push on all branches) was disabled
+    for the push and re-enabled.
+  - Stale Dependabot branches were deleted; Dependabot recreates its PRs.
+  - Still open, for Andrew: ask GitHub Support to purge cached views of commit
+    `06c605837246231a79cf936fdc8504c0608b14e4`. It stays reachable by hash until they do.
+  - Any other clone (the MacBook) must re-clone or `git fetch && git reset --hard origin/master`
+    before pushing, or the old history comes back.
+- [blocked: needs decision] Enabling Dependabot alerts (repo setting).
+- [done] **Downloads are verified before the user gets them** (`src-tauri/src/verify.rs`;
+  Andrew picked hashes + signatures, and vault hashes).
+  - The downloader hashes every file as it streams (SHA-256).
+  - **GitHub releases** (51 entries): GitHub's per-asset `digest` is captured by
+    `resolve_with_digest` and must match exactly.
+  - **Signatures:** on Windows, `Get-AuthenticodeSignature` checks .exe/.msi/.msix; on macOS,
+    `codesign` checks .dmg and `pkgutil` checks .pkg. A broken signature (e.g. `HashMismatch`)
+    always blocks.
+  - **Pinned signers:** catalog `platforms.windows.signer` pins 45 installers to their company
+    (e.g. "Valve Corp."), and a file signed by anyone else is deleted. Names are compared exactly
+    after normalizing case, punctuation and legal suffixes, NOT by substring, because every Certum
+    open-source certificate has O="Open Source Developer"; for those the person's CN is the pin.
+  - **Specials vault:** `_meta/sha256.json` inside the vault lists every file's hash. The app
+    fetches it with the listing and passes the digest to `start_specials_download`. **After
+    uploading to the vault, run `node scripts/update-vault-hashes.mjs`**, which only rehashes
+    new or resized files.
+  - Unsigned files with no published hash (zips, several open-source installers) are allowed and
+    labelled "Unverified". The downloads list shows each file's result.
+  - **Refreshing pins:**
+    `cd src-tauri && cargo test --lib -- --ignored dump_signable_windows_urls`, then
+    `node scripts/collect-signers.mjs [--write|--check]`. The script reads just the PE certificate
+    table over two HTTP range requests; it can't do MSI files or servers that refuse ranges (GOG,
+    HWiNFO). The weekly Catalog health workflow runs `--check`, and a changed signer counts as
+    broken there.
+  - **Verified live** with `live_pinned_signers` on Steam, Battle.net and HandBrake (all pass, and
+    a wrong pin blocks each). A one-byte change to a signed exe yields HashMismatch and is blocked.
+    Vault hashes match the hand-recorded `_MirrorInfo.txt` hashes.
 - [idea: needs discussion] Remaining low-risk items:
   - session token and vault key stored as plaintext files (OS keychain instead);
   - vault key in `?key=` URLs;
-  - no hash verification of downloads;
+  - (download verification: DONE, see below);
   - sign-up email enumeration;
   - no email verification.
 - [done] **Settings window** (commit 368d7b2). From the prototypes

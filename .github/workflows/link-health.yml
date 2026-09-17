@@ -61,6 +61,20 @@ jobs:
           cargo test --lib -- --ignored --nocapture full_catalog_sweep > sweep.log 2>&1
           echo "exit=$?" >> "$GITHUB_OUTPUT"
 
+      # The app deletes any download signed by someone other than the catalog's pinned signer
+      # (src-tauri/src/verify.rs). A vendor that renews its certificate under a new name would
+      # break that app for everyone, so compare the live signers every week too.
+      - name: Check installer signers
+        shell: bash
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          (cd src-tauri && cargo test --lib -- --ignored --nocapture dump_signable_windows_urls > /dev/null 2>&1)
+          node scripts/collect-signers.mjs --check > signers.log 2>&1
+          true
+
       - name: Summarise
         id: report
         shell: bash
@@ -69,6 +83,7 @@ jobs:
           # Individual failure lines can still be long (a vendor page snippet), so cap them.
           grep -a '^BROKEN' "$LOG" | cut -c1-300 > broken.txt || true
           grep -a '^UNCOVERED' "$LOG" | cut -c1-300 > uncovered.txt || true
+          grep -a '^SIGNER CHANGED' signers.log 2>/dev/null | cut -c1-300 >> broken.txt || true
           # The sweep writes this next to the crate; it belongs at the repo root, where the
           # app's raw.githubusercontent URL points.
           mv src-tauri/health.json health.json 2>/dev/null || true

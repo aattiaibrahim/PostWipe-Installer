@@ -22,7 +22,7 @@ export function SpecialsSelectionBar() {
     const targets = all.filter((i) => selected.includes(i.objectKey));
     for (const item of targets) {
       try {
-        await startSpecialsDownload(item.objectKey, item.name, gatedUrl(item.objectKey, sessionKey), item.filename);
+        await startSpecialsDownload(item.objectKey, item.name, gatedUrl(item.objectKey, sessionKey), item.filename, item.sha256);
       } catch {
         // Per-item failures surface on their own card; keep queuing the rest.
       }

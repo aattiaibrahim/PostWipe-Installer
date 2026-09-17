@@ -14,6 +14,8 @@ export interface SpecialsItem {
   previewKeys: string[];
   /** Individual playable sound previews under previews-audio/<stem>/, when present. */
   audioPreviews: { name: string; key: string }[];
+  /** SHA-256 from the vault's _meta/sha256.json; the download is deleted if it doesn't match. */
+  sha256?: string;
 }
 
 /** A nested folder inside a category, itself possibly containing more folders — e.g.
@@ -64,6 +66,16 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
       const res = await fetch(`${SPECIALS_WORKER_URL}/list?key=${encodeURIComponent(key)}`);
       if (!res.ok) throw new Error(`list failed (${res.status})`);
       const data: { objects: { key: string; size: number }[] } = await res.json();
+
+      // The vault's own hash list (scripts/update-vault-hashes.mjs). Missing or unreadable just
+      // means downloads can't be hash-checked yet; the vault still works.
+      let hashes: Record<string, { sha256: string }> = {};
+      try {
+        const manifest = await fetch(`${SPECIALS_WORKER_URL}/file/_meta/sha256.json?key=${encodeURIComponent(key)}`);
+        if (manifest.ok) hashes = (await manifest.json()).files ?? {};
+      } catch {
+        // Keep going without hashes.
+      }
 
       // Preview images live under previews/<item stem>.<ext> (main) plus optional extra
       // angles as previews/<item stem>__2.<ext>, __3.<ext>… — index all of them by stem.
@@ -119,6 +131,7 @@ export const useSpecialsContentStore = create<SpecialsContentState>((set, get) =
           size: obj.size,
           previewKeys: (previewsByStem.get(stem) ?? []).sort((a, b) => a.order - b.order).map((p) => p.key),
           audioPreviews: (audioByStem.get(stem) ?? []).sort((a, b) => a.name.localeCompare(b.name)),
+          sha256: hashes[obj.key]?.sha256,
         };
         let node: MutNode | undefined = byFolder.get(folder);
         if (!node) {

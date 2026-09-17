@@ -6,6 +6,7 @@ mod health;
 mod resolver;
 mod scripts;
 mod shell;
+mod verify;
 
 use commands::account::{
     account_delete, account_disable_two_factor, account_enable_two_factor, account_generate_backup_codes, account_save_backup_codes, account_sign_in, account_sign_out,

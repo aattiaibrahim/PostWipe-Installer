@@ -100,6 +100,11 @@ pub struct PlatformEntry {
     pub script_id: Option<String>,
     #[serde(default)]
     pub stale: bool,
+    /// Who should have signed this platform's installer (the certificate's organization,
+    /// e.g. "Valve Corp."). A download signed by anyone else is deleted — see verify.rs.
+    /// Collected by scripts/collect-signers.mjs; absent where the file type can't be signed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub signer: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

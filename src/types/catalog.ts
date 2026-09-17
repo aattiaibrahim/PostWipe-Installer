@@ -33,6 +33,8 @@ export interface PlatformEntry {
   filename?: string;
   script_id?: string;
   stale: boolean;
+  /** Expected code-signing organization; the downloader deletes files signed by anyone else. */
+  signer?: string;
 }
 
 export interface AppEntry {

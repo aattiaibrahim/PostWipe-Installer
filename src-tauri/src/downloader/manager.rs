@@ -21,6 +21,16 @@ const MAX_CONCURRENT_DOWNLOADS: usize = 6;
 /// multi-GB transfer or a bug we haven't anticipated).
 const JOB_SAFETY_TIMEOUT: Duration = Duration::from_secs(30 * 60);
 
+/// What a download must prove before it's handed to the user (see verify.rs).
+pub struct Expectation {
+    /// A digest from somewhere other than the resolver (the Specials manifest). GitHub
+    /// release digests are picked up during resolution and take precedence.
+    pub sha256: Option<String>,
+    pub signer: Option<String>,
+    /// Who published the digest, for the message: "GitHub", "the Specials vault".
+    pub hash_source: &'static str,
+}
+
 struct JobHandle {
     app_id: String,
     app_name: String,
@@ -58,6 +68,7 @@ impl DownloadManager {
         app_name: String,
         resolver_spec: ResolverSpec,
         dest: PathBuf,
+        expect: Expectation,
     ) -> String {
         let job_id = Uuid::new_v4().to_string();
         let cancel_token = CancellationToken::new();
@@ -82,8 +93,8 @@ impl DownloadManager {
 
             let job_body = async {
                 events::resolving(&app_handle, &job_id_task, &app_id, &app_name);
-                let url = match resolver::resolve(&app_handle, &resolver_spec).await {
-                    Ok(url) => url,
+                let resolved = match resolver::resolve_download(&app_handle, &resolver_spec).await {
+                    Ok(resolved) => resolved,
                     Err(err) => {
                         events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string());
                         return;
@@ -95,13 +106,27 @@ impl DownloadManager {
                 let progress_handle = app_handle.clone();
                 let progress_job_id = job_id_task.clone();
                 let progress_app_id = app_id.clone();
-                let result = job::run(&url, &dest, &cancel_token, |downloaded, total| {
+                let result = job::run(&resolved.url, &dest, &cancel_token, |downloaded, total| {
                     events::progress(&progress_handle, &progress_job_id, &progress_app_id, downloaded, total);
                 })
                 .await;
 
                 match result {
-                    Ok(()) => events::completed(&app_handle, &job_id_task, &app_id, &app_name, &dest.to_string_lossy()),
+                    Ok(actual_sha256) => {
+                        let (expected, source) = match resolved.sha256.as_deref() {
+                            Some(digest) => (Some(digest), "GitHub"),
+                            None => (expect.sha256.as_deref(), expect.hash_source),
+                        };
+                        match crate::verify::check(&dest, &actual_sha256, expected, expect.signer.as_deref(), source).await {
+                            crate::verify::Outcome::Passed(summary) => {
+                                events::completed(&app_handle, &job_id_task, &app_id, &app_name, &dest.to_string_lossy(), summary)
+                            }
+                            crate::verify::Outcome::Blocked(reason) => {
+                                let _ = tokio::fs::remove_file(&dest).await;
+                                events::failed(&app_handle, &job_id_task, &app_id, &app_name, reason)
+                            }
+                        }
+                    }
                     Err(DownloadError::Cancelled) => events::cancelled(&app_handle, &job_id_task, &app_id, &app_name),
                     Err(err) => events::failed(&app_handle, &job_id_task, &app_id, &app_name, err.to_string()),
                 }

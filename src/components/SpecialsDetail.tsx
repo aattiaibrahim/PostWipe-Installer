@@ -97,7 +97,7 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
     if (!sessionKey) return;
     setError(null);
     try {
-      const { destPath: dp } = await startSpecialsDownload(item.objectKey, item.name, gatedUrl(item.objectKey, sessionKey), item.filename);
+      const { destPath: dp } = await startSpecialsDownload(item.objectKey, item.name, gatedUrl(item.objectKey, sessionKey), item.filename, item.sha256);
       setDestPath(dp);
     } catch (err) {
       setError(String(err));

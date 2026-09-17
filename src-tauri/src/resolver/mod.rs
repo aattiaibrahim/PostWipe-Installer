@@ -60,6 +60,19 @@ pub(crate) fn apply_base_and_regex(
     }
 }
 
+/// A resolved download, with the publisher's SHA-256 when the source provides one.
+pub struct Resolved {
+    pub url: String,
+    pub sha256: Option<String>,
+}
+
+pub async fn resolve_download(app_handle: &tauri::AppHandle, spec: &ResolverSpec) -> Result<Resolved, ResolveError> {
+    match spec {
+        ResolverSpec::GithubRelease { .. } => github_release_resolver::resolve_with_digest(spec).await,
+        _ => resolve(app_handle, spec).await.map(|url| Resolved { url, sha256: None }),
+    }
+}
+
 pub async fn resolve(app_handle: &tauri::AppHandle, spec: &ResolverSpec) -> Result<String, ResolveError> {
     match spec {
         ResolverSpec::Static { .. } => static_resolver::resolve(spec),
@@ -344,6 +357,42 @@ mod live_tests {
             .map(|e| format!("{}/{:?}: {}", e.app_id, e.os, e.detail))
             .collect();
         assert!(broken_list.is_empty(), "catalog sweep failures:\n{}", broken_list.join("\n"));
+    }
+
+    /// Feeds scripts/collect-signers.mjs: resolves every signable Windows download (exe/msi) to
+    /// its current URL and writes `target/signable-urls.json`. The script then reads just each
+    /// installer's signature block over HTTP ranges to learn who signed it.
+    ///
+    /// `cargo test --lib -- --ignored --nocapture dump_signable_windows_urls`
+    #[tokio::test]
+    #[ignore = "resolves every Windows download against vendor sites — run manually"]
+    async fn dump_signable_windows_urls() {
+        use crate::catalog::model::Os;
+
+        let catalog = crate::catalog::loader::load_catalog();
+        let mut out = Vec::new();
+        for app in catalog.categories.iter().flat_map(|c| &c.apps) {
+            let Some(platform) = app.platforms.get(&Os::Windows) else { continue };
+            let Some(spec) = &platform.resolver else { continue };
+            let filename = platform.filename.clone().unwrap_or_default().to_lowercase();
+            if !(filename.ends_with(".exe") || filename.ends_with(".msi")) {
+                continue;
+            }
+            let url = match spec {
+                ResolverSpec::Static { .. } => super::static_resolver::resolve(spec),
+                ResolverSpec::GithubRelease { .. } => super::github_release_resolver::resolve(spec).await,
+                ResolverSpec::Html { .. } => super::html_resolver::resolve(spec).await,
+                ResolverSpec::HtmlRegex { .. } => super::html_regex_resolver::resolve(spec).await,
+                ResolverSpec::Webview { .. } => continue,
+            };
+            match url {
+                Ok(url) => out.push(serde_json::json!({ "appId": app.id, "filename": filename, "url": url })),
+                Err(e) => println!("SKIP {}: {e}", app.id),
+            }
+        }
+        std::fs::create_dir_all("target").unwrap();
+        std::fs::write("target/signable-urls.json", serde_json::to_string_pretty(&out).unwrap()).unwrap();
+        println!("wrote {} urls", out.len());
     }
 
     #[tokio::test]

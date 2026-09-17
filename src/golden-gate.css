@@ -1482,3 +1482,26 @@ html.tauri:not(.platform-macos) .app-shell::before {
 .settings-window .settings-panel__row:has(.settings-apps-shown) > .settings-panel__label {
   display: none;
 }
+
+/* Downloads list: what was verified about each finished file. */
+.download-history__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  text-align: left;
+}
+
+.download-history__verify {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.download-history__verify--ok {
+  color: #30d158;
+}

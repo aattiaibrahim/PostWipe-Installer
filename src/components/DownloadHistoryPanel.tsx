@@ -138,8 +138,20 @@ export function DownloadHistoryPanel() {
                   const ext = fileExt(entry.destPath);
                   return (
                     <li key={entry.destPath} className="download-history__row">
-                      <button className="download-history__item" onClick={() => revealItemInDir(entry.destPath)}>
+                      <button
+                        className="download-history__item"
+                        onClick={() => revealItemInDir(entry.destPath)}
+                        title={entry.verification ?? "Downloaded before verification was added"}
+                      >
                         {entry.appName}
+                        {entry.verification && (
+                          <span
+                            className={`download-history__verify${entry.verification.startsWith("Verified") ? " download-history__verify--ok" : ""}`}
+                          >
+                            {entry.verification.startsWith("Verified") ? "✓ " : ""}
+                            {entry.verification.replace(/^(Verified|Unverified): /, "")}
+                          </span>
+                        )}
                       </button>
                       {ext && <span className="download-history__ext">{ext}</span>}
                       {confirming === entry.destPath ? (

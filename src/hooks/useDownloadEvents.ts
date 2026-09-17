@@ -22,13 +22,14 @@ export function useDownloadEvents() {
         upsertJob({ jobId: e.payload.jobId, bytesDownloaded: e.payload.bytesDownloaded, totalBytes: e.payload.totalBytes }),
       ),
       listen<StatusEventPayload>("download://completed", (e) => {
-        upsertJob({ jobId: e.payload.jobId, status: "completed", destPath: e.payload.destPath });
+        upsertJob({ jobId: e.payload.jobId, status: "completed", destPath: e.payload.destPath, verification: e.payload.verification });
         if (e.payload.destPath) {
           addHistoryEntry({
             appId: e.payload.appId,
             appName: e.payload.appName,
             destPath: e.payload.destPath,
             completedAt: Date.now(),
+            verification: e.payload.verification,
           });
         }
       }),

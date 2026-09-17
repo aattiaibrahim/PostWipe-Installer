@@ -1,4 +1,5 @@
 use futures_util::StreamExt;
+use sha2::{Digest, Sha256};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 use thiserror::Error;
@@ -45,6 +46,8 @@ async fn send_with_retry(client: &reqwest::Client, url: &str) -> Result<reqwest:
     }
 }
 
+/// Returns the SHA-256 (lowercase hex) of the bytes written, hashed as they stream.
+///
 /// Streams `url` to `dest`, writing through a `.part` sibling file that's
 /// atomically renamed on success so a cancelled/failed download never leaves
 /// a half-written file at the final path. Uses a connect timeout (not a
@@ -56,7 +59,7 @@ pub async fn run(
     dest: &Path,
     cancel: &CancellationToken,
     mut on_progress: impl FnMut(u64, Option<u64>),
-) -> Result<(), DownloadError> {
+) -> Result<String, DownloadError> {
     // Several download CDNs (battle.net, hwinfo.com) 403 requests without a browser-like
     // User-Agent. The resolvers already send one — the download hop must match, or a URL
     // that resolved fine fails the moment we actually fetch it.
@@ -72,6 +75,7 @@ pub async fn run(
     let mut file = tokio::fs::File::create(&part).await?;
     let mut stream = response.bytes_stream();
     let mut downloaded: u64 = 0;
+    let mut hasher = Sha256::new();
     let mut last_emit = Instant::now();
 
     loop {
@@ -85,6 +89,7 @@ pub async fn run(
                 match chunk {
                     Ok(Some(Ok(bytes))) => {
                         file.write_all(&bytes).await?;
+                        hasher.update(&bytes);
                         downloaded += bytes.len() as u64;
                         if last_emit.elapsed() >= PROGRESS_EMIT_INTERVAL {
                             on_progress(downloaded, total_bytes);
@@ -114,5 +119,5 @@ pub async fn run(
     file.flush().await?;
     drop(file);
     tokio::fs::rename(&part, dest).await?;
-    Ok(())
+    Ok(hasher.finalize().iter().map(|b| format!("{b:02x}")).collect())
 }

@@ -9,6 +9,7 @@ export interface DownloadJobState {
   totalBytes: number | null;
   destPath?: string;
   error?: string;
+  verification?: string;
 }
 
 export interface StatusEventPayload {
@@ -17,6 +18,8 @@ export interface StatusEventPayload {
   appName: string;
   destPath?: string;
   error?: string;
+  /** What the app confirmed about a finished file: "Verified: signed by Valve Corp." */
+  verification?: string;
 }
 
 export interface ProgressEventPayload {

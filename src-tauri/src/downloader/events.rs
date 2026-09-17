@@ -11,6 +11,9 @@ pub struct StatusPayload {
     pub dest_path: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
+    /// What verify.rs confirmed about a finished file ("Verified: signed by Valve Corp.").
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub verification: Option<String>,
 }
 
 #[derive(Clone, Serialize)]
@@ -36,6 +39,7 @@ pub fn queued(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &str
             app_name: app_name.to_string(),
             dest_path: None,
             error: None,
+            verification: None,
         },
     );
 }
@@ -50,6 +54,7 @@ pub fn resolving(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &
             app_name: app_name.to_string(),
             dest_path: None,
             error: None,
+            verification: None,
         },
     );
 }
@@ -64,6 +69,7 @@ pub fn started(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &st
             app_name: app_name.to_string(),
             dest_path: None,
             error: None,
+            verification: None,
         },
     );
 }
@@ -81,7 +87,7 @@ pub fn progress(app_handle: &AppHandle, job_id: &str, app_id: &str, bytes_downlo
     );
 }
 
-pub fn completed(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &str, dest_path: &str) {
+pub fn completed(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &str, dest_path: &str, verification: String) {
     emit(
         app_handle,
         "download://completed",
@@ -91,6 +97,7 @@ pub fn completed(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &
             app_name: app_name.to_string(),
             dest_path: Some(dest_path.to_string()),
             error: None,
+            verification: Some(verification),
         },
     );
 }
@@ -105,6 +112,7 @@ pub fn cancelled(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &
             app_name: app_name.to_string(),
             dest_path: None,
             error: None,
+            verification: None,
         },
     );
 }
@@ -119,6 +127,7 @@ pub fn failed(app_handle: &AppHandle, job_id: &str, app_id: &str, app_name: &str
             app_name: app_name.to_string(),
             dest_path: None,
             error: Some(error),
+            verification: None,
         },
     );
 }
