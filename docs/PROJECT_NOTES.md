@@ -27,12 +27,20 @@ network resolvers, concurrent downloads, auto-updating via CI.
   `tauri::async_runtime::spawn`, **not** `tokio::spawn` — see Known Issues, this bit us once.
 - **Frontend**: Zustand stores (`catalogStore`, `downloadQueueStore`), framer-motion for
   animation, custom frameless title bar (`decorations: false` + our own drag region/window
-  controls), self-hosted Inter variable font, `simple-icons` for brand logos with a luminance-based
-  chip background (falls back to a colored monogram for apps without a real brand-icon match).
+  controls), self-hosted Geist variable font, `simple-icons` for brand logos. Every app icon
+  (brand glyph, favicon, bundled mark, monogram) sits on one dark `#232325` tile in every theme,
+  and `readableOnDark()` lifts brand colours so they read on it. The Golden Gate Store look lives
+  in `src/golden-gate.css`, imported last. The OS and CPU vendor are detected on launch
+  (`detect_system` → `useOsDetect`); overrides live in Settings ▸ Apps shown. App logo:
+  `src-tauri/icons/logo.svg` + `LogoMark.tsx`.
 - **CI/CD** (`.github/workflows/release.yml`): every push to `master` auto-bumps the patch version,
   builds, signs (via `tauri-apps/tauri-action`), and publishes a GitHub Release with `latest.json`
   for the updater. Signing key lives only as a GitHub Actions secret + locally at
   `src-tauri/updater-signing-key.pem` (gitignored, never commit it).
+  **Trap:** GitHub skips workflows for the WHOLE push when the pushed HEAD commit's message contains
+  `[skip ci]` anywhere, even in the body. Don't end a push on a `[skip ci]` docs commit, and don't
+  write that string in a trigger commit's message. Check with `gh run list --workflow release.yml`.
+  (2026-09-17: it took two empty commits to ship v0.1.102.)
 - **Catalog health** (`src-tauri/src/health/`, `.github/workflows/link-health.yml`): one checker
   shared by the weekly CI sweep, the launch badges and Settings ▸ Check All Downloads. Three-way
   status: `ok` / `unknown` (bot-block, 403/429, timeout, webview spec) / `broken` (404, HTML
@@ -182,7 +190,7 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   blurry orbs are removed: `.glass-backdrop` is a solid `var(--bg)`, and the Settings option reads
   "Solid". Window radius is 12px. Verified with headless Playwright screenshots (dark, light,
   rings, select mode, bookmarks, scripts) with no page errors. Not yet seen on a real Mac.
-- [done] **Golden Gate polish batch (commit ccf8aad, not pushed yet).**
+- [done] **Golden Gate polish batch (commit ccf8aad; shipped in v0.1.102 with the new logo).**
   - Clicking an app opens a **detail sheet** (a portal modal in `AppCard.tsx`) instead of expanding in
     the grid, which used to reflow the whole row. The action buttons are one JSX value rendered in both
     the cell and the sheet.
@@ -1036,6 +1044,14 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-09-17 — Detect the machine instead of asking; app details open in a sheet
+The app knows its own OS and reads the CPU vendor through CPUID, so neither is a toolbar control
+or a Kickstart guess. Both are pre-filled, with overrides tucked into Settings ▸ Apps shown for
+prepping another machine. Kickstart's graphics question was dropped because no pick depended on
+it. In the store grid, clicking an app opens a detail sheet, because inline expansion reflowed
+the whole row. Rules out: asking users things the machine can answer, toolbar filters that
+duplicate detection, and inline expansion inside grid layouts.
 
 ### 2026-09-17 — Accounts store the minimum: no name, no session IP or device string
 Andrew wants accounts "somewhat private" and nothing recorded beyond what's needed. So an account
