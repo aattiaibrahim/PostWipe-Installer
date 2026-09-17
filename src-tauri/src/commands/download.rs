@@ -146,3 +146,50 @@ pub struct SpecialsDownloadHandle {
     pub job_id: String,
     pub dest_path: String,
 }
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DownloadFileInfo {
+    pub size: u64,
+    /// Unix milliseconds of the last write (when the download finished).
+    pub modified: u64,
+}
+
+/// Size and date for each Downloads-page entry, or null when the file is gone. Only answers for
+/// files inside PostWipeDownloads, so the page can't be used to probe the rest of the disk.
+#[tauri::command]
+pub fn download_file_info(app_handle: AppHandle, paths: Vec<String>) -> Vec<Option<DownloadFileInfo>> {
+    let Ok(root) = postwipe_downloads_dir(&app_handle) else {
+        return paths.iter().map(|_| None).collect();
+    };
+    paths
+        .iter()
+        .map(|p| {
+            let file = crate::shell::contained_in(&root, p).ok()?;
+            let meta = std::fs::metadata(file).ok()?;
+            if !meta.is_file() {
+                return None;
+            }
+            let modified = meta
+                .modified()
+                .ok()
+                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+                .map(|d| d.as_millis() as u64)
+                .unwrap_or(0);
+            Some(DownloadFileInfo { size: meta.len(), modified })
+        })
+        .collect()
+}
+
+/// "Open" on the Downloads page: launches a downloaded installer/archive with its default
+/// handler. Refuses anything outside PostWipeDownloads — the page names the path, so it must
+/// not become a way to run arbitrary programs.
+#[tauri::command]
+pub fn open_download(app_handle: AppHandle, path: String) -> Result<(), String> {
+    let root = postwipe_downloads_dir(&app_handle)?;
+    let file = crate::shell::contained_in(&root, &path)?;
+    app_handle
+        .opener()
+        .open_path(file.to_string_lossy().to_string(), None::<&str>)
+        .map_err(|e| e.to_string())
+}

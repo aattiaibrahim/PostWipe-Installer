@@ -1,6 +1,5 @@
 import { useCatalogStore } from "../state/catalogStore";
-import { openDownloadsFolder } from "../lib/tauriCommands";
-import { DownloadHistoryPanel } from "./DownloadHistoryPanel";
+import { DownloadsButton } from "./DownloadsButton";
 
 /** Search, at the top of the sidebar column — where the App Store keeps it. */
 export function SearchField() {
@@ -24,21 +23,12 @@ export function SearchField() {
   );
 }
 
-/** Right-hand group of the toolbar: download history and the downloads folder. */
+/** Right-hand group of the toolbar: the shortcut to the Downloads page (which has its own
+ *  "Open folder" button, so the toolbar no longer needs one). */
 export function ToolbarActions() {
   return (
     <div className="gg-toolbar__actions">
-      <DownloadHistoryPanel />
-      <button
-        className="search-filter-bar__folder-btn search-filter-bar__folder-btn--icon"
-        onClick={() => openDownloadsFolder()}
-        aria-label="Open downloads folder"
-        title="Open downloads folder"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
-        </svg>
-      </button>
+      <DownloadsButton />
     </div>
   );
 }

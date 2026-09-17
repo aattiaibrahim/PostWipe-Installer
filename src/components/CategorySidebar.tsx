@@ -1,9 +1,13 @@
-import { memo, useEffect, useRef, type CSSProperties } from "react";
+import { memo, useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { CategoryIcon } from "../lib/categoryIcons";
 import { categoryColor } from "../lib/categoryColors";
-import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, DOWNLOADS_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
+import { useDownloadHistoryStore } from "../state/downloadHistoryStore";
+import { useDownloadQueueStore } from "../state/downloadQueueStore";
+import { pathsExist } from "../lib/tauriCommands";
+import { ACTIVE_STATUSES } from "./DownloadsPage";
 import { useAccountStore } from "../state/accountStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { useCatalogStore } from "../state/catalogStore";
@@ -48,7 +52,7 @@ function LockGlyph() {
 
 /** Golden Gate brought colour back to sidebar icons. Categories take theirs from
  *  categoryColors; the virtual rows need their own. */
-const VIRTUAL_COLORS = { home: "#ff9f0a", all: "#8e8e93", favorites: "#ffb800", set: "#5e5ce6" };
+const VIRTUAL_COLORS = { home: "#ff9f0a", all: "#8e8e93", favorites: "#ffb800", set: "#5e5ce6", downloads: "#30d158" };
 const chip = (color: string) => ({ "--cat-color": color }) as CSSProperties;
 
 /* memo'd so Browse's urgent render (topbar animation frame) skips this subtree; it only
@@ -62,6 +66,23 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
   const signedIn = useAccountStore((s) => s.user !== null);
   const favorites = useAccountStore((s) => s.profile.favorites);
   const sets = useAccountStore((s) => s.profile.sets);
+  const activeDownloads = useDownloadQueueStore(
+    (s) => Object.values(s.jobs).filter((j) => ACTIVE_STATUSES.has(j.status)).length,
+  );
+  const historyEntries = useDownloadHistoryStore((s) => s.entries);
+  // Finished files still on disk — a file deleted from the folder shouldn't count.
+  const [fileCount, setFileCount] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    pathsExist(historyEntries.map((e) => e.destPath))
+      .then((flags) => {
+        if (!cancelled) setFileCount(flags.filter(Boolean).length);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [historyEntries, selectedId]);
 
   // The settings dock is fixed to the bottom-left, below this sidebar. Two things are
   // measured: the sidebar's max-height (so the list ends just above the dock rather than
@@ -164,6 +185,20 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
             <span className="sidebar__count">{favoritesCount + sets.length}</span>
           </button>
         )}
+        <button
+          className={`sidebar__item${selectedId === DOWNLOADS_CATEGORY_ID ? " sidebar__item--active" : ""}`}
+          style={chip(VIRTUAL_COLORS.downloads)}
+          onClick={() => onSelect(DOWNLOADS_CATEGORY_ID)}
+        >
+          {selectedId === DOWNLOADS_CATEGORY_ID && <ActiveIndicator />}
+          <CategoryIcon categoryId={DOWNLOADS_CATEGORY_ID} className="sidebar__icon" />
+          <span className="sidebar__label">Downloads</span>
+          {activeDownloads > 0 ? (
+            <span className="sidebar__count sidebar__count--live">{activeDownloads} ↓</span>
+          ) : (
+            fileCount > 0 && <span className="sidebar__count">{fileCount}</span>
+          )}
+        </button>
         <div className="sidebar__divider" />
         {catalog.categories.map((category) => {
           // Bookmarks have no platforms, so a links-only category must not be hidden here.

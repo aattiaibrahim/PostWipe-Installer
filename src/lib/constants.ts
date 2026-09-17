@@ -3,6 +3,8 @@ export const ALL_CATEGORY_ID = "__all__";
 export const FAVORITES_CATEGORY_ID = "__favorites__";
 /** Virtual sidebar entry: the storefront-style landing page. Not a catalog category. */
 export const HOME_CATEGORY_ID = "__home__";
+/** The Downloads page: in-progress jobs plus every file in PostWipeDownloads. */
+export const DOWNLOADS_CATEGORY_ID = "__downloads__";
 
 /** Curated "Essentials" shelf on Home, in display order. Apps missing on the current OS are
  *  skipped, so one list serves Windows and macOS. */

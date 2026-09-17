@@ -2,7 +2,7 @@ import { Fragment, memo } from "react";
 import { AnimatePresence } from "framer-motion";
 import type { Catalog, Os } from "../types/catalog";
 import { AppCard } from "./AppCard";
-import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, DOWNLOADS_CATEGORY_ID, FAVORITES_CATEGORY_ID } from "../lib/constants";
 import { useAccountStore } from "../state/accountStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { useCatalogStore } from "../state/catalogStore";
@@ -12,6 +12,7 @@ import { SpecialsContent } from "./SpecialsContent";
 import { PublishVisibleSelectable } from "./SelectMode";
 import { SET_CATEGORY_PREFIX, SetPage } from "./SetPage";
 import { FavoritesPage } from "./FavoritesPage";
+import { DownloadsPage } from "./DownloadsPage";
 
 interface CategoryPanelProps {
   catalog: Catalog;
@@ -31,6 +32,10 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
   const setSelectedCategory = useCatalogStore((s) => s.setSelectedCategory);
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
+
+  if (!isSearching && selectedCategoryId === DOWNLOADS_CATEGORY_ID) {
+    return <DownloadsPage catalog={catalog} />;
+  }
 
   if (!isSearching && selectedCategoryId === FAVORITES_CATEGORY_ID) {
     return <FavoritesPage catalog={catalog} os={os} />;

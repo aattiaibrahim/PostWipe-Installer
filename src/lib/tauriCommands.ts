@@ -284,3 +284,20 @@ export async function detectSystem(): Promise<SystemInfo | null> {
     return null;
   }
 }
+
+export interface DownloadFileInfo {
+  size: number;
+  /** Unix ms of the file's last write. */
+  modified: number;
+}
+
+/** Size + date per path (null when gone). The backend only answers inside PostWipeDownloads. */
+export async function downloadFileInfo(paths: string[]): Promise<(DownloadFileInfo | null)[]> {
+  if (!isTauri) return paths.map((_, i) => ({ size: (40 + i * 37) * 1024 * 1024, modified: Date.now() - i * 3_600_000 }));
+  return invoke("download_file_info", { paths });
+}
+
+/** Opens a downloaded file with its default handler. Refused outside PostWipeDownloads. */
+export function openDownload(path: string): Promise<void> {
+  return invoke("open_download", { path });
+}

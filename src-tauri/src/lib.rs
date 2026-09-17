@@ -14,7 +14,7 @@ use commands::account::{
 };
 use commands::catalog::list_categories;
 use commands::download::{
-    cancel_download, delete_download, list_active_downloads, open_downloads_folder, paths_exist, start_download,
+    cancel_download, delete_download, download_file_info, list_active_downloads, open_download, open_downloads_folder, paths_exist, start_download,
     start_specials_download,
 };
 use commands::health::{clear_local_health, load_catalog_health, run_health_check};
@@ -76,6 +76,8 @@ pub fn run() {
             list_active_downloads,
             open_downloads_folder,
             paths_exist,
+            download_file_info,
+            open_download,
             delete_download,
             generate_script,
             find_generated_script,

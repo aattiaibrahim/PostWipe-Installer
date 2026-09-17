@@ -6,7 +6,7 @@ import { SearchField, ToolbarActions } from "../components/SearchFilterBar";
 import { SelectionActionBar, SelectToolbar } from "../components/SelectMode";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
-import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
+import { ALL_CATEGORY_ID, DOWNLOADS_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
 import { HomePage } from "../components/HomePage";
 import { useAccountStore } from "../state/accountStore";
 
@@ -41,7 +41,12 @@ export function Browse() {
   // valid on every OS, so they must count as available or this would bounce you off them.
   useEffect(() => {
     if (!catalog) return;
-    if (selectedCategoryId === ALL_CATEGORY_ID || selectedCategoryId === HOME_CATEGORY_ID) return;
+    if (
+      selectedCategoryId === ALL_CATEGORY_ID ||
+      selectedCategoryId === HOME_CATEGORY_ID ||
+      selectedCategoryId === DOWNLOADS_CATEGORY_ID
+    )
+      return;
     // A saved set's page is valid while signed in (SetPage handles a set that was deleted).
     if (selectedCategoryId?.startsWith("set:")) {
       if (!signedIn) setSelectedCategory(HOME_CATEGORY_ID);

@@ -37,6 +37,7 @@ const PATHS: Record<string, string[]> = {
   [FAVORITES_CATEGORY_ID]: ["M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9Z"],
   // A saved set: stacked layers.
   __set__: ["M12 3l9 5-9 5-9-5 9-5Z", "M3 13l9 5 9-5"],
+  __downloads__: ["M12 3v13", "M7 11l5 5 5-5", "M5 20h14"],
 };
 
 const DOTS: Record<string, { cx: number; cy: number }[]> = {
