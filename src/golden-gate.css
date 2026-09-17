@@ -1175,3 +1175,20 @@ html.tauri:not(.platform-macos) .app-shell::before {
 .kickstart__review-group .kickstart__pick-text span {
   font-size: 0.7rem;
 }
+
+/* ─── Logo ──────────────────────────────────────────────────────────────────────────── */
+
+/* The app mark replaces the old pulsing accent dot in the title bar. */
+.title-bar__logo {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.launch-splash__orb {
+  width: 96px;
+  height: 96px;
+  overflow: visible;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35));
+}

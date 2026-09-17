@@ -4,6 +4,7 @@ import { isMacOS } from "../lib/platform";
 import { SelectionBar } from "./SelectionBar";
 import { SpecialsSelectionBar } from "./SpecialsSelectionBar";
 import { SelectModeToggle } from "./SelectModeToggle";
+import { LogoMark } from "./LogoMark";
 
 const appWindow = isTauri ? getCurrentWindow() : null;
 
@@ -15,7 +16,7 @@ export function TitleBar() {
   return (
     <div className="title-bar" data-tauri-drag-region>
       <div className="title-bar__brand" data-tauri-drag-region>
-        <span className="title-bar__dot" />
+        <LogoMark className="title-bar__logo" />
         <span className="title-bar__title">PostWipe Installer</span>
       </div>
       {/* One shared title-bar slot: the Select-Multiple tool shows while nothing is

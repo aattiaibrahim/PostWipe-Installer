@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { LogoMark } from "./LogoMark";
 
 const THOREAU_QUOTES = [
   "Go confidently in the direction of your dreams. Live the life you have imagined.",
@@ -20,8 +21,8 @@ const THOREAU_QUOTES = [
 
 const SPLASH_DURATION_MS = 1900;
 
-/** Quick launch splash: the accent orb draws in, pulses once, then the whole thing
- *  dissolves into the app. A random Thoreau quote keeps it company, Discord-style. */
+/** Quick launch splash: the app logo draws itself in (ring sweeps, arrow drops), then the
+ *  whole thing dissolves into the app. A random Thoreau quote keeps it company, Discord-style. */
 export function LaunchSplash({ onDone }: { onDone: () => void }) {
   const [quote] = useState(() => THOREAU_QUOTES[Math.floor(Math.random() * THOREAU_QUOTES.length)]);
   const [visible, setVisible] = useState(true);
@@ -39,32 +40,7 @@ export function LaunchSplash({ onDone }: { onDone: () => void }) {
           exit={{ opacity: 0, scale: 1.04 }}
           transition={{ duration: 0.45, ease: "easeInOut" }}
         >
-          <svg className="launch-splash__orb" viewBox="0 0 120 120" fill="none">
-            {/* Ring draws itself in... */}
-            <motion.circle
-              cx="60"
-              cy="60"
-              r="34"
-              stroke="var(--accent)"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, rotate: -90 }}
-              animate={{ pathLength: 1, rotate: -90 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              style={{ transformOrigin: "60px 60px" }}
-            />
-            {/* ...then the core swells into it and pulses once */}
-            <motion.circle
-              cx="60"
-              cy="60"
-              r="34"
-              fill="var(--accent)"
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1, 0.92, 1] }}
-              transition={{ delay: 0.7, duration: 0.8, ease: "easeInOut" }}
-              style={{ transformOrigin: "60px 60px" }}
-            />
-          </svg>
+          <LogoMark className="launch-splash__orb" animated />
           <motion.p
             className="launch-splash__quote"
             initial={{ opacity: 0, y: 8 }}
