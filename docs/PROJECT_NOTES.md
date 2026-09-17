@@ -161,6 +161,30 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Window controls, Select mode C, set pages, trust badges — 2026-09-17 (later)
+- [done] **Window controls:** macOS traffic lights at the top-left on Windows/Linux (`TitleBar.tsx`).
+  Symbols show on hover, the lights turn grey while the window is unfocused (`.window-blurred` from
+  useWindowChrome), and macOS keeps its native ones.
+- [done] **Selecting apps = prototype C** (`SelectMode.tsx`).
+  - A toolbar "Select" button (hidden on Discover) switches the toolbar to Cancel · N selected ·
+    Select all. "Select all" covers the apps on the current page, published by
+    `PublishVisibleSelectable`.
+  - Cards swap Get for a circle.
+  - `SelectionActionBar` sticks to the bottom of `.gg-main` with logos, Save as set (or "Sign in to
+    save a set") and Download N. It works for Specials selections too.
+  - Deselecting the last item no longer exits the mode; Cancel, Esc or Download do.
+  - The title-bar SelectModeToggle/SelectionBar/SpecialsSelectionBar are no longer rendered.
+- [done] **Set pages:** `SetPage.tsx`, reached through category id `set:<id>` from the sidebar or
+  the Home chips. It shows the set's apps for the current OS with Download all, Choose (enters select
+  mode) and Delete set. Andrew hadn't noticed sets existed before.
+- [done] **Trust marks:** `TrustBadge` in HealthBadge.tsx. Green ✓ = checksum (github_release),
+  muted shield = pinned signer, nothing otherwise, so downloads aren't discouraged. HealthBadge
+  shows only for "broken", and the downloads list's ✓ also means a SHA-256 match only.
+- [done] **Specials restyle:** store-head titles, a solid sticky "‹ Specials" back chip, 14px covers /
+  12px cards, no hover lift or accent glow.
+- [done] Signed-in dock initial centered; toolbar download/folder buttons are 36px with 21px icons.
+- Dev-only `window.__accountStore` for checking signed-in UI in the preview.
+
 ### Security pass, backup codes, Settings window — 2026-09-17 (late)
 - [done] **Backup codes download** (commit 832bd05).
   - "Download .txt" on the codes screen: `account_save_backup_codes` writes to Downloads under a
