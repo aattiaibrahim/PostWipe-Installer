@@ -1192,3 +1192,293 @@ html.tauri:not(.platform-macos) .app-shell::before {
   overflow: visible;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35));
 }
+
+/* ─── Settings window: preference tabs + an Overview dashboard ──────────────────────── */
+
+.settings-window__overlay {
+  background-color: rgba(0, 0, 0, 0.38);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.settings-window {
+  width: min(760px, calc(100vw - 3rem));
+  height: min(600px, calc(100vh - 5rem));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--surface-solid);
+  border: 1px solid var(--gg-hair);
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.6);
+  color: var(--text);
+}
+
+.settings-window__toolbar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 44px 8px;
+  background: var(--gg-side);
+  border-bottom: 1px solid var(--gg-hair);
+}
+
+.settings-tab {
+  min-width: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px 5px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.settings-tab svg {
+  width: 21px;
+  height: 21px;
+}
+
+.settings-tab:hover {
+  color: var(--text);
+}
+
+.settings-tab--on,
+.settings-tab--on:hover {
+  background: var(--gg-sel);
+  color: var(--text);
+}
+
+.settings-tab--on svg {
+  color: var(--tab-color);
+}
+
+.settings-window__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gg-pill);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.settings-window__close:hover {
+  color: var(--text);
+}
+
+.settings-window__close svg {
+  width: 12px;
+  height: 12px;
+}
+
+.settings-window__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 22px 22px;
+}
+
+.settings-window__title {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.settings-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.settings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--gg-hair);
+}
+
+.settings-card__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.settings-card__value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.settings-card__sub {
+  min-height: 2.5em;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.settings-card__action {
+  margin-top: 6px;
+}
+
+.settings-group-label {
+  margin: 18px 4px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.settings-window__title + .settings-group-label {
+  margin-top: 0;
+}
+
+.settings-group {
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--gg-hair);
+}
+
+.settings-group--pad {
+  padding: 12px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.settings-row + .settings-row {
+  border-top: 1px solid var(--gg-hair);
+}
+
+.settings-row--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.settings-row__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.82rem;
+}
+
+.settings-row__text small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.settings-row .settings-panel__toggle {
+  flex: none;
+}
+
+.settings-btn {
+  flex: none;
+  padding: 4px 11px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--gg-pill);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--text) 15%, transparent);
+}
+
+.settings-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.settings-btn--primary,
+.settings-btn--primary:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.settings-btn--danger {
+  background: color-mix(in srgb, #ff453a 16%, transparent);
+  color: #ff6961;
+}
+
+/* The pickers shared with the old dock panel, re-scaled for the window. */
+.settings-window .theme-picker {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.settings-window .settings-panel__row {
+  padding: 0;
+  border: 0;
+}
+
+.settings-window .settings-panel__row + .settings-panel__row {
+  margin-top: 12px;
+}
+
+.settings-window .settings-panel__label {
+  font-size: 0.8rem;
+}
+
+.settings-window .settings-panel__hint {
+  font-size: 0.7rem;
+}
+
+.settings-window .settings-panel__hint--lead {
+  margin: 0 0 10px;
+}
+
+.settings-window .settings-panel__toggle {
+  font-size: 0.82rem;
+}
+
+.settings-window .settings-apps-shown {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.settings-window .settings-apps-shown .os-picker {
+  display: inline-flex;
+}
+
+.settings-window .settings-apps-shown .os-picker__tile {
+  flex: none;
+  min-width: 84px;
+}
+
+.settings-window .theme-swatch__label {
+  font-size: 0.68rem;
+}
+
+/* The Apps Shown tab already names the section; the picker's own label would repeat it. */
+.settings-window .settings-panel__row:has(.settings-apps-shown) > .settings-panel__label {
+  display: none;
+}

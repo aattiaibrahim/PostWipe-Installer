@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useCatalogStore, type DockView } from "../state/catalogStore";
 import { useAccountStore } from "../state/accountStore";
-import { SettingsPanel } from "./SettingsPanel";
+import { SettingsWindow } from "./SettingsPanel";
 import { AccountPanel } from "./AccountPanel";
 
 /** The dock is as wide as the category sidebar above it. */
@@ -105,9 +105,9 @@ function Bubble({
 }
 
 /** Bottom-left dock: a Settings bubble and an Account bubble. Clicking either pops it into a
- *  pill and raises its panel above; only one is open at a time, and it expands UPWARD from the
- *  window's bottom edge so it can never grow out of view. While open the category sidebar
- *  dims out of the way; the same bubble, Esc, or a click elsewhere closes it. */
+ *  pill. Account raises its panel above, expanding UPWARD from the window's bottom edge so it
+ *  can never grow out of view; Settings opens the tabbed Settings window instead (it outgrew a
+ *  sidebar-width column). The same bubble, Esc, or a click elsewhere closes either. */
 export function SidebarSettings() {
   const view = useCatalogStore((s) => s.dockView);
   const setView = useCatalogStore((s) => s.setDockView);
@@ -115,11 +115,7 @@ export function SidebarSettings() {
   const user = useAccountStore((s) => s.user);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Keep rendering the last panel while it collapses, so closing doesn't flash the other one.
-  const [shown, setShown] = useState<DockView>("settings");
-  useEffect(() => {
-    if (view) setShown(view);
-  }, [view]);
+  const panelOpen = view === "account";
 
   // Animating framer's height to the "auto" KEYWORD with a spring jump-cuts to the final
   // size (the "snapping" bug report) — so the panel stays mounted, its natural height is
@@ -190,17 +186,17 @@ export function SidebarSettings() {
         initial={false}
         // Deterministic tween, not a spring: any overshoot on an animated `height` reveals
         // an empty strip under the content for a frame.
-        animate={{ height: view ? panelHeight : 0, opacity: view ? 1 : 0, y: view ? 0 : 12 }}
+        animate={{ height: panelOpen ? panelHeight : 0, opacity: panelOpen ? 1 : 0, y: panelOpen ? 0 : 12 }}
         transition={{ duration: 0.26, ease: [0.33, 0.8, 0.3, 1] }}
-        style={{ overflow: "hidden", pointerEvents: view ? "auto" : "none" }}
-        aria-hidden={!view}
+        style={{ overflow: "hidden", pointerEvents: panelOpen ? "auto" : "none" }}
+        aria-hidden={!panelOpen}
       >
         <div
           ref={innerRef}
           className="settings-dock__panel-inner"
           style={maxPanelH === null ? undefined : { maxHeight: maxPanelH }}
         >
-          {shown === "settings" ? <SettingsPanel /> : <AccountPanel />}
+          <AccountPanel />
         </div>
       </motion.div>
       <div className="dock__bar">
@@ -219,6 +215,7 @@ export function SidebarSettings() {
           onClick={() => toggle("account")}
         />
       </div>
+      <SettingsWindow open={view === "settings"} onClose={() => setView(null)} />
     </div>
   );
 }
