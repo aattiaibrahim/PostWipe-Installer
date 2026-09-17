@@ -4,7 +4,7 @@ import { useAccountStore } from "../state/accountStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useSelectionStore } from "../state/selectionStore";
 import { startDownload } from "../lib/tauriCommands";
-import { HOME_CATEGORY_ID } from "../lib/constants";
+import { FAVORITES_CATEGORY_ID } from "../lib/constants";
 import { AppCard } from "./AppCard";
 import { PublishVisibleSelectable } from "./SelectMode";
 
@@ -51,6 +51,12 @@ export function SetPage({ catalog, os, setId }: { catalog: Catalog; os: Os; setI
   return (
     <div className="category-panel">
       <PublishVisibleSelectable ids={downloadable.join(",")} />
+      <button className="set-page__back" onClick={() => setCategory(FAVORITES_CATEGORY_ID)}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 6l-6 6 6 6" />
+        </svg>
+        Favorites
+      </button>
       <header className="store-head set-page__head">
         <div>
           <h1 className="store-head__title">{set.name}</h1>
@@ -72,7 +78,7 @@ export function SetPage({ catalog, os, setId }: { catalog: Catalog; os: Os; setI
                 className="settings-btn settings-btn--danger"
                 onClick={() => {
                   deleteSet(set.id);
-                  setCategory(HOME_CATEGORY_ID);
+                  setCategory(FAVORITES_CATEGORY_ID);
                 }}
               >
                 Delete {set.name}

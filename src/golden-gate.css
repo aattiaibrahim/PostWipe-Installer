@@ -1684,12 +1684,12 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
 
 /* ─── Dock: the signed-in initial sits dead centre in its bubble ────────────────────── */
 
+/* The 26px initial sits in the 20px icon slot. A grid item that overflows its cell hangs off
+   the bottom-right edge (3px each way), so pull it back by half the difference on every side. */
 .dock__initial {
-  margin-left: 0;
   width: 26px;
   height: 26px;
-  justify-self: center;
-  align-self: center;
+  margin: -3px;
 }
 
 /* ─── Selecting apps: toolbar Select, circles, bottom action bar ────────────────────── */
@@ -1915,4 +1915,122 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
   margin: -0.6rem 0 1rem;
   font-size: 0.82rem;
   color: var(--text-muted);
+}
+
+/* ─── Favorites: saved sets above starred apps ─────────────────────────────────────── */
+
+.favorites__hint {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.favorites__sets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.set-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--gg-card);
+  box-shadow: inset 0 0 0 1px var(--gg-hair);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.set-card:hover {
+  filter: brightness(1.08);
+}
+
+.set-card__stack {
+  display: flex;
+  flex: none;
+}
+
+.app-icon.set-card__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  box-shadow: 0 0 0 2px var(--gg-card);
+}
+
+.set-card__icon + .set-card__icon {
+  margin-left: -12px;
+}
+
+.set-card__icon .app-icon__svg,
+.set-card__icon .app-icon__favicon-img {
+  width: 19px;
+  height: 19px;
+}
+
+.set-card__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.set-card__text strong {
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.set-card__text span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.set-card__chev {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.set-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0.3rem 0 0.2rem -0.45rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.25rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gg-pill-text);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.set-page__back:hover {
+  background: var(--gg-fill);
+}
+
+.set-page__back svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.set-page__back + .set-page__head {
+  margin-top: 0.2rem;
 }

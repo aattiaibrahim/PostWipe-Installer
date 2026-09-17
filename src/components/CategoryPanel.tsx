@@ -11,6 +11,7 @@ import { SpecialsUnlockBurst } from "./SpecialsUnlockBurst";
 import { SpecialsContent } from "./SpecialsContent";
 import { PublishVisibleSelectable } from "./SelectMode";
 import { SET_CATEGORY_PREFIX, SetPage } from "./SetPage";
+import { FavoritesPage } from "./FavoritesPage";
 
 interface CategoryPanelProps {
   catalog: Catalog;
@@ -30,6 +31,10 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
   const setSelectedCategory = useCatalogStore((s) => s.setSelectedCategory);
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
+
+  if (!isSearching && selectedCategoryId === FAVORITES_CATEGORY_ID) {
+    return <FavoritesPage catalog={catalog} os={os} />;
+  }
 
   if (!isSearching && selectedCategoryId?.startsWith(SET_CATEGORY_PREFIX)) {
     return <SetPage catalog={catalog} os={os} setId={selectedCategoryId.slice(SET_CATEGORY_PREFIX.length)} />;
