@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BRAND_ICONS, monogramColor, relativeLuminance } from "../lib/brandIcons";
+import { BRAND_ICONS, monogramColor, readableOnDark } from "../lib/brandIcons";
 import nanazipIcon from "../assets/app-icons/nanazip.png";
 import testmem5Icon from "../assets/app-icons/testmem5.png";
 import zentimingsIcon from "../assets/app-icons/zentimings.png";
@@ -69,20 +69,12 @@ const BUNDLED_ICONS: Record<string, string> = {
   "kill-valorant-process": batIcon,
 };
 
-/** Bundled marks that are near-white get a fixed dark chip (theme-independent), mirroring
- *  the luminance-picked chip the single-color brand icons use. */
+/** Every icon sits on the same dark tile (`.app-icon` in golden-gate.css), in every theme.
+ *  Marks drawn in near-black on a transparent field would vanish on it, so they're inverted
+ *  to white; Vencord's V is part black, part pink, so it gets a lighter graphite tile instead. */
+const BUNDLED_INVERT = new Set(["elgato-stream-deck"]);
 const BUNDLED_CHIP_BG: Record<string, string> = {
-  "music-presence": "#1c1d21",
-  // Near-black marks on a transparent field (Vencord's "V", Elgato's Stream Deck line-art
-  // glyph, Insta360's black tile) would disappear against the dark themes' surface.
-  vencord: "#f2f2f3",
-  "elgato-stream-deck": "#f2f2f3",
-  "insta360-link-controller": "#f2f2f3",
-  // RSI's wordmark is light grey on transparent — it needs a DARK chip (the opposite of the
-  // near-black marks above) so it doesn't vanish on the light themes' white surface.
-  "rsi-launcher": "#1c1d21",
-  // Endgame Gear's mark is yellow on transparent: fine on dark, washed out on white.
-  "endgame-op1-8k-v2": "#1c1d21",
+  vencord: "#4a4a4e",
 };
 
 interface AppIconProps {
@@ -106,7 +98,12 @@ export function AppIcon({ appId, name, domain, className }: AppIconProps) {
         className={`app-icon app-icon--favicon ${className ?? ""}`}
         style={chipBg ? { backgroundColor: chipBg } : undefined}
       >
-        <img className="app-icon__favicon-img" src={bundled} alt="" loading="lazy" />
+        <img
+          className={`app-icon__favicon-img${BUNDLED_INVERT.has(appId) ? " app-icon__favicon-img--invert" : ""}`}
+          src={bundled}
+          alt=""
+          loading="lazy"
+        />
       </div>
     );
   }
@@ -114,15 +111,11 @@ export function AppIcon({ appId, name, domain, className }: AppIconProps) {
   const brand = BRAND_ICONS[appId];
 
   if (brand) {
-    // Brand marks are single-color and often near-black or near-white per their
-    // own guidelines (e.g. Steam is "000000") — pick a chip background with
-    // guaranteed contrast against *that specific icon*, independent of the
-    // app's own light/dark theme.
-    const isDark = relativeLuminance(brand.hex) < 0.4;
-    const chipBg = isDark ? "#f2f2f3" : "#1c1d21";
+    // Brand marks are single-colour and often near-black per their own guidelines (Steam is
+    // "000000"), so the colour is lifted until it reads on the dark tile.
     return (
-      <div className={`app-icon app-icon--brand ${className ?? ""}`} style={{ backgroundColor: chipBg }}>
-        <svg viewBox="0 0 24 24" className="app-icon__svg" style={{ fill: `#${brand.hex}` }}>
+      <div className={`app-icon app-icon--brand ${className ?? ""}`}>
+        <svg viewBox="0 0 24 24" className="app-icon__svg" style={{ fill: readableOnDark(brand.hex) }}>
           <path d={brand.path} />
         </svg>
       </div>
@@ -144,7 +137,7 @@ export function AppIcon({ appId, name, domain, className }: AppIconProps) {
   }
 
   return (
-    <div className={`app-icon app-icon--monogram ${className ?? ""}`} style={{ backgroundColor: monogramColor(appId) }}>
+    <div className={`app-icon app-icon--monogram ${className ?? ""}`} style={{ color: readableOnDark(monogramColor(appId)) }}>
       {name.charAt(0).toUpperCase()}
     </div>
   );

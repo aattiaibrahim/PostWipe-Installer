@@ -53,16 +53,18 @@ const ADVANCED_APPS = new Set([
 
 /** The very first screen: what machine this is. Asked up front (not mid-wizard) because the
  *  answers decide everything after it — which OS's downloads exist, which vendor tools apply —
- *  and the OS choice also switches the app's own OS picker when Kickstart finishes. */
+ *  and the OS choice also switches the app's own OS when Kickstart finishes. Both answers come
+ *  pre-filled from this computer (detected on launch), so it's usually just "Next". Graphics
+ *  isn't asked: nothing in the catalog depends on the GPU brand. */
 export interface DeviceChoice {
   id: string;
   label: string;
 }
 
 export interface DeviceGroup {
-  id: "os" | "cpu" | "gpu";
+  id: "os" | "cpu";
   label: string;
-  /** Choices depend on the OS picked (e.g. Macs have Apple Silicon, and no GPU question). */
+  /** Choices depend on the OS picked (Macs have Apple Silicon). */
   choices: (os: Os) => DeviceChoice[];
 }
 
@@ -87,20 +89,6 @@ export const DEVICE_GROUPS: DeviceGroup[] = [
         : [
             { id: "intel", label: "Intel" },
             { id: "amd", label: "AMD" },
-            { id: "unsure", label: "Not sure" },
-          ],
-  },
-  {
-    id: "gpu",
-    label: "Graphics",
-    choices: (os) =>
-      os === "macos"
-        ? []
-        : [
-            { id: "nvidia", label: "NVIDIA" },
-            { id: "amd", label: "AMD" },
-            { id: "intel", label: "Intel" },
-            { id: "unsure", label: "Not sure" },
           ],
   },
 ];
@@ -264,7 +252,6 @@ export const KICKSTART_STEPS: KickstartStep[] = [
 export const KICKSTART_DEFAULTS: KickstartAnswers = {
   os: ["windows"],
   cpu: [],
-  gpu: [],
   uses: [],
   experience: ["comfortable"],
   everyday: ["passwords", "archives"],
@@ -285,7 +272,6 @@ export interface Recommendation {
 export function recommend(catalog: Catalog, answers: KickstartAnswers): Recommendation[] {
   const os = deviceOs(answers);
   const cpu = answers.cpu?.[0];
-  const gpu = answers.gpu?.[0];
   const apps = new Map(catalog.categories.flatMap((c) => c.apps).map((a) => [a.id, a]));
   const simple = picked(answers, "experience", "simple");
   const out = new Map<string, Recommendation>();
@@ -294,9 +280,6 @@ export function recommend(catalog: Catalog, answers: KickstartAnswers): Recommen
     if (simple && ADVANCED_APPS.has(id)) return;
     // The catalog's macOS VirtualBox is the Apple Silicon build; it won't run on an Intel Mac.
     if (id === "virtualbox" && os === "macos" && cpu === "intel") return;
-    // NVIDIA-only tools (Broadcast needs an RTX card) are dropped for anyone who told us their
-    // graphics are AMD or Intel — even when another answer, like streaming, would add them.
-    if (id.startsWith("nvidia-") && (gpu === "amd" || gpu === "intel")) return;
     const app = apps.get(id);
     if (!app || app.kind !== "download" || !app.platforms[os]?.resolver) return;
     const existing = out.get(id);
@@ -314,13 +297,8 @@ export function recommend(catalog: Catalog, answers: KickstartAnswers): Recommen
     }
   }
 
-  // Graphics card companions.
-  if (gpu === "nvidia") {
-    add("nvidia-broadcast", "You have an NVIDIA GPU");
-    add("nvidia-profile-inspector", "You have an NVIDIA GPU");
-  }
   const tuning = picked(answers, "gaming", "tuning") || picked(answers, "experience", "power");
-  if (tuning && gpu && gpu !== "unsure") add("msi-afterburner", "Tunes and monitors your graphics card");
+  if (tuning) add("msi-afterburner", "Tunes and monitors your graphics card");
   // AMD Ryzen memory tuning is vendor-specific (tagged vendor: amd in the catalog).
   if (tuning && cpu === "amd") add("zentimings", "Shows your AMD Ryzen memory timings");
 

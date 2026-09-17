@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Catalog, Os, Vendor } from "../types/catalog";
-import { listCategories } from "../lib/tauriCommands";
+import { listCategories, type SystemInfo } from "../lib/tauriCommands";
 import { HOME_CATEGORY_ID } from "../lib/constants";
 
 export type VendorFilter = "all" | Vendor;
@@ -10,8 +10,13 @@ interface CatalogState {
   catalog: Catalog | null;
   loading: boolean;
   error: string | null;
+  /** Which OS the catalog shows. Starts as this computer's OS; Settings can switch it. */
   osFilter: Os;
+  /** Starts as this PC's detected CPU vendor; Settings can switch it (or show all). */
   vendorFilter: VendorFilter;
+  /** This computer, as detected on launch (null until known, and in the browser preview). */
+  system: SystemInfo | null;
+  setSystem: (info: SystemInfo) => void;
   searchQuery: string;
   selectedCategoryId: string | null;
   /** Which bottom-left dock panel is open, if any. Settings and Account share one panel slot,
@@ -42,6 +47,8 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   error: null,
   osFilter: "windows",
   vendorFilter: "all",
+  system: null,
+  setSystem: (info) => set({ system: info }),
   searchQuery: "",
   selectedCategoryId: HOME_CATEGORY_ID,
   dockView: null,
@@ -68,3 +75,9 @@ export const useCatalogStore = create<CatalogState>((set) => ({
     }
   },
 }));
+
+// Dev-only handle so detection-dependent UI (Settings ▸ Apps shown, Kickstart's "Detected")
+// can be exercised in the browser preview, which has no native side. Never set in production.
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__catalogStore = useCatalogStore;
+}

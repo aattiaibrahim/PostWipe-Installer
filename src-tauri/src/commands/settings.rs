@@ -130,3 +130,91 @@ pub fn clear_vault_key(app_handle: AppHandle) -> Result<(), String> {
         Err(e) => Err(e.to_string()),
     }
 }
+
+/// What this computer is, so the app can show the right apps without asking: the OS it's
+/// running on and the CPU vendor. Read-only — nothing is stored or sent anywhere.
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SystemInfo {
+    /// "windows" or "macos" (anything else reports "windows", the catalog's default).
+    os: &'static str,
+    /// "intel", "amd", "apple", or "unknown".
+    cpu_vendor: &'static str,
+    /// The processor's marketing name, e.g. "AMD Ryzen 7 7800X3D 8-Core Processor".
+    cpu_name: String,
+}
+
+#[tauri::command]
+pub fn detect_system() -> SystemInfo {
+    let os = if cfg!(target_os = "macos") { "macos" } else { "windows" };
+    let (cpu_vendor, cpu_name) = detect_cpu();
+    SystemInfo { os, cpu_vendor, cpu_name }
+}
+
+/// x86 processors identify themselves through the CPUID instruction: leaf 0 holds the vendor
+/// string ("GenuineIntel" / "AuthenticAMD") and leaves 0x80000002-4 the brand name. No shell
+/// command, registry read or extra crate needed.
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+// `__cpuid` became a safe fn in newer toolchains; the unsafe blocks keep older ones building.
+#[allow(unused_unsafe)]
+fn detect_cpu() -> (&'static str, String) {
+    #[cfg(target_arch = "x86")]
+    use std::arch::x86::__cpuid;
+    #[cfg(target_arch = "x86_64")]
+    use std::arch::x86_64::__cpuid;
+
+    // SAFETY: CPUID is available on every x86-64 CPU and every x86 CPU Windows/macOS run on.
+    let leaf0 = unsafe { __cpuid(0) };
+    let mut vendor = Vec::with_capacity(12);
+    for reg in [leaf0.ebx, leaf0.edx, leaf0.ecx] {
+        vendor.extend_from_slice(&reg.to_le_bytes());
+    }
+    let vendor_id = match vendor.as_slice() {
+        b"GenuineIntel" => "intel",
+        b"AuthenticAMD" => "amd",
+        _ => "unknown",
+    };
+
+    let mut name = Vec::with_capacity(48);
+    let max_ext = unsafe { __cpuid(0x8000_0000) }.eax;
+    if max_ext >= 0x8000_0004 {
+        for leaf in 0x8000_0002u32..=0x8000_0004 {
+            let r = unsafe { __cpuid(leaf) };
+            for reg in [r.eax, r.ebx, r.ecx, r.edx] {
+                name.extend_from_slice(&reg.to_le_bytes());
+            }
+        }
+    }
+    let name = String::from_utf8_lossy(&name).trim_matches(char::from(0)).trim().to_string();
+    (vendor_id, name)
+}
+
+/// Apple silicon Macs: there's no Intel/AMD question to answer.
+#[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+fn detect_cpu() -> (&'static str, String) {
+    #[cfg(target_os = "macos")]
+    {
+        let name = std::process::Command::new("sysctl")
+            .args(["-n", "machdep.cpu.brand_string"])
+            .output()
+            .ok()
+            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+            .unwrap_or_default();
+        ("apple", name)
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        ("unknown", String::new())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn detects_this_cpu() {
+        let info = super::detect_system();
+        println!("{} / {} / {}", info.os, info.cpu_vendor, info.cpu_name);
+        assert_ne!(info.cpu_vendor, "unknown");
+        assert!(!info.cpu_name.is_empty());
+    }
+}

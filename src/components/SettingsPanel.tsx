@@ -14,6 +14,39 @@ import { HealthCheckPanel } from "./HealthCheckPanel";
 import { nativeBackdropSupported, useBackdropStore } from "../state/backdropStore";
 import type { Backdrop } from "../lib/tauriCommands";
 import { isMacOS } from "../lib/platform";
+import { OsPicker } from "./OsPicker";
+import { VendorToggle } from "./VendorToggle";
+
+/** Which apps the catalog lists. Both start as this computer (detected on launch), so most
+ *  people never touch this — it's for prepping downloads for a different machine. */
+function AppsShownPicker() {
+  const osFilter = useCatalogStore((s) => s.osFilter);
+  const vendorFilter = useCatalogStore((s) => s.vendorFilter);
+  const system = useCatalogStore((s) => s.system);
+  const thisOs = isMacOS ? "macos" : "windows";
+  const matchesThisComputer =
+    osFilter === thisOs &&
+    (osFilter === "macos" || !system || system.cpuVendor === "unknown" || vendorFilter === system.cpuVendor);
+
+  return (
+    <div className="settings-panel__row settings-panel__row--theme">
+      <span className="settings-panel__label">Apps shown</span>
+      <div className="settings-apps-shown">
+        <OsPicker />
+        {/* Intel/AMD tools are Windows-only; the toggle collapses away for macOS. */}
+        <VendorToggle open={osFilter === "windows"} />
+      </div>
+      <p className="settings-panel__hint">
+        {system?.cpuName ? `This computer: ${system.cpuName}. ` : ""}
+        {matchesThisComputer
+          ? "Showing apps that fit this computer."
+          : osFilter === "windows" && vendorFilter === "all"
+            ? "Showing Windows apps for every processor."
+            : "Showing apps for a different computer than this one."}
+      </p>
+    </div>
+  );
+}
 
 /** Swatch grid of every named theme. Each swatch previews the theme's background + accent;
  *  picking one applies it instantly and themeStore persists it across launches. */
@@ -216,6 +249,7 @@ export function SettingsPanel() {
         <span className="settings-panel__label">Theme</span>
         <ThemePicker />
       </div>
+      <AppsShownPicker />
       <BackdropPicker />
       <div className="settings-panel__row">
         <label className="settings-panel__toggle">

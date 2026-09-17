@@ -2,8 +2,6 @@ import { useDeferredValue, useEffect } from "react";
 import { useCatalogStore } from "../state/catalogStore";
 import { useOsDetect } from "../hooks/useOsDetect";
 import { useDownloadEvents } from "../hooks/useDownloadEvents";
-import { OsPicker } from "../components/OsPicker";
-import { VendorToggle } from "../components/VendorToggle";
 import { SearchField, ToolbarActions } from "../components/SearchFilterBar";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
@@ -78,9 +76,7 @@ export function Browse() {
       </aside>
       <main className="gg-main">
         <div className="gg-toolbar">
-          <OsPicker />
-          {/* Intel/AMD only makes sense on Windows; it collapses away on macOS. */}
-          <VendorToggle open={osFilter === "windows"} />
+          {/* The OS and Intel/AMD come from this computer; Settings ▸ Apps shown overrides them. */}
           <span className="gg-toolbar__spacer" />
           <ToolbarActions />
         </div>

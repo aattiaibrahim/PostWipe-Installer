@@ -53,6 +53,7 @@ export function KickstartDialog() {
   const close = useKickstart((s) => s.close);
   const catalog = useCatalogStore((s) => s.catalog);
   const appOs = useCatalogStore((s) => s.osFilter);
+  const system = useCatalogStore((s) => s.system);
   const setOsFilter = useCatalogStore((s) => s.setOsFilter);
   const signedIn = useAccountStore((s) => s.user !== null);
   const saveSet = useAccountStore((s) => s.saveSet);
@@ -67,8 +68,10 @@ export function KickstartDialog() {
   // Start fresh each time it opens.
   useEffect(() => {
     if (!open) return;
-    // Pre-select the OS the app already detected; it's still the first thing they confirm.
-    setAnswers({ ...KICKSTART_DEFAULTS, os: [useCatalogStore.getState().osFilter] });
+    // Pre-fill this computer's OS and processor (detected on launch); they only confirm.
+    const { osFilter, system } = useCatalogStore.getState();
+    const cpu = system && system.os === osFilter && system.cpuVendor !== "unknown" ? [system.cpuVendor] : [];
+    setAnswers({ ...KICKSTART_DEFAULTS, os: [osFilter], cpu });
     setPhase({ kind: "step", index: 0 });
     setUnchecked(new Set());
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
@@ -94,11 +97,14 @@ export function KickstartDialog() {
   ];
   const recommendations = catalog ? recommend(catalog, answers) : [];
 
-  /** Picking a different OS clears processor/graphics, whose choices differ per OS. */
-  const chooseDevice = (group: "os" | "cpu" | "gpu", choice: string) =>
-    setAnswers((a) =>
-      group === "os" && a.os?.[0] !== choice ? { ...a, os: [choice], cpu: [], gpu: [] } : { ...a, [group]: [choice] },
-    );
+  /** Picking a different OS clears the processor, whose choices differ per OS — unless it's
+   *  this computer's OS again, where the detected processor comes back. */
+  const chooseDevice = (group: "os" | "cpu", choice: string) =>
+    setAnswers((a) => {
+      if (group !== "os" || a.os?.[0] === choice) return { ...a, [group]: [choice] };
+      const detected = system && system.os === choice && system.cpuVendor !== "unknown" ? [system.cpuVendor] : [];
+      return { ...a, os: [choice], cpu: detected };
+    });
 
   /** Kickstart's OS answer becomes the app's OS, so the downloads and any selection match it. */
   const adoptOs = () => {
@@ -111,6 +117,19 @@ export function KickstartDialog() {
     () => new Map((catalog?.categories.flatMap((c) => c.apps) ?? []).map((a) => [a.id, a])),
     [catalog],
   );
+
+  /** The review screen groups picks under their catalog category, in catalog order. */
+  const reviewGroups = useMemo(() => {
+    const byId = new Map(recommendations.map((r) => [r.app.id, r]));
+    return (catalog?.categories ?? [])
+      .map((category) => ({
+        id: category.id,
+        name: category.name,
+        picks: category.apps.map((a) => byId.get(a.id)).filter((r): r is (typeof recommendations)[number] => !!r),
+      }))
+      .filter((g) => g.picks.length > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalog, recommendations.map((r) => r.app.id).join()]);
 
   const toggleOption = (stepId: string, optionId: string, single: boolean) =>
     setAnswers((a) => {
@@ -227,6 +246,9 @@ export function KickstartDialog() {
                                 );
                               })}
                             </div>
+                            {group.id === "cpu" && system && system.os === os && system.cpuName && (
+                              <span className="kickstart__detected">Detected: {system.cpuName}</span>
+                            )}
                           </div>
                         );
                       })}
@@ -289,35 +311,42 @@ export function KickstartDialog() {
                       ? "Untick anything you don't want. Installers download to PostWipeDownloads for you to run."
                       : "Nothing picked yet — go back and choose a few things."}
                   </p>
-                  <ul className="kickstart__review">
-                    {recommendations.map(({ app, reasons }) => {
-                      const on = !unchecked.has(app.id);
-                      return (
-                        <li key={app.id}>
-                          <label className={`kickstart__pick${on ? "" : " kickstart__pick--off"}`}>
-                            <input
-                              type="checkbox"
-                              className="round-check"
-                              checked={on}
-                              onChange={() =>
-                                setUnchecked((prev) => {
-                                  const next = new Set(prev);
-                                  if (next.has(app.id)) next.delete(app.id);
-                                  else next.add(app.id);
-                                  return next;
-                                })
-                              }
-                            />
-                            <AppIcon appId={app.id} name={app.name} domain={app.domain} className="kickstart__icon" />
-                            <span className="kickstart__pick-text">
-                              <strong>{app.name}</strong>
-                              <span>{reasons.join(" · ")}</span>
-                            </span>
-                          </label>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <div className="kickstart__review-groups">
+                    {reviewGroups.map((group) => (
+                      <section key={group.id} className="kickstart__review-group">
+                        <h4 className="kickstart__review-heading">{group.name}</h4>
+                        <ul className="kickstart__review">
+                          {group.picks.map(({ app, reasons }) => {
+                            const on = !unchecked.has(app.id);
+                            return (
+                              <li key={app.id}>
+                                <label className={`kickstart__pick${on ? "" : " kickstart__pick--off"}`} title={reasons.join(" · ")}>
+                                  <input
+                                    type="checkbox"
+                                    className="round-check"
+                                    checked={on}
+                                    onChange={() =>
+                                      setUnchecked((prev) => {
+                                        const next = new Set(prev);
+                                        if (next.has(app.id)) next.delete(app.id);
+                                        else next.add(app.id);
+                                        return next;
+                                      })
+                                    }
+                                  />
+                                  <AppIcon appId={app.id} name={app.name} domain={app.domain} className="kickstart__icon" />
+                                  <span className="kickstart__pick-text">
+                                    <strong>{app.name}</strong>
+                                    <span>{reasons.join(" · ")}</span>
+                                  </span>
+                                </label>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </section>
+                    ))}
+                  </div>
                   {signedIn && recommendations.length > 0 && (
                     <label className="kickstart__save">
                       <input type="checkbox" className="round-check" checked={saveAsSet} onChange={(e) => setSaveAsSet(e.target.checked)} />

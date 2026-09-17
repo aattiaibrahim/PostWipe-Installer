@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import type { AppEntry, Os, PlatformEntry } from "../types/catalog";
 import {
@@ -206,9 +207,90 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
         ? " app-row--completed"
         : "";
 
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setExpanded(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded]);
+
+  /* Rendered twice — in the grid cell and in the detail sheet — so a download started from
+     either place shows its ring in both. */
+  const actions = (
+    <div className="app-row__action-row">
+      {signedIn && (
+        <button
+          className={`app-row__star${favorite ? " app-row__star--on" : ""}`}
+          onClick={() => toggleFavorite(app.id)}
+          aria-pressed={favorite}
+          aria-label={favorite ? `Remove ${app.name} from favorites` : `Add ${app.name} to favorites`}
+          title={favorite ? "Remove from favorites" : "Add to favorites"}
+        >
+          <svg viewBox="0 0 24 24" strokeWidth="1.8" strokeLinejoin="round">
+            <path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9Z" />
+          </svg>
+        </button>
+      )}
+      {isScript && (
+        <button
+          className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}
+          disabled={pinBusy || (!pinned && !generatedPath)}
+          onClick={handleTogglePin}
+          title={
+            !pinned && !generatedPath
+              ? "Generate the script first"
+              : "Adds a shortcut to your Start menu — it only runs when you click it"
+          }
+        >
+          {pinned ? "✓ In Start Menu" : "Add to Start Menu"}
+        </button>
+      )}
+      {isLink ? (
+        <button className="app-row__action" onClick={() => siteUrl && openUrl(siteUrl)} title="Open in your browser">
+          Open ↗
+        </button>
+      ) : isPlaceholder ? (
+        <button className="app-row__action" disabled title="Waiting on files">
+          Coming soon
+        </button>
+      ) : siteOnly ? (
+        <button
+          className="app-row__action"
+          onClick={() => siteUrl && openUrl(siteUrl)}
+          title="This vendor blocks direct downloads — opens their official download page"
+        >
+          Get from site ↗
+        </button>
+      ) : isDownloadingJob ? (
+        <ProgressRing fraction={progressFraction} onCancel={handleCancel} name={app.name} />
+      ) : (
+        /* A failed health check mutes the button and renames it, but never disables
+           it. Half of the first sweep's "broken" verdicts were the CI runner being
+           bot-blocked, and a vendor can fix a link the day after a check — so the
+           user always keeps the final say. */
+        <button
+          className={`app-row__action${isBroken ? " app-row__action--risky" : ""}`}
+          disabled={busy}
+          onClick={handleClick}
+          title={isBroken ? `Last check failed: ${health?.detail ?? ""}` : undefined}
+        >
+          {isBroken && !busy ? "Get anyway" : actionLabel}
+        </button>
+      )}
+    </div>
+  );
+
+  const statusArea = showStatusArea && (
+    <div className="app-row__action-status">
+      {!isDownloadingJob && failureMessage && <span className="app-row__error">{failureMessage}</span>}
+      {!isDownloadingJob && pinError && <span className="app-row__error">{pinError}</span>}
+      {!isDownloadingJob && !pinError && pinMsg && <span className="app-row__pin-msg">{pinMsg}</span>}
+    </div>
+  );
+
   return (
     <motion.div
-      className={`app-row-wrapper${expanded ? " app-row-wrapper--expanded" : ""}`}
+      className="app-row-wrapper"
       layout="position"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
@@ -252,157 +334,14 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
               </span>
             )}
             {health && <HealthBadge health={health} />}
-            {hasDetails && (
-              <button
-                className="app-row__expand-toggle"
-                onClick={() => setExpanded((e) => !e)}
-                aria-label={expanded ? "Hide app info" : "Show app info"}
-              >
-                <motion.svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  animate={{ rotate: expanded ? 90 : 0 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                >
-                  <path d="M9 6l6 6-6 6" />
-                </motion.svg>
-              </button>
-            )}
           </div>
           {app.bio && <p className="app-row__bio">{app.bio}</p>}
         </div>
         <div className="app-row__action-col">
-          <div className="app-row__action-row">
-            {signedIn && (
-              <button
-                className={`app-row__star${favorite ? " app-row__star--on" : ""}`}
-                onClick={() => toggleFavorite(app.id)}
-                aria-pressed={favorite}
-                aria-label={favorite ? `Remove ${app.name} from favorites` : `Add ${app.name} to favorites`}
-                title={favorite ? "Remove from favorites" : "Add to favorites"}
-              >
-                <svg viewBox="0 0 24 24" strokeWidth="1.8" strokeLinejoin="round">
-                  <path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9Z" />
-                </svg>
-              </button>
-            )}
-            {isScript && (
-              <button
-                className={`app-row__pin-btn${pinned ? " app-row__pin-btn--active" : ""}`}
-                disabled={pinBusy || (!pinned && !generatedPath)}
-                onClick={handleTogglePin}
-                title={
-                  !pinned && !generatedPath
-                    ? "Generate the script first"
-                    : "Adds a shortcut to your Start menu — it only runs when you click it"
-                }
-              >
-                {pinned ? "✓ In Start Menu" : "Add to Start Menu"}
-              </button>
-            )}
-            {isLink ? (
-              <button
-                className="app-row__action"
-                onClick={() => siteUrl && openUrl(siteUrl)}
-                title="Open in your browser"
-              >
-                Open ↗
-              </button>
-            ) : isPlaceholder ? (
-              <button className="app-row__action" disabled title="Waiting on files">
-                Coming soon
-              </button>
-            ) : siteOnly ? (
-              <button
-                className="app-row__action"
-                onClick={() => siteUrl && openUrl(siteUrl)}
-                title="This vendor blocks direct downloads — opens their official download page"
-              >
-                Get from site ↗
-              </button>
-            ) : isDownloadingJob ? (
-              <ProgressRing fraction={progressFraction} onCancel={handleCancel} name={app.name} />
-            ) : (
-              /* A failed health check mutes the button and renames it, but never disables
-                 it. Half of the first sweep's "broken" verdicts were the CI runner being
-                 bot-blocked, and a vendor can fix a link the day after a check — so the
-                 user always keeps the final say. */
-              <button
-                className={`app-row__action${isBroken ? " app-row__action--risky" : ""}`}
-                disabled={busy}
-                onClick={handleClick}
-                title={isBroken ? `Last check failed: ${health?.detail ?? ""}` : undefined}
-              >
-                {isBroken && !busy ? "Get anyway" : actionLabel}
-              </button>
-            )}
-          </div>
-          {showStatusArea && (
-            <div className="app-row__action-status">
-              {!isDownloadingJob && failureMessage && <span className="app-row__error">{failureMessage}</span>}
-              {!isDownloadingJob && pinError && <span className="app-row__error">{pinError}</span>}
-              {!isDownloadingJob && !pinError && pinMsg && <span className="app-row__pin-msg">{pinMsg}</span>}
-            </div>
-          )}
+          {actions}
+          {statusArea}
         </div>
       </div>
-      <AnimatePresence initial={false}>
-        {expanded && hasDetails && (
-          <motion.div
-            className="app-row__details-collapse"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 380, damping: 38 }}
-            style={{ overflow: "hidden" }}
-          >
-            <div className="app-row__details">
-              {app.description && <p className="app-row__details-notes">{app.description}</p>}
-              {app.guide && (
-                <div className="app-guide">
-                  <span className="app-guide__title">{app.guide.title}</span>
-                  <ol className="app-guide__steps">
-                    {app.guide.steps.map((step, i) => (
-                      <li key={i}>{step}</li>
-                    ))}
-                  </ol>
-                  {app.guide.snippet && (
-                    <div className="app-guide__snippet">
-                      <div className="app-guide__snippet-head">
-                        <span>{app.guide.snippet.label}</span>
-                        <button
-                          className="app-guide__copy"
-                          onClick={() => {
-                            navigator.clipboard.writeText(app.guide!.snippet!.code).then(
-                              () => setCopied(true),
-                              () => setCopied(false),
-                            );
-                          }}
-                        >
-                          {copied ? "Copied ✓" : "Copy"}
-                        </button>
-                      </div>
-                      <pre className="app-guide__code">{app.guide.snippet.code}</pre>
-                    </div>
-                  )}
-                </div>
-              )}
-              {(app.website || app.domain) && (
-                <button
-                  className="app-row__link-btn"
-                  onClick={() => openUrl(app.website ?? `https://${app.domain}`)}
-                >
-                  Visit {app.website ? app.website.replace(/^https?:\/\//, "") : app.domain} ↗
-                </button>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
       <AnimatePresence initial={false}>
         {showFallback && fallback && (
           <motion.div
@@ -422,6 +361,86 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* App Store-style detail sheet: opening it never reflows the grid underneath. */}
+      {createPortal(
+        <AnimatePresence>
+          {expanded && hasDetails && (
+            <motion.div
+              className="confirm-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setExpanded(false)}
+            >
+              <motion.div
+                className="confirm-dialog app-sheet"
+                role="dialog"
+                aria-label={app.name}
+                onClick={(e) => e.stopPropagation()}
+                initial={{ scale: 0.94, opacity: 0, y: 12 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.96, opacity: 0, y: 8 }}
+                transition={{ type: "spring", stiffness: 460, damping: 34 }}
+              >
+                <button className="app-sheet__close" onClick={() => setExpanded(false)} aria-label="Close">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+                <header className="app-sheet__head">
+                  <AppIcon appId={app.id} name={app.name} domain={app.domain} className="app-sheet__icon" />
+                  <div className="app-sheet__title">
+                    <h3 className="app-sheet__name">
+                      {app.name} {health && <HealthBadge health={health} />}
+                    </h3>
+                    {app.bio && <p className="app-sheet__bio">{app.bio}</p>}
+                    <div className="app-sheet__actions">{actions}</div>
+                  </div>
+                </header>
+                {statusArea}
+                <div className="app-sheet__body">
+                  {app.description && <p className="app-sheet__notes">{app.description}</p>}
+                  {app.guide && (
+                    <div className="app-guide">
+                      <span className="app-guide__title">{app.guide.title}</span>
+                      <ol className="app-guide__steps">
+                        {app.guide.steps.map((step, i) => (
+                          <li key={i}>{step}</li>
+                        ))}
+                      </ol>
+                      {app.guide.snippet && (
+                        <div className="app-guide__snippet">
+                          <div className="app-guide__snippet-head">
+                            <span>{app.guide.snippet.label}</span>
+                            <button
+                              className="app-guide__copy"
+                              onClick={() => {
+                                navigator.clipboard.writeText(app.guide!.snippet!.code).then(
+                                  () => setCopied(true),
+                                  () => setCopied(false),
+                                );
+                              }}
+                            >
+                              {copied ? "Copied ✓" : "Copy"}
+                            </button>
+                          </div>
+                          <pre className="app-guide__code">{app.guide.snippet.code}</pre>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {(app.website || app.domain) && (
+                    <button className="app-row__link-btn" onClick={() => openUrl(app.website ?? `https://${app.domain}`)}>
+                      Visit {app.website ? app.website.replace(/^https?:\/\//, "") : app.domain} ↗
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </motion.div>
   );
 });

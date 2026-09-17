@@ -1,17 +1,23 @@
 import { useEffect } from "react";
-import { platform } from "@tauri-apps/plugin-os";
+import { detectSystem } from "../lib/tauriCommands";
+import { osPlatform } from "../lib/platform";
 import { useCatalogStore } from "../state/catalogStore";
 
+/** Shows the apps for the computer the app is running on: its OS, and — on Windows — its CPU
+ *  vendor, so Intel-only tuning tools don't show on an AMD PC and vice versa. Both can be
+ *  overridden in Settings ▸ Apps shown (e.g. to prep downloads for another machine). */
 export function useOsDetect() {
-  const setOsFilter = useCatalogStore((s) => s.setOsFilter);
-
   useEffect(() => {
-    try {
-      const p = platform();
-      if (p === "macos") setOsFilter("macos");
-      else if (p === "windows") setOsFilter("windows");
-    } catch {
-      // Not running under Tauri (e.g. plain browser preview) — keep the default.
-    }
-  }, [setOsFilter]);
+    const store = useCatalogStore.getState();
+    if (osPlatform === "macos") store.setOsFilter("macos");
+    else if (osPlatform === "windows") store.setOsFilter("windows");
+    void detectSystem().then((info) => {
+      if (!info) return;
+      const { setSystem, setVendorFilter, osFilter } = useCatalogStore.getState();
+      setSystem(info);
+      if (osFilter === "windows" && (info.cpuVendor === "intel" || info.cpuVendor === "amd")) {
+        setVendorFilter(info.cpuVendor);
+      }
+    });
+  }, []);
 }

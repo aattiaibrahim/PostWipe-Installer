@@ -265,3 +265,21 @@ export async function setFlag(name: Flag): Promise<void> {
     /* best-effort */
   }
 }
+
+export interface SystemInfo {
+  os: Os;
+  cpuVendor: "intel" | "amd" | "apple" | "unknown";
+  /** e.g. "AMD Ryzen 7 9800X3D 8-Core Processor"; empty if the CPU didn't say. */
+  cpuName: string;
+}
+
+/** Reads this computer's OS and processor (CPUID on x86, sysctl on Apple silicon). Null in the
+ *  browser preview, where there's no native side to ask. */
+export async function detectSystem(): Promise<SystemInfo | null> {
+  if (!isTauri) return null;
+  try {
+    return await invoke<SystemInfo>("detect_system");
+  } catch {
+    return null;
+  }
+}
