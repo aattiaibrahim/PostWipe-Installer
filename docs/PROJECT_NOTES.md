@@ -41,8 +41,8 @@ network resolvers, concurrent downloads, auto-updating via CI.
   checking one OS never wipes the other's badges). A red weekly run is the alarm working, not a
   broken workflow.
 - **Accounts + community stats** (`accounts-api/`): Better Auth (MIT) on a Cloudflare Worker + D1,
-  live at `https://postwipe-accounts.andrewattiaibrahim.workers.dev`. Email + password, TOTP 2FA,
-  backup codes, account deletion. `/api/profile` stores favorites, named sets and synced settings,
+  live at `https://postwipe-accounts.andrewattiaibrahim.workers.dev`. Email + password (no name
+  collected; sessions keep no IP/User-Agent), TOTP 2FA, backup codes, account deletion. `/api/profile` stores favorites, named sets and synced settings,
   with 409-on-stale-write. `/api/stats/*` holds anonymous download counts for Home's Popular shelf.
   The app talks to it **from Rust** (`src-tauri/src/accounts/`, `commands/account.rs`,
   `commands/stats.rs`), never the webview. See `accounts-api/README.md` for deploy and local dev.
@@ -152,6 +152,23 @@ network resolvers, concurrent downloads, auto-updating via CI.
 ## Backlog
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
+
+### Privacy pass + redesign exploration — 2026-09-17
+- [done] **Accounts collect no name.** Sign-up is email + password only; the name column Better
+  Auth requires is always sent empty. Sessions no longer store IP address or User-Agent (blanked by
+  a `databaseHooks.session.create.before` hook in `accounts-api/src/auth.ts`). Covered by two e2e
+  checks; deployed. Rate-limit counters still key by IP, but they're short-lived and separate.
+- [done] Kickstart opens on "your computer" (OS, processor, graphics). The GPU question moved out
+  of the hardware step, and the answers drive NVIDIA-only filtering, AMD → ZenTimings, and Intel
+  Mac → no VirtualBox. Dock bubbles are 50px, 6px under the sidebar, with a smooth label reveal
+  (v0.1.99).
+- [idea: needs discussion] **UI still feels clunky.** Ten clickable redesign prototypes built on
+  the real catalog, logos and health data: https://claude.ai/artifact/Lq86ow5P2xJkKcdsxqzViR
+  (source: scratchpad `redesigns/`; `build-data.mjs` regenerates `data.js` from the repo). Andrew
+  likes **macOS 27 Golden Gate** (released 2026-09-14), which reverses Tahoe choices this app
+  copied: an edge-to-edge shaded sidebar instead of a floating glass panel, colored sidebar
+  icons, less-rounded unified window corners, a uniform toolbar, and a clear↔tinted glass slider.
+  Waiting on Andrew to pick a direction (or mix) by number.
 
 ### Health checks, Liquid Glass, accounts, Home, Kickstart — 2026-09-12 → 2026-09-16
 Shipped in v0.1.97 and the release after it.
@@ -972,6 +989,14 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-09-17 — Accounts store the minimum: no name, no session IP or device string
+Andrew wants accounts "somewhat private" and nothing recorded beyond what's needed. So an account
+is an email, a scrypt password hash, optional 2FA secrets, and the favorites/sets/settings the user
+syncs. No name is asked for or stored (the earlier optional field also silently fell back to the
+email's local part). Better Auth's default per-session `ipAddress` and `userAgent` are blanked
+before insert, since nothing uses them. Rules out: display names, profile pictures, and
+login-location/device history features, unless privacy is revisited deliberately.
 
 ### 2026-09-16 — Anonymous community counts: all-time, opt-out, nothing identifying stored
 Home's Popular shelf needs other installs' data. We send only the catalog app id and OS, and never
