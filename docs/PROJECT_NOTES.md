@@ -168,7 +168,20 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   likes **macOS 27 Golden Gate** (released 2026-09-14), which reverses Tahoe choices this app
   copied: an edge-to-edge shaded sidebar instead of a floating glass panel, colored sidebar
   icons, less-rounded unified window corners, a uniform toolbar, and a clear↔tinted glass slider.
-  Waiting on Andrew to pick a direction (or mix) by number.
+  → Andrew picked **2 · Golden Gate Store** (see below).
+- [done] **Golden Gate Store redesign shipped (commit 5de14d5).** `src/golden-gate.css` is imported
+  LAST in `App.tsx` and overrides the older glass/home layers (`liquid-glass.css`, `home.css`, … are
+  still loaded underneath). Layout (`Browse.tsx`): a full-height `.gg-side` (search + categories with
+  colored 22px icon chips, `VIRTUAL_COLORS` in `CategorySidebar.tsx`) and `.gg-main` (sticky
+  `.gg-toolbar` with OS/vendor segments + `ToolbarActions`, then store pages). `SearchFilterBar.tsx`
+  now exports `SearchField` and `ToolbarActions`. Categories are App Store grids
+  (`repeat(auto-fill, minmax(290px,1fr))`) with big `store-head` titles, "See All" per section, Get
+  pills and an SVG `ProgressRing` (click = cancel) in `AppCard.tsx`. Script rows (two buttons) wrap
+  their buttons under the text via `:has(.app-row__pin-btn)`. The dark theme is retuned to graphite
+  (`#1d1d1f` / `#0a84ff`) and is the default for new installs (existing saved themes are kept). The
+  blurry orbs are removed: `.glass-backdrop` is a solid `var(--bg)`, and the Settings option reads
+  "Solid". Window radius is 12px. Verified with headless Playwright screenshots (dark, light,
+  rings, select mode, bookmarks, scripts) with no page errors. Not yet seen on a real Mac.
 
 ### Health checks, Liquid Glass, accounts, Home, Kickstart — 2026-09-12 → 2026-09-16
 Shipped in v0.1.97 and the release after it.
