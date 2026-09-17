@@ -161,7 +161,7 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
-### Favorites + sets, Windows controls on the right, counter, Specials tiles — 2026-09-17 (evening)
+### Favorites + sets, Windows controls on the right, counter, Specials tiles, Downloads page — 2026-09-17 (evening)
 - [done] **Sets live in Favorites** (v0.1.107). `FavoritesPage.tsx` shows saved sets as cards (logos +
   count) above starred apps. The sidebar "Your sets" group is gone; the Favorites row counts sets and
   stays lit on a set page, which links back to Favorites.
@@ -176,7 +176,7 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done, same commit] **Specials tiles:** items and covers without art use one graphite tile
   (`tileGradient` is now constant) with a softly tinted initial or folder glyph (`tileTint`). The
   per-name rainbow gradients were the "discoloration / two backdrop colors" Andrew kept seeing.
-- [done] **Downloads rework: he picked design 2** from the five prototypes at
+- [done, v0.1.109] **Downloads rework: he picked design 2** from the five prototypes at
   https://claude.ai/artifact/Ta88zfGZitL96jzCfuTeZp (1 refined popover, 2 Downloads page in the
   sidebar, 3 right-side drawer, 4 bottom shelf with ring chips, 5 Finder-style folder window).
   - `DownloadsPage.tsx` (category id `__downloads__`) has a header with the file count and total
@@ -1178,6 +1178,15 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-09-17 — Downloads is a page, not a toolbar popover
+Andrew picked design 2 of five prototypes. The page lists files and their verification results
+in one place, with room for per-file actions. "Open" uses `open_download`, which only launches
+files inside PostWipeDownloads; opening anything the webview names would amount to "run this
+path". A file counts as a Special when it sits in `PostWipeDownloads\Specials`, not when its
+id is missing from the catalog, because apps later removed from the catalog would be mislabelled.
+Rules out: bringing back the dropdown and a second folder button, and a generic "open path"
+command.
 
 ### 2026-09-17 — Anything from the webview, a download or the vault is data, never code or a path
 Tauri commands that shell out or touch the filesystem must derive paths themselves or confine
