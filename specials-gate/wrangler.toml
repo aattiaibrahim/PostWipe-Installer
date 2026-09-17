@@ -13,3 +13,13 @@ bucket_name = "postwipe-specials"
 
 # The key itself is NOT set here. Set it as a secret so it never lands in the repo:
 #   npx wrangler secret put SPECIALS_KEY
+
+# Cross-isolate backstop for key guessing (see recordFailure in worker.js): at most 10 wrong
+# keys per client IP per minute, counted at each Cloudflare location.
+[[ratelimits]]
+name = "KEY_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 10
+  period = 60

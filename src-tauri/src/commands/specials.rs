@@ -3,10 +3,7 @@ use std::process::Command;
 use tauri::AppHandle;
 use tauri_plugin_opener::OpenerExt;
 
-/// PowerShell single-quoted literal (quotes escaped by doubling).
-fn ps_quote(s: &str) -> String {
-    format!("'{}'", s.replace('\'', "''"))
-}
+use crate::shell::{contained_in, ps_quote};
 
 #[cfg(windows)]
 fn no_window(cmd: &mut Command) {
@@ -86,10 +83,9 @@ pub async fn install_specials_item(app_handle: AppHandle, archive_path: String, 
 }
 
 fn install_specials_item_impl(app_handle: AppHandle, archive_path: String, install_type: String) -> Result<String, String> {
-    let archive = PathBuf::from(&archive_path);
-    if !archive.exists() {
-        return Err(format!("{archive_path} not found — download it again."));
-    }
+    // Only archives the app itself downloaded into PostWipeDownloadsSpecials can be unpacked
+    // and installed from — never an arbitrary path the webview names.
+    let archive = contained_in(&specials_root(&app_handle)?, &archive_path)?;
 
     let is_zip = archive.extension().map(|e| e.eq_ignore_ascii_case("zip")).unwrap_or(false);
     // Non-zip archives (e.g. .rar) can't be expanded without extra tooling — just reveal it.
@@ -169,17 +165,14 @@ fn inf_scheme_name(inf: &Path) -> Option<String> {
 /// the scheme name from the inf itself (falling back to its folder name). The UI shows these
 /// as a "which one do you want?" picker before applying.
 #[tauri::command]
-pub async fn list_cursor_variants(archive_path: String) -> Result<Vec<CursorVariant>, String> {
-    tauri::async_runtime::spawn_blocking(move || list_cursor_variants_impl(archive_path))
+pub async fn list_cursor_variants(app_handle: AppHandle, archive_path: String) -> Result<Vec<CursorVariant>, String> {
+    tauri::async_runtime::spawn_blocking(move || list_cursor_variants_impl(app_handle, archive_path))
         .await
         .map_err(|e| format!("variant scan failed: {e}"))?
 }
 
-fn list_cursor_variants_impl(archive_path: String) -> Result<Vec<CursorVariant>, String> {
-    let archive = PathBuf::from(&archive_path);
-    if !archive.exists() {
-        return Err(format!("{archive_path} not found — download it again."));
-    }
+fn list_cursor_variants_impl(app_handle: AppHandle, archive_path: String) -> Result<Vec<CursorVariant>, String> {
+    let archive = contained_in(&specials_root(&app_handle)?, &archive_path)?;
     let is_zip = archive.extension().map(|e| e.eq_ignore_ascii_case("zip")).unwrap_or(false);
     if !is_zip {
         return Ok(Vec::new());
@@ -217,9 +210,11 @@ pub async fn apply_cursor_variant(app_handle: AppHandle, inf_path: String) -> Re
 }
 
 fn apply_cursor_variant_impl(app_handle: AppHandle, inf_path: String) -> Result<String, String> {
-    let inf = PathBuf::from(&inf_path);
-    if !inf.exists() {
-        return Err(format!("{inf_path} not found — reinstall the pack."));
+    // The .inf is installed ELEVATED (UAC), so it must be one extracted from a Specials pack,
+    // not any .inf on the machine.
+    let inf = contained_in(&specials_root(&app_handle)?, &inf_path)?;
+    if !inf.extension().is_some_and(|e| e.eq_ignore_ascii_case("inf")) {
+        return Err("Only a cursor pack's .inf file can be installed.".into());
     }
     match apply_inf_and_equip(&inf) {
         Ok(msg) => Ok(msg),
@@ -306,6 +301,10 @@ if (-not [Win32.Spi]::SystemParametersInfo(0x0057, 0, $null, 3)) {{ throw "Syste
         name = ps_quote(name)
     );
     run("powershell", &["-NoProfile", "-NonInteractive", "-Command", &ps])
+}
+
+fn specials_root(app_handle: &AppHandle) -> Result<PathBuf, String> {
+    crate::commands::download::specials_downloads_dir(app_handle)
 }
 
 fn open_folder(app_handle: &AppHandle, dir: &Path) {

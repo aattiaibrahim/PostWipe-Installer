@@ -12,6 +12,9 @@ import type { Env } from "./auth.ts";
 const APP_ID = /^[a-z0-9][a-z0-9-]{0,79}$/;
 const OS = new Set(["windows", "macos"]);
 const DAY_MS = 86_400_000;
+/** More distinct downloads than any real post-wipe setup records in a day from one connection
+ *  (the whole catalog is ~120 apps per OS). Past it, requests are accepted but not counted. */
+const MAX_PER_CONNECTION_PER_DAY = 150;
 
 async function sha256Hex(input: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
@@ -20,14 +23,9 @@ async function sha256Hex(input: string): Promise<string> {
 
 type Ctx = Context<{ Bindings: Env }>;
 
-export async function recordDownload(c: Ctx) {
-  let body: { appId?: unknown; os?: unknown };
-  try {
-    body = await c.req.json();
-  } catch {
-    return c.json({ error: "Request body must be JSON." }, 400);
-  }
-  const { appId, os } = body;
+export async function recordDownload<E extends { Bindings: Env }>(c: Context<E>, parsed: unknown) {
+  if (!parsed || typeof parsed !== "object") return c.json({ error: "Request body must be JSON." }, 400);
+  const { appId, os } = parsed as { appId?: unknown; os?: unknown };
   if (typeof appId !== "string" || !APP_ID.test(appId) || typeof os !== "string" || !OS.has(os)) {
     return c.json({ error: "Invalid app or OS." }, 400);
   }
@@ -37,6 +35,16 @@ export async function recordDownload(c: Ctx) {
   const key = await sha256Hex(`${c.env.BETTER_AUTH_SECRET}|${day}|${ip}|${appId}|${os}`);
 
   const db = c.env.DB;
+  const capKey = await sha256Hex(`${c.env.BETTER_AUTH_SECRET}|${day}|${ip}|cap`);
+  const used = await db
+    .prepare(
+      `INSERT INTO download_ip_day (key, day, n) VALUES (?, ?, 1)
+       ON CONFLICT(key) DO UPDATE SET n = n + 1 RETURNING n`,
+    )
+    .bind(capKey, day)
+    .first<{ n: number }>();
+  if ((used?.n ?? 0) > MAX_PER_CONNECTION_PER_DAY) return c.body(null, 204);
+
   const fresh = await db.prepare("INSERT OR IGNORE INTO download_dedupe (key, day) VALUES (?, ?)").bind(key, day).run();
   if (fresh.meta.changes === 1) {
     await db
@@ -51,7 +59,12 @@ export async function recordDownload(c: Ctx) {
   // Yesterday's dedupe hashes have no further use. Pruned lazily on a small share of
   // requests rather than on a cron, so nothing extra needs scheduling.
   if (Math.random() < 0.05) {
-    c.executionCtx.waitUntil(db.prepare("DELETE FROM download_dedupe WHERE day < ?").bind(day).run());
+    c.executionCtx.waitUntil(
+      db.batch([
+        db.prepare("DELETE FROM download_dedupe WHERE day < ?").bind(day),
+        db.prepare("DELETE FROM download_ip_day WHERE day < ?").bind(day),
+      ]),
+    );
   }
   return c.body(null, 204);
 }

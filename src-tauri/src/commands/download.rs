@@ -9,6 +9,9 @@ use tauri::{AppHandle, Manager, State};
 use tauri_plugin_opener::OpenerExt;
 
 /// Specials files land in their own subfolder so they don't mix with app installers.
+/// Every Specials file is served from here; mirrors SPECIALS_WORKER_URL in src/lib/specialsConfig.ts.
+const SPECIALS_GATE_FILE_URL: &str = "https://postwipe-specials-gate.andrewattiaibrahim.workers.dev/file/";
+
 pub fn specials_downloads_dir(app_handle: &AppHandle) -> Result<PathBuf, String> {
     let dir = postwipe_downloads_dir(app_handle)?.join("Specials");
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
@@ -115,6 +118,14 @@ pub fn start_specials_download(
     url: String,
     filename: String,
 ) -> Result<SpecialsDownloadHandle, String> {
+    // Both come from the webview (built from the vault listing). The URL may only point at the
+    // Specials gate, and the file name may only be a plain name: a listing entry like
+    // `../../AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/x.exe` must not be
+    // able to plant a file outside the Specials folder.
+    if !url.starts_with(SPECIALS_GATE_FILE_URL) {
+        return Err("Specials downloads must come from the Specials vault.".into());
+    }
+    let filename = crate::shell::safe_file_name(&filename)?;
     let dest = specials_downloads_dir(&app_handle)?.join(&filename);
     let spec = ResolverSpec::Static { url };
     let job_id = manager.start_download(app_handle.clone(), item_id, name, spec, dest.clone());

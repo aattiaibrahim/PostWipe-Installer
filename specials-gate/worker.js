@@ -14,6 +14,41 @@
  * The key may also be sent as an `X-Specials-Key` header instead of the `?key=` param.
  */
 
+// Password guessing. The key is shared among friends, so it can't be rotated per person, and
+// nothing else stops a script from trying keys as fast as it can send requests.
+//   - Every wrong key from an IP counts. After MAX_FAILURES within LOCKOUT_MS, that IP is locked
+//     out of EVERYTHING (right key included) until the window passes — otherwise a guesser
+//     would still learn which guess was right.
+//   - The counts live in isolate memory, so they're per Cloudflare location and reset when the
+//     isolate recycles. The KEY_LIMITER rate-limit binding (wrangler.toml) is the cross-isolate
+//     backstop: tripping it also locks the IP out here.
+const MAX_FAILURES = 10;
+const LOCKOUT_MS = 15 * 60 * 1000;
+const failures = new Map(); // ip -> { count, first, lockedUntil }
+
+function lockedOut(ip, now) {
+  const entry = failures.get(ip);
+  if (!entry) return 0;
+  if (entry.lockedUntil > now) return Math.ceil((entry.lockedUntil - now) / 1000);
+  if (now - entry.first > LOCKOUT_MS) failures.delete(ip);
+  return 0;
+}
+
+async function recordFailure(ip, env, now) {
+  let entry = failures.get(ip);
+  if (!entry || now - entry.first > LOCKOUT_MS) entry = { count: 0, first: now, lockedUntil: 0 };
+  entry.count += 1;
+  let tripped = entry.count >= MAX_FAILURES;
+  if (env.KEY_LIMITER) {
+    const { success } = await env.KEY_LIMITER.limit({ key: ip });
+    if (!success) tripped = true;
+  }
+  if (tripped) entry.lockedUntil = now + LOCKOUT_MS;
+  failures.set(ip, entry);
+  // Keep memory bounded if something sprays from many addresses.
+  if (failures.size > 10000) failures.delete(failures.keys().next().value);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -24,8 +59,19 @@ export default {
     // Unauthenticated liveness check so you can confirm the deploy from a browser.
     if (url.pathname === "/health") return cors(json({ ok: true }));
 
+    const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
+    const now = Date.now();
+    const wait = lockedOut(ip, now);
+    if (wait) {
+      const res = json({ ok: false, error: "too-many-attempts" }, 429);
+      res.headers.set("Retry-After", String(wait));
+      return cors(res);
+    }
+
     const provided = url.searchParams.get("key") ?? request.headers.get("X-Specials-Key") ?? "";
-    if (!timingSafeEqual(provided, env.SPECIALS_KEY ?? "")) {
+    // An unset secret must never mean "an empty key unlocks everything".
+    if (!env.SPECIALS_KEY || !timingSafeEqual(provided, env.SPECIALS_KEY)) {
+      await recordFailure(ip, env, now);
       return cors(json({ ok: false, error: "unauthorized" }, 401));
     }
 
@@ -55,7 +101,10 @@ export default {
       const headers = new Headers();
       object.writeHttpMetadata(headers);
       headers.set("etag", object.httpEtag);
-      headers.set("content-disposition", `attachment; filename="${objectKey.split("/").pop()}"`);
+      // RFC 5987 encoding: a quote or newline in an object name can't break out of the header.
+      const name = objectKey.split("/").pop();
+      headers.set("content-disposition", `attachment; filename*=UTF-8''${encodeURIComponent(name)}`);
+      headers.set("X-Content-Type-Options", "nosniff");
       return cors(new Response(object.body, { headers }));
     }
 

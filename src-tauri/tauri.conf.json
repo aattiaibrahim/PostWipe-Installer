@@ -25,7 +25,20 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data: blob: https://www.google.com https://*.gstatic.com https://postwipe-specials-gate.andrewattiaibrahim.workers.dev",
+        "media-src": "'self' blob: https://postwipe-specials-gate.andrewattiaibrahim.workers.dev",
+        "font-src": "'self' data:",
+        "connect-src": "'self' ipc: http://ipc.localhost https://postwipe-specials-gate.andrewattiaibrahim.workers.dev",
+        "frame-src": "blob:",
+        "object-src": "'none'",
+        "base-uri": "'none'",
+        "form-action": "'none'"
+      },
+      "devCsp": null
     }
   },
   "bundle": {

@@ -81,10 +81,7 @@ pub fn is_script_pinned(script_id: String) -> Result<bool, String> {
     Ok(pin_lnk_path(&script_id)?.exists())
 }
 
-/// PowerShell single-quoted string literal: quotes are escaped by doubling them.
-fn ps_quote(s: &str) -> String {
-    format!("'{}'", s.replace('\'', "''"))
-}
+use crate::shell::ps_quote;
 
 /// Appends one line to %TEMP%\postwipe-pin.log. Pinning has been reported broken several
 /// times with no artifacts to inspect afterwards — this log is the evidence trail for the
@@ -105,8 +102,18 @@ fn pin_log(msg: &str) {
 /// returns the shortcut's full path (shown in the UI so "where did it go" is never a
 /// mystery). Re-checks the script still exists on disk at pin time — if the user deleted
 /// it after generating it, this fails with a clear error instead of pinning a dead shortcut.
+///
+/// The shortcut's target is always the path THIS command derives from `script_id`: the path
+/// the webview sends is ignored, so it can't aim a Start menu shortcut at an arbitrary program.
 #[tauri::command]
-pub fn pin_script_to_start_menu(script_id: String, script_path: String) -> Result<String, String> {
+pub fn pin_script_to_start_menu(app_handle: AppHandle, script_id: String, script_path: String) -> Result<String, String> {
+    let _ = script_path;
+    let spec = generator::find(&script_id).ok_or_else(|| format!("Unknown script: {script_id}"))?;
+    let generated = crate::commands::download::postwipe_downloads_dir(&app_handle)?.join(spec.filename);
+    pin_script_path(script_id, generated.to_string_lossy().to_string())
+}
+
+fn pin_script_path(script_id: String, script_path: String) -> Result<String, String> {
     if !std::path::Path::new(&script_path).exists() {
         pin_log(&format!("PIN {script_id}: script missing at {script_path}"));
         return Err(format!(
@@ -207,7 +214,7 @@ mod tests {
             return;
         }
 
-        pin_script_to_start_menu(script_id.to_string(), script_path.to_string_lossy().to_string()).unwrap();
+        pin_script_path(script_id.to_string(), script_path.to_string_lossy().to_string()).unwrap();
         assert!(is_script_pinned(script_id.to_string()).unwrap(), "should report pinned right after pinning");
 
         let lnk_path = pin_lnk_path(script_id).unwrap();
@@ -232,7 +239,7 @@ mod tests {
 
     #[test]
     fn pin_fails_clearly_when_the_script_file_no_longer_exists() {
-        let result = pin_script_to_start_menu(
+        let result = pin_script_path(
             "restart-audio-service".to_string(),
             std::env::temp_dir()
                 .join("postwipe-selftest-does-not-exist.ps1")

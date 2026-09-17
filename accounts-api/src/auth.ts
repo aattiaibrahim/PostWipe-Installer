@@ -27,6 +27,13 @@ export function authOptions(database: BetterAuthOptions["database"]): BetterAuth
     // app never uses them, so they're blanked before the row is written. (Rate limiting still
     // works — it keys its own short-lived counters by IP, separately.)
     databaseHooks: {
+      // Accounts carry no name. The app never sends one, and this makes sure nobody calling the
+      // API directly can store one either (or anything else in that column).
+      user: {
+        create: {
+          before: async (user) => ({ data: { ...user, name: "", image: null } }),
+        },
+      },
       session: {
         create: {
           before: async (session) => ({ data: { ...session, ipAddress: null, userAgent: null } }),
@@ -64,6 +71,12 @@ export function authOptions(database: BetterAuthOptions["database"]): BetterAuth
         "/sign-in/email": { window: 60, max: 8 },
         "/two-factor/verify-totp": { window: 60, max: 8 },
         "/two-factor/verify-backup-code": { window: 60, max: 5 },
+        // Everything that checks the password of a signed-in account. A stolen session token
+        // must not become an unlimited password-guessing oracle.
+        "/two-factor/enable": { window: 60, max: 5 },
+        "/two-factor/disable": { window: 60, max: 5 },
+        "/two-factor/generate-backup-codes": { window: 60, max: 5 },
+        "/delete-user": { window: 60, max: 5 },
       },
     },
     plugins: [
