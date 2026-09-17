@@ -161,6 +161,26 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Favorites + sets, Windows controls on the right, counter, Specials tiles — 2026-09-17 (evening)
+- [done] **Sets live in Favorites** (v0.1.107). `FavoritesPage.tsx` shows saved sets as cards (logos +
+  count) above starred apps. The sidebar "Your sets" group is gone; the Favorites row counts sets and
+  stays lit on a set page, which links back to Favorites.
+- [done] **Dock initial truly centered** (v0.1.107). The 26px initial overflowed the 20px icon slot
+  toward the bottom-right, and `margin: -3px` fixes it. Verified by measuring bounding-box centers
+  (dx/dy = 0), not by eye; the first "fix" was visually wrong by 3px.
+- [done, commit f140f81, not pushed] **Window controls on Windows** sit at the top-right in Windows
+  order (minimize, maximize, close outermost), still as traffic lights. Linux keeps the left corner,
+  and macOS uses its native lights.
+- [done, same commit] **Download counter:** a single badge inside the 36px button (green = running,
+  blue = finished files) replaces two badges that hung outside it and got clipped by `.gg-main`.
+- [done, same commit] **Specials tiles:** items and covers without art use one graphite tile
+  (`tileGradient` is now constant) with a softly tinted initial or folder glyph (`tileTint`). The
+  per-name rainbow gradients were the "discoloration / two backdrop colors" Andrew kept seeing.
+- [blocked: needs decision] **Downloads rework:** five interactive prototypes at
+  https://claude.ai/artifact/Ta88zfGZitL96jzCfuTeZp (1 refined popover, 2 Downloads page in the
+  sidebar, 3 right-side drawer, 4 bottom shelf with ring chips, 5 Finder-style folder window).
+  Source: scratchpad `downloads-reworks/`. Waiting on his pick.
+
 ### Window controls, Select mode C, set pages, trust badges — 2026-09-17 (later)
 - [done] **Window controls:** macOS traffic lights at the top-left on Windows/Linux (`TitleBar.tsx`).
   Symbols show on hover, the lights turn grey while the window is unfocused (`.window-blurred` from
