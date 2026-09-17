@@ -182,6 +182,30 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   blurry orbs are removed: `.glass-backdrop` is a solid `var(--bg)`, and the Settings option reads
   "Solid". Window radius is 12px. Verified with headless Playwright screenshots (dark, light,
   rings, select mode, bookmarks, scripts) with no page errors. Not yet seen on a real Mac.
+- [done] **Golden Gate polish batch (commit ccf8aad, not pushed yet).**
+  - Clicking an app opens a **detail sheet** (a portal modal in `AppCard.tsx`) instead of expanding in
+    the grid, which used to reflow the whole row. The action buttons are one JSX value rendered in both
+    the cell and the sheet.
+  - **Selected apps** tint their whole cell as a 12px tile, with no hairline across the corners.
+  - **All app icons use one dark tile** (`#232325`) in every theme. `readableOnDark()` in `brandIcons.ts`
+    lifts brand colours to at least 62% HSL lightness, and greyscale marks become white. The Stream Deck
+    PNG is inverted; Vencord gets a lighter graphite tile.
+  - **Auto-detection:** the new `detect_system` command in `settings.rs` returns the OS plus the CPU
+    vendor and name, via CPUID leaf 0 / 0x80000002-4 on x86 and `sysctl` on Apple silicon. There's no
+    shell command or registry read, and nothing is stored. `useOsDetect` sets the OS and the Intel/AMD
+    filter from it.
+  - **The toolbar no longer has OS/vendor pickers.** They live in Settings ▸ Apps shown, for prepping
+    another machine.
+  - Settings uses a smaller type scale.
+  - **Kickstart** no longer asks about graphics (nothing depends on the GPU brand; MSI Afterburner now
+    comes with any "tuning" answer). It pre-fills the detected processor with a "Detected: …" line, and
+    the review is a grid grouped by catalog category (dialog 720px wide).
+  - Dev-only `window.__catalogStore` lets Playwright fake detection in the browser preview.
+- [blocked: needs decision] **New app logo.** Andrew wants it less "AI-generated" and smoother, in the
+  graphite + blue direction. Three drafts are in the scratchpad `logo/`: a-tray (arrow into a tray),
+  b-ring (arrow inside a progress ring, echoing the Get ring), c-stack (arrow onto stacked bars). Once
+  he picks one, render a 1024px PNG and run `npx tauri icon` to regenerate `src-tauri/icons/*`,
+  including the NSIS/DMG art if it uses the old mark.
 
 ### Health checks, Liquid Glass, accounts, Home, Kickstart — 2026-09-12 → 2026-09-16
 Shipped in v0.1.97 and the release after it.
