@@ -161,6 +161,52 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Security pass, backup codes, Settings window — 2026-09-17 (late)
+- [done] **Backup codes download** (commit 832bd05).
+  - "Download .txt" on the codes screen: `account_save_backup_codes` writes to Downloads under a
+    fixed name, validates each code, never overwrites (`create_new`), and reveals the file.
+  - Account ▸ "New codes" calls Better Auth's `generate-backup-codes` behind the password. Stored
+    codes are encrypted and can't be read back, so a lost set has to be replaced.
+- [done] **Security review + hardening** (commit 6297ede; both Workers deployed and verified).
+  - **App:**
+    - The window now has a CSP.
+    - `src-tauri/src/shell.rs`: `ps_quote` escapes U+2018–U+201B too. PowerShell treats those as
+      quotes, so a cursor pack's SCHEME_NAME could run commands. `contained_in` and
+      `safe_file_name` keep Specials paths inside `PostWipeDownloads\Specials`.
+    - Specials downloads must come from the gate URL.
+    - Pin-to-Start derives its own target path.
+    - rustls, h2 and event-listener bumped past their advisories.
+  - **Accounts Worker:**
+    - Allowlist of the auth routes the app uses.
+    - Rate limits on every password check.
+    - No name/image at user create.
+    - 64 KB capped body reader.
+    - Per-connection daily stats cap (migration 0004).
+    - nosniff/no-store headers.
+  - **Specials gate:** 10 wrong keys lock an IP out of everything for 15 minutes, plus the
+    `KEY_LIMITER` rate-limit binding.
+  - **CI:** actions pinned to SHAs.
+  - **Attack suite:** `accounts-api/test/attack.mjs` has 32 checks, all passing locally. Against
+    prod the non-flooding checks pass, and the sign-up limit trips as intended.
+- [blocked: needs decision]
+  - Commit 06c6058 in the PUBLIC repo's history holds `specials-gate/.wrangler/cache/cf.json` with
+    the dev machine's approximate location (city, postal code, lat/long). Removing it needs a
+    history rewrite + force-push.
+  - Also open: enabling Dependabot alerts and branch protection.
+- [idea: needs discussion] Remaining low-risk items:
+  - session token and vault key stored as plaintext files (OS keychain instead);
+  - vault key in `?key=` URLs;
+  - no hash verification of downloads;
+  - sign-up email enumeration;
+  - no email verification.
+- [done] **Settings window** (commit 368d7b2). From the prototypes
+  (https://claude.ai/artifact/BjBzAb2zU9FwyyfvWTT4KD), Andrew picked **8 + 5**. The gear opens
+  `SettingsWindow` (SettingsPanel.tsx): preference tabs Overview / Appearance / Apps Shown /
+  Downloads / Privacy / Updates. Overview is a status dashboard (version, download health, this
+  computer, account) plus quick settings. The dock panel is now Account-only.
+- [blocked: needs decision] Which selecting-apps design (A–J from the same prototype page)
+  replaces the current select mode.
+
 ### Privacy pass + redesign exploration — 2026-09-17
 - [done] **Accounts collect no name.** Sign-up is email + password only; the name column Better
   Auth requires is always sent empty. Sessions no longer store IP address or User-Agent (blanked by
@@ -1044,6 +1090,13 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-09-17 — Anything from the webview, a download or the vault is data, never code or a path
+Tauri commands that shell out or touch the filesystem must derive paths themselves or confine
+them with `shell::contained_in`. Every PowerShell literal goes through `shell::ps_quote`, and the
+accounts Worker only exposes the auth routes the app calls. Rules out: commands taking arbitrary
+paths or URLs from the page, string-built PowerShell without `ps_quote`, and enabling Better
+Auth endpoints "because they're there".
 
 ### 2026-09-17 — Detect the machine instead of asking; app details open in a sheet
 The app knows its own OS and reads the CPU vendor through CPUID, so neither is a toolbar control
