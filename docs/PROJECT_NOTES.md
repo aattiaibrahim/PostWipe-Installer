@@ -201,11 +201,21 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
     comes with any "tuning" answer). It pre-fills the detected processor with a "Detected: …" line, and
     the review is a grid grouped by catalog category (dialog 720px wide).
   - Dev-only `window.__catalogStore` lets Playwright fake detection in the browser preview.
-- [blocked: needs decision] **New app logo.** Andrew wants it less "AI-generated" and smoother, in the
-  graphite + blue direction. Three drafts are in the scratchpad `logo/`: a-tray (arrow into a tray),
-  b-ring (arrow inside a progress ring, echoing the Get ring), c-stack (arrow onto stacked bars). Once
-  he picks one, render a 1024px PNG and run `npx tauri icon` to regenerate `src-tauri/icons/*`,
-  including the NSIS/DMG art if it uses the old mark.
+- [done] **New app logo: "B · Ring"** (picked over a tray and a stacked-bars draft). It's a white
+  download arrow inside a blue→cyan three-quarter progress ring, on a graphite tile, and echoes the
+  Get button's progress ring.
+  - **Source:** `src-tauri/icons/logo.svg`.
+  - **To regenerate the icons:** render it to a transparent 1024px PNG, then run
+    `npx tauri icon <png> -o src-tauri/icons`. Delete the `android/` and `ios/` folders it creates;
+    this app doesn't ship them.
+  - **Installer art is rendered HTML → PNG** with the app's Geist font:
+    - `nsis-sidebar.bmp` (164×314) and `nsis-header.bmp` (150×57) must be 24-bit BMPs; saved via
+      System.Drawing.
+    - `dmg-background.tiff` is a two-frame TIFF (660×400 @72dpi + 1320×800 @144dpi, LZW), written with
+      System.Drawing `SaveAdd`. `dmg-background.png` is the 1x copy.
+  - **In-app:** `LogoMark.tsx` draws the same mark. It replaces the title bar's old pulsing dot, and
+    `animated` makes the launch splash draw it in (the tile settles, the ring sweeps to 75%, the arrow
+    springs down).
 
 ### Health checks, Liquid Glass, accounts, Home, Kickstart — 2026-09-12 → 2026-09-16
 Shipped in v0.1.97 and the release after it.
