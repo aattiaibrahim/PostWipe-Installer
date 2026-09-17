@@ -25,6 +25,8 @@ import "./liquid-glass.css";
 import "./account.css";
 import "./home.css";
 import "./kickstart.css";
+// The current look (Golden Gate Store). Loaded last: it overrides everything above.
+import "./golden-gate.css";
 
 const CLICKABLE = 'button, [role="button"], a, input[type="checkbox"], .sidebar__item, .os-picker__tile';
 

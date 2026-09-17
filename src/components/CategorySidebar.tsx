@@ -47,6 +47,11 @@ function LockGlyph() {
   );
 }
 
+/** Golden Gate brought colour back to sidebar icons. Categories take theirs from
+ *  categoryColors; the virtual rows need their own. */
+const VIRTUAL_COLORS = { home: "#ff9f0a", all: "#8e8e93", favorites: "#ffb800", set: "#5e5ce6" };
+const chip = (color: string) => ({ "--cat-color": color }) as CSSProperties;
+
 /* memo'd so Browse's urgent render (topbar animation frame) skips this subtree; it only
    re-renders in the deferred pass when the os/search props actually change. */
 export const CategorySidebar = memo(function CategorySidebar({ catalog, os, searchQuery, selectedId, onSelect }: CategorySidebarProps) {
@@ -131,24 +136,27 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
       <div ref={catsRef} className="sidebar__categories">
         <button
           className={`sidebar__item${selectedId === HOME_CATEGORY_ID ? " sidebar__item--active" : ""}`}
+          style={chip(VIRTUAL_COLORS.home)}
           onClick={() => onSelect(HOME_CATEGORY_ID)}
         >
           {selectedId === HOME_CATEGORY_ID && <ActiveIndicator />}
           <CategoryIcon categoryId={HOME_CATEGORY_ID} className="sidebar__icon" />
-          <span className="sidebar__label">Home</span>
+          <span className="sidebar__label">Discover</span>
         </button>
         <button
           className={`sidebar__item${selectedId === ALL_CATEGORY_ID ? " sidebar__item--active" : ""}`}
+          style={chip(VIRTUAL_COLORS.all)}
           onClick={() => onSelect(ALL_CATEGORY_ID)}
         >
           {selectedId === ALL_CATEGORY_ID && <ActiveIndicator />}
           <CategoryIcon categoryId={ALL_CATEGORY_ID} className="sidebar__icon" />
-          <span className="sidebar__label">All</span>
+          <span className="sidebar__label">All Apps</span>
           <span className="sidebar__count">{allCount}</span>
         </button>
         {signedIn && (
           <button
             className={`sidebar__item${selectedId === FAVORITES_CATEGORY_ID ? " sidebar__item--active" : ""}`}
+            style={chip(VIRTUAL_COLORS.favorites)}
             onClick={() => onSelect(FAVORITES_CATEGORY_ID)}
           >
             {selectedId === FAVORITES_CATEGORY_ID && <ActiveIndicator />}
@@ -195,6 +203,7 @@ export const CategorySidebar = memo(function CategorySidebar({ catalog, os, sear
                 <div key={set.id} className="sidebar__set">
                   <button
                     className="sidebar__item"
+                    style={chip(VIRTUAL_COLORS.set)}
                     onClick={() => replaceSelection(apps)}
                     disabled={apps.length === 0}
                     title={apps.length ? `Select these ${apps.length} apps` : `No ${osName} apps in this set`}

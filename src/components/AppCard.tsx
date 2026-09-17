@@ -35,6 +35,37 @@ function fallbackUrl(platform: PlatformEntry, domain?: string): string | null {
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
+const RING_R = 12;
+const RING_C = 2 * Math.PI * RING_R;
+
+/** The App Store's download affordance: a ring that fills with progress, with a stop square in
+ *  the middle — clicking it cancels. Spins indeterminately while the size isn't known yet
+ *  (queued, resolving the URL, or a server that sends no Content-Length). */
+function ProgressRing({ fraction, onCancel, name }: { fraction: number | null; onCancel: () => void; name: string }) {
+  const known = fraction !== null;
+  return (
+    <button
+      className={`app-row__ring${known ? "" : " app-row__ring--spin"}`}
+      onClick={onCancel}
+      aria-label={`Cancel downloading ${name}${known ? ` (${Math.round(fraction * 100)}%)` : ""}`}
+      title="Cancel download"
+    >
+      <svg viewBox="0 0 28 28" aria-hidden="true">
+        <circle className="app-row__ring-track" cx="14" cy="14" r={RING_R} />
+        <circle
+          className="app-row__ring-fill"
+          cx="14"
+          cy="14"
+          r={RING_R}
+          strokeDasharray={RING_C}
+          strokeDashoffset={known ? RING_C * (1 - fraction) : RING_C * 0.72}
+        />
+        <rect className="app-row__ring-stop" x="10.5" y="10.5" width="7" height="7" rx="1.5" />
+      </svg>
+    </button>
+  );
+}
+
 /* memo'd: `app` objects come from the once-loaded catalog (stable identity) and `os` is a
    string, so list-level re-renders (search typing, vendor filter) skip unchanged rows and
    only each row's own store subscriptions re-render it. */
@@ -127,7 +158,10 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
     if (relevantJob) await cancelDownload(relevantJob.jobId);
   }
 
-  const actionLabel = isScript ? (busy ? "Generating…" : "Generate Script") : busy ? "Starting…" : "Download";
+  // App Store vocabulary: a short "Get" pill; it becomes a progress ring once the download starts.
+  const actionLabel = isScript ? (busy ? "Generating…" : "Generate") : busy ? "…" : "Get";
+  const progressFraction =
+    relevantJob && relevantJob.totalBytes ? Math.min(1, relevantJob.bytesDownloaded / relevantJob.totalBytes) : null;
 
   async function handleTogglePin() {
     if (!scriptId) return;
@@ -174,7 +208,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
 
   return (
     <motion.div
-      className="app-row-wrapper"
+      className={`app-row-wrapper${expanded ? " app-row-wrapper--expanded" : ""}`}
       layout="position"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
@@ -291,9 +325,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
                 Get from site ↗
               </button>
             ) : isDownloadingJob ? (
-              <button className="app-row__action app-row__action--cancel" onClick={handleCancel}>
-                Cancel
-              </button>
+              <ProgressRing fraction={progressFraction} onCancel={handleCancel} name={app.name} />
             ) : (
               /* A failed health check mutes the button and renames it, but never disables
                  it. Half of the first sweep's "broken" verdicts were the CI runner being
@@ -305,7 +337,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
                 onClick={handleClick}
                 title={isBroken ? `Last check failed: ${health?.detail ?? ""}` : undefined}
               >
-                {isBroken && !busy ? "Download anyway" : actionLabel}
+                {isBroken && !busy ? "Get anyway" : actionLabel}
               </button>
             )}
           </div>

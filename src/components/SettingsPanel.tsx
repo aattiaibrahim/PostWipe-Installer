@@ -62,7 +62,7 @@ function BackdropPicker() {
   const osBlocksTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
 
   const options: { value: Backdrop; label: string }[] = [
-    { value: "wallpaper", label: "Wallpaper" },
+    { value: "wallpaper", label: "Solid" },
     { value: "native", label: "See-through" },
   ];
 
@@ -98,7 +98,7 @@ function BackdropPicker() {
               ? "“Reduce transparency” is on in System Settings ▸ Accessibility ▸ Display, so macOS draws this as a solid colour."
               : "Windows transparency effects are off, so this shows as a solid colour. Turn them on in Settings ▸ Personalization ▸ Colors."
             : "Blurs your real desktop behind the window. On some PCs this can stutter while you drag or resize."
-          : "A backdrop made from your theme's colours. Looks the same on every machine."}
+          : "A solid background in your theme's colours. Looks the same on every machine."}
       </p>
     </div>
   );

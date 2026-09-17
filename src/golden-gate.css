@@ -1,0 +1,928 @@
+/* ═══════════════════════════════════════════════════════════════════════════════════════
+   Golden Gate Store
+
+   The app's look since 2026-09-17, chosen by Andrew from ten prototypes ("2 · Golden Gate
+   Store"). It follows macOS 27 Golden Gate, which walked back several Tahoe choices the
+   previous Liquid Glass pass had copied:
+     • the sidebar is an edge-to-edge shaded COLUMN again, not a floating glass panel;
+     • sidebar icons have colour again (square chips);
+     • corners are gentler and consistent (12px window, 10–14px surfaces) instead of capsules
+       and 20–28px radii everywhere;
+     • one uniform toolbar holds the controls;
+     • content reads like the Mac App Store: big page titles, "Get" pills that become
+       progress rings, shelves of apps with big icons.
+   No floating gradient orbs or wallpaper: surfaces are solid.
+
+   Loaded LAST so it overrides App.css and liquid-glass.css. Every colour still comes from
+   the theme tokens, so all eight themes keep working; "dark" (the default) is re-tuned below
+   to Golden Gate's graphite + system blue.
+   ═══════════════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --gg-side-w: 264px;
+  --gg-toolbar-h: 56px;
+  /* The sidebar column: a touch lighter than the window in dark mode, darker in light. */
+  --gg-side: color-mix(in srgb, var(--surface-solid) 62%, var(--bg));
+  --gg-hair: color-mix(in srgb, var(--text) 10%, transparent);
+  --gg-fill: color-mix(in srgb, var(--text) 7%, transparent);
+  --gg-sel: color-mix(in srgb, var(--text) 12%, transparent);
+  --gg-pill: color-mix(in srgb, var(--text) 9%, transparent);
+  --gg-pill-text: color-mix(in srgb, var(--accent) 80%, var(--text));
+  --gg-card: color-mix(in srgb, var(--surface-solid) 70%, var(--bg));
+}
+
+/* Golden Gate dark: neutral graphite and system blue, replacing the old navy + indigo. */
+:root[data-theme="dark"] {
+  --bg: #1d1d1f;
+  --surface: rgba(44, 44, 46, 0.9);
+  --surface-solid: #2c2c2e;
+  --surface-hover: rgba(58, 58, 60, 0.95);
+  --border: rgba(255, 255, 255, 0.1);
+  --text: #f5f5f7;
+  --text-muted: #a1a1a6;
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --accent-text: #ffffff;
+  --blob-1: #0a84ff;
+  --blob-2: #bf5af2;
+  --blob-3: #ff9f0a;
+}
+
+/* Golden Gate's window radius: consistent and noticeably gentler than Tahoe's. */
+html.tauri:not(.platform-macos) {
+  --win-radius: 12px;
+}
+
+html.tauri.window-maximized {
+  --win-radius: 0px;
+}
+
+/* ─── Backdrop: solid, no orbs ──────────────────────────────────────────────────────── */
+
+.glass-backdrop {
+  background: var(--bg);
+}
+
+/* The sidebar column is painted as one full-height strip behind the title bar too, so it runs
+   edge to edge from the very top of the window like a Mac sidebar. */
+.app-shell::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--gg-side-w);
+  z-index: 0;
+  background: var(--gg-side);
+  border-right: 1px solid var(--gg-hair);
+  pointer-events: none;
+}
+
+html.tauri:not(.platform-macos) .app-shell::before {
+  border-top-left-radius: var(--win-radius);
+  border-bottom-left-radius: var(--win-radius);
+}
+
+.title-bar {
+  position: relative;
+  z-index: 40;
+}
+
+.title-bar__brand {
+  width: calc(var(--gg-side-w) - 0.9rem);
+}
+
+/* ─── Layout: sidebar column + independently scrolling main ────────────────────────── */
+
+.app-content {
+  overflow: hidden;
+  display: flex;
+}
+
+.browse {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: var(--gg-side-w) minmax(0, 1fr);
+  gap: 0;
+}
+
+.gg-side {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.35rem 0.75rem 0;
+}
+
+.gg-main {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ─── Toolbar ───────────────────────────────────────────────────────────────────────── */
+
+.gg-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: var(--gg-toolbar-h);
+  padding: 0 1.6rem;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid transparent;
+}
+
+.gg-toolbar__spacer {
+  flex: 1;
+}
+
+.gg-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* The collapsed vendor toggle cancels the toolbar's gap, not the old topbar's. */
+.gg-toolbar .vendor-collapse {
+  margin-left: -0.6rem;
+}
+
+.gg-toolbar .vendor-collapse--open {
+  margin-left: 0;
+}
+
+/* macOS segmented controls: a recessed track with a raised white/grey thumb. */
+.os-picker {
+  border-radius: 9px;
+  padding: 2px;
+  border: 0;
+  background-color: var(--gg-pill);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.os-picker__tile {
+  border-radius: 7px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.os-picker__tile--active,
+.os-picker__tile--active:hover {
+  color: var(--text);
+}
+
+.os-picker__indicator {
+  border-radius: 7px;
+  background-color: color-mix(in srgb, var(--surface-solid) 85%, var(--text) 15%);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme="light"] .os-picker__indicator,
+:root[data-theme="solarized"] .os-picker__indicator {
+  background-color: #fff;
+}
+
+.os-picker__icon {
+  width: 14px;
+  height: 14px;
+}
+
+.search-filter-bar__folder-btn,
+.download-history__toggle {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--text-muted);
+}
+
+.search-filter-bar__folder-btn:hover,
+.download-history__toggle:hover {
+  background: var(--gg-fill);
+  color: var(--text);
+  transform: none;
+}
+
+.search-filter-bar__folder-btn svg,
+.download-history__toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────────────────────────── */
+
+.gg-search {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 30px;
+  padding: 0 0.55rem;
+  border-radius: 8px;
+  background: var(--gg-fill);
+  color: var(--text-muted);
+}
+
+.gg-search:focus-within {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.gg-search svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.gg-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.gg-search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* The sidebar is part of the column now: no box, border, blur or shadow of its own. */
+.sidebar {
+  position: static;
+  width: auto;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  padding: 0 0 0.5rem;
+  margin: 0 -0.35rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  margin-block: 4px;
+}
+
+.sidebar__categories {
+  gap: 1px;
+  padding: 0 0.35rem;
+}
+
+.sidebar__item {
+  gap: 0.6rem;
+  padding: 0.32rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  color: var(--text);
+}
+
+.sidebar__item:hover {
+  background-color: var(--gg-fill);
+}
+
+.sidebar__label {
+  color: var(--text);
+  opacity: 1;
+}
+
+/* Selection is a quiet neutral highlight, as in Finder and the App Store. */
+.sidebar__active-bg {
+  border-radius: 8px;
+  background-color: var(--gg-sel);
+  box-shadow: none;
+}
+
+.sidebar__item--active,
+.sidebar__item--active:hover {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Colour is back: each category is a small rounded square chip with a white glyph. */
+.sidebar__icon,
+.sidebar__item--active .sidebar__icon {
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: 6px;
+  box-sizing: border-box;
+  background-color: var(--cat-color, var(--accent));
+  color: #fff;
+  opacity: 1;
+  stroke-width: 2.4;
+}
+
+.sidebar__count {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  opacity: 1;
+  background: transparent;
+}
+
+.sidebar__divider {
+  margin: 0.4rem 0.5rem;
+  background-color: var(--gg-hair);
+}
+
+.sidebar__group-label {
+  padding: 0.5rem 0.5rem 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+/* ─── Bottom-left dock (Settings + Account) ────────────────────────────────────────── */
+
+/* Centered in the sidebar column. */
+.dock {
+  left: calc((var(--gg-side-w) - 236px) / 2);
+  bottom: 30px;
+}
+
+.dock__bubble {
+  border-radius: 999px;
+  border: 1px solid var(--gg-hair);
+  background-color: var(--surface-solid);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.4);
+}
+
+.dock__bubble:hover {
+  background-color: color-mix(in srgb, var(--surface-solid) 85%, var(--text) 15%);
+}
+
+.dock__bubble--open {
+  background-color: color-mix(in srgb, var(--surface-solid) 80%, var(--accent) 20%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 4px 14px -6px rgba(0, 0, 0, 0.4);
+}
+
+.dock__panel {
+  border-radius: 14px;
+  border: 1px solid var(--gg-hair);
+  background-color: var(--surface-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.6);
+}
+
+.theme-swatch__chip,
+.settings-panel__check-btn,
+.settings-panel__download-all,
+.settings-panel__lock-btn {
+  border-radius: 8px;
+}
+
+/* ─── Content: App Store pages ─────────────────────────────────────────────────────── */
+
+.gg-content {
+  padding: 0.6rem 1.6rem 5rem;
+}
+
+.store-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.4rem 0 1.4rem;
+}
+
+.store-head__title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.store-head__sub {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.store-see-all {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--gg-pill-text);
+  font-size: 0.86rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.store-see-all:hover {
+  text-decoration: underline;
+}
+
+/* The old frosted sheet is gone: sections sit directly on the window. */
+.category-panel {
+  gap: 1.8rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.category-panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.category-panel__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0;
+  border-bottom: 1px solid var(--gg-hair);
+  padding-bottom: 0.45rem;
+}
+
+.category-panel__title,
+.category-panel__header .category-panel__title {
+  padding: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.category-panel__group {
+  grid-column: 1 / -1;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-muted);
+}
+
+/* A three-up grid of app cards, like an App Store shelf. */
+.category-panel__rows {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  column-gap: 1.6rem;
+  row-gap: 0;
+  padding: 0;
+}
+
+.app-row-wrapper + .app-row-wrapper {
+  margin-top: 0;
+}
+
+/* Details open across the full width instead of squeezing into one card. */
+.app-row-wrapper--expanded {
+  grid-column: 1 / -1;
+}
+
+.app-row {
+  gap: 0.85rem;
+  padding: 0.7rem 0.2rem;
+  border-radius: 0;
+  border-bottom: 1px solid var(--gg-hair);
+  overflow: visible;
+  contain-intrinsic-size: auto 78px;
+}
+
+.app-row:hover {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.app-row--expandable:hover .app-row__name {
+  color: var(--gg-pill-text);
+}
+
+.app-row--selected {
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 10px;
+}
+
+/* Big App Store icons with Golden Gate's crisper outline. */
+.app-row .app-row__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 0;
+  box-shadow: 0 0 0 1px var(--gg-hair);
+}
+
+.app-row .app-row__icon .app-icon__favicon-img {
+  width: 30px;
+  height: 30px;
+}
+
+.app-row .app-row__icon .app-icon__svg {
+  width: 28px;
+  height: 28px;
+}
+
+.app-row__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.app-row__bio {
+  margin-top: 0.1rem;
+  font-size: 0.8rem;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.app-row__expand-toggle {
+  display: none;
+}
+
+.app-row__status-glow {
+  display: none;
+}
+
+.app-row__action-col {
+  align-self: center;
+}
+
+/* "Get": the App Store pill. */
+.app-row__action {
+  min-width: 64px;
+  padding: 0.3rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--gg-pill);
+  color: var(--gg-pill-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.app-row__action:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--text) 15%, transparent);
+}
+
+.app-row__action:active:not(:disabled) {
+  background-color: color-mix(in srgb, var(--text) 20%, transparent);
+}
+
+.app-row__action:disabled {
+  background-color: var(--gg-fill);
+  color: var(--text-muted);
+}
+
+.app-row__action--risky {
+  background-color: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.app-row__action--risky:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--danger) 22%, transparent);
+}
+
+.app-row--completed .app-row__action {
+  color: var(--text-muted);
+}
+
+/* Download progress ring (click to cancel). */
+.app-row__ring {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.app-row__ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.app-row__ring-track {
+  fill: none;
+  stroke: var(--gg-pill);
+  stroke-width: 2.5;
+}
+
+.app-row__ring-fill {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.app-row__ring-stop {
+  fill: currentColor;
+}
+
+.app-row__ring--spin svg {
+  animation: gg-ring-spin 1s linear infinite;
+}
+
+@keyframes gg-ring-spin {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}
+
+.app-row__pin-btn {
+  border-radius: 999px;
+  border: 0;
+  background: var(--gg-pill);
+}
+
+/* Script rows carry two buttons, which would squeeze the name to one letter in a grid cell:
+   drop the buttons onto their own line under the text instead. */
+.app-row:has(.app-row__pin-btn) {
+  flex-wrap: wrap;
+}
+
+.app-row:has(.app-row__pin-btn) .app-row__body {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.app-row:has(.app-row__pin-btn) .app-row__action-col {
+  flex: 1 0 100%;
+  padding-left: calc(52px + 0.85rem);
+}
+
+.app-row:has(.app-row__pin-btn) .app-row__action-row {
+  justify-content: flex-start;
+}
+
+.app-row__details,
+.app-row__fallback {
+  padding-left: calc(52px + 1.05rem);
+}
+
+.health-badge--ok {
+  background: transparent;
+  padding: 0;
+}
+
+/* ─── Discover (Home) ───────────────────────────────────────────────────────────────── */
+
+.home {
+  gap: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.home .store-head {
+  margin-bottom: 0;
+}
+
+/* The hero is a solid, warm Golden Gate gradient card: no radial orbs. */
+.home-hero {
+  border: 0;
+  border-radius: 16px;
+  padding: 1.8rem 2rem;
+  color: #fff;
+  background: linear-gradient(115deg, #e2553b 0%, #b7477e 55%, #48306e 100%);
+  box-shadow: 0 14px 34px -16px rgba(120, 40, 80, 0.7);
+}
+
+.home-hero__eyebrow {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.home-hero__title {
+  color: #fff;
+}
+
+.home-hero__lede {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.home-hero__primary {
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #b7477e;
+  font-weight: 700;
+}
+
+.home-hero__secondary {
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  box-shadow: none;
+}
+
+.home-hero__secondary:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.home-hero__stack .home-hero__icon {
+  border-radius: 13px;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.55);
+}
+
+.home-sets__chip {
+  border-radius: 999px;
+  border: 0;
+  background: var(--gg-pill);
+}
+
+.home-shelf__head {
+  align-items: baseline;
+  padding: 0 0 0.45rem;
+  border-bottom: 1px solid var(--gg-hair);
+}
+
+.home-shelf__title {
+  font-size: 1.3rem;
+}
+
+/* Shelves become three-up lists of app cards instead of sideways-scrolling tiles. */
+.home-shelf__row {
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-auto-columns: initial;
+  column-gap: 1.6rem;
+  row-gap: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+.home-tile {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 0;
+  padding: 0.7rem 0.2rem;
+  border: 0;
+  border-bottom: 1px solid var(--gg-hair);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-tile:hover {
+  transform: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.home-tile:hover .home-tile__name {
+  color: var(--gg-pill-text);
+}
+
+.home-tile .home-tile__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 0;
+  box-shadow: 0 0 0 1px var(--gg-hair);
+}
+
+.home-tile__meta {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.home-tile__get {
+  align-self: center;
+  min-width: 64px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gg-pill);
+  color: var(--gg-pill-text);
+}
+
+.home-tile__get:hover {
+  background: color-mix(in srgb, var(--text) 15%, transparent);
+}
+
+.home-tile--skeleton {
+  min-height: 78px;
+  border-radius: 10px;
+}
+
+.home-shelf__empty {
+  border-radius: 10px;
+}
+
+.home-signin {
+  border-radius: 14px;
+  border: 1px solid var(--gg-hair);
+  background: var(--gg-card);
+}
+
+.home-signin .home-hero__secondary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+/* ─── Dialogs and popovers: consistent, gentler corners ────────────────────────────── */
+
+.confirm-dialog,
+.kickstart {
+  border-radius: 16px;
+  background-color: var(--surface-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--gg-hair);
+}
+
+.selection-popover__panel,
+.download-history__dropdown,
+.update-prompt {
+  border-radius: 12px;
+  background-color: var(--surface-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Specials' sticky back-header pins under the toolbar in the new scroll container. */
+.specials-page__header {
+  top: var(--gg-toolbar-h);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-row__ring--spin svg {
+    animation-duration: 3s;
+  }
+}
+
+/* ─── Polish ────────────────────────────────────────────────────────────────────────── */
+
+/* The OS picker carried align-self:flex-start from the old topbar, so it sat higher than
+   the Intel/AMD control beside it. */
+.gg-toolbar .os-picker {
+  align-self: center;
+}
+
+/* Long names ("Battlestate Games Launcher") wrapped and pushed the health tick onto a line of
+   its own. Keep name + tick on one line and let the name truncate. */
+.app-row__name-line {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.app-row__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-row__name-line .health-badge,
+.app-row__name-line .badge {
+  flex-shrink: 0;
+}
+
+/* The panel's own gap already separates the title from the first section. */
+.category-panel > .store-head {
+  margin-bottom: -0.6rem;
+}

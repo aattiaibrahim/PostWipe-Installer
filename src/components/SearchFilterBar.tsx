@@ -2,21 +2,32 @@ import { useCatalogStore } from "../state/catalogStore";
 import { openDownloadsFolder } from "../lib/tauriCommands";
 import { DownloadHistoryPanel } from "./DownloadHistoryPanel";
 
-export function SearchFilterBar() {
+/** Search, at the top of the sidebar column — where the App Store keeps it. */
+export function SearchField() {
   const searchQuery = useCatalogStore((s) => s.searchQuery);
   const setSearchQuery = useCatalogStore((s) => s.setSearchQuery);
 
   return (
-    // No framer `layout` here — as `flex: 1`, this grows/shrinks fluidly on its own while the
-    // vendor toggle animates its width. `layout` would animate via a distorting scale transform.
-    <div className="search-filter-bar">
+    <label className="gg-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M20 20l-3.5-3.5" />
+      </svg>
       <input
-        className="search-filter-bar__input"
         type="search"
-        placeholder="Search apps..."
+        placeholder="Search"
+        aria-label="Search apps"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
+    </label>
+  );
+}
+
+/** Right-hand group of the toolbar: download history and the downloads folder. */
+export function ToolbarActions() {
+  return (
+    <div className="gg-toolbar__actions">
       <DownloadHistoryPanel />
       <button
         className="search-filter-bar__folder-btn search-filter-bar__folder-btn--icon"

@@ -4,7 +4,7 @@ import { useOsDetect } from "../hooks/useOsDetect";
 import { useDownloadEvents } from "../hooks/useDownloadEvents";
 import { OsPicker } from "../components/OsPicker";
 import { VendorToggle } from "../components/VendorToggle";
-import { SearchFilterBar } from "../components/SearchFilterBar";
+import { SearchField, ToolbarActions } from "../components/SearchFilterBar";
 import { CategorySidebar } from "../components/CategorySidebar";
 import { CategoryPanel } from "../components/CategoryPanel";
 import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "../lib/constants";
@@ -63,15 +63,11 @@ export function Browse() {
   if (!catalog) return null;
 
   return (
+    // Golden Gate layout: an edge-to-edge sidebar column (search on top, like the App Store)
+    // and a main column that scrolls on its own under one uniform toolbar.
     <div className="browse">
-      <div className="browse__topbar">
-        <OsPicker />
-        {/* Intel/AMD only makes sense on Windows; it collapses away on macOS and the search
-            bar grows into the freed space (CSS grid-track animation inside VendorToggle). */}
-        <VendorToggle open={osFilter === "windows"} />
-        <SearchFilterBar />
-      </div>
-      <div className="browse__body">
+      <aside className="gg-side">
+        <SearchField />
         <CategorySidebar
           catalog={catalog}
           os={deferredOs}
@@ -79,18 +75,29 @@ export function Browse() {
           selectedId={selectedCategoryId}
           onSelect={setSelectedCategory}
         />
-        {/* Typing a search from Home shows results, not the storefront. */}
-        {selectedCategoryId === HOME_CATEGORY_ID && !deferredQuery.trim() ? (
-          <HomePage catalog={catalog} os={deferredOs} />
-        ) : (
-          <CategoryPanel
-            catalog={catalog}
-            os={deferredOs}
-            searchQuery={deferredQuery}
-            selectedCategoryId={selectedCategoryId}
-          />
-        )}
-      </div>
+      </aside>
+      <main className="gg-main">
+        <div className="gg-toolbar">
+          <OsPicker />
+          {/* Intel/AMD only makes sense on Windows; it collapses away on macOS. */}
+          <VendorToggle open={osFilter === "windows"} />
+          <span className="gg-toolbar__spacer" />
+          <ToolbarActions />
+        </div>
+        <div className="gg-content">
+          {/* Typing a search from Home shows results, not the storefront. */}
+          {selectedCategoryId === HOME_CATEGORY_ID && !deferredQuery.trim() ? (
+            <HomePage catalog={catalog} os={deferredOs} />
+          ) : (
+            <CategoryPanel
+              catalog={catalog}
+              os={deferredOs}
+              searchQuery={deferredQuery}
+              selectedCategoryId={selectedCategoryId}
+            />
+          )}
+        </div>
+      </main>
     </div>
   );
 }

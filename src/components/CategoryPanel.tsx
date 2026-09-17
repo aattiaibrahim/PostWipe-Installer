@@ -25,6 +25,7 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
   // Vendor filter lives in the topbar now (VendorToggle) and applies to every category.
   const vendorFilter = useCatalogStore((s) => s.vendorFilter);
   const favorites = useAccountStore((s) => s.profile.favorites);
+  const setSelectedCategory = useCatalogStore((s) => s.setSelectedCategory);
   const query = searchQuery.trim().toLowerCase();
   const isSearching = query.length > 0;
 
@@ -87,14 +88,39 @@ export const CategoryPanel = memo(function CategoryPanel({ catalog, os, searchQu
     );
   }
 
+  // App Store-style page title. With several sections (All, search results) each section also
+  // gets a "See All" that jumps to its category.
+  const total = sections.reduce((n, s) => n + s.apps.length, 0);
+  const multi = sections.length > 1;
+  const pageTitle = isSearching
+    ? `Results for “${searchQuery.trim()}”`
+    : favoritesView
+      ? "Favorites"
+      : selectedCategoryId === ALL_CATEGORY_ID
+        ? "All Apps"
+        : (sections[0]?.category.name ?? "");
+
   return (
     <div className="category-panel">
       {justUnlocked && <SpecialsUnlockBurst />}
+      <header className="store-head">
+        <h1 className="store-head__title">{pageTitle}</h1>
+        <p className="store-head__sub">
+          {total} {total === 1 ? "app" : "apps"}
+        </p>
+      </header>
       {sections.map(({ category, apps }) => (
         <section key={category.id} className="category-panel__section">
-          <div className="category-panel__header">
-            <h2 className="category-panel__title">{category.name}</h2>
-          </div>
+          {multi && (
+            <div className="category-panel__header">
+              <h2 className="category-panel__title">{category.name}</h2>
+              {category.id !== FAVORITES_CATEGORY_ID && (
+                <button className="store-see-all" onClick={() => setSelectedCategory(category.id)}>
+                  See All
+                </button>
+              )}
+            </div>
+          )}
           <div className="category-panel__rows">
             <AnimatePresence initial={false}>
               {apps.map((app, i) => (

@@ -57,7 +57,7 @@ function Tile({ item, os, meta }: { item: Located; os: Os; meta?: ReactNode }) {
       <AppIcon appId={app.id} name={app.name} domain={app.domain} className="home-tile__icon" />
       <div className="home-tile__text">
         <h4 className="home-tile__name">{app.name}</h4>
-        <span className="home-tile__meta">{meta ?? item.categoryName}</span>
+        <span className="home-tile__meta">{meta ?? (app.bio || item.categoryName)}</span>
       </div>
       {action && (
         <button
@@ -94,7 +94,7 @@ function Shelf({
     <section className="home-shelf">
       <header className="home-shelf__head">
         <div>
-          <h3 className="home-shelf__title">{title}</h3>
+          <h2 className="home-shelf__title">{title}</h2>
           {subtitle && <p className="home-shelf__subtitle">{subtitle}</p>}
         </div>
         {action}
@@ -152,10 +152,14 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
 
   return (
     <div className="home">
+      <header className="store-head">
+        <h1 className="store-head__title">Discover</h1>
+        <p className="store-head__sub">Everything you need after a fresh wipe, checked every week.</p>
+      </header>
       <section className="home-hero">
         <div className="home-hero__copy">
-          <p className="home-hero__eyebrow">Fresh wipe?</p>
-          <h2 className="home-hero__title">Get your {osName} setup back in minutes.</h2>
+          <p className="home-hero__eyebrow">Kickstart</p>
+          <h2 className="home-hero__title">Fresh wipe? Get your {osName} setup back in minutes.</h2>
           <p className="home-hero__lede">
             {appCount} apps, each download checked every week. Answer a few questions and Kickstart picks the right ones for you.
           </p>
@@ -165,9 +169,6 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
             </button>
             <button className="home-hero__secondary" onClick={() => replaceSelection(downloadable.map((e) => e.app.id))}>
               Select {downloadable.length} essentials
-            </button>
-            <button className="home-hero__secondary" onClick={() => setCategory(ALL_CATEGORY_ID)}>
-              Browse all
             </button>
           </div>
         </div>
@@ -208,7 +209,15 @@ export const HomePage = memo(function HomePage({ catalog, os }: { catalog: Catal
             ))}
       </Shelf>
 
-      <Shelf title="Essentials" subtitle="What most setups reinstall first">
+      <Shelf
+        title="Essentials"
+        subtitle="What most setups reinstall first"
+        action={
+          <button className="store-see-all" onClick={() => setCategory(ALL_CATEGORY_ID)}>
+            See All
+          </button>
+        }
+      >
         {essentials.map((item) => (
           <Tile key={item.app.id} item={item} os={os} />
         ))}
