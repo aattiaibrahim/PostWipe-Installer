@@ -203,6 +203,18 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
   `html_regex` over the project's RSS feed (newest first). Peace's `PeaceSetup.exe` has a stable
   name, so it uses `static`. Icons: `equalizerapo-icon.png` / `peace-icon.png` are square,
   transparent versions for the shared icon tile (the Specials art is 512x320 on navy).
+- [done, 2026-09-18] **Mouse 4 / 5 = back / forward** (`state/navHistoryStore.ts`, listener in
+  `App.tsx`). A location is `selectedCategoryId` plus, on Specials, the open folder and path.
+  The Specials position moved out of `SpecialsContent` state into `specialsNavStore` so history
+  can restore it. History records by *subscribing* to those two stores, so any navigation,
+  including future ones, is covered without calling in. Entering Specials from another page
+  resets it to the landing grid, the same as the old remount did. Pop-ups aren't locations:
+  Back sends Escape (every pop-up already closes on it) and Forward is ignored while one is open.
+  `OVERLAY_SELECTOR` lists what counts as a pop-up, so **add a new pop-up's wrapper class there
+  if it lacks `role="dialog"`**. A just-dismissed pop-up is ignored for 600ms while it fades, or
+  a quick double Back gets eaten. **Testing trap:** after editing a store with the dev server
+  running, Vite serves the app `store.ts?t=…` while a console `import('/src/…')` gets a second
+  copy with its own subscriptions. Restart the server before driving stores from the console.
 - [done, v0.1.109] **Downloads rework: he picked design 2** from the five prototypes at
   https://claude.ai/artifact/Ta88zfGZitL96jzCfuTeZp (1 refined popover, 2 Downloads page in the
   sidebar, 3 right-side drawer, 4 bottom shelf with ring chips, 5 Finder-style folder window).

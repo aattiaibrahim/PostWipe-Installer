@@ -11,6 +11,7 @@ import { useApplyTheme } from "./hooks/useApplyTheme";
 import { useWindowChrome } from "./hooks/useWindowChrome";
 import { useApplyBackdrop } from "./hooks/useApplyBackdrop";
 import { hydrateVaultUnlock } from "./state/specialsStore";
+import { navigateBack, navigateForward } from "./state/navHistoryStore";
 import { useHealthStore } from "./state/healthStore";
 import { useAccountStore } from "./state/accountStore";
 import { AccountDialog } from "./components/AccountDialog";
@@ -90,6 +91,28 @@ function App() {
     }
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
+  }, []);
+
+  // Mouse 4 and 5 go back and forward, as in a browser (navHistoryStore). The DOM numbers
+  // them 3 (back) and 4 (forward). Acting on mouseup, the way browsers do; mousedown is
+  // swallowed too so the webview never tries a navigation of its own.
+  useEffect(() => {
+    const isSideButton = (e: MouseEvent) => e.button === 3 || e.button === 4;
+    function onDown(e: MouseEvent) {
+      if (isSideButton(e)) e.preventDefault();
+    }
+    function onUp(e: MouseEvent) {
+      if (!isSideButton(e)) return;
+      e.preventDefault();
+      if (e.button === 3) navigateBack();
+      else navigateForward();
+    }
+    window.addEventListener("mousedown", onDown, true);
+    window.addEventListener("mouseup", onUp, true);
+    return () => {
+      window.removeEventListener("mousedown", onDown, true);
+      window.removeEventListener("mouseup", onUp, true);
+    };
   }, []);
 
   return (

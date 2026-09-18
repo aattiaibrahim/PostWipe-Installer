@@ -11,6 +11,7 @@ import {
 } from "../state/specialsContentStore";
 import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
 import { useCatalogStore } from "../state/catalogStore";
+import { useSpecialsNavStore } from "../state/specialsNavStore";
 import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 
 // On macOS only these vault categories are relevant (the rest are Windows-only: cursors,
@@ -203,8 +204,8 @@ export function SpecialsContent() {
   const { loaded, loading, error, groups: allGroups, load } = useSpecialsContentStore();
   const groups = osFilter === "macos" ? allGroups.filter((g) => MAC_FOLDERS.has(g.folder)) : allGroups;
 
-  const [openFolder, setOpenFolder] = useState<string | null>(null);
-  const [subPath, setSubPath] = useState<string[]>([]);
+  // In a store rather than local state so mouse back/forward can return you to a folder.
+  const { folder: openFolder, path: subPath, openFolder: open, enter, up } = useSpecialsNavStore();
   const [detail, setDetail] = useState<{ item: Item; meta: SpecialsCategoryMeta } | null>(null);
 
   useEffect(() => {
@@ -260,10 +261,7 @@ export function SpecialsContent() {
                     seed={g.folder}
                     coverImage={folderCoverImage(g.folder)}
                     sound={g.meta.install === "sound"}
-                    onOpen={() => {
-                      setOpenFolder(g.folder);
-                      setSubPath([]);
-                    }}
+                    onOpen={() => open(g.folder)}
                   />
                 );
               })}
@@ -278,11 +276,8 @@ export function SpecialsContent() {
             subfolders={subfolders}
             meta={group.meta}
             hero={categoryHeroImage(group.folder)}
-            onBack={() => {
-              if (subPath.length > 0) setSubPath(subPath.slice(0, -1));
-              else setOpenFolder(null);
-            }}
-            onOpenSub={(name) => setSubPath([...subPath, name])}
+            onBack={up}
+            onOpenSub={enter}
             onOpenItem={(item) => setDetail({ item, meta: group.meta })}
           />
         )}
