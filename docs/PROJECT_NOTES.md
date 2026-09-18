@@ -161,6 +161,15 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Steady toolbar, clickable profile tiles — 2026-09-18
+- [done, not pushed] **Toolbar no longer jumps between pages.** `.gg-main` is a flex column,
+  and the toolbar shrank from 56px to its buttons' 37px whenever the page was taller than the
+  window (Discover, long lists). The download button moved ~10px between Discover and
+  Downloads. `.gg-toolbar { flex: none }` fixes it; measured at y = 49.5 on every page.
+- [done, not pushed] **Profile panel tiles are clickable** (his pick: "jump to page"). Favorites
+  opens the Favorites page scrolled to Starred apps; Sets scrolls it to Sets. Both close the dock.
+  `useFavoritesFocus` in `FavoritesPage.tsx` carries the target section.
+
 ### Favorites + sets, Windows controls on the right, counter, Specials tiles, Downloads page — 2026-09-17 (evening)
 - [done] **Sets live in Favorites** (v0.1.107). `FavoritesPage.tsx` shows saved sets as cards (logos +
   count) above starred apps. The sidebar "Your sets" group is gone; the Favorites row counts sets and

@@ -1783,6 +1783,13 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
   flex-direction: column;
 }
 
+/* The toolbar must keep its 56px on every page. As a flex item it used to shrink to its
+   buttons' height (37px) whenever the page below was taller than the window (Discover, long
+   lists), so the toolbar buttons jumped ~10px when switching pages. */
+.gg-toolbar {
+  flex: none;
+}
+
 .gg-content {
   flex: 1 0 auto;
 }
@@ -2404,4 +2411,61 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
   .dl-search {
     width: 100%;
   }
+}
+
+/* ─── Profile panel: Favorites / Sets tiles jump to the Favorites page ─────────────── */
+
+.account-panel__stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--glass-stroke);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.account-panel__stat:hover {
+  background: var(--gg-fill);
+}
+
+.account-panel__stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.account-panel__stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.account-panel__stat-chev {
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.15s ease;
+}
+
+.account-panel__stat:hover .account-panel__stat-chev {
+  transform: translate(2px, -50%);
+}
+
+/* Clear the sticky 56px toolbar when a profile tile scrolls a section into view. */
+.favorites__section {
+  scroll-margin-top: calc(var(--gg-toolbar-h) + 12px);
 }

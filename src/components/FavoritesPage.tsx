@@ -1,4 +1,7 @@
+import { useEffect, useRef } from "react";
+import { create } from "zustand";
 import type { Catalog, Os } from "../types/catalog";
+import { FAVORITES_CATEGORY_ID } from "../lib/constants";
 import { useAccountStore } from "../state/accountStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { SPECIALS_CATEGORY_ID } from "../state/specialsStore";
@@ -6,6 +9,22 @@ import { AppCard } from "./AppCard";
 import { AppIcon } from "./AppIcon";
 import { PublishVisibleSelectable } from "./SelectMode";
 import { setCategoryId } from "./SetPage";
+
+type FavoritesSection = "sets" | "starred";
+
+/** Opens the Favorites page scrolled to one of its sections (the profile panel's tiles). */
+export const useFavoritesFocus = create<{
+  section: FavoritesSection | null;
+  show: (section: FavoritesSection) => void;
+  clear: () => void;
+}>((set) => ({
+  section: null,
+  show: (section) => {
+    useCatalogStore.getState().setSelectedCategory(FAVORITES_CATEGORY_ID);
+    set({ section });
+  },
+  clear: () => set({ section: null }),
+}));
 
 /** Everything the account syncs, in one place: saved sets (whole setups restored in one click)
  *  and individually starred apps. Both follow the account to every PC it signs in on. */
@@ -24,6 +43,16 @@ export function FavoritesPage({ catalog, os }: { catalog: Catalog; os: Os }) {
       (app.kind === "link" || !!app.platforms[os]) &&
       !(vendorFilter !== "all" && app.vendor && app.vendor !== vendorFilter),
   );
+  const focus = useFavoritesFocus((s) => s.section);
+  const clearFocus = useFavoritesFocus((s) => s.clear);
+  const setsRef = useRef<HTMLElement>(null);
+  const starredRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!focus) return;
+    (focus === "sets" ? setsRef : starredRef).current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    clearFocus();
+  }, [focus, clearFocus]);
+
   const selectable = starred.filter((a) => a.kind === "download" && !!a.platforms[os]?.resolver).map((a) => a.id);
 
   return (
@@ -37,7 +66,7 @@ export function FavoritesPage({ catalog, os }: { catalog: Catalog; os: Os }) {
         </p>
       </header>
 
-      <section className="category-panel__section">
+      <section ref={setsRef} className="category-panel__section favorites__section">
         <div className="category-panel__header">
           <h2 className="category-panel__title">Sets</h2>
         </div>
@@ -74,7 +103,7 @@ export function FavoritesPage({ catalog, os }: { catalog: Catalog; os: Os }) {
         )}
       </section>
 
-      <section className="category-panel__section">
+      <section ref={starredRef} className="category-panel__section favorites__section">
         <div className="category-panel__header">
           <h2 className="category-panel__title">Starred apps</h2>
         </div>

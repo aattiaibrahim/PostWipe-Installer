@@ -2,6 +2,7 @@ import { useAccountStore } from "../state/accountStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useAccountDialog } from "./AccountDialog";
 import { BetaPasswordWarning } from "./BetaPasswordWarning";
+import { useFavoritesFocus } from "./FavoritesPage";
 
 /** What the account bubble in the bottom-left dock opens. The longer flows (sign-up form, 2FA
  *  QR code, backup codes) happen in the account dialog; this panel is the at-a-glance view. */
@@ -15,6 +16,7 @@ export function AccountPanel() {
   const signOut = useAccountStore((s) => s.signOut);
   const openDialog = useAccountDialog((s) => s.open);
   const closeDock = useCatalogStore((s) => s.setDockView);
+  const showFavorites = useFavoritesFocus((s) => s.show);
 
   const open = (view: Parameters<typeof openDialog>[0]) => {
     closeDock(null);
@@ -63,16 +65,30 @@ export function AccountPanel() {
           <span>{user.email}</span>
         </div>
       </div>
-      <dl className="account-panel__stats">
-        <div>
-          <dt>Favorites</dt>
-          <dd>{favorites}</dd>
-        </div>
-        <div>
-          <dt>Sets</dt>
-          <dd>{sets}</dd>
-        </div>
-      </dl>
+      {/* Each tile jumps to its section of the Favorites page. */}
+      <div className="account-panel__stats">
+        {(
+          [
+            ["starred", "Favorites", favorites],
+            ["sets", "Sets", sets],
+          ] as const
+        ).map(([section, label, count]) => (
+          <button
+            key={section}
+            className="account-panel__stat"
+            onClick={() => {
+              closeDock(null);
+              showFavorites(section);
+            }}
+          >
+            <span className="account-panel__stat-label">{label}</span>
+            <span className="account-panel__stat-value">{count}</span>
+            <svg className="account-panel__stat-chev" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" />
+            </svg>
+          </button>
+        ))}
+      </div>
       <p className={`account-panel__sync${sync === "error" ? " account-panel__sync--error" : ""}`}>{status}</p>
       {!user.twoFactorEnabled && (
         <button className="account-panel__nudge" onClick={() => open("setupPassword")}>
