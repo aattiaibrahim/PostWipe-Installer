@@ -71,10 +71,11 @@ export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item
         }
       }}
     >
-      <div
-        className="specials-card__media"
-        style={firstImage ? undefined : { background: tileGradient(item.name) }}
-      >
+      {/* No art: paint nothing here, so the card's own surface runs top to bottom. This used
+          to paint tileGradient, which fades dark toward the name strip and then met the
+          card's lighter surface in a hard seam - every art-less card read as two stacked
+          backdrops. In light theme it was a graphite block sitting on a light card. */}
+      <div className="specials-card__media">
         {firstImage ? (
           // Own-image GIFs (Profile Pics) are frozen to a static frame in the grid to avoid
           // dozens animating at once; everything else is a plain lazy <img>.

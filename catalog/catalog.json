@@ -1805,6 +1805,47 @@
           }
         },
         {
+          "id": "equalizer-apo",
+          "name": "Equalizer APO",
+          "icon": "equalizerapo.png",
+          "bio": "System-wide parametric EQ for every sound Windows plays.",
+          "description": "An audio processing object that sits in the Windows audio engine, so its EQ applies to every app at once with next to no latency. It has no real interface of its own; install Peace alongside it for one. During setup, tick the playback device you want it on. The installer is the newest x64 build, read from the project's SourceForge file feed.",
+          "domain": "sourceforge.net",
+          "website": "https://sourceforge.net/projects/equalizerapo/",
+          "kind": "download",
+          "notes": "Install this first, then Peace. Reboot after setup, and re-run its Configurator if you add a new audio device.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "html_regex",
+                "page_url": "https://sourceforge.net/projects/equalizerapo/rss?path=/",
+                "url_regex": "https://sourceforge\\.net/projects/equalizerapo/files/[0-9.]+/EqualizerAPO-x64-[0-9.]+\\.exe/download"
+              },
+              "filename": "EqualizerAPO-x64-Setup.exe"
+            }
+          }
+        },
+        {
+          "id": "peace",
+          "name": "Peace",
+          "icon": "peace.png",
+          "bio": "The friendly front end for Equalizer APO.",
+          "description": "A graphical equalizer and mixer for Equalizer APO: sliders, presets, per-device profiles and one-click switching from the tray. It is also how the Audio & EQ profiles in Specials get imported. Only the SourceForge project is the developer's own site; other 'Peace' download sites are not.",
+          "domain": "sourceforge.net",
+          "website": "https://sourceforge.net/projects/peace-equalizer-apo-extension/",
+          "kind": "download",
+          "notes": "Needs Equalizer APO installed first.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://downloads.sourceforge.net/project/peace-equalizer-apo-extension/PeaceSetup.exe"
+              },
+              "filename": "PeaceSetup.exe"
+            }
+          }
+        },
+        {
           "id": "screentogif",
           "name": "ScreenToGif",
           "icon": "screentogif.png",

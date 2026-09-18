@@ -17,7 +17,7 @@ import { CursorVariantPicker } from "./CursorVariantPicker";
 import { SoundRow } from "./SoundRow";
 import { MusicGlyph } from "./MusicGlyph";
 import { SpecialsFilePreview, isPreviewableFile } from "./SpecialsFilePreview";
-import { fmtSize, tileGradient } from "./SpecialsCard";
+import { fmtSize } from "./SpecialsCard";
 import { resolvePreviews, ownImageUrl, gatedUrl } from "../lib/specialsPreview";
 
 const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
@@ -156,9 +156,12 @@ export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: Spec
         transition={{ type: "spring", stiffness: 440, damping: 34 }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Art and file previews keep the dark viewing stage. With neither, the stage takes the
+            sheet's own surface: a graphite gradient here sat beside the lighter info panel as
+            a second backdrop, the same seam the grid cards had. */}
         <div
           className="specials-detail__stage"
-          style={hasImage || previewableFile ? undefined : { background: tileGradient(item.name) }}
+          style={hasImage || previewableFile ? undefined : { background: "transparent" }}
         >
           {previewableFile ? (
             <SpecialsFilePreview url={fileUrl} ext={item.ext} name={item.name} />

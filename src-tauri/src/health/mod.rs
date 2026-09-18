@@ -131,7 +131,17 @@ pub async fn check_spec(spec: &ResolverSpec, client: &reqwest::Client) -> (Healt
     };
 
     // GET rather than HEAD — several hosts reject HEAD — but the body is dropped unread.
-    match client.get(&url).send().await {
+    // Same User-Agent the downloader will use, or the check tests a different client than
+    // the one that actually fetches (see the Battle.net/HWiNFO lesson in PROJECT_NOTES).
+    match client
+        .get(&url)
+        .header(
+            reqwest::header::USER_AGENT,
+            crate::resolver::html_resolver::user_agent_for(&url),
+        )
+        .send()
+        .await
+    {
         Ok(response) if response.status().is_success() => {
             let content_type = response
                 .headers()

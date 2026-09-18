@@ -185,6 +185,24 @@ Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs 
 - [done, same commit] **Specials tiles:** items and covers without art use one graphite tile
   (`tileGradient` is now constant) with a softly tinted initial or folder glyph (`tileTint`). The
   per-name rainbow gradients were the "discoloration / two backdrop colors" Andrew kept seeing.
+  **That was only half of it** (he still saw two colours afterwards). Each art-less card was
+  still two backdrops: `.specials-card__media` painted `tileGradient` (fading dark to `#1f1f21`
+  toward the name strip) over a `var(--bg)` backing, while the card body below is
+  `--surface-solid` (`#282829`), so every card had a hard seam at the name strip. In light theme
+  it was a graphite block on a light card. The detail sheet had the same seam (gradient stage next
+  to the `#2c2c2e` info panel). Fixed 2026-09-18: art-less media and stage are transparent, so
+  the card or sheet surface is the only backdrop. Verified by sampling the painted element at the
+  top and bottom of a card in both themes (both now report `.specials-card`), not by eye.
+- [done, 2026-09-18] **Equalizer APO + Peace in General Utilities**, because the Specials
+  Audio & EQ profiles need both. Both live only on SourceForge (Peace: the developer says every
+  other "Peace" site is a scam). **SourceForge wants the opposite of the browser-UA rule:** a
+  browser UA gets Cloudflare's "Just a moment..." 403 page, and a plain client gets the binary.
+  `html_resolver::user_agent_for(url)` sends `PostWipe-Installer/<ver>` to `*.sourceforge.net`
+  and the browser UA everywhere else. The downloader and the health check both use it, so they
+  test the same client. Equalizer APO's version is in its path, so it resolves through
+  `html_regex` over the project's RSS feed (newest first). Peace's `PeaceSetup.exe` has a stable
+  name, so it uses `static`. Icons: `equalizerapo-icon.png` / `peace-icon.png` are square,
+  transparent versions for the shared icon tile (the Specials art is 512x320 on navy).
 - [done, v0.1.109] **Downloads rework: he picked design 2** from the five prototypes at
   https://claude.ai/artifact/Ta88zfGZitL96jzCfuTeZp (1 refined popover, 2 Downloads page in the
   sidebar, 3 right-side drawer, 4 bottom shelf with ring chips, 5 Finder-style folder window).

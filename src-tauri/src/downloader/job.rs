@@ -62,10 +62,11 @@ pub async fn run(
 ) -> Result<String, DownloadError> {
     // Several download CDNs (battle.net, hwinfo.com) 403 requests without a browser-like
     // User-Agent. The resolvers already send one — the download hop must match, or a URL
-    // that resolved fine fails the moment we actually fetch it.
+    // that resolved fine fails the moment we actually fetch it. (SourceForge is the one
+    // host that wants the opposite; `user_agent_for` explains.)
     let client = reqwest::Client::builder()
         .connect_timeout(CONNECT_TIMEOUT)
-        .user_agent(crate::resolver::html_resolver::BROWSER_USER_AGENT)
+        .user_agent(crate::resolver::html_resolver::user_agent_for(url))
         .build()
         .map_err(|e| DownloadError::Network(e.to_string()))?;
     let response = send_with_retry(&client, url).await?;

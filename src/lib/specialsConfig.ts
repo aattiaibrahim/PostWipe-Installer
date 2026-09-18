@@ -18,7 +18,7 @@ export const SPECIALS_CATEGORIES: Record<string, SpecialsCategoryMeta> = {
   Cursors: { label: "Cursor Packs", order: 1, install: "cursor", blurb: "Download, then Install to apply the cursor scheme (install.inf)." },
   Fonts: { label: "Fonts", order: 2, install: "font", blurb: "Download, then Install to add the font(s) to Windows." },
   "Windows Sounds": { label: "Windows Sounds", order: 3, install: "sound", blurb: "Preview and install custom system sound sets." },
-  "Audio & EQ Profiles": { label: "Audio & EQ", order: 4, install: "none", blurb: "Peace/EqualizerAPO EQ profiles — download and import in Peace." },
+  "Audio & EQ Profiles": { label: "Audio & EQ", order: 4, install: "none", blurb: "EQ profiles for Peace. Get Equalizer APO, then Peace, from General Utilities, and import them there." },
   "Steam Profiles": { label: "Steam Profiles", order: 5, install: "none", blurb: "Artwork/showcase packs — download the archive and apply in Steam." },
   "Payday 2 Mods - Diesel 2.0": {
     label: "PayDay 2 Mods (Diesel 2.0)",

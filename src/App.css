@@ -1767,7 +1767,10 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg);
+  /* Transparent, so the card's own surface is the only backdrop, art or no art. This was
+     var(--bg) - the page colour - under an inline gradient, and the card body below is
+     --surface-solid: two backdrops in one card, meeting at the name strip. */
+  background-color: transparent;
   overflow: hidden;
 }
 

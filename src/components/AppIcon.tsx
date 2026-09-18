@@ -27,6 +27,10 @@ import gwolvesIcon from "../assets/app-icons/gwolves.png";
 import teamviewerIcon from "../assets/app-icons/teamviewer.png";
 import rustdeskIcon from "../assets/app-icons/rustdesk.png";
 import obsidianIcon from "../assets/app-icons/obsidian.png";
+// Square, transparent cut-outs of the Specials Audio & EQ tiles (equalizerapo.png / peace.png
+// are 512x320 on navy, which clashed with the shared icon tile and shrank the mark).
+import equalizerApoIcon from "../assets/app-icons/equalizerapo-icon.png";
+import peaceIcon from "../assets/app-icons/peace-icon.png";
 import batIcon from "../assets/app-icons/bat.ico";
 
 /** Real app logos bundled for apps whose GitHub favicon would otherwise show (their repo
@@ -64,6 +68,9 @@ const BUNDLED_ICONS: Record<string, string> = {
   teamviewer: teamviewerIcon,
   rustdesk: rustdeskIcon,
   obsidian: obsidianIcon,
+  // Both live on SourceForge, whose favicon would otherwise stand in for them.
+  "equalizer-apo": equalizerApoIcon,
+  peace: peaceIcon,
   // Script entries have no domain — they'd fall through to a monogram letter.
   "restart-audio-service": batIcon,
   "kill-valorant-process": batIcon,
