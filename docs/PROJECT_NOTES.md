@@ -161,7 +161,7 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
-### Ninite pass: "Install all at once", Ninite-style Discover, Generate clipping — 2026-09-19
+### Ninite pass: "Install all at once", Ninite-style Discover, Generate clipping — 2026-09-19 (v0.1.117)
 Andrew called the first version bad ("the way you implemented it blows") and pointed at
 ninite.com: no wizards, one progress list, and Ninite even does Brave.
 - **Renamed** the options to "Install all at once" and "Download only" (install each one
