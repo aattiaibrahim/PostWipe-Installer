@@ -1,0 +1,59 @@
+name: Install smoke
+
+# Throwaway branch-only check for "Install for me": runs every catalog installer that has silent
+# switches on a clean Windows runner and records whether it finished, its exit code and the
+# time taken. A hang (still running after 10 min) means the switches don't really suppress
+# the UI.
+on:
+  push:
+    branches: [install-smoke]
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Run installers silently
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $ProgressPreference = 'SilentlyContinue'
+          $ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36'
+          $list = Get-Content smoke/installers.json -Raw | ConvertFrom-Json
+          $dir = Join-Path $env:RUNNER_TEMP 'dl'
+          New-Item -ItemType Directory -Force $dir | Out-Null
+          $results = @()
+          foreach ($i in $list) {
+            $file = Join-Path $dir $i.filename
+            try {
+              Invoke-WebRequest -Uri $i.url -OutFile $file -UserAgent $ua -MaximumRedirection 10 -TimeoutSec 600
+            } catch {
+              $results += [pscustomobject]@{ app = $i.appId; result = 'DOWNLOAD-FAILED'; code = ''; secs = 0; note = $_.Exception.Message }
+              continue
+            }
+            $sw = [Diagnostics.Stopwatch]::StartNew()
+            if ($i.kind -eq 'msi') {
+              $p = Start-Process msiexec.exe -ArgumentList @('/i', "`"$file`"", '/qn', '/norestart') -PassThru
+            } else {
+              $p = Start-Process -FilePath $file -ArgumentList $i.args -PassThru
+            }
+            $done = $p.WaitForExit(600000)
+            $secs = [int]$sw.Elapsed.TotalSeconds
+            if (-not $done) {
+              # What's on screen tells us which dialog it's stuck on.
+              $wins = (Get-Process | Where-Object { $_.MainWindowTitle } | ForEach-Object { "$($_.ProcessName): $($_.MainWindowTitle)" }) -join ' | '
+              Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+              $results += [pscustomobject]@{ app = $i.appId; result = 'HANG'; code = ''; secs = $secs; note = $wins }
+            } else {
+              $code = $p.ExitCode
+              $ok = @(0, 3010, 1641) -contains $code
+              $results += [pscustomobject]@{ app = $i.appId; result = $(if ($ok) { 'OK' } else { 'FAIL' }); code = $code; secs = $secs; note = '' }
+            }
+            # Many installers launch the app when they finish; close those so they don't pile up.
+            Get-Process | Where-Object { $_.MainWindowTitle -and $_.ProcessName -notin @('pwsh','powershell','Runner.Worker','Runner.Listener','explorer') } |
+              Stop-Process -Force -ErrorAction SilentlyContinue
+            Remove-Item $file -Force -ErrorAction SilentlyContinue
+            Write-Host "$($i.appId): $($results[-1].result) $($results[-1].code) in $($secs)s"
+          }
+          $results | Format-Table -AutoSize | Out-String -Width 400 | Write-Host
