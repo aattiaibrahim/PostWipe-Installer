@@ -38,9 +38,17 @@ jobs:
             if ($i.kind -eq 'msi') {
               $p = Start-Process msiexec.exe -ArgumentList @('/i', "`"$file`"", '/qn', '/norestart') -PassThru
             } else {
-              $p = Start-Process -FilePath $file -ArgumentList $i.args -PassThru
+              if (@($i.args).Count -gt 0) { $p = Start-Process -FilePath $file -ArgumentList $i.args -PassThru } else { $p = Start-Process -FilePath $file -PassThru }
             }
-            $done = $p.WaitForExit(600000)
+            # Poll instead of one long wait, noting any window that appears: a silent install shows none.
+            $seen = @{}
+            $deadline = (Get-Date).AddMinutes(10)
+            $done = $false
+            while ((Get-Date) -lt $deadline) {
+              if ($p.WaitForExit(2000)) { $done = $true; break }
+              Get-Process | Where-Object { $_.Id -notin $baseline -and $_.MainWindowTitle } | ForEach-Object { $seen["$($_.ProcessName): $($_.MainWindowTitle)"] = 1 }
+            }
+            $windows = ($seen.Keys -join ' | ')
             $secs = [int]$sw.Elapsed.TotalSeconds
             if (-not $done) {
               # What's on screen tells us which dialog it's stuck on.
@@ -50,12 +58,12 @@ jobs:
             } else {
               $code = $p.ExitCode
               $ok = @(0, 3010, 1641) -contains $code
-              $results += [pscustomobject]@{ app = $i.appId; result = $(if ($ok) { 'OK' } else { 'FAIL' }); code = $code; secs = $secs; note = '' }
+              $results += [pscustomobject]@{ app = $i.appId; result = $(if ($ok) { 'OK' } else { 'FAIL' }); code = $code; secs = $secs; note = $windows }
             }
             # Many installers launch the app when they finish; close those so they don't pile up.
             Get-Process | Where-Object { $_.Id -notin $baseline -and $_.MainWindowTitle } |
               Stop-Process -Force -ErrorAction SilentlyContinue
             Remove-Item $file -Force -ErrorAction SilentlyContinue
-            Write-Host "$($i.appId): $($results[-1].result) $($results[-1].code) in $($secs)s"
+            Write-Host "$($i.appId): $($results[-1].result) $($results[-1].code) in $($secs)s windows=[$($results[-1].note)]"
           }
           $results | Format-Table -AutoSize | Out-String -Width 400 | Write-Host

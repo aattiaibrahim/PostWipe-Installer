@@ -1,54 +1,25 @@
 [
  {
-  "appId": "steam",
-  "filename": "steamsetup.exe",
-  "url": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe",
+  "appId": "brave-standalone-silent",
+  "filename": "BraveBrowserStandaloneSilentSetup.exe",
+  "url": "https://github.com/brave/brave-browser/releases/download/v1.95.104/BraveBrowserStandaloneSilentSetup.exe",
+  "kind": "exe",
+  "args": []
+ },
+ {
+  "appId": "brave-stub-silent",
+  "filename": "bravebrowsersetup.exe",
+  "url": "https://github.com/brave/brave-browser/releases/download/v1.95.104/BraveBrowserSetup.exe",
   "kind": "exe",
   "args": [
-   "/S"
+   "/silent",
+   "/install"
   ]
  },
  {
-  "appId": "epic-games",
-  "filename": "epicgameslauncherinstaller.msi",
-  "url": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi",
-  "kind": "msi"
- },
- {
-  "appId": "wargaming-game-center",
-  "filename": "wgc_installer.exe",
-  "url": "https://redirect.wargaming.net/WGC/Wargaming_Game_Center_Install_NA.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "ubisoft-connect",
-  "filename": "ubisoftconnectinstaller.exe",
-  "url": "https://static3.cdn.ubi.com/orbit/launcher_installer/UbisoftConnectInstaller.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "ea-app",
-  "filename": "eaappinstaller.exe",
-  "url": "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe",
-  "kind": "exe",
-  "args": [
-   "/quiet",
-   "/norestart"
-  ]
- },
- {
-  "appId": "bsg-launcher",
-  "filename": "bsglauncher.exe",
-  "url": "https://launcher.escapefromtarkov.com/launcher/download",
+  "appId": "gog-galaxy",
+  "filename": "gog_galaxy_2.0.exe",
+  "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe",
   "kind": "exe",
   "args": [
    "/VERYSILENT",
@@ -58,173 +29,36 @@
   ]
  },
  {
-  "appId": "rsi-launcher",
-  "filename": "rsi-launcher-setup.exe",
-  "url": "https://install.robertsspaceindustries.com/rel/2/RSI%20Launcher-Setup-2.17.0.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "cpu-z",
-  "filename": "cpu-z-installer.exe",
-  "url": "https://download.cpuid.com/cpu-z/cpu-z_3.01-en.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "hwmonitor",
-  "filename": "hwmonitor-installer.exe",
-  "url": "https://download.cpuid.com/hwmonitor/hwmonitor_1.68.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "winrar",
-  "filename": "winrar-x64.exe",
-  "url": "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-723.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "7-zip",
-  "filename": "7z-x64.exe",
-  "url": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "bitwarden",
-  "filename": "bitwarden-installer.exe",
-  "url": "https://vault.bitwarden.com/download/?app=desktop&platform=windows",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "vscode",
-  "filename": "vscodeusersetup-x64.exe",
-  "url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-",
-   "/MERGETASKS=!runcode"
-  ]
- },
- {
-  "appId": "pycharm",
-  "filename": "pycharm-community-installer.exe",
-  "url": "https://data.services.jetbrains.com/products/download?code=PCC&platform=windows",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "notepad-plus-plus",
-  "filename": "npp-installer-x64.exe",
-  "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8/npp.8.9.8.Installer.x64.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "putty",
-  "filename": "putty-installer.msi",
-  "url": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.85-installer.msi",
-  "kind": "msi"
- },
- {
-  "appId": "powertoys",
-  "filename": "powertoysusersetup-x64.exe",
-  "url": "https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/PowerToysUserSetup-0.101.2362.0-x64.exe",
-  "kind": "exe",
-  "args": [
-   "/quiet",
-   "/norestart"
-  ]
- },
- {
-  "appId": "git",
-  "filename": "gitsetup.exe",
-  "url": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.5/Git-2.55.0.5-64-bit.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "claude-desktop",
-  "filename": "claude-setup-x64.exe",
-  "url": "https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe",
+  "appId": "battle-net",
+  "filename": "battle.net-setup.exe",
+  "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE",
   "kind": "exe",
   "args": [
    "--silent"
   ]
  },
  {
-  "appId": "firefox",
-  "filename": "firefoxsetup.exe",
-  "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US",
+  "appId": "windscribe",
+  "filename": "windscribe-setup.exe",
+  "url": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_amd64.exe",
   "kind": "exe",
   "args": [
-   "/S"
+   "-silent"
   ]
  },
  {
-  "appId": "librewolf",
-  "filename": "librewolf_setup.exe",
-  "url": "https://dl.librewolf.net/librewolf/156.0-1/librewolf-156.0-1-windows-x86_64-setup.exe",
+  "appId": "rustdesk",
+  "filename": "rustdesk-x86_64.exe",
+  "url": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-x86_64.exe",
   "kind": "exe",
   "args": [
-   "/S"
+   "--silent-install"
   ]
  },
  {
-  "appId": "zen-browser",
-  "filename": "zen.installer.exe",
-  "url": "https://github.com/zen-browser/desktop/releases/download/1.22.2b/zen.installer.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "discord",
-  "filename": "discordsetup.exe",
-  "url": "https://discord.com/api/download?platform=win",
-  "kind": "exe",
-  "args": [
-   "--silent"
-  ]
- },
- {
-  "appId": "telegram",
-  "filename": "telegram-setup.exe",
-  "url": "https://telegram.org/dl/desktop/win",
+  "appId": "hwinfo",
+  "filename": "hwinfo-installer.exe",
+  "url": "https://www.hwinfo.com/files/hwi64_852.exe",
   "kind": "exe",
   "args": [
    "/VERYSILENT",
@@ -234,249 +68,32 @@
   ]
  },
  {
-  "appId": "teamspeak",
-  "filename": "teamspeak3-client-win64.exe",
-  "url": "https://files.teamspeak-services.com/releases/client/3.6.2/TeamSpeak3-Client-win64-3.6.2.exe",
+  "appId": "virtualbox",
+  "filename": "virtualbox-setup.exe",
+  "url": "https://download.virtualbox.org/virtualbox/7.2.18/VirtualBox-7.2.18-175117-Win.exe",
   "kind": "exe",
   "args": [
-   "/S"
+   "--silent",
+   "--ignore-reboot"
   ]
  },
  {
-  "appId": "spotify",
-  "filename": "spotifysetup.exe",
-  "url": "https://download.scdn.co/SpotifySetup.exe",
+  "appId": "nvidia-broadcast",
+  "filename": "nvidia_broadcast_setup.exe",
+  "url": "https://international.download.nvidia.com/Windows/broadcast/2.2.1/NVIDIA_Broadcast_v2.2.1.58338310.exe",
   "kind": "exe",
   "args": [
-   "/silent"
+   "-s"
   ]
  },
  {
-  "appId": "tidal",
-  "filename": "tidal setup.exe",
-  "url": "https://download.tidal.com/desktop/TIDALSetup.exe",
+  "appId": "netlimiter",
+  "filename": "netlimiter-setup.exe",
+  "url": "https://download.netlimiter.com/nl/netlimiter-5.3.27.0.exe",
   "kind": "exe",
   "args": [
-   "--silent"
-  ]
- },
- {
-  "appId": "qobuz",
-  "filename": "qobuz setup.exe",
-  "url": "https://desktop.qobuz.com/releases/win32/x64/windows7_8_10/8.2.0-b033/Qobuz_Installer.exe",
-  "kind": "exe",
-  "args": [
-   "--silent"
-  ]
- },
- {
-  "appId": "music-presence",
-  "filename": "musicpresencesetup.exe",
-  "url": "https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-windows-x64-installer.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "qbittorrent",
-  "filename": "qbittorrent_setup.exe",
-  "url": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.3/qbittorrent_5.2.3_x64_setup.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "deluge",
-  "filename": "deluge-win64-setup.exe",
-  "url": "https://ftp.osuosl.org/pub/deluge/windows/deluge-2.2.0-win64-setup.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "sonarr",
-  "filename": "sonarrsetup.exe",
-  "url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.20.3014/Sonarr.main.4.0.20.3014.win-x64-installer.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "radarr",
-  "filename": "radarrsetup.exe",
-  "url": "https://github.com/Radarr/Radarr/releases/download/v6.4.4.10685/Radarr.master.6.4.4.10685.windows-core-x64-installer.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "prowlarr",
-  "filename": "prowlarrsetup.exe",
-  "url": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.6.5.5623/Prowlarr.master.2.6.5.5623.windows-core-x64-installer.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "lidarr",
-  "filename": "lidarrsetup.exe",
-  "url": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.0.4875/Lidarr.master.3.1.0.4875.windows-core-x64-installer.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "sharex",
-  "filename": "sharex-setup.exe",
-  "url": "https://github.com/ShareX/ShareX/releases/download/v21.0.0/ShareX-21.0.0-setup-x64.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "twinkle-tray",
-  "filename": "twinkletray-setup.exe",
-  "url": "https://github.com/xanderfrangos/twinkle-tray/releases/download/v1.17.2/Twinkle.Tray.v1.17.2.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "flux",
-  "filename": "flux-setup.exe",
-  "url": "https://justgetflux.com/flux-setup.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "anki",
-  "filename": "ankisetup.msi",
-  "url": "https://github.com/ankitects/anki/releases/download/26.09.2/anki-26.09.2-win-x64.msi",
-  "kind": "msi"
- },
- {
-  "appId": "handbrake",
-  "filename": "handbrakesetup.exe",
-  "url": "https://github.com/HandBrake/HandBrake/releases/download/1.11.2/HandBrake-1.11.2-x86_64-Win_GUI.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "plex",
-  "filename": "plexsetup.exe",
-  "url": "https://downloads.plex.tv/plex-desktop/1.115.0.426-4e960a1d/windows/Plex-1.115.0.426-4e960a1d-x86_64.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "focusrite-control",
-  "filename": "focusritecontrolsetup.exe",
-  "url": "https://fael-downloads-prod.focusrite.com/customer/prod/downloads/focusrite_control_v3_27_0.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "screentogif",
-  "filename": "screentogifsetup.msi",
-  "url": "https://github.com/NickeManarin/ScreenToGif/releases/download/2.43.2/ScreenToGif.2.43.2.Setup.x64.msi",
-  "kind": "msi"
- },
- {
-  "appId": "obs-studio",
-  "filename": "obs-studio-installer.exe",
-  "url": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-Windows-x64-Installer.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "houdoku",
-  "filename": "houdoku-setup.exe",
-  "url": "https://github.com/xgi/houdoku/releases/download/v2.16.0/Houdoku-Setup-2.16.0.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "insta360-link-controller",
-  "filename": "insta360linkcontroller_2.2.4(build14).exe",
-  "url": "https://wassets.insta360.com/common/ba64efbd74f6411aa9c356b95aa5126e/Insta360LinkController_2.2.4(build14).exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "elgato-stream-deck",
-  "filename": "streamdecksetup.msi",
-  "url": "https://edge.elgato.com/egc/windows/sd/Stream_Deck_7.4.1.22720.msi",
-  "kind": "msi"
- },
- {
-  "appId": "bambu-studio",
-  "filename": "bambustudiosetup.exe",
-  "url": "https://github.com/bambulab/BambuStudio/releases/download/v02.08.02.61/Bambu_Studio_win-v02.08.02.61-20260820225108.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "teamviewer",
-  "filename": "teamviewer_setup_x64.exe",
-  "url": "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
-  ]
- },
- {
-  "appId": "obsidian",
-  "filename": "obsidian-setup.exe",
-  "url": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.7/Obsidian-1.13.7.exe",
-  "kind": "exe",
-  "args": [
-   "/S"
+   "/exenoui",
+   "/qn"
   ]
  }
 ]
