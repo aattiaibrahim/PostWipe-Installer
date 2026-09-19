@@ -161,6 +161,16 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Discover deselect + Save-set spacing — 2026-09-19 (v0.1.119)
+- [done] **Unchecking the last app on Discover leaves select mode.** The bottom bar and the
+  toolbar's "N selected" used to stay up at zero. Discover has no Select button to exit from, so
+  `PickRow` sets select mode to "selection is non-empty" after every toggle. Other pages keep
+  the Photos-style behavior (stays on at zero until Cancel).
+- [done] **Dialog buttons no longer sit flush under a text field.** Save as set measured 0px.
+  `.account-field + .confirm-dialog__actions { margin-top: 1.1rem }` gives 18px anywhere that
+  pattern appears.
+- The Save-as-set copy now says sets are found in Favorites, not "the sidebar".
+
 ### Ninite pass: "Install all at once", Ninite-style Discover, Generate clipping — 2026-09-19 (v0.1.117)
 Andrew called the first version bad ("the way you implemented it blows") and pointed at
 ninite.com: no wizards, one progress list, and Ninite even does Brave.
