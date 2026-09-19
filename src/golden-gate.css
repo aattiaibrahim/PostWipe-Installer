@@ -2961,3 +2961,8 @@ html.window-restoring .app-shell {
   font-weight: 600;
   line-height: 15px;
 }
+
+/* Dialog buttons sat flush under a text field (Save as set: 0px). */
+.account-field + .confirm-dialog__actions {
+  margin-top: 1.1rem;
+}

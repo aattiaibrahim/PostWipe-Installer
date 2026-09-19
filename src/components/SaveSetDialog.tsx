@@ -63,7 +63,7 @@ export function SaveSetDialog() {
             transition={{ type: "spring", stiffness: 460, damping: 34 }}
           >
             <h3 className="confirm-dialog__title">Save {appIds.length} apps as a set</h3>
-            <p className="account-lede">Load it from the sidebar on any PC you sign in on.</p>
+            <p className="account-lede">Find it in Favorites on any PC you sign in on.</p>
             <label className="account-field" htmlFor="set-name">
               <span className="account-field__label">Name</span>
               <input

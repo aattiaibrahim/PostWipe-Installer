@@ -28,8 +28,9 @@ function PickRow({ app, os, checked }: { app: AppEntry; os: Os; checked: boolean
         checked={checked}
         onChange={() => {
           toggle(app.id);
-          // Checking something here brings up the bottom bar (Download N / Save as set).
-          setSelectMode(true);
+          // A pick brings up the bottom bar (Download N / Save as set); unchecking the last one
+          // puts it away again, since Discover has no Select button to leave select mode from.
+          setSelectMode(useSelectionStore.getState().selected.length > 0);
         }}
       />
       <AppIcon appId={app.id} name={app.name} domain={app.domain} className="pick-row__icon" />
