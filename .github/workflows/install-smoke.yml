@@ -24,6 +24,8 @@ jobs:
           $dir = Join-Path $env:RUNNER_TEMP 'dl'
           New-Item -ItemType Directory -Force $dir | Out-Null
           $results = @()
+          # Only processes that appear after this point may be closed; the runner's own must survive.
+          $baseline = @((Get-Process).Id)
           foreach ($i in $list) {
             $file = Join-Path $dir $i.filename
             try {
@@ -51,7 +53,7 @@ jobs:
               $results += [pscustomobject]@{ app = $i.appId; result = $(if ($ok) { 'OK' } else { 'FAIL' }); code = $code; secs = $secs; note = '' }
             }
             # Many installers launch the app when they finish; close those so they don't pile up.
-            Get-Process | Where-Object { $_.MainWindowTitle -and $_.ProcessName -notin @('pwsh','powershell','Runner.Worker','Runner.Listener','explorer') } |
+            Get-Process | Where-Object { $_.Id -notin $baseline -and $_.MainWindowTitle } |
               Stop-Process -Force -ErrorAction SilentlyContinue
             Remove-Item $file -Force -ErrorAction SilentlyContinue
             Write-Host "$($i.appId): $($results[-1].result) $($results[-1].code) in $($secs)s"
