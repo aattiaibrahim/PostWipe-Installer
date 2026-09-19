@@ -58,6 +58,17 @@ pub fn run() {
     cleanup_legacy_startup_pins();
 
     tauri::Builder::default()
+        // Registered first, as the plugin requires. Launching the app while it's already running
+        // doesn't open a second copy: the running window is restored and focused, and it shows a
+        // short "already open" note so the double-click visibly did something.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(window) = app.webview_windows().values().next() {
+                let _ = window.unminimize();
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+            let _ = tauri::Emitter::emit(app, "app://already-open", ());
+        }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_updater::Builder::new().build())

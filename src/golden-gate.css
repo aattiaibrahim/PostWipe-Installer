@@ -1781,6 +1781,10 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
 .gg-main {
   display: flex;
   flex-direction: column;
+  /* Always reserve the 10px scrollbar lane. Without it, pages long enough to scroll
+     (Discover, All Apps) narrowed the column, and the toolbar's buttons slid 10px left
+     compared with short pages like Downloads. */
+  scrollbar-gutter: stable;
 }
 
 /* The toolbar must keep its 56px on every page. As a flex item it used to shrink to its
@@ -2468,4 +2472,115 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
 /* Clear the sticky 56px toolbar when a profile tile scrolls a section into view. */
 .favorites__section {
   scroll-margin-top: calc(var(--gg-toolbar-h) + 12px);
+}
+
+/* ─── Window control animations (TitleBar.tsx toggles the html classes) ───────────────── */
+
+/* The light itself: sinks under the finger, springs back on release. */
+.traffic-light {
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.12s ease;
+}
+
+.traffic-light:active {
+  transform: scale(0.84);
+  filter: brightness(0.8);
+  transition-duration: 0.06s;
+}
+
+/* The whole app shell animates, and because the window is transparent that reads as the
+   window itself moving. Minimize drops toward the taskbar, close shrinks away in place, zoom
+   settles into its new size, and restoring grows back up from where minimize left it. */
+html.window-minimizing .app-shell {
+  transform-origin: 50% 100%;
+  animation: gg-win-minimize 0.23s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+
+html.window-closing .app-shell {
+  transform-origin: 50% 50%;
+  animation: gg-win-close 0.19s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+html.window-zooming .app-shell {
+  transform-origin: 50% 50%;
+  animation: gg-win-zoom 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+html.window-restoring .app-shell {
+  transform-origin: 50% 100%;
+  animation: gg-win-restore 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes gg-win-minimize {
+  to {
+    transform: translateY(18%) scale(0.72, 0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes gg-win-close {
+  to {
+    transform: scale(0.93);
+    opacity: 0;
+  }
+}
+
+@keyframes gg-win-zoom {
+  from {
+    transform: scale(0.975);
+    opacity: 0.75;
+  }
+}
+
+@keyframes gg-win-restore {
+  from {
+    transform: translateY(10%) scale(0.86, 0.8);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[class*="window-"] .app-shell {
+    animation: none;
+  }
+}
+
+/* ─── "Already open" notice (AlreadyOpenNotice.tsx) ─────────────────────────────────── */
+
+.already-open {
+  position: fixed;
+  top: 52px;
+  left: 50%;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px 10px 12px;
+  translate: -50% 0;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface-solid) 94%, var(--text) 6%);
+  box-shadow:
+    0 12px 32px rgb(0 0 0 / 0.35),
+    inset 0 0 0 1px var(--gg-hair);
+  color: var(--text);
+  pointer-events: none;
+}
+
+.already-open__logo {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+
+.already-open > span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.already-open strong {
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 600;
 }

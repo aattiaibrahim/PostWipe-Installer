@@ -161,12 +161,29 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Window animations, single instance, scrollbar gutter — 2026-09-19
+- [done] **Download button no longer slides sideways.** Long pages showed `.gg-main`'s 10px
+  scrollbar, which narrowed the column and moved the toolbar buttons 10px left. `scrollbar-gutter:
+  stable` reserves the lane on every page. Headless Playwright hides scrollbars by default, so
+  measure with `ignoreDefaultArgs: ["--hide-scrollbars"]` or this bug is invisible.
+- [done] **Golden Gate window animations** (Windows/Linux custom lights, `TitleBar.tsx`).
+  - Each light sinks when pressed and springs back.
+  - Minimize shrinks the app shell toward the bottom, then minimizes; focusing again grows it back.
+  - Close shrinks and fades it in place before closing.
+  - Maximize settles in with a small scale.
+  - The animations work because the window is transparent: animating `.app-shell` moves the
+    visible window. They respect prefers-reduced-motion.
+- [done] **Single instance:** `tauri-plugin-single-instance`. A second launch focuses and restores
+  the running window, and it shows an "already open" pill (`AlreadyOpenNotice.tsx`, event
+  `app://already-open`). Test it in the browser with
+  `window.dispatchEvent(new Event("postwipe:already-open"))`.
+
 ### Steady toolbar, clickable profile tiles — 2026-09-18
-- [done, not pushed] **Toolbar no longer jumps between pages.** `.gg-main` is a flex column,
+- [done] **Toolbar no longer jumps between pages.** `.gg-main` is a flex column,
   and the toolbar shrank from 56px to its buttons' 37px whenever the page was taller than the
   window (Discover, long lists). The download button moved ~10px between Discover and
   Downloads. `.gg-toolbar { flex: none }` fixes it; measured at y = 49.5 on every page.
-- [done, not pushed] **Profile panel tiles are clickable** (his pick: "jump to page"). Favorites
+- [done] **Profile panel tiles are clickable** (his pick: "jump to page"). Favorites
   opens the Favorites page scrolled to Starred apps; Sets scrolls it to Sets. Both close the dock.
   `useFavoritesFocus` in `FavoritesPage.tsx` carries the target section.
 

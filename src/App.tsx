@@ -3,6 +3,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { Browse } from "./screens/Browse";
 import { GlassBackdrop } from "./components/GlassBackdrop";
 import { TitleBar } from "./components/TitleBar";
+import { AlreadyOpenNotice } from "./components/AlreadyOpenNotice";
 import { LaunchSplash } from "./components/LaunchSplash";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { SidebarSettings } from "./components/SidebarSettings";
@@ -119,6 +120,7 @@ function App() {
     <main className="app-shell">
       {!splashDone && <LaunchSplash onDone={() => setSplashDone(true)} />}
       <UpdatePrompt />
+      <AlreadyOpenNotice />
       <AccountDialog />
       <SaveSetDialog />
       <KickstartDialog />
