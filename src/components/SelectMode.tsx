@@ -7,7 +7,8 @@ import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
 import { useSpecialsContentStore, flattenGroup } from "../state/specialsContentStore";
 import { SPECIALS_CATEGORY_ID, useSpecialsStore } from "../state/specialsStore";
 import { useAccountStore } from "../state/accountStore";
-import { startDownload, startSpecialsDownload } from "../lib/tauriCommands";
+import { startSpecialsDownload } from "../lib/tauriCommands";
+import { downloadApps } from "./DownloadChoiceSheet";
 import { AppIcon } from "./AppIcon";
 import { useSaveSetDialog } from "./SaveSetDialog";
 import { useAccountDialog } from "./AccountDialog";
@@ -134,13 +135,8 @@ export function SelectionActionBar() {
       }
       clearSpecials();
     } else {
-      for (const id of selected) {
-        try {
-          await startDownload(id, osFilter);
-        } catch {
-          // Per-app failures surface on their own rows.
-        }
-      }
+      // Asks "install for me or just download?" first; closing that sheet keeps the selection.
+      if ((await downloadApps(selected, osFilter)) === null) return;
       clear();
     }
     setSelectMode(false);

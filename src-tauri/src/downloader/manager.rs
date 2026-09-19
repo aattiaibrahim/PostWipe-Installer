@@ -45,9 +45,18 @@ pub struct ActiveDownload {
     pub app_name: String,
 }
 
+/// A file that passed verify.rs in this session: which app it is and its SHA-256. "Install
+/// for me" only runs files listed here, and only while their hash still matches.
+#[derive(Clone)]
+pub struct VerifiedFile {
+    pub app_id: String,
+    pub sha256: String,
+}
+
 pub struct DownloadManager {
     semaphore: Arc<Semaphore>,
     jobs: Arc<DashMap<String, JobHandle>>,
+    verified: Arc<DashMap<PathBuf, VerifiedFile>>,
 }
 
 impl DownloadManager {
@@ -55,7 +64,13 @@ impl DownloadManager {
         Self {
             semaphore: Arc::new(Semaphore::new(MAX_CONCURRENT_DOWNLOADS)),
             jobs: Arc::new(DashMap::new()),
+            verified: Arc::new(DashMap::new()),
         }
+    }
+
+    /// The verification record for a downloaded file (keyed by its canonical path).
+    pub fn verified_file(&self, path: &std::path::Path) -> Option<VerifiedFile> {
+        self.verified.get(path).map(|v| v.clone())
     }
 
     /// Resolution (which may hit the network for `github_release`/`html` specs) happens
@@ -86,6 +101,7 @@ impl DownloadManager {
 
         let semaphore = self.semaphore.clone();
         let jobs = self.jobs.clone();
+        let verified = self.verified.clone();
         let job_id_task = job_id.clone();
 
         tauri::async_runtime::spawn(async move {
@@ -119,6 +135,9 @@ impl DownloadManager {
                         };
                         match crate::verify::check(&dest, &actual_sha256, expected, expect.signer.as_deref(), source).await {
                             crate::verify::Outcome::Passed(summary) => {
+                                if let Ok(canonical) = dest.canonicalize() {
+                                    verified.insert(canonical, VerifiedFile { app_id: app_id.clone(), sha256: actual_sha256.clone() });
+                                }
                                 events::completed(&app_handle, &job_id_task, &app_id, &app_name, &dest.to_string_lossy(), summary)
                             }
                             crate::verify::Outcome::Blocked(reason) => {

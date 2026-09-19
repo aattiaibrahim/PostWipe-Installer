@@ -105,6 +105,23 @@ pub struct PlatformEntry {
     /// Collected by scripts/collect-signers.mjs; absent where the file type can't be signed.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub signer: Option<String>,
+    /// How "Install for me" runs this installer (scripts/install-args.mjs). Absent means it
+    /// opens its own installer window.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub install: Option<InstallSpec>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct InstallSpec {
+    /// Silent switches. Empty = interactive: the installer shows its own UI and the app waits.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub args: Vec<String>,
+    /// Runs in the single elevated batch (one UAC prompt) instead of as the signed-in user.
+    #[serde(default)]
+    pub admin: bool,
+    /// The download is the program itself; there's nothing to install.
+    #[serde(default)]
+    pub portable: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -17,6 +17,7 @@ use commands::download::{
     cancel_download, delete_download, download_file_info, list_active_downloads, open_download, open_downloads_folder, paths_exist, start_download,
     start_specials_download,
 };
+use commands::install::{cancel_install, install_downloads, InstallSessions};
 use commands::health::{clear_local_health, load_catalog_health, run_health_check};
 use commands::scripts::{
     cleanup_legacy_startup_pins, find_generated_script, generate_script, is_script_pinned, pin_script_to_start_menu,
@@ -52,6 +53,11 @@ fn install_panic_hook() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // The elevated copy "Install for me" starts: run the admin installers and exit before any
+    // window, plugin or single-instance check (which would bounce it to the running app).
+    if let Some(code) = commands::install::maybe_run_elevated_batch() {
+        std::process::exit(code);
+    }
     install_panic_hook();
     // Heals machines the feature's first version affected: it wrote pins into the
     // auto-run Startup folder instead of the Start menu, prompting at every boot.
@@ -74,6 +80,7 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .manage(DownloadManager::new())
+        .manage(InstallSessions::default())
         .setup(|app| {
             // Needs the app handle to find the saved session token, so it can't be built
             // before the builder runs like DownloadManager is.
@@ -88,6 +95,8 @@ pub fn run() {
             open_downloads_folder,
             paths_exist,
             download_file_info,
+            install_downloads,
+            cancel_install,
             open_download,
             delete_download,
             generate_script,

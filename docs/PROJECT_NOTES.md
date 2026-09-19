@@ -161,6 +161,43 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### "Install for me" (combo install) — 2026-09-19
+Andrew asked for one file combining all the installers. He picked a Ninite-style **"Install
+for me"** instead (a packed .exe would be unsigned, trip SmartScreen and antivirus, and still
+just run the same installers). He also picked **a choice at Download time**.
+- **Where:** select mode's Download N, a set's Download all, and Kickstart. They all call
+  `downloadApps()` in `DownloadChoiceSheet.tsx`, which asks "Download & install for me" or "Just
+  download" and remembers the last choice. On Windows it's asked only for Windows apps; macOS
+  just downloads (not built for Mac yet).
+- **Run:** `installStore.ts` follows the run's download jobs, then calls `install_downloads` with
+  the finished paths once all have landed. The Downloads page shows `InstallRunPanel`
+  (downloading → installing → summary, Cancel remaining, Clear).
+- **Backend (`commands/install.rs`):**
+  - It only runs files inside PostWipeDownloads that passed verify.rs in this session. The
+    download manager keeps a `verified` map of path → app id and SHA-256.
+  - It re-hashes each file right before running it.
+  - Switches come from the compiled-in catalog.
+  - Admin installers run in one elevated batch. The app relaunches itself with
+    `--postwipe-install-batch …`, which is handled at the top of `run()` before any window or
+    the single-instance plugin, so the UAC prompt names PostWipe and not PowerShell. That copy
+    re-derives every switch and re-checks every hash.
+  - Per-user installers run unelevated (Spotify refuses elevation; Squirrel/electron installers
+    would land in the wrong profile).
+  - An exe that demands admin anyway (error 740) falls back to ShellExecute, which shows its own
+    prompt.
+- **Catalog:** `platforms.windows.install = { args, admin, portable }`, written by
+  `scripts/install-args.mjs`, a reviewed table with the reasoning.
+  `scripts/detect-installers.mjs` identifies each installer's engine and manifest UAC level by
+  range request. Note that Inno loaders always say asInvoker, so the manifest can't decide `admin`
+  for them.
+- **Verified:** a throwaway GitHub Actions Windows run installed all 50 silent installers.
+  49/50 exited 0 with no hangs; BSG's CDN 403s GitHub runners, so the download failed there. The
+  `install-smoke` branch still exists because the Prevent Deletion ruleset blocks deleting it.
+  The elevated batch's guards (hash mismatch, outside folder, fake folder, non-catalog app,
+  portable) were checked against the real binary with dummy files; nothing executed.
+- **Not yet exercised end to end on a real PC:** the UAC prompt, and the batch runner launching
+  real installers. The first real run is the release.
+
 ### Window animations, single instance, scrollbar gutter — 2026-09-19
 - [done] **Download button no longer slides sideways.** Long pages showed `.gg-main`'s 10px
   scrollbar, which narrowed the column and moved the toolbar buttons 10px left. `scrollbar-gutter:
@@ -1234,6 +1271,13 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 
 Append new entries at the top with a date. Keep each one short: what was decided, why, what it
 rules out.
+
+### 2026-09-19 — "Install for me" elevates PostWipe itself, and only for installers that need it
+The admin batch is the app relaunched with `--postwipe-install-batch`, not an encoded PowerShell
+script. The UAC prompt names PostWipe, antivirus doesn't see hidden encoded PowerShell, and the
+elevated copy trusts nothing on its command line: it re-derives switches from its own catalog and
+re-hashes files. Per-user installers never run elevated. Rules out: a combined self-extracting
+.exe, passing installer arguments from the webview, and elevating everything to save a prompt.
 
 ### 2026-09-17 — Downloads is a page, not a toolbar popover
 Andrew picked design 2 of five prototypes. The page lists files and their verification results

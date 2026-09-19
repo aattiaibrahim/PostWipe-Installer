@@ -2584,3 +2584,183 @@ html.window-restoring .app-shell {
   font-size: 0.88rem;
   font-weight: 600;
 }
+
+/* ─── "Install for me": the choice sheet and the run panel ──────────────────────────── */
+
+.download-choice {
+  max-width: 460px;
+}
+
+.download-choice__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 6px;
+}
+
+.download-choice__option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--gg-fill);
+  box-shadow: inset 0 0 0 1px var(--gg-hair);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.download-choice__option:hover:not(:disabled) {
+  background: var(--gg-sel);
+}
+
+.download-choice__option--preferred {
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.download-choice__option:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.download-choice__option svg {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.download-choice__option .download-choice__check {
+  stroke: #30d158;
+}
+
+.download-choice__option > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.download-choice__option strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.download-choice__option > span > span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.install-run {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--gg-card);
+  box-shadow: inset 0 0 0 1px var(--gg-hair);
+}
+
+.install-run__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.install-run__head .category-panel__title {
+  margin: 0;
+}
+
+.install-run__summary {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.install-run__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.install-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 6px 0;
+}
+
+.app-icon.install-row__icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.install-row__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.install-row__body strong {
+  overflow: hidden;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.install-row__detail {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.install-row__state {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 550;
+  white-space: nowrap;
+}
+
+.install-row__state .dl-spinner {
+  width: 14px;
+  height: 14px;
+}
+
+.install-row__state--ok {
+  color: #30d158;
+}
+
+.install-row__state--bad {
+  color: #ff6961;
+}
+
+.install-row__state--you {
+  color: #ffb340;
+}
+
+.install-row--skipped,
+.install-row--portable {
+  opacity: 0.7;
+}

@@ -16,6 +16,7 @@ import {
 import { AppIcon } from "./AppIcon";
 import { fmtSize, tileTint } from "./SpecialsCard";
 import { PublishVisibleSelectable } from "./SelectMode";
+import { InstallRunPanel } from "./InstallRunPanel";
 
 export const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
 
@@ -236,6 +237,8 @@ export function DownloadsPage({ catalog }: { catalog: Catalog }) {
       </header>
 
       {error && <p className="downloads-page__error">Couldn't do that: {error}</p>}
+
+      <InstallRunPanel />
 
       {activeJobs.length > 0 && (
         <section className="category-panel__section">

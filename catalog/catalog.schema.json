@@ -59,7 +59,18 @@
         "resolver": { "$ref": "#/definitions/resolver" },
         "filename": { "type": "string" },
         "script_id": { "type": "string" },
-        "stale": { "type": "boolean" }
+        "stale": { "type": "boolean" },
+        "signer": { "type": "string", "description": "Expected code-signing organization (scripts/collect-signers.mjs)." },
+        "install": {
+          "type": "object",
+          "description": "How Install for me runs this installer (scripts/install-args.mjs). Absent = it opens its own installer.",
+          "additionalProperties": false,
+          "properties": {
+            "args": { "type": "array", "items": { "type": "string", "pattern": "^[^\\s\"']+$" } },
+            "admin": { "type": "boolean" },
+            "portable": { "type": "boolean" }
+          }
+        }
       }
     },
     "resolver": {

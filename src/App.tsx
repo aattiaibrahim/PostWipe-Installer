@@ -4,6 +4,8 @@ import { Browse } from "./screens/Browse";
 import { GlassBackdrop } from "./components/GlassBackdrop";
 import { TitleBar } from "./components/TitleBar";
 import { AlreadyOpenNotice } from "./components/AlreadyOpenNotice";
+import { DownloadChoiceSheet } from "./components/DownloadChoiceSheet";
+import { useInstallRunner } from "./state/installStore";
 import { LaunchSplash } from "./components/LaunchSplash";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { SidebarSettings } from "./components/SidebarSettings";
@@ -47,6 +49,7 @@ function App() {
   useApplyTheme();
   useWindowChrome();
   useApplyBackdrop();
+  useInstallRunner();
   const [splashDone, setSplashDone] = useState(false);
 
   // Restore a remembered Specials unlock (the vault is locked by default; the padlock in
@@ -123,6 +126,7 @@ function App() {
       <AlreadyOpenNotice />
       <AccountDialog />
       <SaveSetDialog />
+      <DownloadChoiceSheet />
       <KickstartDialog />
       <SidebarSettings />
       <GlassBackdrop />

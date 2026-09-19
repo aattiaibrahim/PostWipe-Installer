@@ -13,7 +13,7 @@ import {
   type KickstartOption,
   type KickstartStep,
 } from "../lib/kickstart";
-import { isTauri, startDownload } from "../lib/tauriCommands";
+import { downloadApps } from "./DownloadChoiceSheet";
 import { useCatalogStore } from "../state/catalogStore";
 import { useAccountStore } from "../state/accountStore";
 import { useSelectionStore } from "../state/selectionStore";
@@ -155,16 +155,10 @@ export function KickstartDialog() {
           .map((a) => a.id);
       saveSet("Kickstart", { windows: onOs("windows"), macos: onOs("macos") });
     }
-    let started = 0;
-    for (const id of ids) {
-      try {
-        if (isTauri) await startDownload(id, os);
-        started++;
-      } catch {
-        // A failed start shows on that app's own row; keep queuing the rest.
-      }
-    }
+    // Asks "install for me or just download?"; closing that sheet returns to the review.
+    const started = await downloadApps(ids, os);
     setBusy(false);
+    if (started === null) return;
     setPhase({ kind: "done", count: started });
   }
 

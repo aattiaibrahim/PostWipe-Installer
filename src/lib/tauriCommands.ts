@@ -301,3 +301,24 @@ export async function downloadFileInfo(paths: string[]): Promise<(DownloadFileIn
 export function openDownload(path: string): Promise<void> {
   return invoke("open_download", { path });
 }
+
+export type InstallState = "waiting" | "running" | "installed" | "failed" | "skipped" | "opened" | "portable" | "timed_out";
+
+export interface PlannedInstallStep {
+  path: string;
+  state: InstallState;
+  /** "silent" | "interactive" | "open" | "portable" | "none" */
+  mode: string;
+  admin: boolean;
+  detail: string | null;
+}
+
+/** Hands downloaded files to "Install for me". The backend decides what runs and how (only
+ *  verified files inside PostWipeDownloads, switches from the built-in catalog). */
+export function installDownloads(paths: string[]): Promise<{ sessionId: string; steps: PlannedInstallStep[] }> {
+  return invoke("install_downloads", { paths });
+}
+
+export function cancelInstall(sessionId: string): Promise<void> {
+  return invoke("cancel_install", { sessionId });
+}

@@ -3,7 +3,7 @@ import type { Catalog, Os } from "../types/catalog";
 import { useAccountStore } from "../state/accountStore";
 import { useCatalogStore } from "../state/catalogStore";
 import { useSelectionStore } from "../state/selectionStore";
-import { startDownload } from "../lib/tauriCommands";
+import { downloadApps } from "./DownloadChoiceSheet";
 import { FAVORITES_CATEGORY_ID } from "../lib/constants";
 import { AppCard } from "./AppCard";
 import { PublishVisibleSelectable } from "./SelectMode";
@@ -35,17 +35,9 @@ export function SetPage({ catalog, os, setId }: { catalog: Catalog; os: Os; setI
   const osName = (o: Os) => (o === "windows" ? "Windows" : "macOS");
 
   async function downloadAll() {
-    setStatus(`Starting ${downloadable.length} downloads…`);
-    let started = 0;
-    for (const id of downloadable) {
-      try {
-        await startDownload(id, os);
-        started++;
-      } catch {
-        // Per-app failures show on their own rows.
-      }
-    }
-    setStatus(`Queued ${started} of ${downloadable.length}. Follow them with the download button above.`);
+    const started = await downloadApps(downloadable, os);
+    if (started === null) return;
+    setStatus(`Queued ${started} of ${downloadable.length}. Follow them on the Downloads page.`);
   }
 
   return (
