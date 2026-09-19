@@ -161,7 +161,7 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
-### "Install for me" (combo install) — 2026-09-19
+### "Install for me" (combo install) — 2026-09-19 (v0.1.115)
 Andrew asked for one file combining all the installers. He picked a Ninite-style **"Install
 for me"** instead (a packed .exe would be unsigned, trip SmartScreen and antivirus, and still
 just run the same installers). He also picked **a choice at Download time**.
@@ -198,7 +198,7 @@ just run the same installers). He also picked **a choice at Download time**.
 - **Not yet exercised end to end on a real PC:** the UAC prompt, and the batch runner launching
   real installers. The first real run is the release.
 
-### Window animations, single instance, scrollbar gutter — 2026-09-19
+### Window animations, single instance, scrollbar gutter — 2026-09-19 (v0.1.114)
 - [done] **Download button no longer slides sideways.** Long pages showed `.gg-main`'s 10px
   scrollbar, which narrowed the column and moved the toolbar buttons 10px left. `scrollbar-gutter:
   stable` reserves the lane on every page. Headless Playwright hides scrollbars by default, so
