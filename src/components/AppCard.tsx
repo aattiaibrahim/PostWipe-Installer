@@ -180,7 +180,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
         // Windows 11 blocks apps from placing Start tiles (E_ACCESSDENIED on the shell
         // verb), so the app opens Explorer with the shortcut selected — the tile is then
         // one right-click away, which is the closest any app can legally get. The UI
-        // deliberately says "Add to Start Menu", NOT "Pin to Start": the button can't
+        // deliberately says "+ Start menu", NOT "Pin to Start": the button can't
         // deliver the tile itself, and promising it read as broken.
         setPinMsg(
           `"${lnkName}" was added to your Start menu — find it by typing its name in Start search. Want it as a tile too? Explorer just opened with the shortcut selected: right-click it ▸ Pin to Start. Done.`,
@@ -242,7 +242,7 @@ export const AppCard = memo(function AppCard({ app, os }: AppCardProps) {
               : "Adds a shortcut to your Start menu — it only runs when you click it"
           }
         >
-          {pinned ? "✓ In Start Menu" : "Add to Start Menu"}
+          {pinned ? "✓ In Start menu" : "+ Start menu"}
         </button>
       )}
       {isLink ? (

@@ -161,6 +161,38 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Ninite pass: "Install all at once", Ninite-style Discover, Generate clipping — 2026-09-19
+Andrew called the first version bad ("the way you implemented it blows") and pointed at
+ninite.com: no wizards, one progress list, and Ninite even does Brave.
+- **Renamed** the options to "Install all at once" and "Download only" (install each one
+  yourself, one by one).
+- **No installer window ever opens by itself.** In `install.rs`, a wizard-only installer (an exe
+  with no silent switches, or msix/appinstaller) is planned as `Manual` and never run in the batch.
+  The panel lists it under "Needs you" with a **Run installer** button (`openDownload`). The
+  elevated copy refuses non-silent modes too.
+- **More silent apps**, from a second runner pass that recorded any window appearing:
+  - Brave `/silent /install` (the Omaha stub; `BraveBrowserStandaloneSilentSetup.exe` also works);
+  - RustDesk `--silent-install`;
+  - Windscribe `-silent`;
+  - HWiNFO (Inno);
+  - VirtualBox `--silent --ignore-reboot`;
+  - NetLimiter `/exenoui /qn`.
+
+  Still manual: GOG Galaxy and Battle.net (their windows stay up), NVIDIA Broadcast (`-s`
+  errors), Riot, Docker (license), Equalizer APO and Peace (device choice), Vencord, DDU.
+  Now 51 silent, 9 manual, 3 portable.
+- **The panel matches Ninite's window:** one progress bar and an Application / Status table (OK,
+  Installing…, Downloading N%, Waiting to install, Needs you, Failed).
+- **Discover is a Ninite checklist.** Every downloadable app for the OS appears as a compact row
+  (checkbox, 18px logo, name) under its category, in flowing CSS columns (`.pick-grid`). A small
+  amber **manual** tag comes from `lib/installKind.ts`, which mirrors `mode_for`. Kickstart and
+  sets moved to a one-line strip. The shelves are gone (Popular, Essentials, Favorites, Recently
+  added). Checking a row turns on select mode, so the bottom bar's Download N opens the sheet. The
+  sheet names any picked apps that will need you.
+- **"Generate" was cut off at 1536px windows** (1920 at 125% scaling). The script rows' star,
+  "Add to Start Menu" and Generate overflowed the 294px cell. The label is now "+ Start menu", and
+  `.app-row__action-row` wraps. Measured unclipped from 800 to 2560px.
+
 ### "Install for me" (combo install) — 2026-09-19 (v0.1.115)
 Andrew asked for one file combining all the installers. He picked a Ninite-style **"Install
 for me"** instead (a packed .exe would be unsigned, trip SmartScreen and antivirus, and still

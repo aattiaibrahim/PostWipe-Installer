@@ -92,20 +92,22 @@ const PLAN = {
   "7-zip": { args: NSIS, admin: true },
   winrar: { args: NSIS, admin: true },
   spotify: { args: ["/silent"], admin: false }, // refuses to install elevated
+  // Verified silent on a clean runner 2026-09-19 (second pass over the "wizard-only" list).
+  brave: { args: ["/silent", "/install"], admin: false }, // Omaha stub, per-user like Chrome's
+  rustdesk: { args: ["--silent-install"], admin: true }, // installs its service
+  windscribe: { args: ["-silent"], admin: true }, // installs its VPN adapter
+  hwinfo: { args: INNO, admin: true },
+  virtualbox: { args: ["--silent", "--ignore-reboot"], admin: true },
+  netlimiter: { args: ["/exenoui", "/qn"], admin: true }, // Advanced Installer EXE wrapper
 
-  // No reliable silent mode (or a choice the user should make): opens its own installer.
-  "nvidia-broadcast": { admin: true },
-  netlimiter: { admin: true }, // installs a network driver
-  virtualbox: { admin: true }, // installs network drivers; Windows asks to trust them
+  // No working silent mode (or a choice only the user can make): downloaded and listed under
+  // "Needs you" with a Run installer button. Never opened automatically.
+  "nvidia-broadcast": { admin: true }, // "-s" exits with an error
   "docker-desktop": {}, // its silent mode means accepting Docker's license for the user
-  "battle-net": {},
-  brave: {},
-  "gog-galaxy": {},
+  "battle-net": {}, // "--silent" still shows its window (hung 10 min on the runner)
+  "gog-galaxy": {}, // Inno switches ignored: its window stays up
   "riot-client": {},
-  windscribe: {},
-  rustdesk: {},
   "equalizer-apo": {}, // asks which audio devices to hook, which only the user can answer
-  hwinfo: {},
   peace: {},
   vencord: {}, // a patcher with its own UI, not an installer
 

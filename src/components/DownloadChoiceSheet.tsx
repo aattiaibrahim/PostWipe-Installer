@@ -8,6 +8,7 @@ import { isTauri, startDownload } from "../lib/tauriCommands";
 import { osPlatform } from "../lib/platform";
 import { useCatalogStore } from "../state/catalogStore";
 import { useInstallStore } from "../state/installStore";
+import { installKind } from "../lib/installKind";
 
 type Choice = "install" | "download";
 const LAST_CHOICE_KEY = "postwipe-download-choice";
@@ -20,33 +21,43 @@ function lastChoice(): Choice {
   }
 }
 
+interface ChoiceRequest {
+  count: number;
+  /** Picked apps that only have a click-through installer (downloaded, left for the user). */
+  manual: string[];
+  resolve: (c: Choice | null) => void;
+}
+
 interface ChoiceState {
-  request: { count: number; resolve: (c: Choice | null) => void } | null;
-  ask: (count: number) => Promise<Choice | null>;
+  request: ChoiceRequest | null;
+  ask: (count: number, manual: string[]) => Promise<Choice | null>;
 }
 
 const useDownloadChoice = create<ChoiceState>((set) => ({
   request: null,
-  ask: (count) => new Promise((resolve) => set({ request: { count, resolve } })),
+  ask: (count, manual) => new Promise((resolve) => set({ request: { count, manual, resolve } })),
 }));
 
-/** Downloads several apps, asking first whether PostWipe should also install them.
- *  "Install for me" is Windows-only for now, so elsewhere it just downloads. Returns how many
- *  downloads started, or null if the sheet was dismissed. */
+/** Downloads several apps, asking first whether PostWipe should also install them all at once.
+ *  That's Windows-only for now, so elsewhere it just downloads. Returns how many downloads
+ *  started, or null if the sheet was dismissed. */
 export async function downloadApps(ids: string[], os: Os): Promise<number | null> {
   if (ids.length === 0) return 0;
   // Only Windows installers, on a Windows PC (or the browser preview).
   const canInstall = os === "windows" && (osPlatform === "windows" || !isTauri);
-  const choice = canInstall ? await useDownloadChoice.getState().ask(ids.length) : "download";
+  const catalogApps = new Map((useCatalogStore.getState().catalog?.categories ?? []).flatMap((c) => c.apps).map((a) => [a.id, a]));
+  const manual = ids.flatMap((id) => {
+    const app = catalogApps.get(id);
+    return app && installKind(app, os) === "manual" ? [app.name] : [];
+  });
+  const choice = canInstall ? await useDownloadChoice.getState().ask(ids.length, manual) : "download";
   if (!choice) return null;
   try {
     localStorage.setItem(LAST_CHOICE_KEY, choice);
   } catch {
     // Remembering the choice is a convenience only.
   }
-  const apps = new Map(
-    (useCatalogStore.getState().catalog?.categories ?? []).flatMap((c) => c.apps).map((a) => [a.id, a.name]),
-  );
+  const apps = new Map([...catalogApps].map(([id, a]) => [id, a.name]));
   const jobs: { jobId: string; appId: string; appName: string }[] = [];
   for (const id of ids) {
     try {
@@ -117,12 +128,18 @@ export function DownloadChoiceSheet() {
                   <path d="m9 18 1.5 1.5L14 16" className="download-choice__check" />
                 </svg>
                 <span>
-                  <strong>Download &amp; install for me</strong>
+                  <strong>Install all at once</strong>
                   <span>
                     {busy
                       ? "Another install is still running. Try again when it finishes."
-                      : "Installs them one after another. Windows asks for admin once; apps without a quiet installer open theirs for you to finish."}
+                      : "Installs everything quietly in the background: no clicking Next, no toolbars. Windows asks for admin once."}
                   </span>
+                  {!busy && request.manual.length > 0 && (
+                    <span className="download-choice__manual">
+                      {request.manual.length === 1 ? `${request.manual[0]} only has` : `${request.manual.length} apps (${request.manual.slice(0, 3).join(", ")}${request.manual.length > 3 ? "…" : ""}) only have`}{" "}
+                      {request.manual.length === 1 ? "its" : "their"} own installer, so {request.manual.length === 1 ? "it's" : "they're"} downloaded and listed for you to run.
+                    </span>
+                  )}
                 </span>
               </button>
               <button
@@ -134,8 +151,8 @@ export function DownloadChoiceSheet() {
                   <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
                 </svg>
                 <span>
-                  <strong>Just download</strong>
-                  <span>Saves the installers to PostWipeDownloads so you can run each one yourself.</span>
+                  <strong>Download only</strong>
+                  <span>Saves each installer to PostWipeDownloads so you can install them yourself, one by one.</span>
                 </span>
               </button>
             </div>

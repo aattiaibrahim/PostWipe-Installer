@@ -407,7 +407,15 @@
                 "attr": "href"
               },
               "filename": "hwinfo-installer.exe",
-              "install": {}
+              "install": {
+                "args": [
+                  "/VERYSILENT",
+                  "/SUPPRESSMSGBOXES",
+                  "/NORESTART",
+                  "/SP-"
+                ],
+                "admin": true
+              }
             }
           }
         },
@@ -733,7 +741,12 @@
               },
               "filename": "Windscribe-Setup.exe",
               "signer": "Windscribe Limited",
-              "install": {}
+              "install": {
+                "args": [
+                  "-silent"
+                ],
+                "admin": true
+              }
             },
             "macos": {
               "resolver": {
@@ -841,6 +854,10 @@
               "filename": "netlimiter-setup.exe",
               "signer": "Locktime Software s.r.o.",
               "install": {
+                "args": [
+                  "/exenoui",
+                  "/qn"
+                ],
                 "admin": true
               }
             }
@@ -1118,6 +1135,10 @@
               "filename": "VirtualBox-Setup.exe",
               "signer": "Oracle America, Inc.",
               "install": {
+                "args": [
+                  "--silent",
+                  "--ignore-reboot"
+                ],
                 "admin": true
               }
             },
@@ -1179,7 +1200,13 @@
               },
               "filename": "BraveBrowserSetup.exe",
               "signer": "Brave Software, Inc.",
-              "install": {}
+              "install": {
+                "args": [
+                  "/silent",
+                  "/install"
+                ],
+                "admin": false
+              }
             },
             "macos": {
               "resolver": {
@@ -2527,7 +2554,12 @@
               },
               "filename": "rustdesk-x86_64.exe",
               "signer": "PURSLANE",
-              "install": {}
+              "install": {
+                "args": [
+                  "--silent-install"
+                ],
+                "admin": true
+              }
             },
             "macos": {
               "resolver": {

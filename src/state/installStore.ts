@@ -85,12 +85,12 @@ function applyStep(path: string, state: InstallState, detail: string | null | un
 
 /** Browser preview only: plays a plausible install so the page can be checked without Windows. */
 function simulate(paths: string[]) {
-  const states: InstallState[] = ["installed", "installed", "opened", "installed", "failed"];
+  const states: InstallState[] = ["installed", "installed", "manual", "installed", "failed"];
   paths.forEach((path, n) => {
     window.setTimeout(() => applyStep(path, "running", null), 700 + n * 1400);
     window.setTimeout(() => {
       const state = states[n % states.length];
-      applyStep(path, state, state === "failed" ? "The installer stopped with code 1603." : state === "opened" ? "Opened its installer. Finish it there." : null);
+      applyStep(path, state, state === "failed" ? "The installer stopped with code 1603." : state === "manual" ? "It only has its own installer. Run it when you're ready." : null);
     }, 1500 + n * 1400);
   });
   window.setTimeout(() => useInstallStore.setState({ stage: "done" }), 1800 + paths.length * 1400);

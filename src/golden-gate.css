@@ -2685,82 +2685,279 @@ html.window-restoring .app-shell {
   font-size: 0.8rem;
 }
 
-.install-run__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 4px 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.install-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 6px 0;
-}
-
-.app-icon.install-row__icon {
-  flex: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-}
-
-.install-row__body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.install-row__body strong {
+.install-run__bar {
+  height: 6px;
+  margin: 2px 0 12px;
+  border-radius: 3px;
+  background: var(--gg-fill);
   overflow: hidden;
-  font-size: 0.86rem;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.install-row__detail {
-  overflow: hidden;
+.install-run__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #30d158;
+}
+
+.install-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.install-table th {
+  padding: 0 0 6px;
   color: var(--text-muted);
   font-size: 0.72rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid var(--gg-hair);
 }
 
-.install-row__state {
+.install-table td {
+  height: 30px;
+  padding: 3px 0;
+  vertical-align: middle;
+}
+
+.install-table__app {
   display: inline-flex;
-  flex: none;
   align-items: center;
-  gap: 6px;
-  color: var(--text-muted);
-  font-size: 0.76rem;
+  gap: 8px;
   font-weight: 550;
-  white-space: nowrap;
 }
 
-.install-row__state .dl-spinner {
-  width: 14px;
-  height: 14px;
+.app-icon.install-table__icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  flex: none;
 }
 
-.install-row__state--ok {
+.install-table__icon .app-icon__favicon-img,
+.install-table__icon .app-icon__svg {
+  width: 13px;
+  height: 13px;
+}
+
+.install-table__status {
+  color: var(--text-muted);
+}
+
+.install-table__detail {
+  font-size: 0.74rem;
+  opacity: 0.85;
+}
+
+.install-table__status--ok {
   color: #30d158;
 }
 
-.install-row__state--bad {
+.install-table__status--bad {
   color: #ff6961;
 }
 
-.install-row__state--you {
+.install-table__status--you {
   color: #ffb340;
+  font-weight: 600;
 }
 
-.install-row--skipped,
-.install-row--portable {
+.install-table__action {
+  width: 1%;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.install-table__action .dl-btn {
+  height: 24px;
+  font-size: 0.74rem;
+}
+
+.install-table__row--skipped,
+.install-table__row--portable {
   opacity: 0.7;
+}
+
+.download-choice__manual {
+  margin-top: 4px;
+  color: #ffb340 !important;
+}
+
+/* Script rows carry up to three buttons (star, + Start menu, Generate). On narrow grid cells
+   (e.g. 1536px windows: 1920 at 125% scaling) they overflowed and Generate was clipped at the
+   row edge. They wrap instead; a button never shrinks below its label. */
+.app-row__action-row {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.app-row__action-row > button {
+  flex: none;
+}
+
+/* ─── Discover, Ninite-style: one compact checklist of every app ────────────────────── */
+
+.home-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -0.4rem 0 1.4rem;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--gg-card);
+  box-shadow: inset 0 0 0 1px var(--gg-hair);
+}
+
+.home-strip__text {
+  flex: 1 1 260px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.home-strip__text strong {
+  color: var(--text);
+}
+
+.home-strip__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--gg-pill);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.home-strip__btn:hover {
+  filter: brightness(1.15);
+}
+
+.home-strip__btn--primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.home-strip__btn--set span {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+/* Category blocks flow down columns like Ninite's list, never split across two. */
+.pick-grid {
+  columns: 200px;
+  column-gap: 28px;
+}
+
+.pick-group {
+  break-inside: avoid;
+  margin: 0 0 20px;
+}
+
+.pick-group__title {
+  margin: 0 0 4px;
+}
+
+.pick-group__title button {
+  display: inline-flex;
+  align-items: flex-start;
+  text-align: left;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.pick-group__title button:hover {
+  color: var(--gg-pill-text);
+}
+
+.pick-group__icon {
+  flex: none;
+  margin-top: 1px;
+  width: 20px;
+  height: 20px;
+  padding: 3.5px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background: var(--cat-color, var(--accent));
+  color: #fff;
+  stroke-width: 2.4;
+}
+
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 25px;
+  padding: 0 6px 0 2px;
+  margin: 0 -6px 0 -2px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pick-row:hover {
+  background: var(--gg-fill);
+}
+
+.pick-row--on {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.pick-row input {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.app-icon.pick-row__icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.pick-row__icon .app-icon__favicon-img,
+.pick-row__icon .app-icon__svg {
+  width: 12px;
+  height: 12px;
+}
+
+.pick-row__icon .app-icon__letter {
+  font-size: 0.6rem;
+}
+
+.pick-row__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pick-row__tag {
+  flex: none;
+  margin-left: auto;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: color-mix(in srgb, #ffb340 16%, transparent);
+  color: #ffb340;
+  font-size: 0.64rem;
+  font-weight: 600;
+  line-height: 15px;
 }

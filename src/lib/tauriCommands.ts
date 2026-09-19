@@ -302,7 +302,7 @@ export function openDownload(path: string): Promise<void> {
   return invoke("open_download", { path });
 }
 
-export type InstallState = "waiting" | "running" | "installed" | "failed" | "skipped" | "opened" | "portable" | "timed_out";
+export type InstallState = "waiting" | "running" | "installed" | "failed" | "skipped" | "opened" | "portable" | "timed_out" | "manual";
 
 export interface PlannedInstallStep {
   path: string;

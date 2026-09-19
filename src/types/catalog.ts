@@ -35,6 +35,8 @@ export interface PlatformEntry {
   stale: boolean;
   /** Expected code-signing organization; the downloader deletes files signed by anyone else. */
   signer?: string;
+  /** How "Install all at once" runs it (scripts/install-args.mjs). Absent = needs its own wizard. */
+  install?: { args?: string[]; admin?: boolean; portable?: boolean };
 }
 
 export interface AppEntry {

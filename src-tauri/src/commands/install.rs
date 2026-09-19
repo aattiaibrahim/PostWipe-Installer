@@ -1,5 +1,6 @@
-//! "Install for me": runs downloaded installers one after another so a fresh setup doesn't
-//! mean clicking through a dozen of them.
+//! "Install all at once" (Ninite-style): installs downloaded apps silently, one after another,
+//! with no installer windows. Apps whose installer can only run as a click-through wizard are
+//! never opened automatically; they come back as `Manual` for the user to run when they choose.
 //!
 //! What may run, and how, never comes from the webview. The page only names files; this
 //! module decides everything else:
@@ -57,6 +58,8 @@ pub enum StepState {
     Opened,
     Portable,
     TimedOut,
+    /// Only has its own click-through installer: downloaded, left for the user to run.
+    Manual,
 }
 
 #[derive(Clone, Serialize)]
@@ -162,6 +165,11 @@ fn plan(manager: &DownloadManager, root: &Path, paths: Vec<String>) -> (Vec<Plan
             continue;
         };
         let (mode, admin) = match mode_for(&record.app_id, &file) {
+            // Never pop a wizard during a batch: those wait for the user's click.
+            Ok((Mode::Interactive | Mode::Open, _)) => {
+                planned.push(skip("It only has its own installer. Run it when you're ready.", "manual", StepState::Manual));
+                continue;
+            }
             Ok(m) => m,
             Err((state, detail)) => {
                 let kind = if state == StepState::Portable { "portable" } else { "none" };
@@ -529,6 +537,10 @@ pub fn maybe_run_elevated_batch() -> Option<i32> {
             }
         };
         let (mode, _admin) = match mode_for(app_id, &file) {
+            Ok((Mode::Interactive | Mode::Open, _)) => {
+                log(format!("{i} error It only has its own installer."));
+                continue;
+            }
             Ok(m) => m,
             Err((_, detail)) => {
                 log(format!("{i} error {detail}"));
