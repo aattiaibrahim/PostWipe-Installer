@@ -1,5 +1,5 @@
 {
-  "generated_at": 1789537583,
+  "generated_at": 1790004502,
   "source": "ci",
   "entries": [
     {
@@ -66,19 +66,19 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.95.101/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.95.104/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.95.101/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.95.104/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://launcher.escapefromtarkov.com/launcher/download"
+      "status": "unknown",
+      "detail": "vendor answered 403 Forbidden — likely a bot-block or rate limit"
     },
     {
       "app_id": "cinebench-r23",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.154.0/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.155.1/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.154.0/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.155.1/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files3.majorgeeks.com/1cf47b6e077167d3e6466ce8cd864a64709c62bc/drivers/DDU v18.1.6.0_setup.exe"
+      "detail": "https://files3.majorgeeks.com/140853011fbd8171cc9d46083653a15ed969146f/drivers/DDU v18.1.6.0_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -181,6 +181,12 @@
       "os": "windows",
       "status": "ok",
       "detail": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi"
+    },
+    {
+      "app_id": "equalizer-apo",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://sourceforge.net/projects/equalizerapo/files/1.4.2/EqualizerAPO-x64-1.4.2.exe/download"
     },
     {
       "app_id": "firefox",
@@ -288,13 +294,13 @@
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/155.0.1-1/librewolf-155.0.1-1-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/156.0-1/librewolf-156.0-1-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/155.0.1-1/librewolf-155.0.1-1-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/156.0-1/librewolf-156.0-1-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
@@ -342,7 +348,7 @@
       "app_id": "nanazip",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1832.0/NanaZip_7.0.1832.0.msixbundle"
+      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1843.0/NanaZip_7.0.1843.0.msixbundle"
     },
     {
       "app_id": "netlimiter",
@@ -399,6 +405,12 @@
       "detail": "https://www.ocbase.com/download/OCCT.zip"
     },
     {
+      "app_id": "peace",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://downloads.sourceforge.net/project/peace-equalizer-apo-extension/PeaceSetup.exe"
+    },
+    {
       "app_id": "plex",
       "os": "macos",
       "status": "ok",
@@ -413,14 +425,14 @@
     {
       "app_id": "powertoys",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/PowerToysUserSetup-0.101.2362.0-x64.exe"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     },
     {
       "app_id": "prime95",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip"
+      "status": "unknown",
+      "detail": "couldn't reach the download: error sending request for url (https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip)"
     },
     {
       "app_id": "process-explorer",
@@ -432,19 +444,19 @@
       "app_id": "prowlarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.5.2.5491/Prowlarr.master.2.5.2.5491.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.6.5.5623/Prowlarr.master.2.6.5.5623.osx-app-core-arm64.zip"
     },
     {
       "app_id": "prowlarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.5.2.5491/Prowlarr.master.2.5.2.5491.windows-core-x64-installer.exe"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.6.5.5623/Prowlarr.master.2.6.5.5623.windows-core-x64-installer.exe"
     },
     {
       "app_id": "putty",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.85-installer.msi"
+      "status": "unknown",
+      "detail": "couldn't reach the vendor: network error while resolving URL: error sending request for url (https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)"
     },
     {
       "app_id": "pycharm",
@@ -461,8 +473,8 @@
     {
       "app_id": "qbittorrent",
       "os": "macos",
-      "status": "ok",
-      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.3/qbittorrent-5.2.3.dmg"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     },
     {
       "app_id": "qbittorrent",
@@ -486,13 +498,13 @@
       "app_id": "radarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.3.0.10514/Radarr.master.6.3.0.10514.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.4.4.10685/Radarr.master.6.4.4.10685.osx-app-core-arm64.zip"
     },
     {
       "app_id": "radarr",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.3.0.10514/Radarr.master.6.3.0.10514.windows-core-x64-installer.exe"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     },
     {
       "app_id": "riot-client",
@@ -534,13 +546,13 @@
       "app_id": "sonarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.19.2979/Sonarr.main.4.0.19.2979.osx-arm64-app.zip"
+      "detail": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.20.3014/Sonarr.main.4.0.20.3014.osx-arm64-app.zip"
     },
     {
       "app_id": "sonarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.19.2979/Sonarr.main.4.0.19.2979.win-x64-installer.exe"
+      "detail": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.20.3014/Sonarr.main.4.0.20.3014.win-x64-installer.exe"
     },
     {
       "app_id": "spotify",
@@ -605,8 +617,8 @@
     {
       "app_id": "testmem5",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://github.com/CoolCmd/TestMem5/releases/download/v0.13.1/TestMem5.7z"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     },
     {
       "app_id": "tidal",
@@ -654,13 +666,13 @@
       "app_id": "vencord",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.1/VencordInstaller.dmg"
+      "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.2/VencordInstaller.dmg"
     },
     {
       "app_id": "vencord",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.1/VencordInstaller.exe"
+      "detail": "https://github.com/Vencord/Installer/releases/download/v1.4.2/VencordInstaller.exe"
     },
     {
       "app_id": "virtualbox",
@@ -701,8 +713,8 @@
     {
       "app_id": "windscribe",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_amd64.exe"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     },
     {
       "app_id": "winrar",
@@ -713,20 +725,20 @@
     {
       "app_id": "zen-browser",
       "os": "macos",
-      "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.1b/zen.macos-universal.dmg"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.1b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.2b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://github.com/irusanov/ZenTimings/releases/download/v140.587/ZenTimings_v140.587_beta.zip"
+      "status": "unknown",
+      "detail": "vendor answered 504 Gateway Timeout — likely a bot-block or rate limit"
     }
   ]
 }
