@@ -162,6 +162,13 @@ network resolvers, concurrent downloads, auto-updating via CI.
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
 ### Search no longer sticks to navigation — 2026-09-22 (v0.1.121)
+- [done] **Scrollbars hide while a window animation plays.** The minimize/close/restore
+  animations scale `.app-shell`, and a scrollbar painted inside it scales with it — he saw the
+  bar "expand to the highest point in the app" as the window shrank. The thumbs go transparent
+  under `html.window-minimizing|closing|restoring|zooming`; the gutter keeps its width
+  (`scrollbar-gutter: stable`), so nothing shifts and the scroll position is untouched.
+  Confirmed with him via a question menu before fixing: the bar stretched mid-animation, and he
+  wanted the animation kept.
 - [done] **Clicking a sidebar row clears the search.** A query filters EVERY page, and the
   Downloads/Discover/Favorites pages only render when the search is empty (`!isSearching` in
   CategoryPanel), so searching and then clicking Downloads kept showing "Results for …" with the
