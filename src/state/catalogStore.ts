@@ -64,7 +64,9 @@ export const useCatalogStore = create<CatalogState>((set) => ({
   setOsFilter: (os) => set(os === "windows" ? { osFilter: os } : { osFilter: os, vendorFilter: "all" }),
   setVendorFilter: (vendor) => set({ vendorFilter: vendor }),
   setSearchQuery: (query) => set({ searchQuery: query }),
-  setSelectedCategory: (id) => set({ selectedCategoryId: id }),
+  // Going somewhere ends the search. A search filters every page, so a leftover query used to
+  // keep showing results while the sidebar said Downloads — with the old text still in the box.
+  setSelectedCategory: (id) => set({ selectedCategoryId: id, searchQuery: "" }),
   load: async () => {
     set({ loading: true, error: null });
     try {
