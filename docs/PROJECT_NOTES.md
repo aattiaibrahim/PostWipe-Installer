@@ -161,8 +161,8 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
-### Search no longer sticks to navigation — 2026-09-22 (v0.1.121)
-- [done] **Scrollbars hide while a window animation plays.** The minimize/close/restore
+### Search no longer sticks to navigation; scrollbars during window animations — 2026-09-22 (v0.1.121, v0.1.122)
+- [done, v0.1.122] **Scrollbars hide while a window animation plays.** The minimize/close/restore
   animations scale `.app-shell`, and a scrollbar painted inside it scales with it — he saw the
   bar "expand to the highest point in the app" as the window shrank. The thumbs go transparent
   under `html.window-minimizing|closing|restoring|zooming`; the gutter keeps its width
@@ -1322,6 +1322,13 @@ user can preview the sidebar/layout. The *real* per-category behavior below is s
 - [blocked: needs files+hosting] Steam profile / workshop customization section, with preview
 - [blocked: needs files+hosting] Windows system sounds section
 - [blocked: needs files+hosting] Profile pictures / desktop wallpapers / banners section
+
+### Release runs: only ONE waits in line
+The Release workflow's concurrency group keeps the running job and at most one queued run, so
+pushing three times within a few minutes leaves the middle runs "cancelled" with no jobs. That is
+not a failure: the newest run builds the newest commit, which contains everything. Check what
+actually shipped with `git show <tag>:<file>`, not by counting green runs. Seen 2026-09-22 —
+v0.1.121 carried only the search fix, and v0.1.122 carried both it and the scrollbar fix.
 
 ## Decisions log
 
