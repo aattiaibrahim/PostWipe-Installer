@@ -2966,3 +2966,20 @@ html.window-restoring .app-shell {
 .account-field + .confirm-dialog__actions {
   margin-top: 1.1rem;
 }
+
+/* While a window animation plays, the shell is being scaled — and a scrollbar painted inside it
+   stretches with it, which read as the bar shooting up to the top of the window. Hide the
+   thumbs for those few frames. The track keeps its width (scrollbar-gutter: stable on .gg-main),
+   so nothing shifts, and pointer-events stay off so a stray drag can't scroll mid-animation. */
+html.window-minimizing ::-webkit-scrollbar-thumb,
+html.window-closing ::-webkit-scrollbar-thumb,
+html.window-restoring ::-webkit-scrollbar-thumb,
+html.window-zooming ::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+html.window-minimizing .gg-main,
+html.window-closing .gg-main,
+html.window-restoring .gg-main {
+  pointer-events: none;
+}
