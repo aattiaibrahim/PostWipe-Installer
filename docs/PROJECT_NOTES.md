@@ -161,6 +161,13 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Search no longer sticks to navigation — 2026-09-22 (v0.1.121)
+- [done] **Clicking a sidebar row clears the search.** A query filters EVERY page, and the
+  Downloads/Discover/Favorites pages only render when the search is empty (`!isSearching` in
+  CategoryPanel), so searching and then clicking Downloads kept showing "Results for …" with the
+  old text still in the box. `setSelectedCategory` now clears `searchQuery` too — his report:
+  "it stays in the search field for the app to get but im checking my downloads".
+
 ### Discover deselect + Save-set spacing — 2026-09-19 (v0.1.119)
 - [done] **Unchecking the last app on Discover leaves select mode.** The bottom bar and the
   toolbar's "N selected" used to stay up at zero. Discover has no Select button to exit from, so
