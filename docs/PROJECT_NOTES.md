@@ -161,6 +161,26 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Helium browser; window animations removed — 2026-09-30
+- [done] **Helium** (imput's Chromium fork, GPL-3.0, helium.computer) is in Browsers.
+  - Windows: `imputnet/helium-windows`, pattern `helium_*_x64-installer.exe` (the
+    `*_x64-mini-installer.exe` and `.zip` variants don't match). Signed by **imput LLC**.
+  - macOS: `imputnet/helium-macos`, `helium_*_arm64-macos.dmg`. There is NO universal build:
+    Andrew picked Apple Silicon, so Intel Macs would get the wrong arch. Revisit if the resolver
+    ever learns about CPU architecture.
+  - Install: **`/S`**, no admin (NSIS, asInvoker, installs into the user's profile). Verified on a
+    runner: `/S` exited 0 in 28s with no window, while no-args and `--do-not-launch-chrome` both
+    sat on the "Helium Setup" window for 10 minutes.
+  - The signer sweep also pinned GOG Galaxy ("GOG  sp. z o.o") while it was there.
+- [done] **The window animations are gone** (minimize, close, maximize, restore). Andrew: "the
+  animation when minimizing is terrible and glitchy". Cause: we shrank and faded `.app-shell`
+  BEFORE calling the OS, so Windows then played its own animation on top, and because the window
+  is transparent (that's how the rounded corners work) the desktop showed through the window
+  while the shrunken app moved inside it. The buttons now hand straight to the OS. The lights
+  still sink when pressed. The scrollbar-hiding workaround those animations needed went too.
+  Lesson: don't animate a transparent window's contents as a stand-in for animating the window —
+  the OS owns that, and it will compete.
+
 ### Search no longer sticks to navigation; scrollbars during window animations — 2026-09-22 (v0.1.121, v0.1.122)
 - [done, v0.1.122] **Scrollbars hide while a window animation plays.** The minimize/close/restore
   animations scale `.app-shell`, and a scrollbar painted inside it scales with it — he saw the
