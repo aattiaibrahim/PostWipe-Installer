@@ -161,7 +161,7 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
-### Helium browser; window animations removed — 2026-09-30
+### Helium browser; window animations removed — 2026-09-30 (v0.1.125)
 - [done] **Helium** (imput's Chromium fork, GPL-3.0, helium.computer) is in Browsers.
   - Windows: `imputnet/helium-windows`, pattern `helium_*_x64-installer.exe` (the
     `*_x64-mini-installer.exe` and `.zip` variants don't match). Signed by **imput LLC**.
