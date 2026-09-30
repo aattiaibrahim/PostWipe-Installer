@@ -72,7 +72,8 @@
                 "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe"
               },
               "filename": "GOG_Galaxy_2.0.exe",
-              "install": {}
+              "install": {},
+              "signer": "GOG  sp. z o.o"
             }
           }
         },
@@ -1248,6 +1249,41 @@
                 "url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US"
               },
               "filename": "Firefox.dmg"
+            }
+          }
+        },
+        {
+          "id": "helium",
+          "name": "Helium",
+          "bio": "Chromium without Google's telemetry, with ad and tracker blocking built in.",
+          "description": "Helium is a Chromium-based browser from imput (the Cobalt team) that strips out Google's telemetry and connections home, and blocks ads and trackers by default. Open source under GPL-3.0, for people who want Chrome's compatibility without Chrome's phoning home.",
+          "icon": "helium.ico",
+          "domain": "helium.computer",
+          "kind": "download",
+          "notes": "Verified live 2026-09-29 against imputnet/helium-windows and imputnet/helium-macos. Windows ships helium_<ver>_x64-installer.exe (the *_x64-mini-installer.exe and .zip variants deliberately don't match the pattern). macOS ships SEPARATE arm64 and x86_64 .dmg files with no universal build; Andrew chose the Apple Silicon one, so Intel Macs get the wrong arch — revisit if the resolver ever learns about CPU architecture.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "imputnet/helium-windows",
+                "asset_pattern": "helium_*_x64-installer.exe"
+              },
+              "filename": "helium-installer.exe",
+              "signer": "imput LLC",
+              "install": {
+                "args": [
+                  "/S"
+                ],
+                "admin": false
+              }
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "imputnet/helium-macos",
+                "asset_pattern": "helium_*_arm64-macos.dmg"
+              },
+              "filename": "Helium.dmg"
             }
           }
         },

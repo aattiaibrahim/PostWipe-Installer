@@ -63,6 +63,9 @@ const PLAN = {
   pycharm: { args: NSIS, admin: true },
   qbittorrent: { args: NSIS, admin: true },
   teamviewer: { args: NSIS, admin: true },
+  // NSIS, asInvoker: installs into the user's own profile like Brave. "/S" verified silent on a
+  // runner 2026-09-30 (no args and --do-not-launch-chrome both sat on the Setup window).
+  helium: { args: NSIS, admin: false },
   // electron-builder one-click installers: per-user.
   bitwarden: { args: NSIS, admin: false },
   houdoku: { args: NSIS, admin: false },

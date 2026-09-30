@@ -2477,6 +2477,9 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
 /* ─── Window control animations (TitleBar.tsx toggles the html classes) ───────────────── */
 
 /* The light itself: sinks under the finger, springs back on release. */
+/* The lights are the only window-control animation left: the button sinks under the pointer
+   and springs back. Shrinking the whole shell before minimize/close fought Windows' own window
+   animation and showed the desktop through the transparent window, so the OS does that now. */
 .traffic-light {
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.12s ease;
 }
@@ -2485,63 +2488,6 @@ html.window-blurred .traffic-lights:not(:hover) .traffic-light {
   transform: scale(0.84);
   filter: brightness(0.8);
   transition-duration: 0.06s;
-}
-
-/* The whole app shell animates, and because the window is transparent that reads as the
-   window itself moving. Minimize drops toward the taskbar, close shrinks away in place, zoom
-   settles into its new size, and restoring grows back up from where minimize left it. */
-html.window-minimizing .app-shell {
-  transform-origin: 50% 100%;
-  animation: gg-win-minimize 0.23s cubic-bezier(0.5, 0, 0.75, 0) forwards;
-}
-
-html.window-closing .app-shell {
-  transform-origin: 50% 50%;
-  animation: gg-win-close 0.19s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
-
-html.window-zooming .app-shell {
-  transform-origin: 50% 50%;
-  animation: gg-win-zoom 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
-}
-
-html.window-restoring .app-shell {
-  transform-origin: 50% 100%;
-  animation: gg-win-restore 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
-}
-
-@keyframes gg-win-minimize {
-  to {
-    transform: translateY(18%) scale(0.72, 0.6);
-    opacity: 0;
-  }
-}
-
-@keyframes gg-win-close {
-  to {
-    transform: scale(0.93);
-    opacity: 0;
-  }
-}
-
-@keyframes gg-win-zoom {
-  from {
-    transform: scale(0.975);
-    opacity: 0.75;
-  }
-}
-
-@keyframes gg-win-restore {
-  from {
-    transform: translateY(10%) scale(0.86, 0.8);
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html[class*="window-"] .app-shell {
-    animation: none;
-  }
 }
 
 /* ─── "Already open" notice (AlreadyOpenNotice.tsx) ─────────────────────────────────── */
@@ -2967,19 +2913,3 @@ html.window-restoring .app-shell {
   margin-top: 1.1rem;
 }
 
-/* While a window animation plays, the shell is being scaled — and a scrollbar painted inside it
-   stretches with it, which read as the bar shooting up to the top of the window. Hide the
-   thumbs for those few frames. The track keeps its width (scrollbar-gutter: stable on .gg-main),
-   so nothing shifts, and pointer-events stay off so a stray drag can't scroll mid-animation. */
-html.window-minimizing ::-webkit-scrollbar-thumb,
-html.window-closing ::-webkit-scrollbar-thumb,
-html.window-restoring ::-webkit-scrollbar-thumb,
-html.window-zooming ::-webkit-scrollbar-thumb {
-  background-color: transparent;
-}
-
-html.window-minimizing .gg-main,
-html.window-closing .gg-main,
-html.window-restoring .gg-main {
-  pointer-events: none;
-}
