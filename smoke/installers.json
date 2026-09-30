@@ -1,99 +1,27 @@
 [
  {
-  "appId": "brave-standalone-silent",
-  "filename": "BraveBrowserStandaloneSilentSetup.exe",
-  "url": "https://github.com/brave/brave-browser/releases/download/v1.95.104/BraveBrowserStandaloneSilentSetup.exe",
+  "appId": "helium-no-args",
+  "filename": "helium-installer.exe",
+  "url": "https://github.com/imputnet/helium-windows/releases/download/0.18.1.1/helium_0.18.1.1_x64-installer.exe",
   "kind": "exe",
   "args": []
  },
  {
-  "appId": "brave-stub-silent",
-  "filename": "bravebrowsersetup.exe",
-  "url": "https://github.com/brave/brave-browser/releases/download/v1.95.104/BraveBrowserSetup.exe",
+  "appId": "helium-slash-S",
+  "filename": "helium-installer.exe",
+  "url": "https://github.com/imputnet/helium-windows/releases/download/0.18.1.1/helium_0.18.1.1_x64-installer.exe",
   "kind": "exe",
   "args": [
-   "/silent",
-   "/install"
+   "/S"
   ]
  },
  {
-  "appId": "gog-galaxy",
-  "filename": "gog_galaxy_2.0.exe",
-  "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe",
+  "appId": "helium-do-not-launch",
+  "filename": "helium-installer.exe",
+  "url": "https://github.com/imputnet/helium-windows/releases/download/0.18.1.1/helium_0.18.1.1_x64-installer.exe",
   "kind": "exe",
   "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "battle-net",
-  "filename": "battle.net-setup.exe",
-  "url": "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=LIVE",
-  "kind": "exe",
-  "args": [
-   "--silent"
-  ]
- },
- {
-  "appId": "windscribe",
-  "filename": "windscribe-setup.exe",
-  "url": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_amd64.exe",
-  "kind": "exe",
-  "args": [
-   "-silent"
-  ]
- },
- {
-  "appId": "rustdesk",
-  "filename": "rustdesk-x86_64.exe",
-  "url": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-x86_64.exe",
-  "kind": "exe",
-  "args": [
-   "--silent-install"
-  ]
- },
- {
-  "appId": "hwinfo",
-  "filename": "hwinfo-installer.exe",
-  "url": "https://www.hwinfo.com/files/hwi64_852.exe",
-  "kind": "exe",
-  "args": [
-   "/VERYSILENT",
-   "/SUPPRESSMSGBOXES",
-   "/NORESTART",
-   "/SP-"
-  ]
- },
- {
-  "appId": "virtualbox",
-  "filename": "virtualbox-setup.exe",
-  "url": "https://download.virtualbox.org/virtualbox/7.2.18/VirtualBox-7.2.18-175117-Win.exe",
-  "kind": "exe",
-  "args": [
-   "--silent",
-   "--ignore-reboot"
-  ]
- },
- {
-  "appId": "nvidia-broadcast",
-  "filename": "nvidia_broadcast_setup.exe",
-  "url": "https://international.download.nvidia.com/Windows/broadcast/2.2.1/NVIDIA_Broadcast_v2.2.1.58338310.exe",
-  "kind": "exe",
-  "args": [
-   "-s"
-  ]
- },
- {
-  "appId": "netlimiter",
-  "filename": "netlimiter-setup.exe",
-  "url": "https://download.netlimiter.com/nl/netlimiter-5.3.27.0.exe",
-  "kind": "exe",
-  "args": [
-   "/exenoui",
-   "/qn"
+   "--do-not-launch-chrome"
   ]
  }
 ]
