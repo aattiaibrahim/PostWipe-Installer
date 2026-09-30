@@ -8,3 +8,6 @@
 
 # Updater signing private key — never commit this
 updater-signing-key.pem
+
+# Written by the local full_catalog_sweep run; CI publishes its own copy to master.
+health.json
