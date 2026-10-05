@@ -1,5 +1,5 @@
 {
-  "generated_at": 1790615215,
+  "generated_at": 1791221625,
   "source": "ci",
   "entries": [
     {
@@ -66,13 +66,13 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.96.59/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.96.61/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.96.59/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.96.61/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.158.0/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.160.0/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.158.0/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.160.0/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files2.majorgeeks.com/bf76404c2039129e58132da43aaa008299e4333f/drivers/DDU v18.1.6.1_setup.exe"
+      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.1_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -173,8 +173,8 @@
     {
       "app_id": "endgame-op1-8k-v2",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://img.endgamegear.com/downloads/Endgame_Gear_OP1_8k_v2_Configuration_Tool_v1.07.zip"
+      "status": "unknown",
+      "detail": "couldn't reach the vendor: network error while resolving URL: HTTP status client error (429 Too Many Requests) for url (https://endgamegear.com/pages/op1-8k-v2-downloads)"
     },
     {
       "app_id": "epic-games",
@@ -234,7 +234,7 @@
       "app_id": "git",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/git-for-windows/git/releases/download/v2.55.0.windows.5/Git-2.55.0.5-64-bit.exe"
+      "detail": "https://github.com/git-for-windows/git/releases/download/v2.56.0.windows.1/Git-2.56.0-64-bit.exe"
     },
     {
       "app_id": "gog-galaxy",
@@ -255,6 +255,18 @@
       "detail": "https://github.com/HandBrake/HandBrake/releases/download/1.11.2/HandBrake-1.11.2-x86_64-Win_GUI.exe"
     },
     {
+      "app_id": "helium",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.18.3.1/helium_0.18.3.1_arm64-macos.dmg"
+    },
+    {
+      "app_id": "helium",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.18.3.1/helium_0.18.3.1_x64-installer.exe"
+    },
+    {
       "app_id": "houdoku",
       "os": "macos",
       "status": "ok",
@@ -270,7 +282,7 @@
       "app_id": "hwinfo",
       "os": "windows",
       "status": "ok",
-      "detail": "https://www.hwinfo.com/files/hwi64_852.exe"
+      "detail": "https://www.hwinfo.com/files/hwi64_854.exe"
     },
     {
       "app_id": "hwmonitor",
@@ -294,13 +306,13 @@
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/156.0.1-1/librewolf-156.0.1-1-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/157.0-1/librewolf-157.0-1-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/156.0.1-1/librewolf-156.0.1-1-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/157.0-1/librewolf-157.0-1-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
@@ -390,13 +402,13 @@
       "app_id": "obsidian",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.7/Obsidian-1.13.7.dmg"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.4/Obsidian-1.14.4.dmg"
     },
     {
       "app_id": "obsidian",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.7/Obsidian-1.13.7.exe"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.4/Obsidian-1.14.4.exe"
     },
     {
       "app_id": "occt",
@@ -425,14 +437,14 @@
     {
       "app_id": "powertoys",
       "os": "windows",
-      "status": "unknown",
-      "detail": "vendor answered 500 Internal Server Error — likely a bot-block or rate limit"
+      "status": "ok",
+      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/PowerToysUserSetup-0.101.2362.0-x64.exe"
     },
     {
       "app_id": "prime95",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip"
+      "status": "unknown",
+      "detail": "couldn't reach the download: error sending request for url (https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip)"
     },
     {
       "app_id": "process-explorer",
@@ -473,14 +485,14 @@
     {
       "app_id": "qbittorrent",
       "os": "macos",
-      "status": "ok",
-      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.3/qbittorrent-5.2.3.dmg"
+      "status": "broken",
+      "detail": "resolve failed: no release asset matching 'qbittorrent-*.dmg' in qbittorrent/qBittorrent"
     },
     {
       "app_id": "qbittorrent",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.3/qbittorrent_5.2.3_x64_setup.exe"
+      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.4/qbittorrent_5.2.4_x64_setup.exe"
     },
     {
       "app_id": "qobuz",
@@ -522,13 +534,13 @@
       "app_id": "rustdesk",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-aarch64.dmg"
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.0/rustdesk-1.5.0-aarch64.dmg"
     },
     {
       "app_id": "rustdesk",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-x86_64.exe"
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.0/rustdesk-1.5.0-x86_64.exe"
     },
     {
       "app_id": "screentogif",
@@ -726,19 +738,19 @@
       "app_id": "zen-browser",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.3b/zen.macos-universal.dmg"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23b/zen.macos-universal.dmg"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.22.3b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/irusanov/ZenTimings/releases/download/v140.665/ZenTimings_v140.665.zip"
+      "detail": "https://github.com/irusanov/ZenTimings/releases/download/v141.706/ZenTimings_v141.706.zip"
     }
   ]
 }
