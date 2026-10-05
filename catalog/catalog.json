@@ -1659,7 +1659,7 @@
           "description": "qBittorrent is the go-to free BitTorrent client — no ads, no bundled junk, a built-in search and RSS, and a clean Qt interface. The standard replacement for the ad-riddled uTorrent.",
           "domain": "qbittorrent.org",
           "kind": "download",
-          "notes": "GitHub qbittorrent/qBittorrent. Ships a standard build and a longer-named _lt20 (libtorrent 1.2) variant; the resolver's shortest-match tiebreak selects the standard build. Verified live 2026-07-11.",
+          "notes": "GitHub qbittorrent/qBittorrent. Ships a standard build and a longer-named _lt20 (libtorrent 1.2) variant; the resolver's shortest-match tiebreak selects the standard build. Verified live 2026-07-11. macOS 2026-10-05: the weekly sweep caught the GitHub release dropping .dmg assets — 5.2.4 shipped Windows and Linux only, and qbittorrent.org sends Mac users to SourceForge, where 5.2.3 is still newest. The macOS entry now resolves off SourceForge's qbittorrent-mac RSS, so it tracks whatever the Mac maintainer publishes next, whether or not the GitHub builds come back.",
           "platforms": {
             "windows": {
               "resolver": {
@@ -1677,9 +1677,9 @@
             },
             "macos": {
               "resolver": {
-                "type": "github_release",
-                "repo": "qbittorrent/qBittorrent",
-                "asset_pattern": "qbittorrent-*.dmg"
+                "type": "html_regex",
+                "page_url": "https://sourceforge.net/projects/qbittorrent/rss?path=/qbittorrent-mac",
+                "url_regex": "https://sourceforge.net/projects/qbittorrent/files/qbittorrent-mac/qbittorrent-[0-9.]+/qbittorrent-[0-9.]+.dmg/download"
               },
               "filename": "qbittorrent.dmg"
             }
