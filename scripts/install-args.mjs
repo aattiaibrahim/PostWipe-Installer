@@ -116,6 +116,7 @@ const PLAN = {
 
   // The download is the program itself.
   codex: { portable: true },
+  rufus: { portable: true }, // one exe that asks for admin itself when you run it
   deceive: { portable: true },
   "timer-resolution": { portable: true },
 };

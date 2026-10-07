@@ -758,6 +758,32 @@
               "filename": "Windscribe.dmg"
             }
           }
+        },
+        {
+          "id": "tailscale",
+          "name": "Tailscale",
+          "bio": "Private network between your own machines, with no port forwarding.",
+          "description": "Tailscale builds an encrypted WireGuard network between the devices you sign in on, so a fresh PC can reach your home server, NAS or desktop from anywhere without opening ports or running a VPN server. Sign in once and the machines find each other.",
+          "icon": "tailscale.ico",
+          "domain": "tailscale.com",
+          "kind": "download",
+          "notes": "Added 2026-10-07. pkgs.tailscale.com publishes 'latest' aliases that 302 to the current build (verified: tailscale-setup-latest-amd64.msi -> 1.104.1), so a static URL tracks releases without scraping. macOS gets the standalone .pkg (the 'macsys' build), NOT the Mac App Store version — the App Store one can't be downloaded directly. Windows is an MSI, so Install all at once runs it with msiexec /qn and it needs admin (it installs a network adapter).",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "static",
+                "url": "https://pkgs.tailscale.com/stable/tailscale-setup-latest-amd64.msi"
+              },
+              "filename": "tailscale-setup.msi"
+            },
+            "macos": {
+              "resolver": {
+                "type": "static",
+                "url": "https://pkgs.tailscale.com/stable/Tailscale-latest-macos.pkg"
+              },
+              "filename": "Tailscale.pkg"
+            }
+          }
         }
       ]
     },
@@ -2640,6 +2666,30 @@
                 "url_regex": "https://github\\.com/obsidianmd/obsidian-releases/releases/download/v[0-9.]+/Obsidian-[0-9.]+\\.dmg"
               },
               "filename": "Obsidian.dmg"
+            }
+          }
+        },
+        {
+          "id": "rufus",
+          "name": "Rufus",
+          "bio": "Writes a Windows or Linux ISO to a USB stick and makes it bootable.",
+          "description": "Rufus turns a USB stick into bootable install media from an ISO — the tool you use to build the installer BEFORE a wipe. It can also write Windows 11 media with the TPM, Secure Boot and Microsoft-account requirements removed. It's one small program with nothing to install: run it straight from your downloads folder.",
+          "icon": "rufus.ico",
+          "domain": "rufus.ie",
+          "kind": "download",
+          "notes": "GitHub pbatard/rufus, added 2026-10-05. The pattern also matches the p (portable), _arm64 and _x86 assets, so the shortest-name rule picks the plain x64 build; the .sig files can't match. The download IS the app, so install.portable = true and 'Install all at once' leaves it in the folder. Rufus asks for admin itself when you run it, because it writes to a raw disk.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "pbatard/rufus",
+                "asset_pattern": "rufus-*.exe"
+              },
+              "filename": "rufus.exe",
+              "signer": "Akeo Consulting",
+              "install": {
+                "portable": true
+              }
             }
           }
         }
