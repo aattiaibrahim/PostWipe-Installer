@@ -1,0 +1,165 @@
+name: Release
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # Bumps the patch version once and pushes the bump commit; the platform builds all
+  # check out that commit so every artifact carries the same version.
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.bump.outputs.version }}
+      sha: ${{ steps.bump.outputs.sha }}
+      notes: ${{ steps.bump.outputs.notes }}
+      release_id: ${{ steps.bump.outputs.release_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 20
+
+      - name: Bump version
+        id: bump
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          current=$(node -p "require('./package.json').version")
+          IFS='.' read -r major minor patch <<< "$current"
+          new_version="$major.$minor.$((patch + 1))"
+          echo "version=$new_version" >> "$GITHUB_OUTPUT"
+
+          # Release notes = commit subjects since the last release tag, minus merges and the
+          # bot's own [skip ci] bump commits. Computed before we make this release's bump commit.
+          prev=$(git describe --tags --match 'v*' --abbrev=0 2>/dev/null || true)
+          notes=$(git log ${prev:+$prev..}HEAD --no-merges --pretty=format:'- %s' \
+            | grep -viE '\[skip ci\]' || true)
+          [ -z "$notes" ] && notes="- Maintenance release."
+          {
+            echo "notes<<__NOTES_EOF__"
+            echo "### Changes"
+            echo "$notes"
+            echo "__NOTES_EOF__"
+          } >> "$GITHUB_OUTPUT"
+          npm version "$new_version" --no-git-tag-version --allow-same-version
+          node -e "
+            const fs = require('fs');
+            const p = 'src-tauri/tauri.conf.json';
+            const c = JSON.parse(fs.readFileSync(p, 'utf8'));
+            c.version = '$new_version';
+            fs.writeFileSync(p, JSON.stringify(c, null, 2) + '\n');
+          "
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json src-tauri/tauri.conf.json
+          git commit -m "chore: release v$new_version [skip ci]"
+          git push
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          # Create THE draft release here, exactly once, and hand its id to the platform
+          # builds. When each build's tauri-action did its own find-or-create on the tag,
+          # the two jobs could race the lookup and each create a draft — one got published
+          # (with only that platform's assets) and the other stranded the rest (v0.1.71
+          # shipped mac-only that way, with the Windows .exe stuck in an orphan draft).
+          printf '### Changes\n%s\n' "$notes" > /tmp/release-notes.md
+          release_id=$(gh api -X POST "repos/$GITHUB_REPOSITORY/releases" \
+            -f tag_name="v$new_version" \
+            -f name="v$new_version" \
+            -F draft=true \
+            -f target_commitish="$(git rev-parse HEAD)" \
+            -f body="$(cat /tmp/release-notes.md)" \
+            --jq '.id')
+          echo "release_id=$release_id" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: ""
+          - platform: macos-latest
+            # Universal binary so the .dmg runs on both Apple Silicon and Intel Macs.
+            args: "--target universal-apple-darwin"
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout (bumped commit)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.version.outputs.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # The catalog is embedded via include_str! and only parsed at RUNTIME, so a malformed
+      # or schema-invalid catalog.json builds fine but crashes the app on launch. These tests
+      # (which include catalog_json_parses) fail the release instead. Live/network sweeps are
+      # skipped so a flaky host can't block a release. Windows runner only — the check is
+      # platform-independent and this keeps the mac build fast.
+      - name: Validate catalog + unit tests
+        if: matrix.platform == 'windows-latest'
+        working-directory: src-tauri
+        run: cargo test --lib -- --skip live_tests --skip full_catalog_sweep
+
+      # Draft until EVERY platform has uploaded. The mac build finishes first, and a live
+      # release at that moment serves a latest.json with only darwin platforms — Windows
+      # update checks in that window fail with "none of the fallback platforms were found".
+      # The publish job below flips the draft live only once all builds succeed.
+      # `releaseId` (created once by the version job) instead of tagName: both builds upload
+      # to the SAME draft, so they can't race a find-or-create and split the release.
+      - name: Build, sign, and upload to draft release
+        uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          releaseId: ${{ needs.version.outputs.release_id }}
+          args: ${{ matrix.args }}
+
+  # Publishes the draft only when both platform builds succeeded, so releases/latest (and the
+  # updater's latest.json) always points at a complete release. A failed build leaves the
+  # draft unpublished and users stay on the previous version.
+  publish:
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # By id, not tag — a tag lookup is ambiguous the moment a duplicate draft exists.
+        run: |
+          gh api -X PATCH "repos/${{ github.repository }}/releases/${{ needs.version.outputs.release_id }}" \
+            -F draft=false -f make_latest=true

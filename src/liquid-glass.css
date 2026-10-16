@@ -1,0 +1,679 @@
+/* ═══════════════════════════════════════════════════════════════════════════════════════
+   Liquid Glass
+
+   Two layers, the way Apple's own design language splits them:
+     • CHROME is clear glass that floats — sidebar, toolbar controls, settings dock,
+       title-bar tools, dialogs. It refracts whatever sits behind it.
+     • CONTENT sits on one frosted sheet that stays mostly opaque, so app names and
+       descriptions keep the contrast the legibility pass fought for. Glass is for
+       navigation, never for the text you actually read.
+
+   Every colour here is DERIVED from the active theme's existing tokens (--bg, --blob-*,
+   --accent, --surface-solid, --text), so all eight themes tint the glass with no per-theme
+   duplication. Only the two light themes need a different material recipe, because frosted
+   white and frosted dark glass are built differently.
+
+   Loaded after App.css and overrides it. Where an App.css modifier (e.g. --risky, --cancel)
+   has the same specificity as a base rule restyled here, it is re-declared further down so
+   this file's base rule can't silently beat it.
+   ═══════════════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Clear glass: chrome. */
+  /* A whisper of white on top of the theme's surface: dark glass that's merely darker than
+     the wallpaper reads as a hole, not a pane. */
+  --glass-fill: color-mix(in srgb, var(--surface-solid) 34%, rgba(255, 255, 255, 0.07));
+  /* Thicker glass: anything with text you must read over busy content (dock, dialogs). */
+  --glass-fill-strong: color-mix(in srgb, var(--surface-solid) 64%, transparent);
+  /* The content sheet. */
+  --sheet: color-mix(in srgb, var(--surface-solid) 80%, transparent);
+  --glass-stroke: rgba(255, 255, 255, 0.14);
+  /* The bright top edge that sells "a slab of glass catching light". */
+  --glass-hi: rgba(255, 255, 255, 0.26);
+  --glass-lo: rgba(255, 255, 255, 0.04);
+  --glass-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.5);
+  /* The moving selection "lens" inside segmented controls and the sidebar. */
+  --glass-lens: rgba(255, 255, 255, 0.14);
+  --glass-hover: color-mix(in srgb, var(--text) 7%, transparent);
+  --wall-strength: 88%;
+}
+
+:root[data-theme="light"],
+:root[data-theme="solarized"] {
+  --glass-fill: rgba(255, 255, 255, 0.4);
+  --glass-fill-strong: rgba(255, 255, 255, 0.7);
+  --sheet: rgba(255, 255, 255, 0.74);
+  --glass-stroke: rgba(255, 255, 255, 0.75);
+  --glass-hi: rgba(255, 255, 255, 0.95);
+  --glass-lo: rgba(0, 0, 0, 0.03);
+  --glass-shadow: 0 12px 30px -14px rgba(30, 40, 90, 0.3);
+  --glass-lens: rgba(255, 255, 255, 0.85);
+  --wall-strength: 46%;
+}
+
+/* ─── The backdrop ──────────────────────────────────────────────────────────────────── */
+
+.app-shell {
+  background-color: transparent;
+}
+
+.glass-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Colour is placed where the GLASS is — behind the sidebar (left) and the toolbar (top) —
+     not in the middle, which the mostly-opaque content sheet covers anyway. Glass over a
+     dark, featureless patch just reads as a grey box. */
+  background:
+    radial-gradient(34% 62% at 4% 46%, color-mix(in srgb, var(--blob-1) var(--wall-strength), transparent) 0%, transparent 72%),
+    radial-gradient(46% 30% at 46% 0%, color-mix(in srgb, var(--blob-2) var(--wall-strength), transparent) 0%, transparent 74%),
+    radial-gradient(38% 46% at 100% 100%, color-mix(in srgb, var(--blob-3) var(--wall-strength), transparent) 0%, transparent 72%),
+    radial-gradient(40% 40% at 10% 100%, color-mix(in srgb, var(--accent) 60%, transparent) 0%, transparent 70%),
+    var(--bg);
+}
+
+/* Native see-through: the OS paints the blurred desktop, and this only tints it toward the
+   theme so dark themes stay dark over a bright wallpaper (and vice versa). */
+:root[data-backdrop="native"] .glass-backdrop {
+  background: color-mix(in srgb, var(--bg) 56%, transparent);
+}
+
+/* The desktop behind a see-through window is unknown, so the reading surfaces get a little
+   more body there than over our own wallpaper. */
+:root[data-backdrop="native"] {
+  --sheet: color-mix(in srgb, var(--surface-solid) 88%, transparent);
+  --glass-fill-strong: color-mix(in srgb, var(--surface-solid) 76%, transparent);
+}
+
+html.platform-macos[data-backdrop="native"],
+html.platform-macos[data-backdrop="native"] body {
+  background-color: transparent;
+}
+
+/* Acrylic is painted by DWM across the whole rectangular window, outside the CSS clip — so
+   native mode lets Windows 11 round the window itself (useApplyBackdrop turns the native
+   shadow on), which is fixed at 8px. Matching the clip to it keeps the edges in agreement. */
+html.tauri.platform-windows[data-backdrop="native"] {
+  --win-radius: 8px;
+}
+
+html.tauri.window-maximized[data-backdrop] {
+  --win-radius: 0px;
+}
+
+/* ─── Shared glass material ─────────────────────────────────────────────────────────── */
+
+.sidebar,
+.os-picker,
+.search-filter-bar__input,
+.search-filter-bar__folder-btn,
+.download-history__toggle,
+.select-mode-toggle,
+.selection-bar {
+  background-color: var(--glass-fill);
+  border: 1px solid var(--glass-stroke);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -1px 0 var(--glass-lo),
+    var(--glass-shadow);
+}
+
+/* ─── Window chrome: nothing boxed, the wallpaper runs edge to edge ────────────────── */
+
+.title-bar,
+.app-footer {
+  background-color: transparent;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.title-bar__win-btn:hover {
+  background-color: var(--glass-hover);
+}
+
+/* ─── Toolbar ───────────────────────────────────────────────────────────────────────── */
+
+/* No painted band: the controls are the glass. Rows scrolling up under them fade and blur
+   out instead (the "scroll edge" treatment) so text never collides with the capsules. */
+.browse__topbar {
+  background-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.browse__topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -22px 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 40%, transparent), transparent);
+  backdrop-filter: blur(calc(var(--glass-blur) * 0.6));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.6));
+  mask-image: linear-gradient(to bottom, #000 45%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent);
+}
+
+.os-picker {
+  border-radius: 999px;
+}
+
+.os-picker__tile {
+  border-radius: 999px;
+}
+
+.os-picker__tile--active,
+.os-picker__tile--active:hover {
+  color: var(--text);
+}
+
+/* The sliding lens. Still the shared framer layoutId element, so it glides between tiles. */
+.os-picker__indicator {
+  border-radius: 999px;
+  background-color: var(--glass-lens);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 2px 10px -3px rgba(0, 0, 0, 0.35);
+}
+
+.search-filter-bar__input {
+  border-radius: 999px;
+  padding-left: 1.1rem;
+}
+
+.search-filter-bar__input:focus {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.search-filter-bar__folder-btn,
+.download-history__toggle {
+  border-radius: 999px;
+}
+
+.search-filter-bar__folder-btn:hover,
+.download-history__toggle:hover {
+  background-color: color-mix(in srgb, var(--surface-solid) 50%, transparent);
+  transform: none;
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────────────────────────────── */
+
+.sidebar {
+  border-radius: 24px;
+  padding: 0.5rem;
+}
+
+/* The scrollbar ran the full height of the sidebar, so its ends poked out through the 24px
+   rounded corners. Insetting the TRACK keeps the thumb inside the straight part of the edge.
+   (Not scrollbar-gutter or overflow changes: those resize the content and once left a dead
+   strip down the right side.) */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  margin-block: 22px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  border-width: 2px 3px 2px 0;
+}
+
+.sidebar__item {
+  border-radius: 999px;
+  color: var(--text-muted);
+}
+
+.sidebar__item:hover {
+  background-color: var(--glass-hover);
+  color: var(--text);
+}
+
+/* Category icons go monochrome: colour is now reserved for things that MEAN something
+   (download health, the one primary action), not for decorating navigation.
+
+   They were hard to read, though: thin 1.6px strokes in the MUTED text colour, over glass
+   that lets the wallpaper's brightest patch sit right behind them. So the icons take the full
+   text colour with a heavier stroke, and the sidebar's glass gets more body than other
+   chrome — still frosted, but no longer see-through enough to fight a 16px glyph. */
+.sidebar {
+  background-color: color-mix(in srgb, var(--surface-solid) 58%, rgba(255, 255, 255, 0.06));
+}
+
+.sidebar__icon {
+  color: var(--text);
+  opacity: 0.92;
+  /* Beats the SVG's strokeWidth="1.6" attribute: CSS outranks presentation attributes. */
+  stroke-width: 2;
+}
+
+.sidebar__label {
+  color: var(--text);
+  opacity: 0.88;
+}
+
+.sidebar__item--active .sidebar__label {
+  opacity: 1;
+}
+
+.sidebar__active-bg {
+  border-radius: 999px;
+  background-color: var(--glass-lens);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 2px 12px -4px rgba(0, 0, 0, 0.35);
+}
+
+.sidebar__item--active,
+.sidebar__item--active:hover {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* A hint of the accent on the selected category only. */
+.sidebar__item--active .sidebar__icon {
+  color: var(--accent);
+}
+
+.sidebar__count {
+  background-color: transparent;
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar__divider {
+  background-color: var(--glass-stroke);
+}
+
+/* ─── Bottom-left dock: Settings + Account bubbles ─────────────────────────────────── */
+
+/* Anchored to the window's bottom edge so its panel can only grow UPWARD, never out of view.
+   The container itself takes no clicks — only the bubbles and an open panel do — so the
+   empty space beside two closed bubbles doesn't swallow clicks on the sidebar above. */
+.dock {
+  position: fixed;
+  left: 24px;
+  /* Tucked a few pixels under the sidebar's bottom edge (the sidebar's max-height is measured
+     from .dock__bar's top, with a 6px gap), sitting just above the footer. */
+  bottom: 30px;
+  z-index: 54;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.dock__panel {
+  border-radius: 24px;
+  border: 1px solid var(--glass-stroke);
+  background-color: var(--glass-fill-strong);
+  backdrop-filter: blur(calc(var(--glass-blur) * 1.3)) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.3)) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    var(--glass-shadow);
+  transform-origin: bottom left;
+}
+
+.dock__panel--shadow {
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 -12px 30px -10px rgba(0, 0, 0, 0.4);
+}
+
+/* Centered under the sidebar. When a bubble stretches into a pill the row grows outward from
+   the middle, and at full width it lines up with the panel above. */
+.dock__bar {
+  display: flex;
+  gap: 8px;
+  height: 50px;
+  pointer-events: auto;
+  align-self: center;
+}
+
+.dock__bubble {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  height: 50px;
+  /* (50 - 20px icon) / 2 - 1px border: the icon sits dead-centre while round. */
+  padding: 0 0 0 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid var(--glass-stroke);
+  /* No backdrop-filter here, deliberately: re-blurring what's behind an element whose width
+     changes every frame was a big part of the stutter. At this fill the frost was barely
+     visible anyway. */
+  background-color: color-mix(in srgb, var(--surface-solid) 78%, rgba(255, 255, 255, 0.05));
+  will-change: width;
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    var(--glass-shadow);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dock__bubble:hover {
+  background-color: color-mix(in srgb, var(--surface-solid) 78%, rgba(255, 255, 255, 0.08));
+}
+
+.dock__bubble--open {
+  background-color: var(--glass-lens);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+    var(--glass-shadow);
+}
+
+.dock__bubble:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.dock__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+}
+
+.dock__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Signed in: the account bubble shows the account's initial instead of the person glyph. */
+.dock__initial {
+  width: 26px;
+  height: 26px;
+  margin-left: -3px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 80%, var(--text));
+  color: var(--accent-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Natural width, never truncated: the pill's own overflow clip reveals it. */
+.dock__label {
+  display: block;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.settings-panel__row + .settings-panel__row {
+  border-top-color: var(--glass-stroke);
+}
+
+/* ─── Title-bar selection tools ─────────────────────────────────────────────────────── */
+
+.select-mode-toggle,
+.selection-bar {
+  border-radius: 999px;
+}
+
+.selection-popover__panel,
+.download-history__dropdown,
+.update-prompt {
+  border: 1px solid var(--glass-stroke);
+  background-color: var(--glass-fill-strong);
+  backdrop-filter: blur(calc(var(--glass-blur) * 1.4)) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.4)) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 18px 40px -14px rgba(0, 0, 0, 0.45);
+}
+
+/* ─── Content sheet ─────────────────────────────────────────────────────────────────── */
+
+/* One continuous frosted sheet instead of a bordered box per category: sections are
+   separated by their headings and space, not by more borders and shadows. */
+.category-panel {
+  gap: 0.2rem;
+  padding: 0.35rem 0 0.6rem;
+  border-radius: 22px;
+  border: 1px solid var(--glass-stroke);
+  background-color: var(--sheet);
+  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    var(--glass-shadow);
+}
+
+.category-panel__section {
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  overflow: visible;
+}
+
+.category-panel__title {
+  padding: 0.9rem 1.1rem 0.35rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.category-panel__group {
+  color: var(--text-muted);
+}
+
+.app-row {
+  border-radius: 16px;
+}
+
+.app-row:hover {
+  background-color: var(--glass-hover);
+  box-shadow: none;
+}
+
+/* The Specials gate already lives on the sheet — its own box would be a box in a box. */
+.category-panel .specials-lock {
+  border: 0;
+  background-color: transparent;
+}
+
+/* ─── Row actions ───────────────────────────────────────────────────────────────────── */
+
+/* Tinted capsules instead of a solid accent block on every row: a screen of eleven
+   identical filled buttons means none of them reads as the primary action. The text colour
+   is pulled toward --text so it clears contrast on both dark and light sheets. */
+.app-row__action {
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: color-mix(in srgb, var(--accent) 62%, var(--text));
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--glass-hi) 60%, transparent);
+}
+
+.app-row__action:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.app-row__action:active:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 36%, transparent);
+}
+
+.app-row__action:disabled {
+  background-color: transparent;
+  border-color: var(--glass-stroke);
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
+/* Re-declared so the base rule above can't override them (same specificity, this file is
+   later in the cascade). */
+.app-row__action--cancel {
+  background-color: transparent;
+  border-color: var(--glass-stroke);
+  color: var(--text-muted);
+  box-shadow: none;
+}
+
+.app-row__action--cancel:hover:not(:disabled) {
+  background-color: var(--glass-hover);
+  color: var(--text);
+}
+
+.app-row__action--risky {
+  background-color: transparent;
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  color: var(--danger);
+  box-shadow: none;
+}
+
+.app-row__action--risky:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.app-row__pin-btn {
+  border-radius: 999px;
+  border-color: var(--glass-stroke);
+}
+
+/* ─── Dialogs ───────────────────────────────────────────────────────────────────────── */
+
+.confirm-overlay {
+  background-color: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.confirm-dialog {
+  border: 1px solid var(--glass-stroke);
+  border-radius: 28px;
+  background-color: var(--glass-fill-strong);
+  backdrop-filter: blur(calc(var(--glass-blur) * 1.6)) saturate(180%);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.6)) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    0 30px 70px -20px rgba(0, 0, 0, 0.6);
+}
+
+.confirm-dialog__btn {
+  border-radius: 999px;
+  border-color: var(--glass-stroke);
+}
+
+.confirm-dialog__btn:hover {
+  background-color: var(--glass-hover);
+}
+
+.settings-panel__check-btn,
+.settings-panel__download-all,
+.settings-panel__lock-btn {
+  border-radius: 999px;
+}
+
+/* Deliberately NOT gated on `prefers-reduced-transparency`. WebView2 maps that to Windows'
+   "Transparency effects" switch, which is off on plenty of machines for reasons unrelated to
+   readability (it was off on the dev PC this was built on) — gating on it silently turned the
+   whole glass look into flat solid panels. Legibility doesn't depend on it here anyway: the
+   text people read sits on the mostly-opaque content sheet. The OS setting still governs the
+   native See-through backdrop, and Settings says so when it's what's blocking it. */
+
+/* ─── Settings: background picker ───────────────────────────────────────────────────── */
+
+.backdrop-picker {
+  align-self: stretch;
+  display: flex;
+}
+
+.backdrop-picker .os-picker__tile {
+  flex: 1;
+  padding: 0.35rem 0.4rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.settings-panel__hint {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* ─── Round checkboxes ───────────────────────────────────────────────────────────────
+   Every checkbox in the app is a circle: the app-row and Specials selectors already were,
+   and native checkboxes are square (and ignore the theme). Same drawing as .app-row__select. */
+.round-check {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.round-check:hover {
+  border-color: var(--accent);
+}
+
+.round-check:checked {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+.round-check:checked::before {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid var(--accent-text);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.round-check:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Native controls follow the theme ───────────────────────────────────────────────
+   Without color-scheme, WebView2 draws native bits — checkbox fallbacks, scrollbar arrows,
+   autofill, select menus, number spinners — in LIGHT mode on every theme. */
+:root {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"],
+:root[data-theme="solarized"] {
+  color-scheme: light;
+}
+
+/* Chromium paints autofilled inputs pale yellow/blue regardless of theme, which is jarring in
+   the dark sign-in dialog. Cover it with the field's own background. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px color-mix(in srgb, var(--surface-solid) 92%, var(--bg)) inset;
+  caret-color: var(--text);
+  transition: background-color 9999s ease-out 0s;
+}

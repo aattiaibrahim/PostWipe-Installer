@@ -1,0 +1,284 @@
+import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import type { SpecialsItem as Item } from "../state/specialsContentStore";
+import type { SpecialsCategoryMeta } from "../lib/specialsConfig";
+import { useSpecialsStore } from "../state/specialsStore";
+import { useDownloadQueueStore } from "../state/downloadQueueStore";
+import {
+  startSpecialsDownload,
+  installSpecialsItem,
+  listCursorVariants,
+  applyCursorVariant,
+  type CursorVariant,
+} from "../lib/tauriCommands";
+import { CursorVariantPicker } from "./CursorVariantPicker";
+import { SoundRow } from "./SoundRow";
+import { MusicGlyph } from "./MusicGlyph";
+import { SpecialsFilePreview, isPreviewableFile } from "./SpecialsFilePreview";
+import { fmtSize } from "./SpecialsCard";
+import { resolvePreviews, ownImageUrl, gatedUrl } from "../lib/specialsPreview";
+
+const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
+
+/** The umbrel-style detail sheet opened by clicking a card: big preview on the left, name /
+ *  size / description and the Download-Install actions on the right. Owns the whole download
+ *  and install flow (previously on the list row). */
+export function SpecialsDetail({ item, meta, onClose }: { item: Item; meta: SpecialsCategoryMeta; onClose: () => void }) {
+  const sessionKey = useSpecialsStore((s) => s.sessionKey);
+  const jobs = useDownloadQueueStore((s) => s.jobs);
+  const [destPath, setDestPath] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [installing, setInstalling] = useState(false);
+  const [installMsg, setInstallMsg] = useState<string | null>(null);
+  const [variants, setVariants] = useState<CursorVariant[] | null>(null);
+  const [index, setIndex] = useState(0);
+  const [linkUrl, setLinkUrl] = useState<string | null>(null);
+
+  // A `.url` shortcut is a bookmark, not a download: fetch it, parse the INI `URL=` line, and
+  // offer an "Open ↗" button that launches it in the default browser (no download/install).
+  const isLink = item.ext === "url";
+  useEffect(() => {
+    if (!isLink || !sessionKey) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const text = await (await fetch(gatedUrl(item.objectKey, sessionKey))).text();
+        const match = text.split(/\r?\n/).find((l) => /^\s*URL\s*=/i.test(l));
+        const url = match?.replace(/^\s*URL\s*=/i, "").trim();
+        if (!cancelled && url) setLinkUrl(url);
+      } catch {
+        /* leave linkUrl null → button stays disabled */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isLink, sessionKey, item.objectKey]);
+
+  const job = Object.values(jobs)
+    .reverse()
+    .find((j) => j.appId === item.objectKey);
+  const downloading = !!job && ACTIVE_STATUSES.has(job.status);
+  const failed = job?.status === "failed";
+  const downloaded = job?.status === "completed";
+  const path = downloaded ? (job?.destPath ?? destPath) : null;
+  const canInstall = meta.install !== "none";
+  const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
+
+  // Grid tiles use the small uploaded thumbnail (resolvePreviews → previewKeys); the detail
+  // shows the full-res / animated ORIGINAL for image items, thumbnails/carousel otherwise.
+  const own = ownImageUrl(item, sessionKey);
+  const previewUrls = own ? [own] : resolvePreviews(item, sessionKey);
+  // PDFs / text files (readmes, EQ presets, .bat scripts) render inline instead of downloading.
+  const previewableFile = isPreviewableFile(item.ext);
+  const fileUrl = previewableFile ? gatedUrl(item.objectKey, sessionKey) : "";
+  const sounds = sessionKey ? item.audioPreviews.map((a) => ({ name: a.name, url: gatedUrl(a.key, sessionKey) })) : [];
+  const many = previewUrls.length > 1;
+  // Cursor packs: the 2nd image is the full-set collage — open on it so inspecting shows every cursor.
+  const initialIndex = meta.install === "cursor" && previewUrls.length > 1 ? 1 : 0;
+
+  useEffect(() => setIndex(initialIndex), [initialIndex]);
+
+  const step = useCallback((dir: number) => setIndex((i) => (i + dir + previewUrls.length) % previewUrls.length), [previewUrls.length]);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight" && many) step(1);
+      else if (e.key === "ArrowLeft" && many) step(-1);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose, step, many]);
+
+  async function download() {
+    if (!sessionKey) return;
+    setError(null);
+    try {
+      const { destPath: dp } = await startSpecialsDownload(item.objectKey, item.name, gatedUrl(item.objectKey, sessionKey), item.filename, item.sha256);
+      setDestPath(dp);
+    } catch (err) {
+      setError(String(err));
+    }
+  }
+
+  async function install() {
+    if (!path) return;
+    setInstalling(true);
+    setInstallMsg(null);
+    try {
+      if (meta.install === "cursor" && item.ext === "zip") {
+        const found = await listCursorVariants(path);
+        if (found.length > 1) {
+          setVariants(found);
+          return;
+        }
+      }
+      setInstallMsg(await installSpecialsItem(path, meta.install));
+    } catch (err) {
+      setInstallMsg(String(err));
+    } finally {
+      setInstalling(false);
+    }
+  }
+
+  async function pickVariant(variant: CursorVariant) {
+    setInstalling(true);
+    try {
+      setInstallMsg(await applyCursorVariant(variant.inf_path));
+      setVariants(null);
+    } catch (err) {
+      setInstallMsg(String(err));
+      setVariants(null);
+    } finally {
+      setInstalling(false);
+    }
+  }
+
+  const hasImage = previewUrls.length > 0;
+
+  return createPortal(
+    <motion.div
+      className="specials-detail"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.16 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="specials-detail__sheet"
+        initial={{ scale: 0.94, opacity: 0, y: 14 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.96, opacity: 0, y: 10 }}
+        transition={{ type: "spring", stiffness: 440, damping: 34 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Art and file previews keep the dark viewing stage. With neither, the stage takes the
+            sheet's own surface: a graphite gradient here sat beside the lighter info panel as
+            a second backdrop, the same seam the grid cards had. */}
+        <div
+          className="specials-detail__stage"
+          style={hasImage || previewableFile ? undefined : { background: "transparent" }}
+        >
+          {previewableFile ? (
+            <SpecialsFilePreview url={fileUrl} ext={item.ext} name={item.name} />
+          ) : hasImage ? (
+            <>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={index}
+                  className={`specials-detail__img${many ? "" : " specials-detail__img--fill"}`}
+                  src={previewUrls[index]}
+                  alt={item.name}
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.14 }}
+                />
+              </AnimatePresence>
+              {many && (
+                <>
+                  <button className="specials-detail__arrow specials-detail__arrow--l" onClick={() => step(-1)} aria-label="Previous preview">
+                    ‹
+                  </button>
+                  <button className="specials-detail__arrow specials-detail__arrow--r" onClick={() => step(1)} aria-label="Next preview">
+                    ›
+                  </button>
+                  <span className="specials-detail__counter">
+                    {index + 1} / {previewUrls.length}
+                  </span>
+                </>
+              )}
+            </>
+          ) : (
+            <span className="specials-detail__glyph">
+              {isLink ? (
+                <svg className="specials-detail__link-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              ) : sounds.length > 0 ? (
+                <MusicGlyph className="specials-detail__music" />
+              ) : (
+                item.name.charAt(0).toUpperCase()
+              )}
+            </span>
+          )}
+        </div>
+
+        <div className="specials-detail__info">
+          <span className="specials-detail__cat">{meta.label}</span>
+          <h2 className="specials-detail__name">{item.name}</h2>
+          <span className="specials-detail__meta">
+            {fmtSize(item.size)}
+            {item.ext ? ` · ${item.ext.toUpperCase()}` : ""}
+          </span>
+
+          {sounds.length > 0 && (
+            <div className="specials-detail__sounds">
+              {sounds.map((s) => (
+                <SoundRow key={s.url} name={s.name} url={s.url} />
+              ))}
+            </div>
+          )}
+
+          {(error || (failed && job?.error)) && <p className="specials-detail__error">{error ?? job?.error}</p>}
+          {installMsg && <p className="specials-detail__msg">{installMsg}</p>}
+          {downloading && (
+            <div className="specials-detail__bar">
+              <div className="specials-detail__bar-fill" style={{ width: percent !== null ? `${percent}%` : "40%" }} />
+            </div>
+          )}
+
+          <div className="specials-detail__actions">
+            {isLink ? (
+              <button
+                className="specials-detail__btn specials-detail__btn--primary"
+                disabled={!linkUrl}
+                onClick={() => linkUrl && openUrl(linkUrl)}
+              >
+                Open ↗
+              </button>
+            ) : (
+              <>
+                <button className="specials-detail__btn" disabled={downloading} onClick={download}>
+                  {downloading ? "Downloading…" : downloaded ? "Re-download" : "Download"}
+                </button>
+                {canInstall && (
+                  <button className="specials-detail__btn specials-detail__btn--primary" disabled={!downloaded || installing} onClick={install}>
+                    {installing ? "Installing…" : "Install"}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+          {isLink && linkUrl && <span className="specials-detail__hint specials-detail__hint--link">{linkUrl}</span>}
+          {!isLink && canInstall && !downloaded && <span className="specials-detail__hint">Download first, then Install.</span>}
+        </div>
+
+        <button className="specials-detail__close" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
+      </motion.div>
+
+      <AnimatePresence>
+        {variants && (
+          <CursorVariantPicker
+            title={item.name}
+            variants={variants}
+            busy={installing}
+            onPick={pickVariant}
+            onClose={() => {
+              setVariants(null);
+              setInstalling(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>,
+    document.body,
+  );
+}

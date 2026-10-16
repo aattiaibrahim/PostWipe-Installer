@@ -1,0 +1,101 @@
+import { ALL_CATEGORY_ID, FAVORITES_CATEGORY_ID, HOME_CATEGORY_ID } from "./constants";
+
+const PATHS: Record<string, string[]> = {
+  gaming: [
+    "M17.5 8h-11A4.5 4.5 0 0 0 2 12.5A3.5 3.5 0 0 0 5.5 16c1 0 1.6-.4 2.2-1l.7-.7a2 2 0 0 1 1.4-.6h4.4a2 2 0 0 1 1.4.6l.7.7c.6.6 1.2 1 2.2 1a3.5 3.5 0 0 0 3.5-3.5A4.5 4.5 0 0 0 17.5 8Z",
+    "M7 10.5v3M5.5 12h3",
+  ],
+  overclocking: ["M4 15a8 8 0 1 1 16 0", "M12 15l4-5"],
+  "file-compressors": [
+    "M3 4.5A1.5 1.5 0 0 1 4.5 3h15A1.5 1.5 0 0 1 21 4.5V7H3Z",
+    "M5 7v10.5A1.5 1.5 0 0 0 6.5 19h11a1.5 1.5 0 0 0 1.5-1.5V7",
+    "M10 12h4",
+  ],
+  security: ["M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"],
+  "dev-tools": ["M9 8l-4 4 4 4", "M15 8l4 4-4 4"],
+  // A monitor inside a monitor — a guest OS running in a window on the host.
+  "virtual-machines": [
+    "M3 5h18a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z",
+    "M7 9h8v4H7z",
+    "M9 19h6",
+  ],
+  browsers: ["M12 4a8 8 0 1 0 0 16a8 8 0 0 0 0-16Z", "M4 12h16", "M12 4c3 3 3 13 0 16", "M12 4c-3 3-3 13 0 16"],
+  social: ["M4 5h16v10H8l-4 4V5Z"],
+  music: ["M9 18V5l10-2v13", "M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z", "M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"],
+  torrenting: ["M12 3v13", "M7 11l5 5 5-5", "M5 20h14"],
+  utilities: ["M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2 2.3-2.3Z"],
+  // Bookmarks: a ribbon/tag glyph.
+  bookmarks: ["M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1Z"],
+  "system-tweaks": [
+    "M4 6h10M17 6h3",
+    "M4 12h3M10 12h10",
+    "M4 18h10M17 18h3",
+  ],
+  // The "void": concentric rings around a solid core, echoing the lock-screen glyph.
+  specials: ["M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18Z", "M12 16.5a4.5 4.5 0 1 0 0-9a4.5 4.5 0 0 0 0 9Z"],
+  [HOME_CATEGORY_ID]: ["M3.5 10.5 12 3.5l8.5 7", "M5.5 9v10.5h4.5v-5.5h4v5.5h4.5V9"],
+  [FAVORITES_CATEGORY_ID]: ["M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.7l5.9-.9Z"],
+  // A saved set: stacked layers.
+  __set__: ["M12 3l9 5-9 5-9-5 9-5Z", "M3 13l9 5 9-5"],
+  __downloads__: ["M12 3v13", "M7 11l5 5 5-5", "M5 20h14"],
+};
+
+const DOTS: Record<string, { cx: number; cy: number }[]> = {
+  gaming: [
+    { cx: 15, cy: 10.5 },
+    { cx: 17, cy: 12.5 },
+  ],
+  overclocking: [{ cx: 12, cy: 15 }],
+  specials: [{ cx: 12, cy: 12 }],
+  "system-tweaks": [
+    { cx: 14, cy: 6 },
+    { cx: 7, cy: 12 },
+    { cx: 14, cy: 18 },
+  ],
+};
+
+const FALLBACK = ["M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"];
+
+export function CategoryIcon({ categoryId, className }: { categoryId: string; className?: string }) {
+  if (categoryId === ALL_CATEGORY_ID) {
+    return (
+      <svg
+        className={className}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="3" y="3" width="7" height="7" rx="1.4" />
+        <rect x="14" y="3" width="7" height="7" rx="1.4" />
+        <rect x="3" y="14" width="7" height="7" rx="1.4" />
+        <rect x="14" y="14" width="7" height="7" rx="1.4" />
+      </svg>
+    );
+  }
+
+  const paths = PATHS[categoryId] ?? FALLBACK;
+  const dots = DOTS[categoryId] ?? [];
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {paths.map((d, i) => (
+        <path key={i} d={d} />
+      ))}
+      {dots.map((dot, i) => (
+        <circle key={i} cx={dot.cx} cy={dot.cy} r="1" fill="currentColor" stroke="none" />
+      ))}
+    </svg>
+  );
+}

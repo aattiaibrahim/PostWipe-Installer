@@ -1,0 +1,3716 @@
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist-Variable.woff2") format("woff2-variations"), url("/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+html.is-resizing {
+  --glass-blur: 0px;
+}
+
+:root {
+  --bg: #f0f1fa;
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-solid: #ffffff;
+  --surface-hover: rgba(255, 255, 255, 0.95);
+  --border: rgba(26, 47, 251, 0.2);
+  --text: #0b0c14;
+  /* Legibility pass 2026-07-21: darker again (was #3f4459, before that #565b72) — muted
+     text sits on translucent glass over colorful blobs, which eats apparent contrast. */
+  --text-muted: #2e3348;
+  --accent: #1a2ffb;
+  --accent-hover: #1526d1;
+  --accent-text: #ffffff;
+  --stale: #b45309;
+  --stale-bg: #fef3c7;
+  --verified: #15803d;
+  --verified-bg: #dcfce7;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --blob-1: #3b4dfd;
+  --blob-2: #6a5cff;
+  --blob-3: #3fc4e0;
+  --glass-blur: 22px;
+
+  font-family: "Geist", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-feature-settings: "cv11", "ss01", "cv01";
+  color: var(--text);
+  background-color: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b0c16;
+  --surface: rgba(19, 20, 32, 0.85);
+  --surface-solid: #181926;
+  --surface-hover: rgba(30, 32, 48, 0.95);
+  --border: rgba(126, 138, 255, 0.24);
+  --text: #f7f8fd;
+  --text-muted: #bcc0d8;
+  --accent: #4a5bfc;
+  --accent-hover: #6673ff;
+  --accent-text: #ffffff;
+  --stale: #fbbf24;
+  --stale-bg: #3f2f0f;
+  --verified: #4ade80;
+  --verified-bg: #123a20;
+  --blob-1: #3b4dfd;
+  --blob-2: #6a5cff;
+  --blob-3: #2fb8d6;
+}
+
+/* ---- Named colour themes (picked in Settings, persisted by themeStore) ----
+   Each one redefines the whole token set, so every surface follows automatically. */
+
+:root[data-theme="nord"] {
+  --bg: #2e3440;
+  --surface: rgba(59, 66, 82, 0.85);
+  --surface-solid: #3b4252;
+  --surface-hover: rgba(76, 86, 106, 0.95);
+  --border: rgba(136, 192, 208, 0.26);
+  --text: #eceff4;
+  --text-muted: #ccd4e2;
+  --accent: #88c0d0;
+  --accent-hover: #8fbcbb;
+  --accent-text: #2e3440;
+  --stale: #ebcb8b;
+  --stale-bg: #4a3f2a;
+  --verified: #a3be8c;
+  --verified-bg: #2f3d2c;
+  --danger: #bf616a;
+  --success: #a3be8c;
+  --blob-1: #5e81ac;
+  --blob-2: #88c0d0;
+  --blob-3: #8fbcbb;
+}
+
+:root[data-theme="dracula"] {
+  --bg: #282a36;
+  --surface: rgba(51, 54, 71, 0.85);
+  --surface-solid: #343746;
+  --surface-hover: rgba(68, 71, 90, 0.95);
+  --border: rgba(189, 147, 249, 0.28);
+  --text: #f8f8f2;
+  --text-muted: #cccee0;
+  --accent: #bd93f9;
+  --accent-hover: #caa9fa;
+  --accent-text: #282a36;
+  --stale: #ffb86c;
+  --stale-bg: #4a3524;
+  --verified: #50fa7b;
+  --verified-bg: #1e3d28;
+  --danger: #ff5555;
+  --success: #50fa7b;
+  --blob-1: #bd93f9;
+  --blob-2: #ff79c6;
+  --blob-3: #8be9fd;
+}
+
+:root[data-theme="catppuccin"] {
+  --bg: #1e1e2e;
+  --surface: rgba(49, 50, 68, 0.85);
+  --surface-solid: #313244;
+  --surface-hover: rgba(69, 71, 90, 0.95);
+  --border: rgba(203, 166, 247, 0.28);
+  --text: #dee5fa;
+  --text-muted: #bac1da;
+  --accent: #cba6f7;
+  --accent-hover: #dcc0fb;
+  --accent-text: #1e1e2e;
+  --stale: #fab387;
+  --stale-bg: #46362b;
+  --verified: #a6e3a1;
+  --verified-bg: #2b3d2a;
+  --danger: #f38ba8;
+  --success: #a6e3a1;
+  --blob-1: #cba6f7;
+  --blob-2: #89b4fa;
+  --blob-3: #94e2d5;
+}
+
+:root[data-theme="gruvbox"] {
+  --bg: #282828;
+  --surface: rgba(60, 56, 54, 0.85);
+  --surface-solid: #3c3836;
+  --surface-hover: rgba(80, 73, 69, 0.95);
+  --border: rgba(250, 189, 47, 0.26);
+  --text: #ebdbb2;
+  --text-muted: #d5c4a1;
+  --accent: #fabd2f;
+  --accent-hover: #fac03f;
+  --accent-text: #282828;
+  --stale: #fe8019;
+  --stale-bg: #4a2f16;
+  --verified: #b8bb26;
+  --verified-bg: #333a14;
+  --danger: #fb4934;
+  --success: #b8bb26;
+  --blob-1: #d79921;
+  --blob-2: #cc241d;
+  --blob-3: #689d6a;
+}
+
+:root[data-theme="rose-pine"] {
+  --bg: #191724;
+  --surface: rgba(38, 35, 58, 0.85);
+  --surface-solid: #26233a;
+  --surface-hover: rgba(64, 61, 82, 0.95);
+  --border: rgba(235, 188, 186, 0.26);
+  --text: #e0def4;
+  --text-muted: #cac5e4;
+  --accent: #ebbcba;
+  --accent-hover: #f2cdcb;
+  --accent-text: #191724;
+  --stale: #f6c177;
+  --stale-bg: #45351f;
+  --verified: #9ccfd8;
+  --verified-bg: #22383c;
+  --danger: #eb6f92;
+  --success: #9ccfd8;
+  --blob-1: #c4a7e7;
+  --blob-2: #eb6f92;
+  --blob-3: #9ccfd8;
+}
+
+:root[data-theme="solarized"] {
+  --bg: #fdf6e3;
+  --surface: rgba(255, 252, 242, 0.85);
+  --surface-solid: #fffcf2;
+  --surface-hover: rgba(238, 232, 213, 0.95);
+  --border: rgba(38, 139, 210, 0.28);
+  --text: #073642;
+  --text-muted: #35525e;
+  --accent: #268bd2;
+  --accent-hover: #1f76b4;
+  --accent-text: #ffffff;
+  --stale: #b58900;
+  --stale-bg: #f5ecd0;
+  --verified: #859900;
+  --verified-bg: #ecf0d4;
+  --danger: #dc322f;
+  --success: #859900;
+  --blob-1: #268bd2;
+  --blob-2: #2aa198;
+  --blob-3: #b58900;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Form controls don't inherit the page font by default — without this every button and
+   the search input silently render in the OS UI font instead of Geist. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+html,
+body {
+  margin: 0;
+  background: transparent;
+}
+
+/* Frameless-window rounding on Windows: the window itself is TRANSPARENT (set in
+   tauri.windows.conf.json — Windows-only, macOS keeps native corners) and this clip rounds
+   everything drawn in it, fixed overlays and body portals included. The radius can be
+   anything we like this way — DWM's native rounding is locked to 8px, which read as barely
+   rounded. html/body must stay transparent (the base rule above) or the painted background
+   would fill the square window rect and bring the corner wedges back. */
+/* One knob for the window rounding. 0 everywhere it shouldn't apply (browser, macOS's
+   native corners, maximized), so every rule below can use it unconditionally. */
+html.tauri:not(.platform-macos) {
+  --win-radius: 20px;
+  clip-path: inset(0 round var(--win-radius));
+}
+
+/* Square again while the window fills the screen. */
+html.tauri.window-maximized {
+  --win-radius: 0px;
+}
+
+/* The root clip-path alone is NOT enough: Chromium promotes elements with backdrop-filter
+   (.title-bar at the top corners, .app-footer at the bottom) and filter: blur (the ambient
+   blobs, which cover all four) to their own composited layers, and those routinely paint
+   OUTSIDE an ancestor clip-path. That's why the corners survived every window-config change
+   — the window was already transparent and clipped; these layers were drawing over it. So
+   each corner-touching layer is rounded on its own as well. */
+html.tauri:not(.platform-macos) .app-shell {
+  border-radius: var(--win-radius);
+}
+
+html.tauri:not(.platform-macos) .glass-backdrop {
+  border-radius: var(--win-radius);
+}
+
+html.tauri:not(.platform-macos) .title-bar {
+  border-top-left-radius: var(--win-radius);
+  border-top-right-radius: var(--win-radius);
+}
+
+html.tauri:not(.platform-macos) .app-footer {
+  border-bottom-left-radius: var(--win-radius);
+  border-bottom-right-radius: var(--win-radius);
+}
+
+/* Same treatment for every full-bleed fixed overlay: these cover the whole window (so they
+   own all four corners) and the dimmed/blurred ones are composited for the same reason. */
+html.tauri:not(.platform-macos) .launch-splash,
+html.tauri:not(.platform-macos) .confirm-overlay,
+html.tauri:not(.platform-macos) .specials-detail,
+html.tauri:not(.platform-macos) .preview-lightbox,
+html.tauri:not(.platform-macos) .specials-unlock-burst {
+  border-radius: var(--win-radius);
+  overflow: hidden;
+}
+
+/* macOS keeps native decorations (rounded corners come from the OS), so paint the canvas
+   instead of clipping, and clear the overlay traffic lights at the top-left. */
+html.platform-macos,
+html.platform-macos body {
+  background-color: var(--bg);
+}
+
+html.platform-macos .title-bar {
+  padding-left: 84px;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--text-muted) 40%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background-clip: padding-box;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  background-color: var(--bg);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--text);
+}
+
+.app-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+.app-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  user-select: none;
+}
+
+.app-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.app-footer__link:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.app-footer__heart {
+  color: #e0245e;
+  animation: footer-heart-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes footer-heart-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.35);
+  }
+  40% {
+    transform: scale(1.05);
+  }
+  55% {
+    transform: scale(1.25);
+  }
+}
+
+/* Launch splash overlay */
+.launch-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  background-color: var(--bg);
+}
+
+.launch-splash__orb {
+  width: 110px;
+  height: 110px;
+  margin-bottom: 1rem;
+}
+
+.launch-splash__quote {
+  margin: 0;
+  max-width: 34rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.launch-splash__attribution {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.title-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding-left: 0.9rem;
+  /* Must be positioned for z-index to apply, and above the sticky topbar (z-index 30)
+     so the Settings dropdown paints over it instead of hiding behind it. */
+  position: relative;
+  z-index: 40;
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
+.title-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.title-bar__title {
+  color: var(--text);
+}
+
+.title-bar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  animation: title-bar-dot-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes title-bar-dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.85;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+
+.title-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  height: 100%;
+}
+
+.settings-dock__panel-inner {
+  padding-bottom: 0.35rem;
+  /* The real cap is measured in SidebarSettings and applied inline (magic numbers were wrong
+     twice); this is only the pre-measurement fallback for the first paint. */
+  max-height: calc(100vh - 152px);
+  overflow-y: auto;
+}
+
+
+.sidebar__categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: opacity 0.22s ease, transform 0.22s ease, filter 0.22s ease;
+}
+
+.sidebar--settings-open .sidebar__categories {
+  opacity: 0.3;
+  filter: saturate(0.5);
+  transform: scale(0.965);
+  pointer-events: none;
+}
+
+/* While settings is expanded the dimmed categories aren't interactive, so their scrollbar
+   is dead weight — hide it; it comes back the moment settings contracts. (Doubled class
+   because the main `.sidebar { overflow-y: auto }` block sits later in the file.) */
+/* Hide the scrollbar by making the THUMB transparent, not by switching overflow. Switching
+   overflow (and the scrollbar-gutter reservation it then needed) changed the sidebar's
+   content width — that's what put an extra empty strip down the right-hand side. Leaving
+   overflow untouched means zero reflow: the track just goes invisible. */
+.sidebar.sidebar--settings-open::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.title-bar__window-controls {
+  display: flex;
+  height: 100%;
+}
+
+.title-bar__win-btn {
+  width: 44px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.title-bar__win-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.title-bar__win-btn--close:hover {
+  background-color: #e81123;
+  color: #fff;
+}
+
+/* Sized by its container (the settings dock). */
+.settings-panel {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.settings-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settings-panel__row + .settings-panel__row {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Stacked: the Light/Dark toggle is wider than the sidebar panel leaves room for beside
+   the label, and side-by-side it clipped out of bounds. */
+.settings-panel__row--theme {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+/* Theme swatch grid — two columns fit the 236px settings dock. */
+.theme-picker {
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.theme-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+}
+
+.theme-swatch:hover {
+  color: var(--text);
+}
+
+.theme-swatch--active {
+  color: var(--text);
+}
+
+.theme-swatch__chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 30px;
+  padding: 0 7px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.theme-swatch__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.theme-swatch__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.theme-swatch__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding-left: 1px;
+}
+
+.settings-panel__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.settings-panel__version {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.settings-panel__check-btn {
+  padding: 0.5rem 0.9rem;
+  border-radius: 9px;
+  border: 1px solid var(--accent);
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Padlock that re-locks the Specials vault. Secondary (outline) next to the accent-filled
+   Check for Updates, since it's a "take it back" action rather than a primary one. */
+.settings-panel__lock-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background-color: var(--surface-solid);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.settings-panel__lock-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.settings-panel__lock-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background-color: var(--surface-hover);
+}
+
+.settings-panel__check-btn:disabled {
+  border-color: var(--border);
+  background-color: var(--bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.settings-panel__status {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.settings-panel__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* The native checkbox stays in the tree for keyboard/screen-reader semantics but is
+   visually replaced by .toggle-switch, which can actually animate. */
+.settings-panel__toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggle-switch {
+  flex-shrink: 0;
+  width: 34px;
+  height: 20px;
+  padding: 2px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--text) 22%, transparent);
+  transition: background-color 0.25s ease;
+}
+
+.settings-panel__toggle input:checked + .toggle-switch {
+  background-color: var(--accent);
+}
+
+.settings-panel__toggle input:focus-visible + .toggle-switch {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.toggle-switch__knob {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  /* Overshooting ease = the smooth settle instead of the native checkbox snap. */
+  transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.settings-panel__toggle input:checked + .toggle-switch .toggle-switch__knob {
+  transform: translateX(14px);
+}
+
+/* Accent glow hugging Download / Install buttons on hover. Plain box-shadow: it follows the
+   button's border-radius exactly on every engine — the old blurred conic-gradient pseudo
+   stack kept rendering as a hard-edged box in WKWebView (macOS), and per-row blur filters
+   plus an infinite gradient animation were expensive besides. */
+.app-row__action:hover:not(:disabled),
+.specials-detail__btn:hover:not(:disabled) {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 65%, transparent),
+    0 0 14px color-mix(in srgb, var(--accent) 55%, transparent),
+    0 0 3px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+/* Centered confirmation dialog (Download All). Portaled to <body>. */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.confirm-dialog {
+  width: min(360px, 90vw);
+  padding: 1.15rem 1.25rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.55);
+}
+
+.confirm-dialog__title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.confirm-dialog__body {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.confirm-dialog__btn {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.12s ease, filter 0.12s ease;
+}
+
+.confirm-dialog__btn:hover {
+  background-color: var(--surface-hover);
+}
+
+.confirm-dialog__btn--primary {
+  border-color: var(--danger);
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.confirm-dialog__btn--primary:hover {
+  background-color: var(--danger);
+  filter: brightness(1.1);
+}
+
+.settings-panel__download-all {
+  width: 100%;
+  padding: 0.5rem 0.9rem;
+  border-radius: 9px;
+  border: 1px solid var(--danger);
+  background-color: var(--danger);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.settings-panel__download-all:hover {
+  filter: brightness(1.1);
+}
+
+/* Update-available banner */
+.update-prompt {
+  position: fixed;
+  bottom: 42px;
+  right: 16px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.35);
+  font-size: 0.85rem;
+}
+
+.update-prompt__actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.update-prompt__install {
+  padding: 0.4rem 0.75rem;
+  border-radius: 9px;
+  border: none;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.update-prompt__later {
+  padding: 0.4rem 0.75rem;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.status-message {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.status-message--error {
+  color: var(--danger);
+}
+
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.error-boundary__message {
+  max-width: 32rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.error-boundary__reload-btn {
+  padding: 0.5rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.browse {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.browse__topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  /* Bleed to the pane edges so scrolling rows never peek out beside the bar. */
+  margin: 0 -1.5rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+
+.browse__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+/* OS picker: compact segmented control, full-section "lightswitch" highlight */
+.os-picker {
+  display: inline-flex;
+  align-self: flex-start;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  padding: 3px;
+}
+
+.os-picker__tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: color 0.15s ease;
+}
+
+.os-picker__tile:hover {
+  color: var(--text);
+}
+
+.os-picker__tile--active {
+  color: var(--accent-text);
+}
+
+.os-picker__tile--active:hover {
+  color: var(--accent-text);
+}
+
+.os-picker__indicator {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 9px;
+  background-color: var(--accent);
+}
+
+.os-picker__icon,
+.os-picker__tile span {
+  position: relative;
+  z-index: 1;
+}
+
+.os-picker__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Search + folder bar */
+.search-filter-bar {
+  display: flex;
+  flex: 1;
+  gap: 0.75rem;
+  min-width: 240px;
+}
+
+.search-filter-bar__input {
+  flex: 1;
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  color: var(--text);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-filter-bar__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.search-filter-bar__folder-btn {
+  padding: 0.5rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.search-filter-bar__folder-btn:hover {
+  background-color: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.download-history {
+  position: relative;
+  /* The wrapper stretches to the flex row's height, but without this the toggle button
+     inside keeps its own natural height and hangs off-alignment from its siblings. */
+  display: flex;
+  align-items: stretch;
+}
+
+.download-history__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.download-history__toggle:hover {
+  background-color: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.download-history__count {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.download-history__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: 240px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface-solid);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.35);
+}
+
+.download-history__empty {
+  margin: 0;
+  padding: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.download-history__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.download-history__item {
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--text);
+  font-size: 0.82rem;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background-color 0.12s ease;
+}
+
+.download-history__item:hover {
+  background-color: var(--surface-hover);
+}
+
+.download-history__row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.download-history__row .download-history__item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* EXE / DMG / MSI… file-type tag, derived from the downloaded file's extension. */
+.download-history__ext {
+  flex-shrink: 0;
+  padding: 0.1rem 0.35rem;
+  border-radius: 5px;
+  background-color: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.download-history__delete {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--danger);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.download-history__delete:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+}
+
+.download-history__confirm {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.download-history__confirm-btn {
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.download-history__confirm-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.download-history__confirm-btn--delete {
+  border-color: var(--danger);
+  background-color: var(--danger);
+  color: #fff;
+}
+
+.download-history__confirm-btn--delete:hover {
+  background-color: var(--danger);
+  color: #fff;
+  filter: brightness(1.1);
+}
+
+/* Category sidebar */
+.sidebar {
+  position: sticky;
+  /* Sits below the sticky topbar (measured height) instead of sliding under it. */
+  top: 76px;
+  flex-shrink: 0;
+  /* Wide enough that the expanded settings panel doesn't feel cramped. */
+  width: 236px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+/* No bottom "clearance" padding any more — the sidebar's max-height is measured in
+   CategorySidebar so the list simply ends above the dock. The old padding reserved dead
+   space under the last row (Specials). */
+
+.sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* The colored pill behind the active row. It's a shared framer layoutId element, so
+   selecting another category SLIDES it vertically instead of jump-cutting. Row content
+   sits above it via z-index. */
+.sidebar__active-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 9px;
+  background-color: var(--cat-color, var(--accent));
+}
+
+.sidebar__item > :not(.sidebar__active-bg) {
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar__item:hover {
+  /* Mixed from --text so it reads clearly against the sidebar surface in BOTH themes —
+     the old --surface-hover was nearly invisible against the sidebar in light mode. */
+  background-color: color-mix(in srgb, var(--text) 12%, transparent);
+  color: var(--text);
+}
+
+.sidebar__item--active {
+  /* Background lives on .sidebar__active-bg (the sliding pill), not the button. */
+  color: #fff;
+}
+
+/* Without this, :hover's higher specificity wins over --active's background/color (but not
+   the icon's separate --active-scoped color rule below), leaving a white icon stranded on
+   the plain near-white hover surface in light mode — invisible until the pointer moves off. */
+.sidebar__item--active:hover {
+  background-color: transparent;
+  color: #fff;
+}
+
+.sidebar__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--cat-color, currentColor);
+}
+
+.sidebar__item--active .sidebar__icon {
+  color: #fff;
+}
+
+.sidebar__label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__count {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.sidebar__lock {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  /* currentColor is the muted row color — too dark against the dark sidebar; the lock
+     needs to read at a glance, so lift it to full text color. --active keeps it white. */
+  color: var(--text);
+  opacity: 0.95;
+}
+
+/* WebView2's built-in password-reveal eye is drawn black; invert it in dark mode so it's
+   visible on the dark input. */
+:root[data-theme="dark"] input::-ms-reveal {
+  filter: invert(1);
+}
+
+/* Specials password curtain */
+.specials-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 3.5rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+
+.specials-lock__glyph {
+  width: 96px;
+  height: 96px;
+  color: var(--cat-color, #7c3aed);
+  margin-bottom: 0.5rem;
+}
+
+.specials-lock__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.specials-lock__hint {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.specials-lock__form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.specials-lock__input {
+  width: 200px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: var(--surface-solid);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.specials-lock__input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #7c3aed 25%, transparent);
+}
+
+.specials-lock__submit {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: none;
+  background-color: #7c3aed;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.specials-lock__submit:hover {
+  filter: brightness(1.1);
+}
+
+/* Quick padlock-open burst on successful unlock */
+.specials-unlock-burst {
+  /* Fixed to the viewport, not the panel: the Specials panel is tall (all the shelves),
+     so an absolutely-positioned burst centered ~1000px down never showed on screen. */
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.specials-unlock-burst svg {
+  width: 72px;
+  height: 72px;
+  color: #7c3aed;
+}
+
+.specials-unlock-burst__ring {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #7c3aed;
+}
+
+.specials-unlock-burst__glow {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, #7c3aed 45%, transparent) 0%, transparent 70%);
+}
+
+.specials-unlock-burst__spark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #7c3aed;
+  box-shadow: 0 0 8px color-mix(in srgb, #7c3aed 80%, transparent);
+}
+
+/* Specials vault content (dynamic items from the Worker) */
+.specials-group__count {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  background-color: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.specials-group__blurb {
+  margin: 0 0 0.4rem;
+  padding: 0 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ---- Specials gallery (AppleTV / umbrelOS-style: covers → grid → detail sheet) ---- */
+
+.specials-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.specials-page__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.4rem;
+  /* Stays pinned while the grid scrolls. top matches the sticky topbar's height (same 76px
+     the sidebar uses) — at top:0 this bar slid UNDERNEATH the frosted topbar (z 30 vs 15)
+     and looked like it had scrolled away. */
+  position: sticky;
+  top: 76px;
+  z-index: 15;
+  margin: 0 -0.2rem;
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* The whole frosted bar is the back control now, not just the arrow. */
+.specials-page__header--clickable {
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.specials-page__header--clickable:hover {
+  background-color: color-mix(in srgb, var(--surface-hover) 85%, transparent);
+}
+
+.specials-page__header--clickable:hover .specials-page__back {
+  background-color: var(--surface-hover);
+  transform: translateX(-2px);
+}
+
+/* Square icon buttons for the header (download / open-folder). */
+.download-history__toggle--icon,
+.search-filter-bar__folder-btn--icon {
+  position: relative;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-history__toggle--icon svg,
+.search-filter-bar__folder-btn--icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.download-history__toggle--icon .download-history__count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.download-history__toggle--icon .download-history__count--active {
+  top: auto;
+  bottom: -5px;
+  right: -5px;
+  color: #fff;
+}
+
+.specials-page__back {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.12s ease, transform 0.12s ease;
+}
+
+.specials-page__back svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.specials-page__back:hover {
+  background-color: var(--surface-hover);
+  transform: translateX(-2px);
+}
+
+.specials-page__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.specials-page__crumb {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.specials-page__blurb {
+  margin: 0 0 0.2rem 0.2rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Full-width category banner (Payday) — the one image that represents the whole pack,
+   shown in full (natural aspect, no crop). */
+.specials-page__hero {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  border-radius: 18px;
+  margin: 0.2rem 0 0.8rem;
+  box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive vertical grid — the whole point of this direction: scroll only up and down. */
+.specials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 16px;
+  padding: 6px 2px 10px;
+}
+
+.specials-grid--covers {
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+}
+
+/* ---- Department cover card ---- */
+.specials-cover {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 16 / 10;
+  background-color: var(--bg);
+  box-shadow: 0 2px 8px -3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+}
+
+.specials-cover:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow:
+    0 18px 40px -12px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 12px 34px -14px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.specials-cover__collage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2px;
+}
+
+/* Single-image / glyph cover fills the whole card (no 2×2 collage with blank cells). */
+.specials-cover__fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.specials-cover__glyph-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.specials-cover__music {
+  width: 34%;
+  height: 34%;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-cover__collage img,
+.specials-cover__collage span {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.specials-cover__folder {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 30px;
+  height: 30px;
+  color: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+.specials-cover--image-only .specials-cover__label {
+  display: none;
+}
+
+.specials-cover__label {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 1.6rem 0.85rem 0.7rem;
+  text-align: left;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.82));
+}
+
+.specials-cover__name {
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: #fff;
+}
+
+.specials-cover__count {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* ---- Item tile (opens the detail sheet on click) ---- */
+.specials-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: var(--surface-solid);
+  /* A <button> doesn't inherit text color — without this the name fell back to the UA
+     default (near-black), invisible on the dark card in dark mode. */
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 2px 8px -3px rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease;
+}
+
+.specials-card:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow:
+    0 18px 40px -12px rgba(0, 0, 0, 0.6),
+    0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 12px 34px -14px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.specials-card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Transparent, so the card's own surface is the only backdrop, art or no art. This was
+     var(--bg) - the page colour - under an inline gradient, and the card body below is
+     --surface-solid: two backdrops in one card, meeting at the name strip. */
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.specials-card__media img,
+.specials-card__frozen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.specials-card:hover .specials-card__media img {
+  transform: scale(1.05);
+}
+
+.specials-card__glyph {
+  font-size: 1.9rem;
+  color: rgba(255, 255, 255, 0.92);
+  user-select: none;
+}
+
+.specials-card__glyph--initial {
+  font-weight: 700;
+}
+
+.specials-card__badge {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  min-width: 17px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* Multi-select checkbox — hidden until hover / while selecting / when checked. */
+.specials-card__check {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  opacity: 0;
+  display: grid;
+  place-content: center;
+  transition: opacity 0.14s ease, background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.specials-card:hover .specials-card__check,
+.specials-grid--selecting .specials-card__check,
+.specials-card__check--on {
+  opacity: 1;
+}
+
+.specials-card__check--on {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+.specials-card__check--on::before {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.specials-card--selected {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.specials-card__state {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  color: #fff;
+  background-color: color-mix(in srgb, var(--accent) 85%, #000);
+}
+
+.specials-card__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.specials-card__bar-fill {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.specials-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  padding: 0.5rem 0.6rem 0.55rem;
+}
+
+.specials-card__name {
+  font-size: 0.82rem;
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.specials-card__meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ---- Detail sheet (modal, portaled to body) ---- */
+.specials-detail {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.specials-detail__sheet {
+  position: relative;
+  display: flex;
+  width: min(780px, 94vw);
+  max-height: min(78vh, 520px);
+  border-radius: 22px;
+  overflow: hidden;
+  background-color: var(--surface-solid);
+  border: 1px solid var(--border);
+  box-shadow: 0 28px 70px -18px rgba(0, 0, 0, 0.75);
+}
+
+.specials-detail__stage {
+  position: relative;
+  flex: 0 0 52%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0c0e14;
+  overflow: hidden;
+}
+
+.specials-detail__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* A single preview (a PSD/Payday tile, one wallpaper, one pfp) fills the whole panel. */
+.specials-detail__img--fill {
+  object-fit: cover;
+}
+
+.specials-detail__pdf {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+}
+
+/* Inline text preview (readmes, EQ presets, .bat scripts). Gets its own surface/text colors
+   so it stays readable in light mode — the stage behind it is always dark. */
+.specials-detail__text {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0.9rem;
+  overflow: auto;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: var(--text);
+  background-color: var(--surface-solid);
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-align: left;
+}
+
+.specials-detail__file-msg {
+  margin: 0;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.specials-detail__glyph {
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.specials-detail__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.specials-detail__arrow--l { left: 8px; }
+.specials-detail__arrow--r { right: 8px; }
+.specials-detail__arrow:hover { background-color: rgba(0, 0, 0, 0.72); }
+
+.specials-detail__counter {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 0.68rem;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.specials-detail__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.2rem 1.3rem;
+  overflow-y: auto;
+}
+
+.specials-detail__cat {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.specials-detail__name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.specials-detail__meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.specials-detail__sounds {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.2rem 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+/* Modern one-tap sound row (replaces native <audio controls>). */
+.sound-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: none;
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--text) 5%, transparent);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.14s ease;
+}
+
+.sound-row:hover {
+  background-color: color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.sound-row--playing {
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.sound-row__btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  background-color: var(--accent);
+}
+
+.sound-row__btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sound-row__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sound-row__eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 15px;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+.sound-row--playing .sound-row__eq {
+  opacity: 1;
+}
+
+.sound-row__eq i {
+  width: 3px;
+  border-radius: 2px;
+  background-color: var(--accent);
+  height: 4px;
+  animation: sound-bar-bounce 0.9s ease-in-out infinite;
+}
+
+.sound-row__eq i:nth-child(2) { animation-delay: 0.15s; }
+.sound-row__eq i:nth-child(3) { animation-delay: 0.35s; }
+.sound-row__eq i:nth-child(4) { animation-delay: 0.5s; }
+
+/* Modern music note used as the tile art / detail glyph for sound sets. */
+.specials-card__music {
+  width: 40%;
+  height: 40%;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-detail__music {
+  width: 72px;
+  height: 72px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Link (.url bookmark) glyphs — a chain-link, reusing the sound-glyph sizing. */
+.specials-card__link {
+  width: 42%;
+  height: 42%;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-detail__link-glyph {
+  width: 76px;
+  height: 76px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.specials-detail__hint--link {
+  word-break: break-all;
+  max-width: 100%;
+}
+
+.specials-detail__error {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--danger);
+}
+
+.specials-detail__msg {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.specials-detail__bar {
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--bg);
+  overflow: hidden;
+}
+
+.specials-detail__bar-fill {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.specials-detail__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.specials-detail__btn {
+  flex: 1;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.12s ease, box-shadow 0.2s ease;
+}
+
+.specials-detail__btn:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+}
+
+.specials-detail__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.specials-detail__btn--primary {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.specials-detail__btn--primary:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 88%, white);
+}
+
+.specials-detail__hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.specials-detail__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9px;
+  background-color: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.specials-detail__close:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 560px) {
+  .specials-detail__sheet {
+    flex-direction: column;
+    max-height: 86vh;
+  }
+  .specials-detail__stage {
+    flex: 0 0 200px;
+  }
+}
+
+/* ---- Preview lightbox ---- */
+
+.preview-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(8px);
+  cursor: zoom-out;
+}
+
+.preview-lightbox__stage {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: min(88vw, 1100px);
+  cursor: default;
+}
+
+.preview-lightbox__img {
+  max-width: min(74vw, 960px);
+  max-height: 72vh;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  background-color: var(--bg);
+}
+
+.preview-lightbox__arrow {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--text) 8%, var(--bg));
+  color: var(--text);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.preview-lightbox__arrow:hover {
+  background-color: color-mix(in srgb, var(--accent) 22%, var(--bg));
+  transform: scale(1.08);
+}
+
+.preview-lightbox__caption {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: default;
+}
+
+.preview-lightbox__counter {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.preview-lightbox__close {
+  position: absolute;
+  top: 52px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--text) 8%, var(--bg));
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.preview-lightbox__close:hover {
+  background-color: color-mix(in srgb, #ef4444 30%, var(--bg));
+}
+
+/* ---- Sound preview / variant picker overlay card ---- */
+
+.sound-preview {
+  width: min(88vw, 440px);
+  max-height: 74vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  cursor: default;
+  overflow: hidden;
+}
+
+.sound-preview__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.9rem 1rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sound-preview__title {
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.sound-preview__count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.sound-preview__list {
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sound-preview__row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--text);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.sound-preview__row:hover {
+  background-color: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.sound-preview__row--playing {
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.sound-preview__play {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  background-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+}
+
+.sound-preview__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sound-preview__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.sound-preview__bars i {
+  width: 3px;
+  border-radius: 2px;
+  background-color: var(--accent);
+  animation: sound-bar-bounce 0.9s ease-in-out infinite;
+}
+
+.sound-preview__bars i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.sound-preview__bars i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes sound-bar-bounce {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 12px;
+  }
+}
+
+/* In-row how-to (OBS replay buffer) with a copyable snippet.
+   align-self/min-width keep the long <pre> line from stretching the flex column and
+   clipping the step text — the code scrolls inside its own box instead. */
+.app-guide {
+  align-self: stretch;
+  min-width: 0;
+  max-width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.app-guide__title {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.app-guide__steps {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.app-guide__snippet {
+  margin-top: 0.6rem;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.app-guide__snippet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background-color: color-mix(in srgb, var(--text) 6%, transparent);
+}
+
+.app-guide__copy {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: none;
+  color: var(--text);
+  font-size: 0.68rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.app-guide__copy:hover {
+  background-color: var(--surface-hover);
+}
+
+.app-guide__code {
+  margin: 0;
+  padding: 0.6rem;
+  overflow-x: auto;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--surface-solid);
+  white-space: pre;
+}
+
+/* Sub-heading inside a category (Essential Bookmarks groups its links by topic). */
+.category-panel__group {
+  margin: 0.9rem 0 0.1rem;
+  padding: 0 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.category-panel__group:first-child {
+  margin-top: 0.2rem;
+}
+
+.sidebar__divider {
+  height: 1px;
+  margin: 0.35rem 0.2rem;
+  background-color: var(--border);
+}
+
+/* Category content panel */
+.category-panel {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.category-panel__empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.category-panel__section {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background-color: var(--surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  overflow: hidden;
+}
+
+.category-panel__title {
+  margin: 0;
+  padding: 0.8rem 0.9rem 0.6rem;
+  font-size: 0.95rem;
+}
+
+.category-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 0.9rem;
+}
+
+.category-panel__header .category-panel__title {
+  padding-right: 0;
+}
+
+.os-picker--vendor .os-picker__tile {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Collapsible shell around the vendor toggle. max-width (not width) animates the collapse so
+   the toggle keeps its intrinsic size while open; the wrapper clips it as it shrinks and the
+   flex:1 search bar next to it absorbs the space every frame. (A grid 0fr↔1fr track doesn't
+   work here: as an auto-sized flex item the wrapper's width is indefinite, so a 0fr track
+   resolves to max-content and never collapses.) The negative margin cancels the topbar's
+   0.9rem flex gap while collapsed so the hidden toggle doesn't reserve a gap; visibility
+   flips after the transition so the collapsed control can't be focused or hovered. */
+.vendor-collapse {
+  display: flex;
+  flex: none;
+  overflow: hidden;
+  max-width: 0;
+  margin-left: -0.9rem;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    max-width 0.3s ease,
+    margin-left 0.3s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0.3s;
+}
+
+.vendor-collapse--open {
+  /* Slightly above the toggle's natural ~152px width; the clamp keeps the dead zone at the
+     ends of the transition small. */
+  max-width: 176px;
+  margin-left: 0;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    max-width 0.3s ease,
+    margin-left 0.3s ease,
+    opacity 0.25s ease 0.05s,
+    visibility 0s;
+}
+
+.vendor-collapse > .os-picker--vendor {
+  flex: none;
+}
+
+.category-panel__rows {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.6rem 0.6rem;
+}
+
+/* Horizontal app row */
+.app-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.6rem;
+  /* Softer pill to match the rest of the rounded chrome now that the straight dividers
+     between rows are gone. */
+  border-radius: 12px;
+  overflow: hidden;
+  transition: background-color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  /* Rows offscreen skip layout + paint entirely; `auto` keeps a row's real size once it has
+     rendered (matters for expanded rows) with 58px as the pre-render estimate. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 58px;
+}
+
+.app-row--expandable {
+  cursor: pointer;
+}
+
+/* No translateY lift here — the rows sit between 1px divider lines, and shifting the
+   highlighted row up made its background overlap the divider above it. */
+.app-row:hover {
+  background-color: var(--surface-hover);
+  box-shadow: 0 4px 16px -6px rgba(0, 0, 0, 0.25);
+}
+
+/* Ambient status glow painted into the row background: yellow while downloading,
+   green once done, red on failure. Light and quick — a signal, not a siren. */
+.app-row__status-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(160px 130% at 100% 50%, var(--status-glow, transparent) 0%, transparent 72%);
+}
+
+.app-row > *:not(.app-row__status-glow) {
+  position: relative;
+  z-index: 1;
+}
+
+.app-row--downloading .app-row__status-glow {
+  --status-glow: color-mix(in srgb, #eab308 45%, transparent);
+  animation: status-glow-blink 1.1s ease-in-out infinite;
+}
+
+.app-row--completed .app-row__status-glow {
+  --status-glow: color-mix(in srgb, var(--success) 40%, transparent);
+  animation: status-glow-breathe 2.8s ease-in-out infinite;
+}
+
+/* Custom-drawn so it can be circular (native checkboxes can't be). */
+.app-row__select {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+}
+
+.app-row__select:hover {
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+
+.app-row__select:checked {
+  border-color: var(--accent);
+  background-color: var(--accent);
+}
+
+/* The checkmark: a rotated border "L". */
+.app-row__select:checked::before {
+  content: "";
+  width: 5px;
+  height: 9px;
+  margin-top: -2px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.app-row--selected {
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* Batch-download pill — slides down from the very top, dead-center in the title bar,
+   with the same ambient-glow treatment as the app rows. Horizontal centering is
+   left:50% + framer x:"-50%" (set in the component, since framer owns transform). */
+/* Positioning wrapper for the pill + its hover popover: the pill keeps overflow:hidden
+   (glow + pulse clipping) while the popover can hang below it unclipped. */
+.selection-wrap {
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  z-index: 40;
+}
+
+.selection-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  /* No left text anymore (the count lives in the Download button) — even padding. */
+  padding: 2px 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface-solid);
+  overflow: hidden;
+}
+
+/* Hover list of everything selected. The padding-top bridge keeps hover unbroken while the
+   pointer travels from the pill down into the panel. */
+.selection-popover {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-top: 8px;
+  display: none;
+}
+
+.selection-wrap:hover .selection-popover,
+.selection-popover:hover {
+  display: block;
+}
+
+.selection-popover__panel {
+  min-width: 240px;
+  max-width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface-solid);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.selection-popover__row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 9px;
+}
+
+.selection-popover__row:hover {
+  background-color: var(--surface-hover);
+}
+
+.selection-popover__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.selection-popover__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.selection-popover__remove {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.selection-popover__remove:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}
+
+/* The Select-Multiple tool that shares this slot while nothing is selected. The outer pill
+   mirrors .selection-bar and the label chip mirrors .selection-bar__download exactly, so
+   swapping between this and "Clear | Download N" reads as one control changing state. */
+.select-mode-toggle {
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface-solid);
+  cursor: pointer;
+}
+
+.select-mode-toggle__label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.8rem;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.74rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: filter 0.15s ease;
+}
+
+.select-mode-toggle__label svg {
+  width: 13px;
+  height: 13px;
+}
+
+.select-mode-toggle:hover .select-mode-toggle__label {
+  filter: brightness(1.08);
+}
+
+/* ON state must look unmistakably different from OFF (they were identical accent chips
+   before, differing only in wording): the chip goes hollow — accent outline + accent text
+   on the bare pill — and the pill breathes an accent ring so "selecting" reads as a live
+   mode you're currently inside, and as something you can click again to cancel. */
+@keyframes select-mode-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+
+.select-mode-toggle--on {
+  border-color: var(--accent);
+  animation: select-mode-breathe 1.9s ease-out infinite;
+}
+
+.select-mode-toggle--on .select-mode-toggle__label {
+  background-color: transparent;
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+}
+
+.select-mode-toggle--on:hover .select-mode-toggle__label {
+  filter: none;
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* Accent ring flashed (re-keyed) on every select/deselect — the pill's "pulse". */
+.selection-bar__pulse {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.selection-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(140px 130% at 0% 50%, color-mix(in srgb, var(--accent) 35%, transparent) 0%, transparent 70%);
+  animation: status-glow-breathe 2.8s ease-in-out infinite;
+}
+
+.selection-bar > * {
+  position: relative;
+  z-index: 1;
+}
+
+.selection-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.selection-bar__clear {
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.selection-bar__clear:hover {
+  color: var(--text);
+}
+
+.selection-bar__download {
+  padding: 0.28rem 0.8rem;
+  border-radius: 999px;
+  border: none;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.15s ease;
+}
+
+.selection-bar__download:hover {
+  filter: brightness(1.08);
+}
+
+.app-row--failed .app-row__status-glow {
+  --status-glow: color-mix(in srgb, var(--danger) 45%, transparent);
+  animation: status-glow-flash 0.55s ease-in-out 4, status-glow-hold 0.1s 2.2s forwards;
+}
+
+@keyframes status-glow-blink {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes status-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes status-glow-flash {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes status-glow-hold {
+  to {
+    opacity: 0.55;
+  }
+}
+
+/* No divider lines between rows. Each row's hover/selected state is a rounded pill, and a
+   full-bleed straight line running into that curve is what made the rows read as "supposed
+   to be straight but curved". Separation now comes from the pill + a small gap, so the whole
+   list is consistently rounded. (To bring lines back, prefer an INSET one — e.g.
+   `margin: 0 0.5rem` — so it stops short of the pill's corners.) */
+.app-row-wrapper + .app-row-wrapper {
+  margin-top: 3px;
+}
+
+.app-row__fallback {
+  padding: 0.1rem 0.5rem 0.7rem 3.25rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.app-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.app-icon--brand {
+  border: 1px solid var(--border);
+}
+
+.app-icon__svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-icon--favicon {
+  border: 1px solid var(--border);
+  background-color: var(--surface-solid);
+}
+
+.app-icon__favicon-img {
+  width: 20px;
+  height: 20px;
+  /* Favicons are often 16/32px sources — keep upscaling crisp instead of blurry. */
+  image-rendering: -webkit-optimize-contrast;
+  /* Square logos (OBS, Docker, Claude…) get softened corners so they sit better in the UI.
+     Round marks are unaffected — their corners are already transparent. */
+  border-radius: 5px;
+}
+
+.app-icon--monogram {
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.app-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-row__name-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.app-row__name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.app-row__bio {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-row__expand-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.app-row__expand-toggle:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.app-row__expand-toggle svg {
+  width: 13px;
+  height: 13px;
+}
+
+.app-row__details {
+  padding: 0.1rem 0.5rem 0.7rem 3.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  /* Without this, a wide child (the guide's <pre>) blows the column out and clips it. */
+  min-width: 0;
+}
+
+.app-row__details-notes {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.app-row__error {
+  margin: 0.1rem 0 0;
+  font-size: 0.75rem;
+  color: var(--danger);
+}
+
+.app-row__link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.badge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge--stale {
+  color: var(--stale);
+  background-color: var(--stale-bg);
+}
+
+.app-row__action {
+  flex-shrink: 0;
+  padding: 0.45rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease, box-shadow 0.2s ease;
+}
+
+/* Hover/active shift via color-mix rather than filter: brightness() — a filter
+   here wraps the glow pseudo-elements in a WebKit rasterization group that
+   renders as a hard-edged box on macOS. */
+.app-row__action:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 90%, white);
+}
+
+.app-row__action:active:not(:disabled) {
+  background-color: color-mix(in srgb, var(--accent) 92%, black);
+}
+
+.app-row__action:disabled {
+  background: none;
+  border-color: var(--border);
+  background-color: var(--bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.app-row__pin-btn {
+  flex-shrink: 0;
+  padding: 0.45rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.app-row__pin-btn:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.app-row__pin-btn:disabled {
+  color: var(--text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.app-row__pin-btn--active {
+  color: var(--verified);
+  background-color: var(--verified-bg);
+  border-color: transparent;
+  opacity: 1;
+}
+
+.app-row__pin-btn--active:hover {
+  color: var(--verified);
+  background-color: var(--verified-bg);
+}
+
+/* Per-row action column: buttons on top, progress/checkmark/error status below */
+.app-row__action-col {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.app-row__action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-row__action--cancel {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.app-row__action--cancel:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.app-row__pin-msg {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.app-row__action-status {
+  width: 160px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.app-row__action-status .app-row__error {
+  margin: 0;
+  text-align: right;
+}
+
+/* Live progress rows inside the Downloaded dropdown */
+.download-history__active-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.download-history__active-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.download-history__active-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+/* Spinning green ring chasing a download arrow — the "downloading" indicator. */
+.dl-spinner {
+  position: relative;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+}
+
+.dl-spinner__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: dl-spin 0.9s linear infinite;
+}
+
+.dl-spinner__track {
+  stroke: color-mix(in srgb, var(--verified) 22%, transparent);
+  stroke-width: 3;
+}
+
+.dl-spinner__arc {
+  stroke: var(--verified);
+  stroke-width: 3;
+  stroke-linecap: round;
+  /* r=15 → circumference ≈ 94; ~26 on, rest off = a chasing arc */
+  stroke-dasharray: 26 94;
+}
+
+.dl-spinner__icon {
+  width: 13px;
+  height: 13px;
+  color: var(--verified);
+}
+
+@keyframes dl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-spinner__ring {
+    animation: none;
+  }
+}
+
+.download-history__cancel {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.download-history__cancel:hover {
+  background-color: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}
+
+.download-history__active-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.download-history__active-percent {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.download-history__bar-track {
+  height: 5px;
+  border-radius: 999px;
+  background-color: var(--bg);
+  overflow: hidden;
+}
+
+.download-history__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--accent);
+}
+
+@keyframes bar-indeterminate-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(420%);
+  }
+}
+
+.download-history__bar-fill--indeterminate {
+  animation: bar-indeterminate-slide 1.4s ease-in-out infinite;
+}
+
+.download-history__count--active {
+  background-color: var(--verified);
+}
+
+/* ---- Legibility pass (2026-07-21): heavier weights + full-strength icons so muted text
+   and glyphs read clearly on the glass surfaces, in every theme. Geist is a variable font,
+   so the in-between weights render true instead of faux-bolding. ---- */
+
+.sidebar__label,
+.app-row__bio,
+.specials-card__meta,
+.specials-detail__meta,
+.app-row__domain {
+  font-weight: 500;
+}
+
+.sidebar__count {
+  font-weight: 600;
+}
+
+.app-row__name {
+  font-weight: 620;
+}
+
+/* Category glyphs and the app-icon chips get a touch more presence. */
+.sidebar__icon {
+  stroke-width: 2;
+}
+
+.app-icon--favicon {
+  border-color: color-mix(in srgb, var(--text-muted) 32%, transparent);
+}
+
+/* ---- "Select Multiple Apps" mode ---- */
+
+/* Whole row/card is the checkbox while the mode is on. */
+.app-row--select-mode {
+  cursor: pointer;
+}
+
+.app-row--select-mode:hover {
+  background-color: var(--surface-hover);
+}
+
+/* ── Download health ───────────────────────────────────────────────────────────
+   Badges sourced from the weekly CI sweep (or a live check run in Settings).
+   Colours come from existing tokens so every theme picks them up for free:
+   --stale is already the amber pair, --danger the red. Green has no token yet,
+   so it's defined here once and re-stated for dark themes below. */
+:root {
+  --health-ok: #15803d;
+  --health-ok-bg: #dcfce7;
+}
+
+/* Dark themes set --accent-text white on a dark --surface; the light-mode green
+   is unreadable there, so lift it. Keyed off the same attribute the themes use. */
+:root[data-theme="dark"],
+:root[data-theme="nord"],
+:root[data-theme="dracula"],
+:root[data-theme="catppuccin"],
+:root[data-theme="gruvbox"],
+:root[data-theme="rose-pine"] {
+  --health-ok: #4ade80;
+  --health-ok-bg: rgba(34, 197, 94, 0.16);
+}
+
+.health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding: 0.14rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.health-badge svg {
+  width: 0.62rem;
+  height: 0.62rem;
+  flex-shrink: 0;
+}
+
+.health-badge--ok {
+  color: var(--health-ok);
+  background-color: var(--health-ok-bg);
+}
+
+.health-badge--unknown {
+  color: var(--stale);
+  background-color: var(--stale-bg);
+}
+
+.health-badge--broken {
+  color: var(--danger);
+  background-color: color-mix(in srgb, var(--danger) 14%, transparent);
+}
+
+/* A "working" badge on every healthy row would be visual noise on a list of 60.
+   The green one stays quiet until you look for it; amber and red keep full weight. */
+.health-badge--ok .health-badge__label {
+  display: none;
+}
+
+.health-badge--ok {
+  padding: 0.14rem 0.24rem;
+}
+
+/* Broken downloads are muted, NOT disabled — see AppCard for why. */
+.app-row__action--risky {
+  background-color: transparent;
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  color: var(--danger);
+  box-shadow: none;
+}
+
+.app-row__action--risky:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* ── Live check terminal ─────────────────────────────────────────────────────── */
+.health-check {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.health-check__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.health-check__meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.health-check__count--ok { color: var(--health-ok); font-weight: 600; }
+.health-check__count--unknown { color: var(--stale); font-weight: 600; }
+.health-check__count--broken { color: var(--danger); font-weight: 600; }
+
+.health-check__terminal {
+  position: relative;
+  width: min(46rem, 88vw);
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: #0d1117;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.health-check__close {
+  margin-left: auto;
+  padding: 0 0.25rem;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.health-check__close:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.health-check__terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.health-check__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+}
+
+.health-check__dot--red { background-color: #ff5f57; }
+.health-check__dot--amber { background-color: #febc2e; }
+.health-check__dot--green { background-color: #28c840; }
+
+.health-check__terminal-title {
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.health-check__log {
+  max-height: min(24rem, 60vh);
+  overflow-y: auto;
+  padding: 0.6rem 0.7rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  line-height: 1.55;
+  color: #c9d1d9;
+  scrollbar-width: thin;
+}
+
+.health-check__line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.health-check__line--muted { color: rgba(201, 209, 217, 0.45); }
+
+.health-check__tag {
+  flex-shrink: 0;
+  white-space: pre;
+  font-weight: 600;
+}
+
+.health-check__tag--ok { color: #3fb950; }
+.health-check__tag--unknown { color: #d29922; }
+.health-check__tag--broken { color: #f85149; }
+
+.health-check__app { flex-shrink: 0; }
+
+.health-check__detail {
+  color: rgba(201, 209, 217, 0.5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.health-check__cursor {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.85rem;
+  background-color: #3fb950;
+  animation: health-blink 1s step-end infinite;
+}
+
+@keyframes health-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .health-check__cursor { animation: none; }
+}
+
+.health-check__progress {
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.health-check__progress-fill {
+  height: 100%;
+  background-color: #3fb950;
+}
+
+.health-check__note {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: 8px;
+  background-color: rgba(210, 153, 34, 0.12);
+  color: #d29922;
+  white-space: normal;
+  line-height: 1.5;
+}

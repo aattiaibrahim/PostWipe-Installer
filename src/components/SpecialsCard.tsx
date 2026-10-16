@@ -1,0 +1,132 @@
+import type { SpecialsItem as Item } from "../state/specialsContentStore";
+import { useSpecialsStore } from "../state/specialsStore";
+import { useSpecialsSelectionStore } from "../state/specialsSelectionStore";
+import { useCatalogStore } from "../state/catalogStore";
+import { useDownloadQueueStore } from "../state/downloadQueueStore";
+import { resolvePreviews } from "../lib/specialsPreview";
+import { FrozenGif } from "./FrozenGif";
+import { MusicGlyph } from "./MusicGlyph";
+
+// Re-exported so existing imports (`from "./SpecialsCard"`) keep working.
+export { gatedUrl } from "../lib/specialsPreview";
+
+const ACTIVE_STATUSES = new Set(["queued", "resolving", "downloading"]);
+
+export function fmtSize(n: number): string {
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
+  return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
+/** Deterministic per-name gradient for cards/covers with no preview image. */
+export function tileGradient(_name: string): string {
+  // One graphite tile for every item without preview art — the same dark tile app icons sit
+  // on. The old per-name rainbow gradients read as random discolouration across the grid.
+  return "linear-gradient(160deg, #2e2e31, #1f1f21)";
+}
+
+/** A soft per-item colour for the glyph or initial on that graphite tile, so tiles stay
+ *  distinguishable without painting the whole background. */
+export function tileTint(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  const hue = ((hash % 360) + 360) % 360;
+  return `hsl(${hue} 70% 72%)`;
+}
+
+/** A single vault item as a gallery tile: preview art (or a gradient glyph tile) with the
+ *  name/size beneath. Clicking opens the detail sheet — actions live there, not on the card. */
+export function SpecialsCard({ item, onOpen }: { item: Item; onOpen: (item: Item) => void }) {
+  const sessionKey = useSpecialsStore((s) => s.sessionKey);
+  const jobs = useDownloadQueueStore((s) => s.jobs);
+  const selected = useSpecialsSelectionStore((s) => s.selected.includes(item.objectKey));
+  const toggleSelected = useSpecialsSelectionStore((s) => s.toggle);
+  const selectMode = useCatalogStore((s) => s.selectMode);
+
+  const job = Object.values(jobs)
+    .reverse()
+    .find((j) => j.appId === item.objectKey);
+  const downloading = !!job && ACTIVE_STATUSES.has(job.status);
+  const downloaded = job?.status === "completed";
+  const percent = job?.totalBytes ? Math.min(100, (job.bytesDownloaded / job.totalBytes) * 100) : null;
+
+  const previews = resolvePreviews(item, sessionKey);
+  const hasSound = item.audioPreviews.length > 0;
+  const isLink = item.ext === "url";
+  const firstImage = previews[0] ?? null;
+
+  return (
+    <div
+      className={`specials-card${selected ? " specials-card--selected" : ""}`}
+      role="button"
+      tabIndex={0}
+      // In "Select Multiple Apps" mode the whole card is the checkbox (links stay links —
+      // they can't be batch-downloaded, so they always open their detail).
+      onClick={() => (selectMode && !isLink ? toggleSelected(item.objectKey) : onOpen(item))}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (selectMode && !isLink) toggleSelected(item.objectKey);
+          else onOpen(item);
+        }
+      }}
+    >
+      {/* No art: paint nothing here, so the card's own surface runs top to bottom. This used
+          to paint tileGradient, which fades dark toward the name strip and then met the
+          card's lighter surface in a hard seam - every art-less card read as two stacked
+          backdrops. In light theme it was a graphite block sitting on a light card. */}
+      <div className="specials-card__media">
+        {firstImage ? (
+          // Own-image GIFs (Profile Pics) are frozen to a static frame in the grid to avoid
+          // dozens animating at once; everything else is a plain lazy <img>.
+          item.ext === "gif" && item.previewKeys.length === 0 ? (
+            <FrozenGif src={firstImage} className="specials-card__frozen" />
+          ) : (
+            <img src={firstImage} alt="" loading="lazy" decoding="async" />
+          )
+        ) : isLink ? (
+          <svg className="specials-card__glyph specials-card__link" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        ) : hasSound ? (
+          <MusicGlyph className="specials-card__glyph specials-card__music" />
+        ) : (
+          <span className="specials-card__glyph specials-card__glyph--initial" style={{ color: tileTint(item.name) }}>
+            {item.name.charAt(0).toUpperCase()}
+          </span>
+        )}
+        {/* Check circle only exists while select mode is on (or this card is already
+            selected) — idle cards stay clean. */}
+        {!isLink && (selectMode || selected) && (
+          <button
+            className={`specials-card__check${selected ? " specials-card__check--on" : ""}`}
+            aria-label={selected ? `Deselect ${item.name}` : `Select ${item.name}`}
+            aria-pressed={selected}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSelected(item.objectKey);
+            }}
+          />
+        )}
+        {item.previewKeys.length > 1 && <span className="specials-card__badge">{item.previewKeys.length}</span>}
+        {downloaded && (
+          <span className="specials-card__state" title="Downloaded">
+            ✓
+          </span>
+        )}
+        {downloading && (
+          <div className="specials-card__bar">
+            <div className="specials-card__bar-fill" style={{ width: percent !== null ? `${percent}%` : "40%" }} />
+          </div>
+        )}
+      </div>
+      <div className="specials-card__body">
+        <span className="specials-card__name" title={item.name}>
+          {item.name}
+        </span>
+        <span className="specials-card__meta">{fmtSize(item.size)}</span>
+      </div>
+    </div>
+  );
+}

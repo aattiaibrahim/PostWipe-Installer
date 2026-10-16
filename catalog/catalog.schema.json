@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://postwipe-installer.local/catalog.schema.json",
+  "title": "PostWipe Installer catalog",
+  "type": "object",
+  "required": ["version", "categories"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "categories": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/category" }
+    }
+  },
+  "definitions": {
+    "category": {
+      "type": "object",
+      "required": ["id", "name", "apps"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string" },
+        "apps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/app" }
+        }
+      }
+    },
+    "app": {
+      "type": "object",
+      "required": ["id", "name", "icon", "kind", "platforms"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string" },
+        "bio": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "domain": { "type": "string" },
+        "website": { "type": "string", "format": "uri" },
+        "vendor": { "type": "string", "enum": ["intel", "amd"] },
+        "kind": { "type": "string", "enum": ["download", "script", "placeholder"] },
+        "notes": { "type": "string" },
+        "platforms": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "windows": { "$ref": "#/definitions/platformEntry" },
+            "macos": { "$ref": "#/definitions/platformEntry" }
+          }
+        }
+      }
+    },
+    "platformEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resolver": { "$ref": "#/definitions/resolver" },
+        "filename": { "type": "string" },
+        "script_id": { "type": "string" },
+        "stale": { "type": "boolean" },
+        "signer": { "type": "string", "description": "Expected code-signing organization (scripts/collect-signers.mjs)." },
+        "install": {
+          "type": "object",
+          "description": "How Install for me runs this installer (scripts/install-args.mjs). Absent = it opens its own installer.",
+          "additionalProperties": false,
+          "properties": {
+            "args": { "type": "array", "items": { "type": "string", "pattern": "^[^\\s\"']+$" } },
+            "admin": { "type": "boolean" },
+            "portable": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "resolver": {
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        {
+          "properties": {
+            "type": { "const": "static" },
+            "url": { "type": "string", "format": "uri" }
+          },
+          "required": ["type", "url"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": { "const": "github_release" },
+            "repo": { "type": "string", "pattern": "^[^/]+/[^/]+$" },
+            "asset_pattern": { "type": "string" }
+          },
+          "required": ["type", "repo", "asset_pattern"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": { "const": "html" },
+            "page_url": { "type": "string", "format": "uri" },
+            "selector": { "type": "string" },
+            "attr": { "type": "string" },
+            "base_url": { "type": "string", "format": "uri" },
+            "url_regex": { "type": "string" }
+          },
+          "required": ["type", "page_url", "selector", "attr"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": { "const": "html_regex" },
+            "page_url": { "type": "string", "format": "uri" },
+            "url_regex": { "type": "string" }
+          },
+          "required": ["type", "page_url", "url_regex"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": { "const": "webview" },
+            "page_url": { "type": "string", "format": "uri" },
+            "selector": { "type": "string" },
+            "attr": { "type": "string" },
+            "base_url": { "type": "string", "format": "uri" },
+            "url_regex": { "type": "string" },
+            "wait_ms": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["type", "page_url", "selector", "attr"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

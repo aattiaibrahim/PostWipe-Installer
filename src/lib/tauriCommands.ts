@@ -1,0 +1,324 @@
+import { invoke } from "@tauri-apps/api/core";
+import type { Catalog, Os } from "../types/catalog";
+
+export const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+
+export async function listCategories(): Promise<Catalog> {
+  if (isTauri) return invoke("list_categories");
+  // Plain-browser dev preview fallback (no Tauri IPC available) — reads the copy in
+  // public/catalog.json, which is not the source of truth; the app always uses the
+  // Rust-embedded catalog/catalog.json at runtime.
+  const res = await fetch("/catalog.json");
+  return res.json();
+}
+
+export function startDownload(appId: string, os: Os): Promise<string> {
+  return invoke("start_download", { appId, os });
+}
+
+export function cancelDownload(jobId: string): Promise<boolean> {
+  return invoke("cancel_download", { jobId });
+}
+
+export function listActiveDownloads(): Promise<{ jobId: string; appId: string; appName: string }[]> {
+  return invoke("list_active_downloads");
+}
+
+export function openDownloadsFolder(): Promise<void> {
+  return invoke("open_downloads_folder");
+}
+
+export async function pathsExist(paths: string[]): Promise<boolean[]> {
+  // Browser preview has no filesystem access — treat everything as present.
+  if (!isTauri) return paths.map(() => true);
+  return invoke("paths_exist", { paths });
+}
+
+/** Deletes a downloaded file. The backend refuses anything outside PostWipeDownloads. */
+export function deleteDownload(path: string): Promise<void> {
+  return invoke("delete_download", { path });
+}
+
+export function startSpecialsDownload(
+  itemId: string,
+  name: string,
+  url: string,
+  filename: string,
+  sha256?: string,
+): Promise<{ jobId: string; destPath: string }> {
+  return invoke("start_specials_download", { itemId, name, url, filename, sha256: sha256 ?? null });
+}
+
+export function installSpecialsItem(archivePath: string, installType: string): Promise<string> {
+  return invoke("install_specials_item", { archivePath, installType });
+}
+
+export interface CursorVariant {
+  label: string;
+  inf_path: string;
+}
+
+/** Extracts a cursor pack and lists every install.inf scheme inside it (for the variant picker). */
+export function listCursorVariants(archivePath: string): Promise<CursorVariant[]> {
+  return invoke("list_cursor_variants", { archivePath });
+}
+
+export function applyCursorVariant(infPath: string): Promise<string> {
+  return invoke("apply_cursor_variant", { infPath });
+}
+
+export async function specialsItemInstalled(filename: string): Promise<boolean> {
+  if (!isTauri) return false;
+  return invoke("specials_item_installed", { filename });
+}
+
+export function generateScript(scriptId: string): Promise<string> {
+  return invoke("generate_script", { scriptId });
+}
+
+export function findGeneratedScript(scriptId: string): Promise<string | null> {
+  return invoke("find_generated_script", { scriptId });
+}
+
+export function isScriptPinned(scriptId: string): Promise<boolean> {
+  return invoke("is_script_pinned", { scriptId });
+}
+
+/** Resolves with the full path of the created Start-menu .lnk. */
+export function pinScriptToStartMenu(scriptId: string, scriptPath: string): Promise<string> {
+  return invoke("pin_script_to_start_menu", { scriptId, scriptPath });
+}
+
+export function unpinScriptFromStartMenu(scriptId: string): Promise<void> {
+  return invoke("unpin_script_from_start_menu", { scriptId });
+}
+
+/** Disk-backed theme persistence (see settings.rs) — durable across restarts even
+ *  when the WebView drops localStorage. No-ops outside Tauri (browser dev). */
+export async function getSavedTheme(): Promise<string | null> {
+  if (!isTauri) return null;
+  return invoke<string | null>("get_theme");
+}
+
+export async function saveTheme(theme: string): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_theme", { theme });
+  } catch {
+    /* best-effort; localStorage still holds it for the session */
+  }
+}
+
+export type Backdrop = "wallpaper" | "native";
+
+/** Disk-backed backdrop choice (see settings.rs), for the same durability reason as theme. */
+export async function getSavedBackdrop(): Promise<Backdrop | null> {
+  if (!isTauri) return null;
+  try {
+    return await invoke<Backdrop | null>("get_backdrop");
+  } catch {
+    return null;
+  }
+}
+
+export async function saveBackdrop(backdrop: Backdrop): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_backdrop", { backdrop });
+  } catch {
+    /* best-effort */
+  }
+}
+
+/** Remembered Specials key (see settings.rs). Returns null when the vault should be
+ *  locked: never unlocked, explicitly locked, or the app was updated since. */
+export async function getVaultKey(): Promise<string | null> {
+  if (!isTauri) return null;
+  try {
+    return await invoke<string | null>("get_vault_key");
+  } catch {
+    return null;
+  }
+}
+
+export async function saveVaultKey(key: string): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_vault_key", { key });
+  } catch {
+    /* best-effort — the vault just relocks next launch */
+  }
+}
+
+/** Health of one catalog download — see `src-tauri/src/health/mod.rs` for the rules.
+ *  `unknown` explicitly means "couldn't verify", NOT "broken": bot-blocks and dead
+ *  connections land here so a flaky CI network can never grey out a working download. */
+export type HealthStatus = "ok" | "unknown" | "broken";
+
+export interface EntryHealth {
+  app_id: string;
+  os: Os;
+  status: HealthStatus;
+  detail: string;
+}
+
+export interface HealthReport {
+  /** Unix seconds. */
+  generated_at: number;
+  /** "ci" = the weekly published sweep, "local" = a check the user ran themselves. */
+  source: string;
+  entries: EntryHealth[];
+}
+
+/** Badges for launch: the published weekly sweep (one request), a local check if the user
+ *  has run one, or null when nothing trustworthy exists — in which case show no badges. */
+export async function loadCatalogHealth(): Promise<HealthReport | null> {
+  if (!isTauri) {
+    // Browser dev preview has no IPC — read the copy in public/, mirroring the
+    // catalog.json fallback above. The real app always goes through the Rust command,
+    // which also handles caching and the local-check override.
+    try {
+      const res = await fetch("/health.json");
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null;
+    }
+  }
+  try {
+    return await invoke<HealthReport | null>("load_catalog_health");
+  } catch {
+    return null;
+  }
+}
+
+/** Really resolves and fetches every download for `os`. Streams `health-check:*` events. */
+export function runHealthCheck(os: Os): Promise<HealthReport> {
+  return invoke("run_health_check", { os });
+}
+
+export async function clearLocalHealth(): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("clear_local_health");
+  } catch {
+    /* best-effort */
+  }
+}
+
+export async function clearVaultKey(): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("clear_vault_key");
+  } catch {
+    /* best-effort */
+  }
+}
+
+/** Anonymous community download counts (see src-tauri/src/commands/stats.rs). */
+export async function getShareStats(): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    return await invoke<boolean>("get_share_stats");
+  } catch {
+    return true;
+  }
+}
+
+export async function setShareStats(enabled: boolean): Promise<void> {
+  if (!isTauri) return;
+  await invoke("set_share_stats", { enabled });
+}
+
+export interface PopularApp {
+  appId: string;
+  count: number;
+}
+
+/** Most-downloaded apps for `os` of all time; empty when offline or not enough data. */
+export async function statsPopular(os: Os): Promise<PopularApp[]> {
+  if (!isTauri) return [];
+  try {
+    return await invoke<PopularApp[]>("stats_popular", { os });
+  } catch {
+    return [];
+  }
+}
+
+/** One-time UI flags kept on disk (see settings.rs): e.g. whether Kickstart was already
+ *  offered. Browser preview has no disk, so it reports every flag as unset. */
+export type Flag = "kickstart-offered";
+
+export async function getFlag(name: Flag): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    return await invoke<boolean>("get_flag", { name });
+  } catch {
+    // If the flag can't be read, don't risk nagging on every launch.
+    return true;
+  }
+}
+
+export async function setFlag(name: Flag): Promise<void> {
+  if (!isTauri) return;
+  try {
+    await invoke("set_flag", { name });
+  } catch {
+    /* best-effort */
+  }
+}
+
+export interface SystemInfo {
+  os: Os;
+  cpuVendor: "intel" | "amd" | "apple" | "unknown";
+  /** e.g. "AMD Ryzen 7 9800X3D 8-Core Processor"; empty if the CPU didn't say. */
+  cpuName: string;
+}
+
+/** Reads this computer's OS and processor (CPUID on x86, sysctl on Apple silicon). Null in the
+ *  browser preview, where there's no native side to ask. */
+export async function detectSystem(): Promise<SystemInfo | null> {
+  if (!isTauri) return null;
+  try {
+    return await invoke<SystemInfo>("detect_system");
+  } catch {
+    return null;
+  }
+}
+
+export interface DownloadFileInfo {
+  size: number;
+  /** Unix ms of the file's last write. */
+  modified: number;
+}
+
+/** Size + date per path (null when gone). The backend only answers inside PostWipeDownloads. */
+export async function downloadFileInfo(paths: string[]): Promise<(DownloadFileInfo | null)[]> {
+  if (!isTauri) return paths.map((_, i) => ({ size: (40 + i * 37) * 1024 * 1024, modified: Date.now() - i * 3_600_000 }));
+  return invoke("download_file_info", { paths });
+}
+
+/** Opens a downloaded file with its default handler. Refused outside PostWipeDownloads. */
+export function openDownload(path: string): Promise<void> {
+  return invoke("open_download", { path });
+}
+
+export type InstallState = "waiting" | "running" | "installed" | "failed" | "skipped" | "opened" | "portable" | "timed_out" | "manual";
+
+export interface PlannedInstallStep {
+  path: string;
+  state: InstallState;
+  /** "silent" | "interactive" | "open" | "portable" | "none" */
+  mode: string;
+  admin: boolean;
+  detail: string | null;
+}
+
+/** Hands downloaded files to "Install for me". The backend decides what runs and how (only
+ *  verified files inside PostWipeDownloads, switches from the built-in catalog). */
+export function installDownloads(paths: string[]): Promise<{ sessionId: string; steps: PlannedInstallStep[] }> {
+  return invoke("install_downloads", { paths });
+}
+
+export function cancelInstall(sessionId: string): Promise<void> {
+  return invoke("cancel_install", { sessionId });
+}

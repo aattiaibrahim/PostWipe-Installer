@@ -1,0 +1,22 @@
+{
+  "name": "postwipe-accounts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "schema": "node scripts/generate-schema.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-auth": "^1.7.5",
+    "hono": "^4.13.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260916.1",
+    "@types/node": "^22.20.3",
+    "otpauth": "^9.5.2",
+    "typescript": "5.9",
+    "wrangler": "^4.132.0"
+  }
+}

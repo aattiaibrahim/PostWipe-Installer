@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PostWipe Installer",
+  "version": "0.1.130",
+  "identifier": "dev.andrewattia.postwipe-installer",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "title": "PostWipe Installer",
+        "width": 1360,
+        "height": 860,
+        "minWidth": 900,
+        "minHeight": 600,
+        "center": true,
+        "resizable": true,
+        "decorations": false,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data: blob: https://www.google.com https://*.gstatic.com https://postwipe-specials-gate.andrewattiaibrahim.workers.dev",
+        "media-src": "'self' blob: https://postwipe-specials-gate.andrewattiaibrahim.workers.dev",
+        "font-src": "'self' data:",
+        "connect-src": "'self' ipc: http://ipc.localhost https://postwipe-specials-gate.andrewattiaibrahim.workers.dev",
+        "frame-src": "blob:",
+        "object-src": "'none'",
+        "base-uri": "'none'",
+        "form-action": "'none'"
+      },
+      "devCsp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "publisher": "Andrew Attia Ibrahim",
+    "createUpdaterArtifacts": true,
+    "targets": [
+      "nsis",
+      "dmg",
+      "app"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "icons/nsis-header.bmp",
+        "sidebarImage": "icons/nsis-sidebar.bmp"
+      }
+    },
+    "macOS": {
+      "dmg": {
+        "background": "icons/dmg-background.tiff",
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        },
+        "appPosition": {
+          "x": 180,
+          "y": 210
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 210
+        }
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDU2MTk5MUI5NjA0QThFNzQKUldSMGprcGd1WkVaVnZIYWl1TUFYMVlrRElJWGp5aHo0UTM1N0xzVS91OUJ1V3c3Wm0xbjVHWnQK",
+      "endpoints": [
+        "https://github.com/aattiaibrahim/PostWipe-Installer/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

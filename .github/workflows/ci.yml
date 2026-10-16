@@ -1,0 +1,60 @@
+name: CI
+
+# Pre-merge quality gates. Runs on feature-branch pushes and on PRs into master
+# (including Dependabot's). Master pushes are covered by the Release workflow's own
+# build + test, so we skip them here to avoid duplicate runs.
+on:
+  push:
+    branches-ignore: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # `npm run build` is `tsc && vite build`, so this is the typecheck + build gate.
+      - name: Typecheck and build
+        run: npm run build
+
+  rust:
+    # Windows matches the Release runner (no apt system deps needed for the Tauri crate).
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      # The real gate: catalog parse + unit tests (skip live/network sweeps).
+      - name: Tests
+        working-directory: src-tauri
+        run: cargo test --lib -- --skip live_tests --skip full_catalog_sweep
+      # Informational only — the codebase uses a deliberately wide manual style that isn't
+      # rustfmt-default-clean, so these report without failing the build.
+      - name: Format (informational)
+        working-directory: src-tauri
+        run: cargo fmt --check
+        continue-on-error: true
+      - name: Clippy (informational)
+        working-directory: src-tauri
+        run: cargo clippy --lib --no-deps
+        continue-on-error: true
