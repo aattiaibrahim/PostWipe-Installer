@@ -161,6 +161,29 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Repository restarted from a clean history — 2026-10-16 (v0.1.132)
+The old repo was deleted and recreated under the same owner/name, because the September
+`wrangler dev` cache leak could not be removed any other way: **23 of its 44
+`refs/pull/<n>/head` refs still carried the commit**, and GitHub keeps those permanently and
+serves them to ordinary clones. A history rewrite never touches PR refs, so the file was
+fetchable with no commit id. Deleting the repository took the PR refs with it.
+- **Verified gone:** the API reports "no commit found" for that hash, and a fresh mirror clone
+  has one ref and no PR refs.
+- **Kept working** by reusing the same owner/name: the updater endpoint, the
+  raw.githubusercontent health URL, and every in-app link.
+- **Lost on purpose:** 129 releases, 391 commits, 127 tags, 9 issues, 44 PR refs. The history is
+  archived locally as a pruned mirror (391 commits, 127 tags, leak removed).
+- **Signing key:** unchanged, so installed apps still trust it. It has **no password** — it signs
+  with an empty one, so only `TAURI_SIGNING_PRIVATE_KEY` needs to exist as a secret;
+  `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` can be absent (GitHub passes an empty string).
+  `src-tauri/updater-signing-key.pem` is now the ONLY copy outside that secret — back it up.
+- **Trap hit on the way:** the first push triggered a release before the secret existed, which
+  would have published an UNSIGNED build that every installed app rejects. Cancelled mid-build
+  and the draft deleted. On a fresh repo, add the signing secret BEFORE the first push.
+- **First release v0.1.132 verified:** both installers, both .sig files and latest.json present,
+  GitHub serves it as latest, and all 8 platform entries in latest.json are signed by the key id
+  the app embeds (748e4a60b9911956). Friends on 0.1.130 get offered it normally.
+
 ### Privacy audit — 2026-10-16
 Full pass over the repo, its history and the live Workers ("make sure there isn't any leaks").
 - [done] **Rate limits were storing client IP addresses.** Better Auth builds its database
