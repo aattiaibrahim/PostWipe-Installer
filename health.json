@@ -1,5 +1,5 @@
 {
-  "generated_at": 1791829267,
+  "generated_at": 1792427352,
   "source": "ci",
   "entries": [
     {
@@ -66,13 +66,13 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.97.56/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.97.59/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.97.56/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.97.59/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.162.1/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.163.0/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.162.1/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.163.0/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files3.majorgeeks.com/dda015131992b61f3933594bf3992b944cf4a2e4/drivers/DDU v18.1.6.1_setup.exe"
+      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.1_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -258,13 +258,13 @@
       "app_id": "helium",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.19.2.1/helium_0.19.2.1_arm64-macos.dmg"
+      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.19.4.1/helium_0.19.4.1_arm64-macos.dmg"
     },
     {
       "app_id": "helium",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.19.2.1/helium_0.19.2.1_x64-installer.exe"
+      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.19.4.1/helium_0.19.4.1_x64-installer.exe"
     },
     {
       "app_id": "houdoku",
@@ -281,8 +281,8 @@
     {
       "app_id": "hwinfo",
       "os": "windows",
-      "status": "unknown",
-      "detail": "couldn't reach the vendor: network error while resolving URL: HTTP status server error (521 <unknown status code>) for url (https://www.hwinfo.com/download/)"
+      "status": "ok",
+      "detail": "https://www.hwinfo.com/files/hwi64_854.exe"
     },
     {
       "app_id": "hwmonitor",
@@ -306,13 +306,13 @@
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/157.0.1-1/librewolf-157.0.1-1-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/158.0-1/librewolf-158.0-1-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/157.0.1-1/librewolf-157.0.1-1-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/158.0-1/librewolf-158.0-1-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
@@ -330,13 +330,13 @@
       "app_id": "losslesscut",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.69.0/LosslessCut-mac-arm64.dmg"
+      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.70.1/LosslessCut-mac-arm64.dmg"
     },
     {
       "app_id": "losslesscut",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.69.0/LosslessCut-win-x64.7z"
+      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.70.1/LosslessCut-win-x64.7z"
     },
     {
       "app_id": "msi-afterburner",
@@ -378,7 +378,7 @@
       "app_id": "nvidia-broadcast",
       "os": "windows",
       "status": "ok",
-      "detail": "https://international.download.nvidia.com/Windows/broadcast/2.2.1/NVIDIA_Broadcast_v2.2.1.58338310.exe"
+      "detail": "https://international.download.nvidia.com/Windows/broadcast/2.3.0/NVIDIA_Broadcast_v2.3.0.71988672.exe"
     },
     {
       "app_id": "nvidia-profile-inspector",
@@ -756,13 +756,13 @@
       "app_id": "zen-browser",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.2b/zen.macos-universal.dmg"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.3b/zen.macos-universal.dmg"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.2b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.3b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
