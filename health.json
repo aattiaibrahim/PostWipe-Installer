@@ -1,12 +1,12 @@
 {
-  "generated_at": 1792427352,
+  "generated_at": 1793030735,
   "source": "ci",
   "entries": [
     {
       "app_id": "7-zip",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/ip7z/7zip/releases/download/26.04/7z2604-x64.exe"
+      "detail": "https://github.com/ip7z/7zip/releases/download/26.05/7z2605-x64.exe"
     },
     {
       "app_id": "anki",
@@ -66,13 +66,13 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.97.59/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.98.60/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.97.59/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.98.60/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.163.0/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.164.0/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.163.0/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.164.0/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.1_setup.exe"
+      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.2_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -173,8 +173,8 @@
     {
       "app_id": "endgame-op1-8k-v2",
       "os": "windows",
-      "status": "unknown",
-      "detail": "couldn't reach the vendor: network error while resolving URL: HTTP status client error (429 Too Many Requests) for url (https://endgamegear.com/pages/op1-8k-v2-downloads)"
+      "status": "ok",
+      "detail": "https://img.endgamegear.com/downloads/Endgame_Gear_OP1_8k_v2_Configuration_Tool_v1.07.zip"
     },
     {
       "app_id": "epic-games",
@@ -234,7 +234,7 @@
       "app_id": "git",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/git-for-windows/git/releases/download/v2.56.0.windows.2/Git-2.56.0.2-64-bit.exe"
+      "detail": "https://github.com/git-for-windows/git/releases/download/v2.56.0.windows.4/Git-2.56.0.4-64-bit.exe"
     },
     {
       "app_id": "gog-galaxy",
@@ -258,13 +258,13 @@
       "app_id": "helium",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.19.4.1/helium_0.19.4.1_arm64-macos.dmg"
+      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.20.1.1/helium_0.20.1.1_arm64-macos.dmg"
     },
     {
       "app_id": "helium",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.19.4.1/helium_0.19.4.1_x64-installer.exe"
+      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.20.1.1/helium_0.20.1.1_x64-installer.exe"
     },
     {
       "app_id": "houdoku",
@@ -306,25 +306,25 @@
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/158.0-1/librewolf-158.0-1-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/158.0-1/librewolf-158.0-1-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.0.4875/Lidarr.master.3.1.0.4875.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.6.5079/Lidarr.master.3.1.6.5079.osx-app-core-arm64.zip"
     },
     {
       "app_id": "lidarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.0.4875/Lidarr.master.3.1.0.4875.windows-core-x64-installer.exe"
+      "detail": "https://github.com/Lidarr/Lidarr/releases/download/v3.1.6.5079/Lidarr.master.3.1.6.5079.windows-core-x64-installer.exe"
     },
     {
       "app_id": "losslesscut",
@@ -360,7 +360,7 @@
       "app_id": "nanazip",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1843.0/NanaZip_7.0.1843.0.msixbundle"
+      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1873.0/NanaZip_7.0.1873.0.msixbundle"
     },
     {
       "app_id": "netlimiter",
@@ -390,25 +390,25 @@
       "app_id": "obs-studio",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-macOS-Apple.dmg"
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.0/OBS-Studio-33.0.0-macOS-Apple.dmg"
     },
     {
       "app_id": "obs-studio",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsproject/obs-studio/releases/download/32.2.2/OBS-Studio-32.2.2-Windows-x64-Installer.exe"
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.0/OBS-Studio-33.0.0-Windows-x64-Installer.exe"
     },
     {
       "app_id": "obsidian",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.4/Obsidian-1.14.4.dmg"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.5/Obsidian-1.14.5.dmg"
     },
     {
       "app_id": "obsidian",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.4/Obsidian-1.14.4.exe"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.5/Obsidian-1.14.5.exe"
     },
     {
       "app_id": "occt",
@@ -438,13 +438,13 @@
       "app_id": "powertoys",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.101.2362.0/PowerToysUserSetup-0.101.2362.0-x64.exe"
+      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.102.2933.0/PowerToysUserSetup-0.102.2933.0-x64.exe"
     },
     {
       "app_id": "prime95",
       "os": "windows",
-      "status": "ok",
-      "detail": "https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip"
+      "status": "unknown",
+      "detail": "couldn't reach the download: error sending request for url (https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip)"
     },
     {
       "app_id": "process-explorer",
@@ -467,8 +467,8 @@
     {
       "app_id": "putty",
       "os": "windows",
-      "status": "unknown",
-      "detail": "couldn't reach the vendor: network error while resolving URL: error sending request for url (https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)"
+      "status": "ok",
+      "detail": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.85-installer.msi"
     },
     {
       "app_id": "pycharm",
@@ -492,19 +492,19 @@
       "app_id": "qbittorrent",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.2.4/qbittorrent_5.2.4_x64_setup.exe"
+      "detail": "https://github.com/qbittorrent/qBittorrent/releases/download/release-5.3.0/qbittorrent_5.3.0_x64_setup.exe"
     },
     {
       "app_id": "qobuz",
       "os": "macos",
       "status": "ok",
-      "detail": "https://desktop.qobuz.com/releases/darwin/arm64/bigsur/8.2.0-b033/Qobuz.dmg"
+      "detail": "https://desktop.qobuz.com/releases/darwin/arm64/bigsur/8.3.0-b028/Qobuz.dmg"
     },
     {
       "app_id": "qobuz",
       "os": "windows",
       "status": "ok",
-      "detail": "https://desktop.qobuz.com/releases/win32/x64/windows7_8_10/8.2.0-b033/Qobuz_Installer.exe"
+      "detail": "https://desktop.qobuz.com/releases/win32/x64/windows7_8_10/8.3.0-b028/Qobuz_Installer.exe"
     },
     {
       "app_id": "radarr",
@@ -708,13 +708,13 @@
       "app_id": "virtualbox",
       "os": "macos",
       "status": "ok",
-      "detail": "https://download.virtualbox.org/virtualbox/7.2.20/VirtualBox-7.2.20-175154-macOSArm64.dmg"
+      "detail": "https://download.virtualbox.org/virtualbox/7.2.22/VirtualBox-7.2.22-175245-macOSArm64.dmg"
     },
     {
       "app_id": "virtualbox",
       "os": "windows",
       "status": "ok",
-      "detail": "https://download.virtualbox.org/virtualbox/7.2.20/VirtualBox-7.2.20-175154-Win.exe"
+      "detail": "https://download.virtualbox.org/virtualbox/7.2.22/VirtualBox-7.2.22-175245-Win.exe"
     },
     {
       "app_id": "vscode",
@@ -756,13 +756,13 @@
       "app_id": "zen-browser",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.3b/zen.macos-universal.dmg"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.4b/zen.macos-universal.dmg"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.3b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.4b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
