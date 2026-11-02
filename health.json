@@ -1,5 +1,5 @@
 {
-  "generated_at": 1793030735,
+  "generated_at": 1793647585,
   "source": "ci",
   "entries": [
     {
@@ -66,13 +66,13 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.98.60/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.98.63/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.98.60/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.98.63/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.164.0/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.166.0/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.164.0/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.166.0/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.2_setup.exe"
+      "detail": "https://files3.majorgeeks.com/cf331a5aeba3f85f4a9c254c2f7a3b236ddc781e/drivers/DDU v18.1.6.2_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -258,13 +258,13 @@
       "app_id": "helium",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.20.1.1/helium_0.20.1.1_arm64-macos.dmg"
+      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.20.3.1/helium_0.20.3.1_arm64-macos.dmg"
     },
     {
       "app_id": "helium",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.20.1.1/helium_0.20.1.1_x64-installer.exe"
+      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.20.3.1/helium_0.20.3.1_x64-installer.exe"
     },
     {
       "app_id": "houdoku",
@@ -306,13 +306,13 @@
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/159.0-1/librewolf-159.0-1-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/158.0.1-2/librewolf-158.0.1-2-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/159.0-1/librewolf-159.0-1-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
@@ -330,13 +330,13 @@
       "app_id": "losslesscut",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.70.1/LosslessCut-mac-arm64.dmg"
+      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.70.2/LosslessCut-mac-arm64.dmg"
     },
     {
       "app_id": "losslesscut",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.70.1/LosslessCut-win-x64.7z"
+      "detail": "https://github.com/mifi/lossless-cut/releases/download/v3.70.2/LosslessCut-win-x64.7z"
     },
     {
       "app_id": "msi-afterburner",
@@ -360,7 +360,7 @@
       "app_id": "nanazip",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1873.0/NanaZip_7.0.1873.0.msixbundle"
+      "detail": "https://github.com/M2Team/NanaZip/releases/download/7.0.1882.0/NanaZip_7.0.1882.0.msixbundle"
     },
     {
       "app_id": "netlimiter",
@@ -390,25 +390,25 @@
       "app_id": "obs-studio",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.0/OBS-Studio-33.0.0-macOS-Apple.dmg"
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.1/OBS-Studio-33.0.1-macOS-Apple.dmg"
     },
     {
       "app_id": "obs-studio",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.0/OBS-Studio-33.0.0-Windows-x64-Installer.exe"
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.1/OBS-Studio-33.0.1-Windows-x64-Installer.exe"
     },
     {
       "app_id": "obsidian",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.5/Obsidian-1.14.5.dmg"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.0/Obsidian-1.15.0.dmg"
     },
     {
       "app_id": "obsidian",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.14.5/Obsidian-1.14.5.exe"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.0/Obsidian-1.15.0.exe"
     },
     {
       "app_id": "occt",
@@ -438,7 +438,7 @@
       "app_id": "powertoys",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.102.2933.0/PowerToysUserSetup-0.102.2933.0-x64.exe"
+      "detail": "https://github.com/microsoft/PowerToys/releases/download/v0.102.3001/PowerToysUserSetup-0.102.3001.0-x64.exe"
     },
     {
       "app_id": "prime95",
@@ -456,13 +456,13 @@
       "app_id": "prowlarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.6.5.5623/Prowlarr.master.2.6.5.5623.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.7.0.5723/Prowlarr.master.2.7.0.5723.osx-app-core-arm64.zip"
     },
     {
       "app_id": "prowlarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.6.5.5623/Prowlarr.master.2.6.5.5623.windows-core-x64-installer.exe"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.7.0.5723/Prowlarr.master.2.7.0.5723.windows-core-x64-installer.exe"
     },
     {
       "app_id": "putty",
@@ -540,13 +540,13 @@
       "app_id": "rustdesk",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.0/rustdesk-1.5.0-aarch64.dmg"
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.1/rustdesk-1.5.1-aarch64.dmg"
     },
     {
       "app_id": "rustdesk",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.0/rustdesk-1.5.0-x86_64.exe"
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.1/rustdesk-1.5.1-x86_64.exe"
     },
     {
       "app_id": "screentogif",
@@ -756,13 +756,13 @@
       "app_id": "zen-browser",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.4b/zen.macos-universal.dmg"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24b/zen.macos-universal.dmg"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.23.4b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
