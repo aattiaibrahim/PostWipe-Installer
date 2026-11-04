@@ -113,6 +113,7 @@ const PLAN = {
   "equalizer-apo": {}, // asks which audio devices to hook, which only the user can answer
   peace: {},
   vencord: {}, // a patcher with its own UI, not an installer
+  millennium: {}, // Steam theming installer: its WinMain ignores the command line
 
   // The download is the program itself.
   codex: { portable: true },

@@ -38,6 +38,28 @@
           }
         },
         {
+          "id": "millennium",
+          "name": "Millennium",
+          "bio": "Community themes and plugins for the Steam client.",
+          "description": "Millennium is an open-source framework for restyling the Steam client: browse community themes and plugins on steambrew.app to change how Steam looks and add features it doesn't have. This is its official installer, which also updates and removes it. Install Steam first, and close it before running the installer.",
+          "icon": "millennium.ico",
+          "domain": "steambrew.app",
+          "kind": "download",
+          "notes": "Added 2026-11-03. Uses SteamClientHomebrew/Installer (the official GUI installer, MIT), not the main SteamClientHomebrew/Millennium repo, which only ships a raw windows-x86_64.zip to unpack into Steam's folder by hand. No silent mode: src/main.cc's WinMain receives the command line but never reads it (checked 2026-11-03), so Install all at once lists it under Needs you. No macOS build exists (Windows and Linux only). The steambrew.app PowerShell one-liner is deliberately NOT used: PostWipe never runs remote scripts.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "SteamClientHomebrew/Installer",
+                "asset_pattern": "MillenniumInstaller-Windows.exe"
+              },
+              "filename": "MillenniumInstaller.exe",
+              "install": {},
+              "signer": "SignPath Foundation"
+            }
+          }
+        },
+        {
           "id": "epic-games",
           "name": "Epic Games Launcher",
           "bio": "Epic Games Store client for buying and launching games.",

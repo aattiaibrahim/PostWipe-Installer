@@ -161,6 +161,21 @@ network resolvers, concurrent downloads, auto-updating via CI.
 
 Status tags: `[done]` `[in-progress]` `[blocked: needs files]` `[blocked: needs decision]` `[idea: needs discussion]`
 
+### Millennium (Steam themes) — 2026-11-03
+- [done] **Millennium** in Gaming, right after Steam, Windows only (there is no macOS build).
+  It resolves the official GUI installer from `SteamClientHomebrew/Installer`
+  (`MillenniumInstaller-Windows.exe`), not the main Millennium repo, whose Windows release is a
+  raw zip you'd unpack into Steam's folder by hand.
+  - **Manual in Install all at once:** `src/main.cc`'s WinMain receives the command line and
+    never reads it, so there is no silent mode. The steambrew.app PowerShell one-liner is NOT
+    used: PostWipe never runs remote scripts.
+  - **Signer pinned as "SignPath Foundation".** That's SignPath's free code-signing programme for
+    open-source projects, so the certificate is shared by many projects. The pin still rejects
+    unsigned or tampered files, but it proves "signed through SignPath's OSS programme", which is
+    weaker than a vendor-specific pin like "Valve Corp.".
+  - The icon is their real mark (Steam's shape with a crescent and star in the circle), not a
+    copy of Steam's logo.
+
 ### Repository restarted from a clean history — 2026-10-16 (v0.1.132)
 The old repo was deleted and recreated under the same owner/name, because the September
 `wrangler dev` cache leak could not be removed any other way: **23 of its 44
