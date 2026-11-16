@@ -1,5 +1,5 @@
 {
-  "generated_at": 1794253551,
+  "generated_at": 1794857657,
   "source": "ci",
   "entries": [
     {
@@ -66,13 +66,13 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.99.55/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.99.57/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.99.55/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.99.57/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.167.0/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.169.0/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.167.0/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.169.0/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files1.majorgeeks.com/0b93caee71a9d214d0bbbc5622ea29507e3b8a7a/drivers/DDU v18.1.6.2_setup.exe"
+      "detail": "https://files2.majorgeeks.com/eee9dc5129787c4d2a8fda055f09565efcf9322a/drivers/DDU v18.1.6.3_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -234,7 +234,7 @@
       "app_id": "git",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/git-for-windows/git/releases/download/v2.56.0.windows.4/Git-2.56.0.4-64-bit.exe"
+      "detail": "https://github.com/git-for-windows/git/releases/download/v2.56.1.windows.1/Git-2.56.1-64-bit.exe"
     },
     {
       "app_id": "gog-galaxy",
@@ -258,13 +258,13 @@
       "app_id": "helium",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.21.1.1/helium_0.21.1.1_arm64-macos.dmg"
+      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.21.3.1/helium_0.21.3.1_arm64-macos.dmg"
     },
     {
       "app_id": "helium",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.21.1.1/helium_0.21.1.1_x64-installer.exe"
+      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.21.3.1/helium_0.21.3.1_x64-installer.exe"
     },
     {
       "app_id": "houdoku",
@@ -282,7 +282,7 @@
       "app_id": "hwinfo",
       "os": "windows",
       "status": "ok",
-      "detail": "https://www.hwinfo.com/files/hwi64_854.exe"
+      "detail": "https://www.hwinfo.com/files/hwi64_860.exe"
     },
     {
       "app_id": "hwmonitor",
@@ -306,13 +306,13 @@
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/159.0-1/librewolf-159.0-1-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/159.0.1-1/librewolf-159.0.1-1-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/159.0-1/librewolf-159.0-1-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/159.0.1-1/librewolf-159.0.1-1-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
@@ -378,7 +378,7 @@
       "app_id": "notepad-plus-plus",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.9/npp.8.9.9.Installer.x64.exe"
+      "detail": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.9.1/npp.8.9.9.1.Installer.x64.exe"
     },
     {
       "app_id": "nvidia-broadcast",
@@ -408,13 +408,13 @@
       "app_id": "obsidian",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.0/Obsidian-1.15.0.dmg"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.1/Obsidian-1.15.1.dmg"
     },
     {
       "app_id": "obsidian",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.0/Obsidian-1.15.0.exe"
+      "detail": "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.15.1/Obsidian-1.15.1.exe"
     },
     {
       "app_id": "occt",
@@ -462,13 +462,13 @@
       "app_id": "prowlarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.7.0.5723/Prowlarr.master.2.7.0.5723.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v3.0.2.5780/Prowlarr.master.3.0.2.5780.osx-app-core-arm64.zip"
     },
     {
       "app_id": "prowlarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v2.7.0.5723/Prowlarr.master.2.7.0.5723.windows-core-x64-installer.exe"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v3.0.2.5780/Prowlarr.master.3.0.2.5780.windows-core-x64-installer.exe"
     },
     {
       "app_id": "putty",
@@ -516,13 +516,13 @@
       "app_id": "radarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.4.4.10685/Radarr.master.6.4.4.10685.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Radarr/Radarr/releases/download/v7.0.3.10918/Radarr.master.7.0.3.10918.osx-app-core-arm64.zip"
     },
     {
       "app_id": "radarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Radarr/Radarr/releases/download/v6.4.4.10685/Radarr.master.6.4.4.10685.windows-core-x64-installer.exe"
+      "detail": "https://github.com/Radarr/Radarr/releases/download/v7.0.3.10918/Radarr.master.7.0.3.10918.windows-core-x64-installer.exe"
     },
     {
       "app_id": "riot-client",
@@ -546,13 +546,13 @@
       "app_id": "rustdesk",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.1/rustdesk-1.5.1-aarch64.dmg"
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.3/rustdesk-1.5.3-aarch64.dmg"
     },
     {
       "app_id": "rustdesk",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.1/rustdesk-1.5.1-x86_64.exe"
+      "detail": "https://github.com/rustdesk/rustdesk/releases/download/1.5.3/rustdesk-1.5.3-x86_64.exe"
     },
     {
       "app_id": "screentogif",
@@ -744,13 +744,13 @@
       "app_id": "windscribe",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_universal.dmg"
+      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.25.8/Windscribe_2.25.8_universal.dmg"
     },
     {
       "app_id": "windscribe",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.24.13/Windscribe_2.24.13_amd64.exe"
+      "detail": "https://github.com/Windscribe/Desktop-App/releases/download/v2.25.8/Windscribe_2.25.8_amd64.exe"
     },
     {
       "app_id": "winrar",
@@ -762,13 +762,13 @@
       "app_id": "zen-browser",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.1b/zen.macos-universal.dmg"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.2b/zen.macos-universal.dmg"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.1b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.2b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
