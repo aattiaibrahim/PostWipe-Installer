@@ -86,6 +86,7 @@ const PLAN = {
   // WiX Burn bundles.
   "ea-app": { args: BURN, admin: true },
   powertoys: { args: BURN, admin: false }, // the per-user build (PowerToysUserSetup)
+  moonlight: { args: BURN, admin: true }, // MoonlightSetup, per-machine (verified .wixburn 2026-11-20)
 
   // Mozilla-style 7-Zip SFX around an NSIS setup; /S is documented for both.
   firefox: { args: NSIS, admin: true },

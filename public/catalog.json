@@ -311,6 +311,71 @@
               }
             }
           }
+        },
+        {
+          "id": "moonlight",
+          "name": "Moonlight",
+          "icon": "moonlight.png",
+          "bio": "Stream games from your gaming PC to any device.",
+          "description": "Moonlight is the open-source client for game streaming: it plays games running on another PC (hosted with Sunshine) on this one, at up to 4K 120 FPS with HDR and low latency. Use it on a laptop, a second PC or a Mac to play from your main rig anywhere in the house, or over Tailscale from anywhere.",
+          "domain": "moonlight-stream.org",
+          "website": "https://moonlight-stream.org",
+          "kind": "download",
+          "notes": "Added 2026-11-20. GitHub moonlight-stream/moonlight-qt (GPL-3.0), verified live against v6.2.0: MoonlightSetup-<ver>.exe is a WiX Burn bundle (.wixburn section, checked 2026-11-20), so Install for me runs it with /quiet /norestart, per-machine. The Portable zips are skipped by the pattern. macOS: a single universal Moonlight-<ver>.dmg; the Moonlight-SteamLink zip doesn't match.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "moonlight-stream/moonlight-qt",
+                "asset_pattern": "MoonlightSetup-*.exe"
+              },
+              "filename": "MoonlightSetup.exe",
+              "install": {
+                "args": [
+                  "/quiet",
+                  "/norestart"
+                ],
+                "admin": true
+              }
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "moonlight-stream/moonlight-qt",
+                "asset_pattern": "Moonlight-*.dmg"
+              },
+              "filename": "Moonlight.dmg"
+            }
+          }
+        },
+        {
+          "id": "sunshine",
+          "name": "Sunshine",
+          "icon": "sunshine.png",
+          "bio": "Self-hosted game-stream host for Moonlight.",
+          "description": "Sunshine turns your gaming PC into a game-streaming host: it captures the screen with the GPU's hardware encoder (NVIDIA, AMD or Intel) and streams it to Moonlight on any other device. Set it up in its web page at https://localhost:47990 after installing, then pair Moonlight with a PIN.",
+          "domain": "sunshine.lizardbyte.dev",
+          "website": "https://sunshine.lizardbyte.dev",
+          "kind": "download",
+          "notes": "Added 2026-11-20. The repo moved from LizardByte/Sunshine to SunshineStream/Sunshine (GitHub 301s the old name); the new name is used directly. GPL-3.0. Since v2026.906 Windows ships only an .msi (the .exe installer was dropped), so Install for me runs it with msiexec /qn and admin (it installs a service). Nightly builds are GitHub prereleases, which releases/latest skips. macOS ships separate arm64 and x86_64 dmgs and the catalog has one macOS entry, so this takes Apple Silicon (arm64); Intel Macs need the x86_64 dmg from the releases page.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "SunshineStream/Sunshine",
+                "asset_pattern": "Sunshine-Windows-AMD64-installer.msi"
+              },
+              "filename": "SunshineSetup.msi"
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "SunshineStream/Sunshine",
+                "asset_pattern": "Sunshine-macOS-arm64.dmg"
+              },
+              "filename": "Sunshine.dmg"
+            }
+          }
         }
       ]
     },
