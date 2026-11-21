@@ -70,6 +70,7 @@ const PLAN = {
   bitwarden: { args: NSIS, admin: false },
   houdoku: { args: NSIS, admin: false },
   "music-presence": { args: NSIS, admin: false },
+  feishin: { args: NSIS, admin: false }, // electron-builder per-user NSIS (verified NullsoftInst 2026-11-20)
   obsidian: { args: NSIS, admin: false },
   "twinkle-tray": { args: NSIS, admin: false },
   flux: { args: NSIS, admin: false },

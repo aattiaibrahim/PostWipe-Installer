@@ -587,14 +587,16 @@
           "icon": "prime95.ico",
           "domain": "mersenne.org",
           "kind": "download",
-          "notes": "The old unversioned prime95.zip URL 404s now. Resolves dynamically by scraping the current win64 build link off mersenne.org's download page ([href$='.win64.zip'] deliberately excludes the .service.zip variant). Verified live 2026-07-08.",
+          "notes": "The old unversioned prime95.zip URL 404s now. Resolves dynamically by scraping the current win64 build link off mersenne.org's download page ([href$='.win64.zip'] deliberately excludes the .service.zip variant). Verified live 2026-07-08. 2026-11-20: the page's links point at download.mersenne.ca, which the weekly sweep couldn't reach; mersenne.org serves the same files under /download/software/, so url_regex keeps the vNN/ver/file part of the scraped link and base_url rejoins it there (checked: v30/30.19/p95v3019b20.win64.zip is the real zip).",
           "platforms": {
             "windows": {
               "resolver": {
                 "type": "html",
                 "page_url": "https://www.mersenne.org/download/",
                 "selector": "a[href$='.win64.zip']",
-                "attr": "href"
+                "attr": "href",
+                "base_url": "https://www.mersenne.org/download/software/",
+                "url_regex": "v[0-9]+/[0-9.]+/p95v[0-9a-z]+\\.win64\\.zip"
               },
               "filename": "prime95.zip"
             }
@@ -1724,6 +1726,41 @@
           }
         },
         {
+          "id": "feishin",
+          "name": "Feishin",
+          "icon": "feishin.png",
+          "bio": "Desktop player for your own Navidrome / Jellyfin music server.",
+          "description": "Feishin is a modern desktop music player for self-hosted libraries: it connects to Navidrome, Jellyfin or any OpenSubsonic server and streams your own collection with gapless playback, synced lyrics, smart playlists and a built-in Discord Rich Presence toggle, so what you play from the NAS shows as your Discord status.",
+          "domain": "github.com",
+          "website": "https://github.com/jeffvli/feishin",
+          "kind": "download",
+          "notes": "GitHub jeffvli/feishin, verified live 2026-11-20 (v1.17.0): Windows Feishin-<ver>-win-x64.exe is an electron-builder NSIS installer (NullsoftInst header checked), per-user, so /S and not elevated. There's also a -win.exe (x64+arm64 combined, bigger) and -win-arm64.exe; the x64 one is picked. macOS ships separate arm64 and x64 dmgs; arm64 is picked (one file per platform). Icon is the repo's assets/icons/256x256.png scaled to 96px, bundled because domain github.com would show the GitHub favicon.",
+          "platforms": {
+            "windows": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "jeffvli/feishin",
+                "asset_pattern": "Feishin-*-win-x64.exe"
+              },
+              "filename": "FeishinSetup.exe",
+              "install": {
+                "args": [
+                  "/S"
+                ],
+                "admin": false
+              }
+            },
+            "macos": {
+              "resolver": {
+                "type": "github_release",
+                "repo": "jeffvli/feishin",
+                "asset_pattern": "Feishin-*-mac-arm64.dmg"
+              },
+              "filename": "Feishin.dmg"
+            }
+          }
+        },
+        {
           "id": "music-presence",
           "name": "Music Presence",
           "icon": "music-presence.png",
@@ -2442,14 +2479,14 @@
           "domain": "insta360.com",
           "website": "https://www.insta360.com/download/insta360-link2pro",
           "kind": "download",
-          "notes": "Pinned to 2.2.4(build14) as requested; both URLs verified live 2026-07-17 (exe 619 MB, pkg 772 MB, HTTP 200). These are hashed wassets.insta360.com paths with NO stable 'latest' alias, so they must be re-pinned by re-scraping the insta360-link2pro download page when a newer build ships.",
+          "notes": "Re-pinned 2026-11-20 to 2.2.5(build25), the newest build (URLs from the winget-pkgs and Homebrew manifests, both answered 200 with the right content type; insta360.com blocks scripted fetches with 403). Was 2.2.4(build14). These are hashed wassets.insta360.com paths with NO stable 'latest' alias, so they must be re-pinned by re-scraping the insta360-link2pro download page when a newer build ships.",
           "platforms": {
             "windows": {
               "resolver": {
                 "type": "static",
-                "url": "https://wassets.insta360.com/common/ba64efbd74f6411aa9c356b95aa5126e/Insta360LinkController_2.2.4(build14).exe"
+                "url": "https://wassets.insta360.com/common/bde7fd91a27e4c0baaff25c02ed8208f/Insta360LinkController_2.2.5(build25).exe"
               },
-              "filename": "Insta360LinkController_2.2.4(build14).exe",
+              "filename": "Insta360LinkController_2.2.5(build25).exe",
               "signer": "影石创新科技股份有限公司",
               "install": {
                 "args": [
@@ -2464,9 +2501,9 @@
             "macos": {
               "resolver": {
                 "type": "static",
-                "url": "https://wassets.insta360.com/common/f5d12724880a43bbb77753d6daa1e9cd/Insta360LinkController_2.2.4(build14).pkg"
+                "url": "https://wassets.insta360.com/common/5691fa4c032d4c15bbaa33dee8188008/Insta360LinkController_2.2.5(build25).pkg"
               },
-              "filename": "Insta360LinkController_2.2.4(build14).pkg"
+              "filename": "Insta360LinkController_2.2.5(build25).pkg"
             }
           }
         },

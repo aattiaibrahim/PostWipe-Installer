@@ -7,6 +7,7 @@ import timerResolutionIcon from "../assets/app-icons/timer-resolution.png";
 import puttyIcon from "../assets/app-icons/putty.ico";
 import qobuzIcon from "../assets/app-icons/qobuz.png";
 import musicPresenceIcon from "../assets/app-icons/music-presence.png";
+import feishinIcon from "../assets/app-icons/feishin.png";
 import deceiveIcon from "../assets/app-icons/deceive.ico";
 import losslesscutIcon from "../assets/app-icons/losslesscut.png";
 import translucenttbIcon from "../assets/app-icons/translucenttb.png";
@@ -46,6 +47,7 @@ const BUNDLED_ICONS: Record<string, string> = {
   // render the GitHub favicon; this is their real mark (white, needs the dark chip below).
   qobuz: qobuzIcon,
   "music-presence": musicPresenceIcon,
+  feishin: feishinIcon,
   // GitHub-hosted apps whose domain would otherwise render the GitHub favicon.
   deceive: deceiveIcon,
   losslesscut: losslesscutIcon,
