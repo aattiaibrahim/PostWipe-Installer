@@ -1,5 +1,5 @@
 {
-  "generated_at": 1794857657,
+  "generated_at": 1795468252,
   "source": "ci",
   "entries": [
     {
@@ -66,13 +66,13 @@
       "app_id": "brave",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.99.57/Brave-Browser-universal.dmg"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.100.58/Brave-Browser-universal.dmg"
     },
     {
       "app_id": "brave",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/brave/brave-browser/releases/download/v1.99.57/BraveBrowserSetup.exe"
+      "detail": "https://github.com/brave/brave-browser/releases/download/v1.100.58/BraveBrowserSetup.exe"
     },
     {
       "app_id": "bsg-launcher",
@@ -102,13 +102,13 @@
       "app_id": "codex",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.169.0/codex-x86_64-apple-darwin.dmg"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.171.0/codex-x86_64-apple-darwin.dmg"
     },
     {
       "app_id": "codex",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/openai/codex/releases/download/rust-v0.169.0/codex-x86_64-pc-windows-msvc.exe"
+      "detail": "https://github.com/openai/codex/releases/download/rust-v0.171.0/codex-x86_64-pc-windows-msvc.exe"
     },
     {
       "app_id": "cpu-z",
@@ -120,7 +120,7 @@
       "app_id": "ddu",
       "os": "windows",
       "status": "ok",
-      "detail": "https://files2.majorgeeks.com/eee9dc5129787c4d2a8fda055f09565efcf9322a/drivers/DDU v18.1.6.3_setup.exe"
+      "detail": "https://files3.majorgeeks.com/4370b8ac30c7aaaa0b7971c19507ce679f8ecf2d/drivers/DDU v18.1.6.3_setup.exe"
     },
     {
       "app_id": "deceive",
@@ -187,6 +187,18 @@
       "os": "windows",
       "status": "ok",
       "detail": "https://sourceforge.net/projects/equalizerapo/files/1.4.2/EqualizerAPO-x64-1.4.2.exe/download"
+    },
+    {
+      "app_id": "feishin",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/jeffvli/feishin/releases/download/v1.17.0/Feishin-1.17.0-mac-arm64.dmg"
+    },
+    {
+      "app_id": "feishin",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/jeffvli/feishin/releases/download/v1.17.0/Feishin-1.17.0-win-x64.exe"
     },
     {
       "app_id": "firefox",
@@ -258,13 +270,13 @@
       "app_id": "helium",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.21.3.1/helium_0.21.3.1_arm64-macos.dmg"
+      "detail": "https://github.com/imputnet/helium-macos/releases/download/0.22.2.1/helium_0.22.2.1_arm64-macos.dmg"
     },
     {
       "app_id": "helium",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.21.3.1/helium_0.21.3.1_x64-installer.exe"
+      "detail": "https://github.com/imputnet/helium-windows/releases/download/0.22.2.1/helium_0.22.2.1_x64-installer.exe"
     },
     {
       "app_id": "houdoku",
@@ -294,25 +306,25 @@
       "app_id": "insta360-link-controller",
       "os": "macos",
       "status": "ok",
-      "detail": "https://wassets.insta360.com/common/f5d12724880a43bbb77753d6daa1e9cd/Insta360LinkController_2.2.4(build14).pkg"
+      "detail": "https://wassets.insta360.com/common/5691fa4c032d4c15bbaa33dee8188008/Insta360LinkController_2.2.5(build25).pkg"
     },
     {
       "app_id": "insta360-link-controller",
       "os": "windows",
       "status": "ok",
-      "detail": "https://wassets.insta360.com/common/ba64efbd74f6411aa9c356b95aa5126e/Insta360LinkController_2.2.4(build14).exe"
+      "detail": "https://wassets.insta360.com/common/bde7fd91a27e4c0baaff25c02ed8208f/Insta360LinkController_2.2.5(build25).exe"
     },
     {
       "app_id": "librewolf",
       "os": "macos",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/159.0.1-1/librewolf-159.0.1-1-macos-x86_64-package.dmg"
+      "detail": "https://dl.librewolf.net/librewolf/160.0.1-1/librewolf-160.0.1-1-macos-x86_64-package.dmg"
     },
     {
       "app_id": "librewolf",
       "os": "windows",
       "status": "ok",
-      "detail": "https://dl.librewolf.net/librewolf/159.0.1-1/librewolf-159.0.1-1-windows-x86_64-setup.exe"
+      "detail": "https://dl.librewolf.net/librewolf/160.0.1-1/librewolf-160.0.1-1-windows-x86_64-setup.exe"
     },
     {
       "app_id": "lidarr",
@@ -343,6 +355,18 @@
       "os": "windows",
       "status": "ok",
       "detail": "https://github.com/SteamClientHomebrew/Installer/releases/download/v1.12.1/MillenniumInstaller-Windows.exe"
+    },
+    {
+      "app_id": "moonlight",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.2.0/Moonlight-6.2.0.dmg"
+    },
+    {
+      "app_id": "moonlight",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/moonlight-stream/moonlight-qt/releases/download/v6.2.0/MoonlightSetup-6.2.0.exe"
     },
     {
       "app_id": "msi-afterburner",
@@ -396,13 +420,13 @@
       "app_id": "obs-studio",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.1/OBS-Studio-33.0.1-macOS-Apple.dmg"
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.3/OBS-Studio-33.0.3-macOS-Apple.dmg"
     },
     {
       "app_id": "obs-studio",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.1/OBS-Studio-33.0.1-Windows-x64-Installer.exe"
+      "detail": "https://github.com/obsproject/obs-studio/releases/download/33.0.3/OBS-Studio-33.0.3-Windows-x64-Installer.exe"
     },
     {
       "app_id": "obsidian",
@@ -449,8 +473,8 @@
     {
       "app_id": "prime95",
       "os": "windows",
-      "status": "unknown",
-      "detail": "couldn't reach the download: error sending request for url (https://download.mersenne.ca/gimps/v30/30.19/p95v3019b20.win64.zip)"
+      "status": "ok",
+      "detail": "https://www.mersenne.org/download/software/v30/30.19/p95v3019b20.win64.zip"
     },
     {
       "app_id": "process-explorer",
@@ -462,13 +486,13 @@
       "app_id": "prowlarr",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v3.0.2.5780/Prowlarr.master.3.0.2.5780.osx-app-core-arm64.zip"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v3.1.0.5799/Prowlarr.master.3.1.0.5799.osx-app-core-arm64.zip"
     },
     {
       "app_id": "prowlarr",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v3.0.2.5780/Prowlarr.master.3.0.2.5780.windows-core-x64-installer.exe"
+      "detail": "https://github.com/Prowlarr/Prowlarr/releases/download/v3.1.0.5799/Prowlarr.master.3.1.0.5799.windows-core-x64-installer.exe"
     },
     {
       "app_id": "putty",
@@ -540,7 +564,7 @@
       "app_id": "rufus",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/pbatard/rufus/releases/download/v4.15/rufus-4.15.exe"
+      "detail": "https://github.com/pbatard/rufus/releases/download/v4.16/rufus-4.16.exe"
     },
     {
       "app_id": "rustdesk",
@@ -601,6 +625,18 @@
       "os": "windows",
       "status": "ok",
       "detail": "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+    },
+    {
+      "app_id": "sunshine",
+      "os": "macos",
+      "status": "ok",
+      "detail": "https://github.com/SunshineStream/Sunshine/releases/download/v2026.914.233613/Sunshine-macOS-arm64.dmg"
+    },
+    {
+      "app_id": "sunshine",
+      "os": "windows",
+      "status": "ok",
+      "detail": "https://github.com/SunshineStream/Sunshine/releases/download/v2026.914.233613/Sunshine-Windows-AMD64-installer.msi"
     },
     {
       "app_id": "tailscale",
@@ -762,13 +798,13 @@
       "app_id": "zen-browser",
       "os": "macos",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.2b/zen.macos-universal.dmg"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.3b/zen.macos-universal.dmg"
     },
     {
       "app_id": "zen-browser",
       "os": "windows",
       "status": "ok",
-      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.2b/zen.installer.exe"
+      "detail": "https://github.com/zen-browser/desktop/releases/download/1.24.3b/zen.installer.exe"
     },
     {
       "app_id": "zentimings",
